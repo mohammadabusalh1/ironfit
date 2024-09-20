@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ironfit/core/presention/style/palette.dart';
+import 'package:ironfit/core/presention/widgets/custom_text_widget.dart';
+import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({super.key});
@@ -7,6 +10,8 @@ class SideMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: Palette.black,
+      shadowColor: Palette.mainAppColor,
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
@@ -14,28 +19,33 @@ class SideMenu extends StatelessWidget {
             decoration: BoxDecoration(
               color: Palette.mainAppColor,
             ),
-            child: Text(
-              'IRONFIT',
-              style: TextStyle(
-                fontSize: 32.0,
-                fontWeight: FontWeight.bold,
-              ),
+            child: CustomTextWidget(
+              text: 'IRONFIT',
+              fontSize: 36,
+              color: Palette.black,
+              fontWeight: FontWeight.bold,
             ),
           ),
           ListTile(
             leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
+            title: const CustomTextWidget(
+              text: 'Settings',
+              fontSize: 20,
+            ),
             onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Navigate to settings screen
+              Get.back();
               Navigator.pushNamed(context, '/settings');
+              Get.off(CoachDashboard());
             },
           ),
           ListTile(
             leading: const Icon(Icons.logout),
-            title: const Text('Logout'),
+            title: const CustomTextWidget(
+              text: 'Logout',
+              fontSize: 20,
+            ),
             onTap: () {
-              Navigator.pop(context); // Close the drawer
+              Get.back();
               // Handle logout logic
             },
           ),

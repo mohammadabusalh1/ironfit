@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ironfit/core/presention/style/palette.dart';
 
 class CustomTextWidget extends StatelessWidget {
   final String text;
@@ -9,7 +10,7 @@ class CustomTextWidget extends StatelessWidget {
   const CustomTextWidget({
     super.key,
     required this.text,
-    this.color = Colors.grey,
+    this.color = Palette.white,
     this.fontSize = 14.0,
     this.fontWeight = FontWeight.normal,
   });

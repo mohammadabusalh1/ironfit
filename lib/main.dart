@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:ironfit/core/presention/controllers/nav_bar_controller.dart';
 import 'package:ironfit/core/presention/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
+import 'package:ironfit/features/my_gym/screens/my_gym_screen.dart';
 
 
 void main() {
@@ -15,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(NavController());
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'IronFit',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -29,13 +31,13 @@ class MyApp extends StatelessWidget {
           titleTextStyle: TextStyle(color: Palette.black, fontSize: 20),
           iconTheme: IconThemeData(color: Palette.black),
         ),
-        // colorScheme: ColorScheme.fromSwatch().copyWith(
-        //   primary: Palette.mainAppColor,
-        //   secondary: Palette.mainAppColor,
-        // ),
       ),
       initialRoute: Routes.home,
-      onGenerateRoute: generateRoute,
+      getPages: [
+        GetPage(name: Routes.home, page: () => CoachDashboard()),
+        GetPage(name: Routes.myGym, page: () => MyGymScreen()),
+      ],
     );
+
   }
 }

@@ -1,13 +1,14 @@
 import 'package:get/get.dart';
-
+import 'package:ironfit/features/my_gym/screens/my_gym_screen.dart';
 
 class CoachDashboardController extends GetxController {
-  var coaches = <Map<String, String>>[
-    {'name': 'John Doe', 'photo': 'https://example.com/john.jpg'},
-    {'name': 'Jane Smith', 'photo': 'https://example.com/jane.jpg'},
-  ].obs;
 
-  void onCoachTap(Map<String, String> coach) {
-    // Get.to(() => CoachDetailScreen(coach: coach));
+  void onTap() {
+    Get.to(() => MyGymScreen());
+    Get.toNamed('/gymScreen');
+  }
+
+  void back () {
+    Get.back();
   }
 }

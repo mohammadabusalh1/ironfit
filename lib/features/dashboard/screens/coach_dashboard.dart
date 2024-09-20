@@ -18,7 +18,7 @@ class CoachDashboard extends StatelessWidget {
       appBar: const CustomAppBar(title: 'Coach Dashboard',),
       drawer: const SideMenu(),
       body: CoachDashboardBody(),
-      bottomNavigationBar:  NavBar(),
+      bottomNavigationBar: NavBar(),
     );
   }
 }

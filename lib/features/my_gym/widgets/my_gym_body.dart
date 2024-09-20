@@ -15,12 +15,17 @@ class MyGymBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
+            const SizedBox(
+              height: 100,
+              child: CustomTextWidget(text:'AD Banner',),
+            ),
+            const SizedBox(height: 10),
             GymTicket(
               name: 'Wider Gym',
               address: 'Bethlehem',

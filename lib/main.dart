@@ -5,6 +5,7 @@ import 'package:ironfit/core/presention/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
 import 'package:ironfit/features/my_gym/screens/my_gym_screen.dart';
+import 'package:ironfit/features/regestraion/register/screens/sing_up_screen.dart';
 
 
 void main() {
@@ -32,10 +33,11 @@ class MyApp extends StatelessWidget {
           iconTheme: IconThemeData(color: Palette.black),
         ),
       ),
-      initialRoute: Routes.home,
+      initialRoute: Routes.singUp,
       getPages: [
         GetPage(name: Routes.home, page: () => CoachDashboard()),
         GetPage(name: Routes.myGym, page: () => MyGymScreen()),
+        GetPage(name: Routes.singUp, page: () => const SignUpScreen()),
       ],
     );
 

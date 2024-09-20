@@ -34,6 +34,9 @@ flutter:
   assets:
     - assets/images/gym.jpg
     - assets/images/trainer.jpg
+    - assets/images/signOne.jpeg
+    - assets/images/ironFit.jpg
+    - assets/images/ironFitLogo.png
 
   # Fonts can also be added if required for custom typography
   # fonts:

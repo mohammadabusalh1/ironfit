@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presention/style/assets.dart';
 
-class SignUpBody extends StatefulWidget {
+class LoginBody extends StatefulWidget {
 
-  const SignUpBody({super.key});
+  const LoginBody({super.key});
 
   @override
-  State<SignUpBody> createState() => _SignUpBodyState();
+  State<LoginBody> createState() => _LoginBodyState();
 }
 
-class _SignUpBodyState extends State<SignUpBody> {
+class _LoginBodyState extends State<LoginBody> {
   final TextEditingController emailController = TextEditingController();
 
   final TextEditingController passwordController = TextEditingController();
@@ -43,7 +43,7 @@ class _SignUpBodyState extends State<SignUpBody> {
                   const SizedBox(height: 24),
                   _buildPrivacyText(context),
                   const SizedBox(height: 12),
-                  _buildRegisterButton(),
+                  _buildLoginButton(),
                   const SizedBox(height: 12),
                   _buildGoogleRegisterButton(),
                   const SizedBox(height: 10),
@@ -191,7 +191,7 @@ class _SignUpBodyState extends State<SignUpBody> {
     );
   }
 
-  Widget _buildRegisterButton() {
+  Widget _buildLoginButton() {
     return SizedBox(
       height: 100,
       child: Align(
@@ -218,7 +218,7 @@ class _SignUpBodyState extends State<SignUpBody> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text('إنشاء حساب'),
+              child: const Text('تسجيل الدخول'),
             ),
           ),
         ),
@@ -242,7 +242,7 @@ class _SignUpBodyState extends State<SignUpBody> {
               onPressed: () {
                 // Handle button press
               },
-              icon: const Icon(Icons.g_mobiledata, size: 16),
+              icon: const Icon(Icons.g_mobiledata, size: 24),
               style: ElevatedButton.styleFrom(
                 foregroundColor: const Color(0xFF1C1503), backgroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -262,12 +262,12 @@ class _SignUpBodyState extends State<SignUpBody> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          ' تسجيل الدخول',
+          'إنشاء حساب',
           style: TextStyle(color: Color(0xFFFFBB02), fontSize: 16),
         ),
         SizedBox(width: 4),
         Text(
-          '!لدي حساب بالفعل',
+          '!ليس لدي حساب ',
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ],

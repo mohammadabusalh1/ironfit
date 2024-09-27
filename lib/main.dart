@@ -3,15 +3,19 @@ import 'package:get/get.dart';
 import 'package:ironfit/core/presention/controllers/nav_bar_controller.dart';
 import 'package:ironfit/core/presention/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/MyPlans/screens/my_plans_screen.dart';
 import 'package:ironfit/features/Trainee/screens/trainee_screen.dart';
 import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
+import 'package:ironfit/features/enteInfo/screens/ente_info_screen.dart';
 import 'package:ironfit/features/my_gym/screens/my_gym_screen.dart';
 import 'package:ironfit/features/Trainees/screens/Trainees_screen.dart';
+import 'package:ironfit/features/plan/screens/plan_screen.dart';
 import 'package:ironfit/features/preLoginScreens/screens/pre_login_screen.dart';
 import 'package:ironfit/features/regestraion/login/screens/login_screen.dart';
 import 'package:ironfit/features/regestraion/register/screens/sing_up_screen.dart';
+import 'package:ironfit/features/splash/screens/splash_screen.dart';
 import 'package:ironfit/features/traineesGroupsbyAge/screens/trainees_groups_by_age_screen.dart';
-
+import 'package:ironfit/features/userStatistics/screens/user_statistics_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,7 +42,7 @@ class MyApp extends StatelessWidget {
           iconTheme: IconThemeData(color: Palette.black),
         ),
       ),
-      initialRoute: Routes.trainee,
+      initialRoute: Routes.userStatistics,
       getPages: [
         GetPage(name: Routes.home, page: () => CoachDashboard()),
         GetPage(name: Routes.myGym, page: () => MyGymScreen()),
@@ -46,10 +50,19 @@ class MyApp extends StatelessWidget {
         GetPage(name: Routes.login, page: () => const LoginScreen()),
         GetPage(name: Routes.preLogin, page: () => const PreLoginScreen()),
         GetPage(name: Routes.trainees, page: () => const TraineesScreen()),
-        GetPage(name: Routes.traineesGroupsByAge, page: () => TraineesGroupsByAgeScreen()),
+        GetPage(
+            name: Routes.traineesGroupsByAge,
+            page: () => const TraineesGroupsByAgeScreen()),
         GetPage(name: Routes.trainee, page: () => const TraineeScreen()),
+        GetPage(name: Routes.splash, page: () => const SplashScreen()),
+        GetPage(name: Routes.myPlans, page: () => const MyPlansScreen()),
+        GetPage(name: Routes.plan, page: () => const PlanScreen()),
+        GetPage(name: Routes.userStatistics, page: () => const UserStatisticsScreen()),
+        GetPage(
+            name: Routes.enterInfo,
+            page: () => Directionality(
+                textDirection: TextDirection.rtl, child: EnteInfoScreen())),
       ],
     );
-
   }
 }

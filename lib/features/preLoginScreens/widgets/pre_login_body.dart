@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ironfit/core/presention/style/assets.dart';
 
 class PreLoginBody extends StatefulWidget {
-  const PreLoginBody({Key? key}) : super(key: key);
+  const PreLoginBody({super.key});
 
   @override
   _PreLoginBodyState createState() => _PreLoginBodyState();
@@ -20,7 +20,7 @@ class _PreLoginBodyState extends State<PreLoginBody> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
-            child: Container(
+            child: SizedBox(
               width: double.infinity,
               child: Stack(
                 children: [
@@ -78,7 +78,7 @@ class _PreLoginBodyState extends State<PreLoginBody> {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
-        Container(
+        SizedBox(
           width: double.infinity,
           height: MediaQuery.of(context).size.height,
           child: Stack(

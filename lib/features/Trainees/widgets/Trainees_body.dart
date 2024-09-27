@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ironfit/core/presention/style/assets.dart';
 
 class TraineesBody extends StatefulWidget {
-  const TraineesBody({Key? key}) : super(key: key);
+  const TraineesBody({super.key});
 
   @override
   _TraineesBodyState createState() => _TraineesBodyState();
@@ -10,7 +10,7 @@ class TraineesBody extends StatefulWidget {
 
 class _TraineesBodyState extends State<TraineesBody> {
   final PageController _pageController = PageController(initialPage: 0);
-  int _currentPage = 0;
+  final int _currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +20,11 @@ class _TraineesBodyState extends State<TraineesBody> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
-            child: Container(
+            child: SizedBox(
               width: double.infinity,
               child: Column(
                 children: [
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     child: Stack(
                       children: [
@@ -45,7 +45,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                             children: [
                               const Opacity(
                                 opacity: 0.8,
-                                child: const Text(
+                                child: Text(
                                   'المتدربين',
                                   style: TextStyle(
                                     fontFamily: 'Inter',
@@ -259,7 +259,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
@@ -299,7 +299,7 @@ Widget buildCard(
                   children: [
                     const Align(
                       alignment: AlignmentDirectional(0, 0),
-                      child: const Column(
+                      child: Column(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.end,

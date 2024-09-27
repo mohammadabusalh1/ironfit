@@ -11,7 +11,7 @@ class TraineeBody extends StatefulWidget {
 
 class _TraineeBodyState extends State<TraineeBody> {
   final PageController _pageController = PageController(initialPage: 0);
-  int _currentPage = 0;
+  final int _currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +21,13 @@ class _TraineeBodyState extends State<TraineeBody> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
-            child: Container(
+            child: SizedBox(
               width: double.infinity,
               child: Column(
                 children: [
                   Align(
                     alignment: const AlignmentDirectional(0, 1),
-                    child: Container(
+                    child: SizedBox(
                       width: double.infinity,
                       child: Stack(
                         alignment: const AlignmentDirectional(0, 1),
@@ -128,7 +128,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                                     0xFFBBDEFB), // Example color for background
                                 center: const Text(
                                   '50%',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontFamily: 'Inter Tight',
                                     color: Color(0xFF1C1503),
                                     fontSize: 14,
@@ -165,7 +165,6 @@ class _TraineeBodyState extends State<TraineeBody> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              elevation: 0,
                               fixedSize: const Size(double.infinity, 40),
                             ),
                             child: const Text(
@@ -197,7 +196,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                             ),
                             child: const Text(
                               'أضف برنامج',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Inter Tight',
                                 color: Color(0xFF1C1503),
                                 letterSpacing: 1,
@@ -213,25 +212,27 @@ class _TraineeBodyState extends State<TraineeBody> {
                   ),
                   Padding(
                     padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
-                    child: ListView(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      scrollDirection: Axis.vertical,
-                      children: [
-                        _buildCard(context, 'الأحد'),
-                        const SizedBox(height: 8),
-                        _buildCard(context, 'الإثنين'),
-                        const SizedBox(height: 8),
-                        _buildCard(context, 'الثلاثاء'),
-                        const SizedBox(height: 8),
-                        _buildCard(context, 'الأربعاء'),
-                        const SizedBox(height: 8),
-                        _buildCard(context, 'الخميس'),
-                        const SizedBox(height: 8),
-                        _buildCard(context, 'الجمعة'),
-                        const SizedBox(height: 8),
-                        _buildCard(context, 'السبت'),
-                      ],
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height *
+                          0.4, // Adjust height as needed
+                      child: ListView(
+                        padding: EdgeInsets.zero,
+                        children: [
+                          _buildCard(context, 'الأحد'),
+                          const SizedBox(height: 8),
+                          _buildCard(context, 'الإثنين'),
+                          const SizedBox(height: 8),
+                          _buildCard(context, 'الثلاثاء'),
+                          const SizedBox(height: 8),
+                          _buildCard(context, 'الأربعاء'),
+                          const SizedBox(height: 8),
+                          _buildCard(context, 'الخميس'),
+                          const SizedBox(height: 8),
+                          _buildCard(context, 'الجمعة'),
+                          const SizedBox(height: 8),
+                          _buildCard(context, 'السبت'),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -284,7 +285,7 @@ Widget _buildCard(BuildContext context, String day) {
                   ),
                   const Text(
                     'ظهر + باي',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Inter',
                       color: Color(0x93FFFFFF),
                       fontSize: 10,

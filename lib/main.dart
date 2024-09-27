@@ -16,6 +16,10 @@ import 'package:ironfit/features/regestraion/register/screens/sing_up_screen.dar
 import 'package:ironfit/features/splash/screens/splash_screen.dart';
 import 'package:ironfit/features/traineesGroupsbyAge/screens/trainees_groups_by_age_screen.dart';
 import 'package:ironfit/features/userStatistics/screens/user_statistics_screen.dart';
+import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
+import 'package:ironfit/features/dashboard/screens/trainer_dashboard.dart';
+import 'package:ironfit/features/profile/screens/profile_screen.dart';
+import 'package:ironfit/features/profile/controllers/profile_controller.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,6 +31,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(NavController());
+    Get.lazyPut(() => CoachDashboardController());
+    Get.lazyPut(() => ProfileController());
+
     return GetMaterialApp(
       title: 'IronFit',
       debugShowCheckedModeBanner: false,
@@ -45,7 +52,9 @@ class MyApp extends StatelessWidget {
       initialRoute: Routes.userStatistics,
       getPages: [
         GetPage(name: Routes.home, page: () => CoachDashboard()),
+        GetPage(name: Routes.dashboard, page: () => TrainerDashboard()),
         GetPage(name: Routes.myGym, page: () => MyGymScreen()),
+        GetPage(name: Routes.profile, page: () => ProfileScreen()),
         GetPage(name: Routes.singUp, page: () => const SignUpScreen()),
         GetPage(name: Routes.login, page: () => const LoginScreen()),
         GetPage(name: Routes.preLogin, page: () => const PreLoginScreen()),

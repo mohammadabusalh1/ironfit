@@ -36,8 +36,8 @@ class CoachCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomTextWidget(text: name , fontWeight : FontWeight.bold,fontSize: 20,color:Palette.black,),
-                    CustomTextWidget(text: address),
-                    CustomTextWidget(text: description),
+                    CustomTextWidget(text: address,color: Palette.subTitleBlack,),
+                    CustomTextWidget(text: description,color: Palette.subTitleBlack,),
                   ],
                 ),
               ),

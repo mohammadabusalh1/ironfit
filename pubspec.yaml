@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  percent_indicator: ^4.0.1
   # State management using GetX for dashboard logic and navigation
   get: ^4.6.5
 
@@ -35,8 +35,12 @@ flutter:
     - assets/images/gym.jpg
     - assets/images/trainer.jpg
     - assets/images/signOne.jpeg
-    - assets/images/ironFit.jpg
-    - assets/images/ironFitLogo.png
+    - assets/images/IronFit.png
+    - assets/images/preLogin1.jpg
+    - assets/images/preLogin2.png
+    - assets/images/preLogin3.png
+    - assets/images/header.png
+    - assets/images/IronFitLogo2.png
 
   # Fonts can also be added if required for custom typography
   # fonts:

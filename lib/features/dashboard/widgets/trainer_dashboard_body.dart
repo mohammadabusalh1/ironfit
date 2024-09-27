@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presention/style/assets.dart';
-import 'package:ironfit/core/presention/widgets/custom_text_widget.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/dashboard/controllers/trainer_dashboard_controller.dart';
 import 'package:ironfit/core/presention/style/palette.dart';
+
 
 class TrainerDashboardBody extends StatelessWidget {
   final TranierDashboardController dashboardController = Get.find();
@@ -19,12 +19,6 @@ class TrainerDashboardBody extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const CustomTextWidget(
-          text: 'Welcome',
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Palette.mainAppColor,
-        ),
         actions: const [
           Padding(
             padding: EdgeInsets.all(8.0),
@@ -48,7 +42,7 @@ class TrainerDashboardBody extends StatelessWidget {
                 _buildStatCard('Calories', '2,351', '0.1% vs Yesterday', Icons.local_fire_department),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             // Main Grid Menu
             Expanded(
               child: GridView.count(
@@ -56,10 +50,10 @@ class TrainerDashboardBody extends StatelessWidget {
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
                 children: [
-                  _buildMenuCard('Activity', 'Track your Progress', Icons.bar_chart, Routes.myGym),
-                  _buildMenuCard('Workouts', 'Manage your Exercises', Icons.fitness_center, Routes.home),
-                  _buildMenuCard('Diets', 'Count your Calories', Icons.restaurant_menu, Routes.home),
-                  _buildMenuCard('Goals', 'Crush your Goals', Icons.star, Routes.home),
+                  _buildMenuCard('Activity', 'Track your Progress', Icons.bar_chart, Routes.userStatistics),
+                  _buildMenuCard('Workouts', 'Manage your Exercises', Icons.fitness_center, Routes.plan),
+                  _buildMenuCard('Diets', 'Count your Calories', Icons.restaurant_menu, Routes.trainees),
+                  _buildMenuCard('Goals', 'Crush your Goals', Icons.star, Routes.myPlans),
                 ],
               ),
             ),
@@ -98,7 +92,7 @@ class TrainerDashboardBody extends StatelessWidget {
             const SizedBox(height: 10),
             Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Palette.black)),
             const SizedBox(height: 5),
-            Text(trend, style: TextStyle(color: trend.contains('-') ? Colors.red : Colors.green)),
+            Text(trend, style: TextStyle(color: trend.contains('-') ? Colors.red : Palette.greenActive,fontWeight: FontWeight.bold)),
           ],
         ),
       ),

@@ -18,7 +18,7 @@ class CustomTextWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      text.toString(), // Convert the text to uppercase
+      text.toString(),
       style: TextStyle(
         color: color,
         fontSize: fontSize,

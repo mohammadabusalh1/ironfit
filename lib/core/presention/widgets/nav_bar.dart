@@ -21,7 +21,7 @@ class NavBar extends StatelessWidget {
         children: [
           _buildNavItem(Icons.home_filled, 0),
           _buildNavItem(Icons.pie_chart, 1),
-          _buildNavItem(Icons.notifications, 2),
+          _buildNavItem(Icons.pending_actions, 2),
           _buildNavItem(Icons.person, 3),
         ],
       ),
@@ -42,13 +42,13 @@ class NavBar extends StatelessWidget {
             Icon(
               icon,
               color: isSelected ? Palette.mainAppColor : Palette.white,
-              size: isSelected ? 30 : 25, // Highlight selected icon
+              size: isSelected ? 35 : 25, // Highlight selected icon
             ),
             const SizedBox(height: 4),
             if (isSelected)
               Container(
-                width: 6,
-                height: 6,
+                width: 7,
+                height: 7,
                 decoration: const BoxDecoration(
                   color: Palette.mainAppColor,
                   shape: BoxShape.circle,

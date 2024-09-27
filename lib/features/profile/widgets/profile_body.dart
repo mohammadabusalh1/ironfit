@@ -47,7 +47,7 @@ class ProfileBody extends StatelessWidget {
 
             // Gym Info Fields (Height, Weight, Age)
             Card(
-              color: Palette.subTitleGrey,
+              color: Palette.subTitleBlack,
               margin: const EdgeInsets.symmetric(horizontal: 16),
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -71,7 +71,7 @@ class ProfileBody extends StatelessWidget {
                         const CustomTextWidget(
                           text: 'Units',
                           fontSize: 18,
-                          color: Colors.black,
+                          color: Colors.white,
                         ),
                         Obx(() => Switch(
                               value: controller.isMetric.value,
@@ -130,12 +130,12 @@ class ProfileBody extends StatelessWidget {
           CustomTextWidget(
             text: label,
             fontSize: 16,
-            color: Colors.black,
+            color: Colors.white,
           ),
           CustomTextWidget(
             text: value,
             fontSize: 16,
-            color: Colors.black,
+            color: Colors.white,
           ),
         ],
       ),

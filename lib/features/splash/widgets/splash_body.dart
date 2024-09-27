@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presention/style/assets.dart';
-
+import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class SplashBody extends StatefulWidget {
   const SplashBody({super.key});

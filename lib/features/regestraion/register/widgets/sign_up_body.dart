@@ -27,20 +27,20 @@ class _SignUpBodyState extends State<SignUpBody> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(24.0),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   _buildHeaderImages(),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 24),
                   _buildWelcomeText(context),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 24),
                   _buildEmailTextField(context),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   _buildPasswordTextField(context),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
                   _buildCoachSwitch(context),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
                   _buildPrivacyText(context),
                   const SizedBox(height: 12),
                   _buildRegisterButton(),
@@ -74,7 +74,7 @@ class _SignUpBodyState extends State<SignUpBody> {
           child: Image.asset(
             Assets.ironFitLogo,
             width: double.infinity,
-            height: 50,
+            height: 200,
             fit: BoxFit.cover,
             alignment: const Alignment(0, 0),
           ),
@@ -99,7 +99,6 @@ class _SignUpBodyState extends State<SignUpBody> {
     return Opacity(
       opacity: 0.9,
       child: Container(
-        width: 350,
         child: TextFormField(
           controller: emailController,
           decoration: InputDecoration(
@@ -126,7 +125,6 @@ class _SignUpBodyState extends State<SignUpBody> {
     return Opacity(
       opacity: 0.9,
       child: SizedBox(
-        width: 350,
         child: StatefulBuilder(
           builder: (context, setState) {
             return TextFormField(
@@ -203,7 +201,6 @@ class _SignUpBodyState extends State<SignUpBody> {
           child: Container(
             width: double.infinity,
             constraints: const BoxConstraints(
-              maxWidth: 350,
               minHeight: 50,
             ),
             child: ElevatedButton(
@@ -217,7 +214,6 @@ class _SignUpBodyState extends State<SignUpBody> {
                   letterSpacing: 1,
                   fontWeight: FontWeight.bold,
                 ),
-                elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -240,7 +236,6 @@ class _SignUpBodyState extends State<SignUpBody> {
           child: Container(
             width: double.infinity,
             constraints: const BoxConstraints(
-              maxWidth: 350,
               minHeight: 50,
             ),
             child:  ElevatedButton.icon(

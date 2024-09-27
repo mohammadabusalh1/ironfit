@@ -11,3 +11,4 @@ class Assets {
   static const String IronFitLogo2 = 'assets/images/IronFitLogo2.png';
   static const String signOne = 'assets/images/signOne.jpeg';
 }
+

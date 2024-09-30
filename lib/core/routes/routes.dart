@@ -14,4 +14,6 @@ class Routes {
   static const String myPlans = '/myPlans';
   static const String plan = '/plan';
   static const String userStatistics = '/userStatistics';
+  static const String userMyPlan = '/userMyPlan';
+  static const String userPlanExercises = '/userPlnExercises';
 }

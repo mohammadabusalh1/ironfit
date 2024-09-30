@@ -35,12 +35,12 @@ class _UserStatisticsBodyState extends State<UserStatisticsBody> {
                           child: Image.asset(
                             Assets.header,
                             width: double.infinity,
-                            height: 132,
+                            height: MediaQuery.of(context).size.height * 0.23,
                             fit: BoxFit.fitWidth,
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 50, 24, 50),
+                          padding: const EdgeInsets.fromLTRB(24, 60, 24, 60),
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -99,7 +99,6 @@ class _UserStatisticsBodyState extends State<UserStatisticsBody> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CustomCard(
-                          height: 90,
                           backgroundColor: const Color(0xFFFFE49A),
                           icon: Icons.local_fire_department,
                           iconColor: const Color(0xFFFFC700),
@@ -110,9 +109,8 @@ class _UserStatisticsBodyState extends State<UserStatisticsBody> {
                           },
                         ),
                         SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.05),
+                            width: MediaQuery.of(context).size.width * 0.04),
                         CustomCard(
-                          height: 90,
                           backgroundColor: const Color(0xFF9AD8FF),
                           icon: Icons.water_drop_rounded,
                           iconColor: const Color(0xFF00BEFF),
@@ -123,9 +121,8 @@ class _UserStatisticsBodyState extends State<UserStatisticsBody> {
                           },
                         ),
                         SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.05),
+                            width: MediaQuery.of(context).size.width * 0.04),
                         CustomCard(
-                          height: 90,
                           backgroundColor: const Color(0xFF9AFFC5),
                           icon: Icons.power,
                           iconColor: const Color(0xFF00FF6C),
@@ -139,6 +136,47 @@ class _UserStatisticsBodyState extends State<UserStatisticsBody> {
                     ),
                   ),
                   const SizedBox(height: 24),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.35,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: [
+                          LongCard(
+                            percentage: '80%',
+                            label: 'نسبة العضلات',
+                            icon: Icons.accessibility,
+                            onPressed: () {
+                              print(
+                                  'IconButton pressed for muscles percentage');
+                            },
+                            iconColor: Palette.darkCyan,
+                          ),
+                          const SizedBox(height: 8), // Spacing between cards
+                          LongCard(
+                            percentage: '10%',
+                            label: 'نسبة الدهون',
+                            icon: Icons.local_fire_department,
+                            onPressed: () {
+                              print('IconButton pressed for fat percentage');
+                            },
+                            iconColor: Palette.accentRed,
+                          ),
+                          const SizedBox(height: 8), // Spacing between cards
+                          LongCard(
+                            percentage: '60 kg',
+                            label: 'الوزن المثالي',
+                            icon: Icons.scale,
+                            onPressed: () {
+                              print('IconButton pressed for ideal weight');
+                            },
+                            iconColor: Palette.black,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -150,7 +188,6 @@ class _UserStatisticsBodyState extends State<UserStatisticsBody> {
 }
 
 class CustomCard extends StatelessWidget {
-  final double height;
   final Color backgroundColor;
   final IconData icon;
   final Color iconColor;
@@ -160,7 +197,6 @@ class CustomCard extends StatelessWidget {
 
   const CustomCard({
     Key? key,
-    required this.height,
     required this.backgroundColor,
     required this.icon,
     required this.iconColor,
@@ -174,7 +210,7 @@ class CustomCard extends StatelessWidget {
     return Expanded(
         flex: 1,
         child: Container(
-          height: height,
+          height: MediaQuery.of(context).size.height * 0.13,
           decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: BorderRadius.circular(32),
@@ -203,7 +239,7 @@ class CustomCard extends StatelessWidget {
                 Align(
                   alignment: const AlignmentDirectional(0, 0),
                   child: Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(0, 32, 0, 12),
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 20, 0, 12),
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -212,7 +248,7 @@ class CustomCard extends StatelessWidget {
                           title,
                           style: const TextStyle(
                             fontFamily: 'Inter',
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -233,5 +269,79 @@ class CustomCard extends StatelessWidget {
             ),
           ),
         ));
+  }
+}
+
+// Reusable Card Component
+class LongCard extends StatelessWidget {
+  final String percentage;
+  final String label;
+  final IconData icon;
+  final VoidCallback onPressed;
+  final Color iconColor;
+
+  const LongCard({
+    Key? key,
+    required this.percentage,
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+    required this.iconColor,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    const textColor = Palette.borderGrey;
+    return Card(
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      color: Palette.darkBackground,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              percentage,
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                color: textColor,
+                letterSpacing: 0.0,
+              ),
+            ),
+            Row(
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontFamily: 'Inter Tight',
+                    color: textColor,
+                    fontSize: 16,
+                    letterSpacing: 0.0,
+                  ),
+                ),
+                const SizedBox(width: 12), // Spacing between text and icon
+                IconButton(
+                  icon: Icon(
+                    icon,
+                    color: iconColor,
+                  ),
+                  style: const ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(textColor),
+                    padding: WidgetStatePropertyAll(EdgeInsets.zero),
+                  ),
+                  onPressed: onPressed,
+                  iconSize: 20,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

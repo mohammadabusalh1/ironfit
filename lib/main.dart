@@ -5,6 +5,8 @@ import 'package:ironfit/core/presention/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/MyPlans/screens/my_plans_screen.dart';
 import 'package:ironfit/features/Trainees/screens/Trainees_screen.dart';
+import 'package:ironfit/features/UserMyPlan/screens/user_my_plan_screen.dart';
+import 'package:ironfit/features/UserPalnExercises/screens/user_plan_exercises_screen.dart';
 import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
 import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
 import 'package:ironfit/features/dashboard/screens/trainer_dashboard.dart';
@@ -62,6 +64,8 @@ class MyApp extends StatelessWidget {
         GetPage(name: Routes.plan, page: () => const PlanScreen()),
         GetPage(name: Routes.userStatistics, page: () => const UserStatisticsScreen()),
         GetPage(name: Routes.splash, page: () => const SplashScreen()),
+        GetPage(name: Routes.userMyPlan, page: () => const UserMyPlanScreen()),
+        GetPage(name: Routes.userPlanExercises, page: () => const UserPalnExercisesScreen()),
       ],
     );
   }

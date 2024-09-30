@@ -239,16 +239,16 @@ class _TraineesBodyState extends State<TraineesBody> {
                           ),
                           errorBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.red,
-                              // Assuming the error color from the theme
+                              color: Colors
+                                  .red, // Assuming the error color from the theme
                               width: 1,
                             ),
                             borderRadius: BorderRadius.circular(14),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.red,
-                              // Assuming the error color from the theme
+                              color: Colors
+                                  .red, // Assuming the error color from the theme
                               width: 1,
                             ),
                             borderRadius: BorderRadius.circular(14),

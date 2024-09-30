@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ironfit/core/presention/dialogs/main_pop_up.dart';
 import 'package:ironfit/core/presention/style/assets.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
@@ -12,6 +14,23 @@ class TraineeBody extends StatefulWidget {
 class _TraineeBodyState extends State<TraineeBody> {
   final PageController _pageController = PageController(initialPage: 0);
   final int _currentPage = 0;
+  void showCreatePlanDialog(BuildContext context) {
+    Get.dialog(
+      MainPopUp(
+        title: 'Create Plan',
+        content: 'Please fill in the details to create a new plan:',
+        textFieldHints: const ['Plan Name', 'Duration (in days)', 'Description'],
+        confirmText: 'Create Plan',
+        cancelText: 'Cancel',
+        onConfirm: () {
+          Get.back();
+        },
+        onCancel: () {
+          Get.back();
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +201,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                           flex: 1,
                           child: ElevatedButton(
                             onPressed: () {
-                              print('Add program button pressed ...');
+                              showCreatePlanDialog(context);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor:

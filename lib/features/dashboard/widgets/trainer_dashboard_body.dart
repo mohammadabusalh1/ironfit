@@ -52,8 +52,8 @@ class TrainerDashboardBody extends StatelessWidget {
                 children: [
                   _buildMenuCard('Activity', 'Track your Progress', Icons.bar_chart, Routes.userStatistics),
                   _buildMenuCard('Workouts', 'Manage your Exercises', Icons.fitness_center, Routes.plan),
-                  _buildMenuCard('Diets', 'Count your Calories', Icons.restaurant_menu, Routes.trainees),
-                  _buildMenuCard('Goals', 'Crush your Goals', Icons.star, Routes.myPlans),
+                  _buildMenuCard('Diets', 'Count your Calories', Icons.restaurant_menu, Routes.dashboard),
+                  _buildMenuCard('Goals', 'Crush your Goals', Icons.star, Routes.dashboard),
                 ],
               ),
             ),

@@ -33,7 +33,7 @@ class CoachDashboardBody extends StatelessWidget {
         ),
         const SizedBox(height: 40,),
         CardWidget(
-          onTap: () => controller.onTap,
+          onTap: () => Get.toNamed(Routes.trainees),
           title: 'My Trainers',
           imagePath: Assets.myTrainerImage,
           subtitle: ' ',

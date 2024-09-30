@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presention/style/palette.dart';
 import 'package:ironfit/core/presention/widgets/custom_text_widget.dart';
+import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
+import 'package:ironfit/features/regestraion/register/screens/sing_up_screen.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({super.key});
@@ -45,7 +47,7 @@ class SideMenu extends StatelessWidget {
               fontSize: 20,
             ),
             onTap: () {
-              Get.back();
+              Get.toNamed(Routes.singUp);
               // Handle logout logic
             },
           ),

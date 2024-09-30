@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ironfit/core/presention/style/palette.dart';
+import 'package:ironfit/features/splash/controllers/splash_controller.dart';
 import 'package:ironfit/features/splash/widgets/splash_body.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -7,8 +9,11 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final SplashController splashController = Get.put(SplashController());
+
     return const Scaffold(
-       backgroundColor: Palette.mainAppColor,
+      backgroundColor: Palette.mainAppColor,
       body: SplashBody(),
     );
   }

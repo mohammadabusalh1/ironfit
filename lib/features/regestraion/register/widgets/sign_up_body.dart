@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ironfit/core/presention/style/assets.dart';
+import 'package:ironfit/core/routes/routes.dart';
 
 class SignUpBody extends StatefulWidget {
-
   const SignUpBody({super.key});
 
   @override
@@ -63,7 +64,7 @@ class _SignUpBodyState extends State<SignUpBody> {
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: Image.asset(
-          Assets.singUpImage,
+            Assets.singUpImage,
             width: double.infinity,
             height: 200,
             fit: BoxFit.cover,
@@ -137,7 +138,8 @@ class _SignUpBodyState extends State<SignUpBody> {
                 filled: true,
                 fillColor: const Color(0xFF454038),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color(0xFFFFBB02), width: 1),
+                  borderSide:
+                      const BorderSide(color: Color(0xFFFFBB02), width: 1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 suffixIcon: InkWell(
@@ -167,7 +169,9 @@ class _SignUpBodyState extends State<SignUpBody> {
         Switch.adaptive(
           value: isCoach,
           onChanged: (newValue) {
-            isCoach = newValue;
+            setState(() {
+              isCoach = newValue;
+            });
           },
           activeColor: const Color(0xFFFFBB02),
           inactiveTrackColor: Colors.grey,
@@ -205,9 +209,19 @@ class _SignUpBodyState extends State<SignUpBody> {
             ),
             child: ElevatedButton(
               onPressed: () {
+
+                if (isCoach) {
+                  Get.toNamed(Routes
+                      .home);
+                } else {
+                  Get.toNamed(
+                      Routes.dashboard);
+                }
               },
               style: ElevatedButton.styleFrom(
-                foregroundColor: const Color(0xFF1C1503), padding: const EdgeInsets.symmetric(horizontal: 16), backgroundColor: const Color(0xFFFFBB02),
+                foregroundColor: const Color(0xFF1C1503),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                backgroundColor: const Color(0xFFFFBB02),
                 textStyle: const TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 20,
@@ -227,7 +241,6 @@ class _SignUpBodyState extends State<SignUpBody> {
   }
 
   Widget _buildGoogleRegisterButton() {
-
     return SizedBox(
       child: Align(
         alignment: const AlignmentDirectional(0, 1),
@@ -238,23 +251,26 @@ class _SignUpBodyState extends State<SignUpBody> {
             constraints: const BoxConstraints(
               minHeight: 50,
             ),
-            child:  ElevatedButton.icon(
+            child: ElevatedButton.icon(
               onPressed: () {
                 // Handle button press
               },
               icon: const Icon(Icons.g_mobiledata, size: 16),
               style: ElevatedButton.styleFrom(
-                foregroundColor: const Color(0xFF1C1503), backgroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                foregroundColor: const Color(0xFF1C1503),
+                backgroundColor: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
               ),
-              label: const Text('Google التسجيل عبر', style: TextStyle(fontSize: 16)),
+              label: const Text('Google التسجيل عبر',
+                  style: TextStyle(fontSize: 16)),
             ),
           ),
         ),
       ),
     );
-
   }
 
   Widget _buildLoginText(BuildContext context) {

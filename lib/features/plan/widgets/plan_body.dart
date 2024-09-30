@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ironfit/core/presention/dialogs/main_pop_up.dart';
 import 'package:ironfit/core/presention/style/assets.dart';
 
 class PlanBody extends StatefulWidget {
@@ -11,6 +13,23 @@ class PlanBody extends StatefulWidget {
 class _PlanBodyState extends State<PlanBody> {
   final PageController _pageController = PageController(initialPage: 0);
   final int _currentPage = 0;
+  void showCreatePlanDialog(BuildContext context) {
+    Get.dialog(
+      MainPopUp(
+        title: 'Create Plan',
+        content: 'Please fill in the details to create a new plan:',
+        textFieldHints: const ['Plan Name', 'Duration (in days)', 'Description'],
+        confirmText: 'Create Plan',
+        cancelText: 'Cancel',
+        onConfirm: () {
+          Get.back();
+        },
+        onCancel: () {
+          Get.back();
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,12 +107,14 @@ class _PlanBodyState extends State<PlanBody> {
                       ],
                     ),
                   ),
+
+
                   const SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
                     child: ElevatedButton(
                       onPressed: () {
-                        print('Button pressed ...');
+                        showCreatePlanDialog(context);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFFBB02),

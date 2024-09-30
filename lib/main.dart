@@ -12,6 +12,7 @@ import 'package:ironfit/features/enteInfo/screens/ente_info_screen.dart';
 import 'package:ironfit/features/my_gym/screens/my_gym_screen.dart';
 import 'package:ironfit/features/plan/screens/plan_screen.dart';
 import 'package:ironfit/features/profile/screens/profile_screen.dart';
+import 'package:ironfit/features/regestraion/login/screens/login_screen.dart';
 import 'package:ironfit/features/regestraion/register/screens/sing_up_screen.dart';
 import 'package:ironfit/features/profile/controllers/profile_controller.dart';
 import 'package:ironfit/features/splash/screens/splash_screen.dart';
@@ -46,13 +47,14 @@ class MyApp extends StatelessWidget {
           iconTheme: IconThemeData(color: Palette.black),
         ),
       ),
-      initialRoute: Routes.home,
+      initialRoute: Routes.splash,
       getPages: [
         GetPage(name: Routes.home, page: () => CoachDashboard()),
         GetPage(name: Routes.dashboard, page: () => TrainerDashboard()),
         GetPage(name: Routes.myGym, page: () => MyGymScreen()),
         GetPage(name: Routes.profile, page: () => ProfileScreen()),
         GetPage(name: Routes.singUp, page: () => const SignUpScreen()),
+        GetPage(name: Routes.singIn, page: () => const LoginScreen()),
         GetPage(name: Routes.trainees, page: () => const TraineesScreen()),
         GetPage(name: Routes.traineesGroupsByAge, page: () => const TraineesGroupsByAgeScreen()),
         GetPage(name: Routes.enterInfo, page: () =>  EnteInfoScreen()),

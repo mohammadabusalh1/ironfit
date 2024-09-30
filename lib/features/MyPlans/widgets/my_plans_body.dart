@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ironfit/core/presention/dialogs/main_pop_up.dart';
 import 'package:ironfit/core/presention/style/assets.dart';
 
 class MyPlansBody extends StatefulWidget {
@@ -8,10 +10,46 @@ class MyPlansBody extends StatefulWidget {
   _MyPlansBodyState createState() => _MyPlansBodyState();
 }
 
+
+
 class _MyPlansBodyState extends State<MyPlansBody> {
   final PageController _pageController = PageController(initialPage: 0);
   final int _currentPage = 0;
 
+  void showCreatePlanDialog(BuildContext context) {
+    Get.dialog(
+      MainPopUp(
+        title: 'Create Plan',
+        content: 'Please fill in the details to create a new plan:',
+        textFieldHints: const ['Plan Name', 'Duration (in days)', 'Description'],
+        confirmText: 'Create Plan',
+        cancelText: 'Cancel',
+        onConfirm: () {
+          Get.back();
+        },
+        onCancel: () {
+          Get.back();
+        },
+      ),
+    );
+  }
+  void showEditPlanDialog(BuildContext context) {
+    Get.dialog(
+      MainPopUp(
+        title: 'Edit Plan',
+        content: 'Update the details of the plan:',
+        textFieldHints: ['Plan Name', 'Duration (in days)', 'Description'],
+        confirmText: 'Save Changes',
+        cancelText: 'Cancel',
+        onConfirm: () {
+          Get.back();
+        },
+        onCancel: () {
+          Get.back();
+        },
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -65,7 +103,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                               const SizedBox(width: 12),
                               ElevatedButton(
                                 onPressed: () {
-                                  print('Button pressed ...');
+
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF1C1503),
@@ -130,7 +168,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                           flex: 1,
                           child: ElevatedButton(
                             onPressed: () {
-                              print('Button pressed ...');
+                              showCreatePlanDialog(context);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFFFBB02),
@@ -146,6 +184,36 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                                 size: 22,
                                 color: Color(0xFF1C1503),
                               ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12), // Space between buttons
+                        Expanded(
+                          flex: 1,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              showEditPlanDialog(context);
+                            },
+                            label: const Text(''),
+                            icon: const Icon(
+                              Icons.edit,
+                              size: 22,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: const Color(0xFF1C1503),
+                              backgroundColor: const Color(0xFFFFBB02),
+                              padding:
+                              const EdgeInsetsDirectional.only(start: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              textStyle: const TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 0.0,
+                              ),
+                              minimumSize: const Size(double.infinity, 50),
                             ),
                           ),
                         ),

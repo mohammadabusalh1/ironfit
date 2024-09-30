@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ironfit/core/presention/dialogs/main_pop_up.dart';
 import 'package:ironfit/core/presention/style/assets.dart';
 
 class TraineesBody extends StatefulWidget {
@@ -11,6 +13,24 @@ class TraineesBody extends StatefulWidget {
 class _TraineesBodyState extends State<TraineesBody> {
   final PageController _pageController = PageController(initialPage: 0);
   final int _currentPage = 0;
+
+  void showAddTraineeDialog(BuildContext context) {
+    Get.dialog(
+      MainPopUp(
+        title: 'Add New Trainee',
+        content: 'Please fill in the details to add a new trainee:',
+        textFieldHints: ['Trainee Name', 'Age', 'Email', 'Phone Number'],
+        confirmText: 'Add Trainee',
+        cancelText: 'Cancel',
+        onConfirm: () {
+          Get.back(); // You can replace this with the actual logic to add the trainee
+        },
+        onCancel: () {
+          Get.back();
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +177,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                           flex: 1,
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              print('Button pressed ...');
+                              showAddTraineeDialog(context);
                             },
                             label: const Text(''),
                             icon: const Icon(
@@ -219,16 +239,16 @@ class _TraineesBodyState extends State<TraineesBody> {
                           ),
                           errorBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors
-                                  .red, // Assuming the error color from the theme
+                              color: Colors.red,
+                              // Assuming the error color from the theme
                               width: 1,
                             ),
                             borderRadius: BorderRadius.circular(14),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors
-                                  .red, // Assuming the error color from the theme
+                              color: Colors.red,
+                              // Assuming the error color from the theme
                               width: 1,
                             ),
                             borderRadius: BorderRadius.circular(14),

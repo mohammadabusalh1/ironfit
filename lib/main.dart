@@ -49,23 +49,40 @@ class MyApp extends StatelessWidget {
           iconTheme: IconThemeData(color: Palette.black),
         ),
       ),
-      initialRoute: Routes.splash,
+      initialRoute: Routes.singIn,
       getPages: [
         GetPage(name: Routes.home, page: () => CoachDashboard()),
-        GetPage(name: Routes.dashboard, page: () => TrainerDashboard()),
+        GetPage(
+            name: Routes.dashboard,
+            page: () => Directionality(
+                textDirection: TextDirection.rtl, child: TrainerDashboard())),
         GetPage(name: Routes.myGym, page: () => MyGymScreen()),
         GetPage(name: Routes.profile, page: () => ProfileScreen()),
-        GetPage(name: Routes.singUp, page: () => const SignUpScreen()),
-        GetPage(name: Routes.singIn, page: () => const LoginScreen()),
+        GetPage(
+            name: Routes.singUp,
+            page: () => const Directionality(
+                textDirection: TextDirection.rtl, child: SignUpScreen())),
+        GetPage(
+            name: Routes.singIn,
+            page: () => const Directionality(
+                textDirection: TextDirection.rtl, child: LoginScreen())),
         GetPage(name: Routes.trainees, page: () => const TraineesScreen()),
-        GetPage(name: Routes.traineesGroupsByAge, page: () => const TraineesGroupsByAgeScreen()),
-        GetPage(name: Routes.enterInfo, page: () =>  EnteInfoScreen()),
+        GetPage(
+            name: Routes.traineesGroupsByAge,
+            page: () => const TraineesGroupsByAgeScreen()),
+        GetPage(name: Routes.enterInfo, page: () => EnteInfoScreen()),
         GetPage(name: Routes.myPlans, page: () => const MyPlansScreen()),
         GetPage(name: Routes.plan, page: () => const PlanScreen()),
-        GetPage(name: Routes.userStatistics, page: () => const UserStatisticsScreen()),
+        GetPage(
+            name: Routes.userStatistics,
+            page: () => const Directionality(
+                textDirection: TextDirection.rtl,
+                child: UserStatisticsScreen())),
         GetPage(name: Routes.splash, page: () => const SplashScreen()),
         GetPage(name: Routes.userMyPlan, page: () => const UserMyPlanScreen()),
-        GetPage(name: Routes.userPlanExercises, page: () => const UserPalnExercisesScreen()),
+        GetPage(
+            name: Routes.userPlanExercises,
+            page: () => const UserPalnExercisesScreen()),
       ],
     );
   }

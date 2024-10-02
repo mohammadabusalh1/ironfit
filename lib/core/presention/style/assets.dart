@@ -10,5 +10,7 @@ class Assets {
   static const String header = 'assets/images/header.png';
   static const String IronFitLogo2 = 'assets/images/IronFitLogo2.png';
   static const String signOne = 'assets/images/signOne.jpeg';
+  static const String dashboardBackground = 'assets/images/dashboardBackground.jpg';
+  static const String dashboardYellow = 'assets/images/dashboardYellow.png';
 }
 

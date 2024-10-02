@@ -8,7 +8,6 @@ class UserStatisticsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: ''),
       body: UserStatisticsBody(),
       bottomNavigationBar: NavBar(),
     );

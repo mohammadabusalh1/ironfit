@@ -14,7 +14,6 @@ class NavBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         color: Palette.black,
-        borderRadius: BorderRadius.circular(30), // Make it curved
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,

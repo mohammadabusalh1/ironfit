@@ -16,171 +16,160 @@ class _UserStatisticsBodyState extends State<UserStatisticsBody> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: true,
-      child: Column(
+    return Scaffold(
+      body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
-          Expanded(
-            child: SizedBox(
-              width: double.infinity,
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.asset(
-                            Assets.header,
-                            width: double.infinity,
-                            height: MediaQuery.of(context).size.height * 0.23,
-                            fit: BoxFit.fitWidth,
-                          ),
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  Assets.header,
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.28,
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.14 -
+                    24, // Adjust this to control vertical alignment
+                left: 0,
+                right: 24,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment:
+                      MainAxisAlignment.start, // Center horizontally
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        print('Button pressed ...');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1C1503),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 60, 24, 60),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              const Opacity(
-                                opacity: 0.8,
-                                child: Text(
-                                  'إحصائيات',
-                                  style: TextStyle(
-                                    fontFamily: 'Inter',
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w800,
-                                    shadows: [
-                                      Shadow(
-                                        color: Color(0xFF2F3336),
-                                        offset: Offset(4.0, 4.0),
-                                        blurRadius: 2.0,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              ElevatedButton(
-                                onPressed: () {
-                                  print('Button pressed ...');
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF1C1503),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 8),
-                                  elevation: 0,
-                                ),
-                                child: const Icon(
-                                  Icons.arrow_right,
-                                  color: Color(0xFFFFBB02),
-                                  size: 24,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Padding(
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(24, 12, 24, 0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CustomCard(
-                          backgroundColor: const Color(0xFFFFE49A),
-                          icon: Icons.local_fire_department,
-                          iconColor: const Color(0xFFFFC700),
-                          title: '2500 c',
-                          subtitle: 'كاربوهيدرات',
-                          onPressed: () {
-                            print('IconButton pressed for carbs');
-                          },
-                        ),
-                        SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.04),
-                        CustomCard(
-                          backgroundColor: const Color(0xFF9AD8FF),
-                          icon: Icons.water_drop_rounded,
-                          iconColor: const Color(0xFF00BEFF),
-                          title: '2 L',
-                          subtitle: 'ماء',
-                          onPressed: () {
-                            print('IconButton pressed for water');
-                          },
-                        ),
-                        SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.04),
-                        CustomCard(
-                          backgroundColor: const Color(0xFF9AFFC5),
-                          icon: Icons.power,
-                          iconColor: const Color(0xFF00FF6C),
-                          title: '120 gm',
-                          subtitle: 'بروتين',
-                          onPressed: () {
-                            print('IconButton pressed for protein');
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.35,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: ListView(
-                        shrinkWrap: true,
-                        children: [
-                          LongCard(
-                            percentage: '80%',
-                            label: 'نسبة العضلات',
-                            icon: Icons.accessibility,
-                            onPressed: () {
-                              print(
-                                  'IconButton pressed for muscles percentage');
-                            },
-                            iconColor: Palette.darkCyan,
-                          ),
-                          const SizedBox(height: 8), // Spacing between cards
-                          LongCard(
-                            percentage: '10%',
-                            label: 'نسبة الدهون',
-                            icon: Icons.local_fire_department,
-                            onPressed: () {
-                              print('IconButton pressed for fat percentage');
-                            },
-                            iconColor: Palette.accentRed,
-                          ),
-                          const SizedBox(height: 8), // Spacing between cards
-                          LongCard(
-                            percentage: '60 kg',
-                            label: 'الوزن المثالي',
-                            icon: Icons.scale,
-                            onPressed: () {
-                              print('IconButton pressed for ideal weight');
-                            },
-                            iconColor: Palette.black,
-                          ),
-                        ],
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        elevation: 0,
+                      ),
+                      child: const Icon(
+                        Icons.arrow_left,
+                        color: Color(0xFFFFBB02),
+                        size: 24,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 12),
+                    const Opacity(
+                      opacity: 0.8,
+                      child: Text(
+                        'إحصائيات',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          shadows: [
+                            Shadow(
+                              color: Color(0xFF2F3336),
+                              offset: Offset(4.0, 4.0),
+                              blurRadius: 2.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
+          const SizedBox(height: 32),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.55,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CustomCard(
+                        backgroundColor: const Color(0xFFFFE49A),
+                        icon: Icons.local_fire_department,
+                        iconColor: const Color(0xFFFFC700),
+                        title: '2500 c',
+                        subtitle: 'كاربوهيدرات',
+                        onPressed: () {
+                          print('IconButton pressed for carbs');
+                        },
+                      ),
+                      SizedBox(width: MediaQuery.of(context).size.width * 0.04),
+                      CustomCard(
+                        backgroundColor: const Color(0xFF9AD8FF),
+                        icon: Icons.water_drop_rounded,
+                        iconColor: const Color(0xFF00BEFF),
+                        title: '2 L',
+                        subtitle: 'ماء',
+                        onPressed: () {
+                          print('IconButton pressed for water');
+                        },
+                      ),
+                      SizedBox(width: MediaQuery.of(context).size.width * 0.04),
+                      CustomCard(
+                        backgroundColor: const Color(0xFF9AFFC5),
+                        icon: Icons.power,
+                        iconColor: const Color(0xFF00FF6C),
+                        title: '120 gm',
+                        subtitle: 'بروتين',
+                        onPressed: () {
+                          print('IconButton pressed for protein');
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      LongCard(
+                        percentage: '80%',
+                        label: 'نسبة العضلات',
+                        icon: Icons.accessibility,
+                        onPressed: () {
+                          print('IconButton pressed for muscles percentage');
+                        },
+                        iconColor: Palette.darkCyan,
+                      ),
+                      const SizedBox(height: 8), // Spacing between cards
+                      LongCard(
+                        percentage: '10%',
+                        label: 'نسبة الدهون',
+                        icon: Icons.local_fire_department,
+                        onPressed: () {
+                          print('IconButton pressed for fat percentage');
+                        },
+                        iconColor: Palette.accentRed,
+                      ),
+                      const SizedBox(height: 8), // Spacing between cards
+                      LongCard(
+                        percentage: '60 kg',
+                        label: 'الوزن المثالي',
+                        icon: Icons.scale,
+                        onPressed: () {
+                          print('IconButton pressed for ideal weight');
+                        },
+                        iconColor: Palette.black,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );

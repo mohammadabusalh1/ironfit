@@ -16,8 +16,8 @@ class TrainerDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Dashboard',),
-      drawer: const SideMenu(),
+      // appBar: const CustomAppBar(title: 'Dashboard',),
+      // drawer: const SideMenu(),
       body: TrainerDashboardBody(),
       bottomNavigationBar: NavBar(),
     );

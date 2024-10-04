@@ -19,7 +19,11 @@ class _TraineeBodyState extends State<TraineeBody> {
       MainPopUp(
         title: 'Create Plan',
         content: 'Please fill in the details to create a new plan:',
-        textFieldHints: const ['Plan Name', 'Duration (in days)', 'Description'],
+        textFieldHints: const [
+          'Plan Name',
+          'Duration (in days)',
+          'Description'
+        ],
         confirmText: 'Create Plan',
         cancelText: 'Cancel',
         onConfirm: () {

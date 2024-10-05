@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presention/style/assets.dart';
+import 'package:ironfit/core/presention/widgets/PagesHeader.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/dashboard/controllers/trainer_dashboard_controller.dart';
 import 'package:ironfit/core/presention/style/palette.dart';
@@ -18,72 +19,12 @@ class TrainerDashboardBody extends StatelessWidget {
         backgroundColor: Palette.black,
         body: Column(
           children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    Assets.dashboardBackground,
-                    width: double.infinity,
-                    height: MediaQuery.of(context).size.height * 0.2,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Positioned(
-                  right: 12,
-                  top: MediaQuery.of(context).size.height * 0.07,
-                  child: Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: Image.asset(
-                          Assets.myTrainerImage,
-                          width: MediaQuery.of(context).size.height * 0.09,
-                          height: MediaQuery.of(context).size.height * 0.09,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "محمد ابو صالح",
-                            style: TextStyle(
-                                color: Palette.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            "oG2gU@example.com",
-                            style: TextStyle(
-                              color: Palette.subTitleGrey,
-                              fontSize: 12,
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(width: 40),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          color: Palette.colseButtonBlack,
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.notifications,
-                              color: Palette.white,
-                              size: 24,
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
+            const DashboardHeader(
+              backgroundImage:
+                  Assets.dashboardBackground, // Background image path
+              trainerImage: Assets.myTrainerImage, // Trainer image path
+              trainerName: "محمد ابو صالح", // Trainer's name
+              trainerEmail: "oG2gU@example.com", // Trainer's email
             ),
             const SizedBox(height: 12),
             Expanded(

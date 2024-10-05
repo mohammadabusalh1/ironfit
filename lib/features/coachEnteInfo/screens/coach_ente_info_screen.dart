@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presention/widgets/nav_bar.dart';
-import 'package:ironfit/features/enteInfo/widgets/ente_info_body.dart';
-import 'package:ironfit/features/my_gym/controllers/my_gym_controller.dart';
+import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/coachEnteInfo/widgets/coach_ente_info_body.dart';
 
-class EnteInfoScreen extends StatelessWidget {
+class CoachEnterInfoScreen extends StatelessWidget {
   // final MyGymController controller = Get.put(MyGymController());
 
-  EnteInfoScreen({super.key});
+  CoachEnterInfoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: EnteInfoBody(),
-      bottomNavigationBar: Directionality(
-        textDirection: TextDirection.ltr,
-        child: Padding(
+        body: CoachEnterInfoBody(),
+        bottomNavigationBar: Padding(
           padding: EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
           child: ElevatedButton.icon(
             onPressed: () {
-              print('Button pressed ...');
+              Get.toNamed(Routes.coachDashboard);
             },
             icon: const Icon(
               Icons.west,
@@ -37,19 +34,20 @@ class EnteInfoScreen extends StatelessWidget {
               ),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFFBB02), // Background color
-              minimumSize: Size(
-                  MediaQuery.of(context).size.width, 55), // Width and height
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
+              foregroundColor: const Color(0xFF1C1503),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              backgroundColor: const Color(0xFFFFBB02),
+              textStyle: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 14,
+                letterSpacing: 0,
+                fontWeight: FontWeight.bold,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              elevation: 0,
-              shadowColor: Colors.transparent,
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }

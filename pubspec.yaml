@@ -16,6 +16,8 @@ dependencies:
 
   # Cupertino Icons for iOS style icons
   cupertino_icons: ^1.0.6
+  flutter_native_splash: ^2.4.1
+  shared_preferences: ^2.3.2
 
   # Add any other packages your project might need like HTTP for API calls
   # Example:
@@ -49,3 +51,11 @@ flutter:
   #   - family: CustomFont
   #     fonts:
   #       - asset: fonts/CustomFont-Regular.ttf
+
+flutter_native_splash:
+  color: "#ffbb02"  # Background color
+  image: assets\images\IronFitLogo2.png  # Logo or image you want to display
+  android: true  # Enable splash screen for Android
+  ios: true  # Enable splash screen for iOS
+  
+

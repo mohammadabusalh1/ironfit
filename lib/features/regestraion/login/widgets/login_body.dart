@@ -204,7 +204,7 @@ class _LoginBodyState extends State<LoginBody> {
               if (isCoach) {
                 Get.toNamed(Routes.home);
               } else {
-                Get.toNamed(Routes.dashboard);
+                Get.toNamed(Routes.trainerDashboard);
               }
             },
             style: ElevatedButton.styleFrom(

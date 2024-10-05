@@ -201,9 +201,9 @@ class _SignUpBodyState extends State<SignUpBody> {
           child: ElevatedButton(
             onPressed: () {
               if (isCoach) {
-                Get.toNamed(Routes.home);
+                Get.toNamed(Routes.coachEnteInfo);
               } else {
-                Get.toNamed(Routes.dashboard);
+                Get.toNamed(Routes.trainerDashboard);
               }
             },
             style: ElevatedButton.styleFrom(

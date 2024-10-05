@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ironfit/core/presention/style/assets.dart';
+import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/UserMyPlan/screens/user_my_plan_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PreLoginBody extends StatefulWidget {
   const PreLoginBody({super.key});
@@ -80,7 +84,7 @@ class _PreLoginBodyState extends State<PreLoginBody> {
       children: [
         SizedBox(
           width: double.infinity,
-          height: MediaQuery.of(context).size.height,
+          height: MediaQuery.of(context).size.height * 0.96,
           child: Stack(
             children: [
               ClipRRect(
@@ -92,88 +96,87 @@ class _PreLoginBodyState extends State<PreLoginBody> {
                   fit: BoxFit.cover,
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(50, 0, 20, 110),
-                  child: Text(
-                    text,
-                    textAlign: TextAlign.end,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      color: Colors.white,
-                      fontSize: 21,
-                      letterSpacing: 2,
-                      fontWeight: FontWeight.w800,
-                      shadows: [
-                        Shadow(
-                          color: Color(0xFF1B1B1B),
-                          offset: Offset(4.0, 4.0),
-                          blurRadius: 4.0,
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              if (showNextButton)
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
-                    child: _buildButton(
-                      text: 'التالي',
-                      icon: Icons.west,
-                      onPressed: () {
-                        _pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.ease,
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              if (!showNextButton)
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 40),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildButton(
-                          text: 'إنهاء',
-                          icon: Icons.west,
-                          onPressed: () {
-                            // Handle finish action
-                          },
-                          width: MediaQuery.of(context).size.width * 0.40,
-                          backgroundColor: Colors.white,
-                          textColor: const Color(0xFF1C1503),
-                        ),
-                        const SizedBox(width: 24),
-                        _buildButton(
-                          text: '',
-                          icon: Icons.east,
-                          onPressed: () {
-                            _pageController
-                                .previousPage(
-                              duration: const Duration(milliseconds: 200),
-                              curve: Curves.ease,
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 50),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        text,
+                        textAlign: TextAlign.end,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          shadows: [
+                            Shadow(
+                              color: Color(0xFF1B1B1B),
+                              offset: Offset(4.0, 4.0),
+                              blurRadius: 4.0,
                             )
-                                .then((value) {
-                              _pageController.previousPage(
-                                duration: const Duration(milliseconds: 200),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      if (showNextButton)
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: _buildButton(
+                            text: 'التالي',
+                            icon: Icons.west,
+                            onPressed: () {
+                              _pageController.nextPage(
+                                duration: const Duration(milliseconds: 300),
                                 curve: Curves.ease,
                               );
-                            });
-                          },
-                          width: MediaQuery.of(context).size.width * 0.40,
+                            },
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
+                      if (!showNextButton)
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _buildButton(
+                                text: 'إنهاء',
+                                icon: Icons.west,
+                                onPressed: () async {
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  prefs.setBool('hasSeenPreLoginScreen', true);
+                                  Get.toNamed(Routes.singIn);
+                                },
+                                width: MediaQuery.of(context).size.width * 0.40,
+                                backgroundColor: Colors.white,
+                                textColor: const Color(0xFF1C1503),
+                              ),
+                              const SizedBox(width: 16),
+                              _buildButton(
+                                text: '',
+                                icon: Icons.east,
+                                onPressed: () {
+                                  _pageController
+                                      .previousPage(
+                                    duration: const Duration(milliseconds: 200),
+                                    curve: Curves.ease,
+                                  )
+                                      .then((value) {
+                                    _pageController.previousPage(
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      curve: Curves.ease,
+                                    );
+                                  });
+                                },
+                                width: MediaQuery.of(context).size.width * 0.40,
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  )),
             ],
           ),
         ),
@@ -191,18 +194,18 @@ class _PreLoginBodyState extends State<PreLoginBody> {
   }) {
     return ElevatedButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon, size: 26, color: textColor),
+      icon: Icon(icon, size: 24, color: textColor),
       label: Text(text),
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         foregroundColor: textColor,
-        minimumSize: Size(width, 60),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
+        minimumSize: Size(width, 50),
         textStyle: const TextStyle(
           fontFamily: 'Inter',
-          fontSize: 20,
+          fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
       ),

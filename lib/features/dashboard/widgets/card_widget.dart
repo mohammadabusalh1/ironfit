@@ -3,7 +3,6 @@ import 'package:ironfit/core/presention/style/palette.dart';
 import 'package:ironfit/core/presention/widgets/custom_text_widget.dart';
 
 class CardWidget extends StatelessWidget {
-  final String title;
   final String subtitle;
   final String imagePath;
   final String description;
@@ -11,7 +10,6 @@ class CardWidget extends StatelessWidget {
 
   const CardWidget({
     super.key,
-    required this.title,
     required this.subtitle,
     required this.imagePath,
     required this.description,
@@ -23,7 +21,7 @@ class CardWidget extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Stack(
-        alignment: Alignment.topLeft,
+        alignment: AlignmentDirectional(-1, 1),
         children: [
           // Background image
           Container(
@@ -47,16 +45,10 @@ class CardWidget extends StatelessWidget {
           ),
           // Text Content
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.symmetric(horizontal: 12),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max, // Align content to the right
               children: [
-                CustomTextWidget(
-                    text: title,
-                    color: Palette.mainAppColor,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold),
-                const SizedBox(height: 4),
                 CustomTextWidget(
                     text: subtitle,
                     color: Palette.white,
@@ -65,9 +57,10 @@ class CardWidget extends StatelessWidget {
                 const SizedBox(height: 4),
                 CustomTextWidget(
                     text: description,
-                    color: Palette.subTitleGrey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold),
+                    color: Palette.suffixColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400),
+                const SizedBox(height: 24),
               ],
             ),
           ),

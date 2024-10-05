@@ -1,7 +1,7 @@
 class Routes {
   static const String home = '/';
   static const String coachDashboard = '/coachDashboard';
-  static const String dashboard = '/trainerDashboard';
+  static const String trainerDashboard = '/trainerDashboard';
   static const String myGym = '/gymScreen';
   static const String profile = '/profileScreen';
   static const String singUp = '/singUpScreen';
@@ -16,4 +16,6 @@ class Routes {
   static const String userStatistics = '/userStatistics';
   static const String userMyPlan = '/userMyPlan';
   static const String userPlanExercises = '/userPlnExercises';
+  static const String preLoginScreens = '/preLoginScreens';
+  static const String coachEnteInfo = '/coachEnteInfo';
 }

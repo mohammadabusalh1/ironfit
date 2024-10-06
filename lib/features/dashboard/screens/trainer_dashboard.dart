@@ -4,7 +4,7 @@ import 'package:ironfit/core/presention/widgets/app_bar.dart';
 import 'package:ironfit/core/presention/widgets/side_menu.dart';
 import 'package:ironfit/features/dashboard/controllers/trainer_dashboard_controller.dart';
 
-import 'package:ironfit/core/presention/widgets/nav_bar.dart';
+import 'package:ironfit/core/presention/widgets/coach_nav_bar.dart';
 import 'package:ironfit/features/dashboard/widgets/trainer_dashboard_body.dart';
 
 class TrainerDashboard extends StatelessWidget {
@@ -19,7 +19,6 @@ class TrainerDashboard extends StatelessWidget {
       // appBar: const CustomAppBar(title: 'Dashboard',),
       // drawer: const SideMenu(),
       body: TrainerDashboardBody(),
-      bottomNavigationBar: NavBar(),
     );
   }
 }

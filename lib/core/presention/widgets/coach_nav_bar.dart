@@ -3,26 +3,30 @@ import 'package:get/get.dart';
 import 'package:ironfit/core/presention/controllers/nav_bar_controller.dart';
 import 'package:ironfit/core/presention/style/palette.dart';
 
-class NavBar extends StatelessWidget {
+class CoachNavBar extends StatelessWidget {
   final NavController navController = Get.find();
 
-  NavBar({super.key}); // Find the controller
+  CoachNavBar({super.key}); // Find the controller
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: Palette.black,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(Icons.home_filled, 0),
-          _buildNavItem(Icons.pie_chart, 1),
-          _buildNavItem(Icons.pending_actions, 2),
-          _buildNavItem(Icons.person, 3),
-        ],
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: const BoxDecoration(
+          color: Palette.black,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(Icons.home_filled, 0),
+            _buildNavItem(Icons.people, 1),
+            _buildNavItem(Icons.pending_actions, 2),
+            _buildNavItem(Icons.pie_chart, 3),
+            _buildNavItem(Icons.person, 4),
+          ],
+        ),
       ),
     );
   }

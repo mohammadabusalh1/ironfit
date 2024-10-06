@@ -29,98 +29,103 @@ class MainPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Palette.black,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
-      ),
-      elevation: 16,
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.8, // Limit the height
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomTextWidget(
-                  text: title,
-                  color: Palette.mainAppColor,
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
+    return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Dialog(
+          backgroundColor: Palette.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24.0),
+          ),
+          elevation: 16,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height *
+                      0.8, // Limit the height
                 ),
-                const SizedBox(height: 12.0),
-                CustomTextWidget(
-                  text: content,
-                  fontSize: 16.0,
-                  color: Colors.white,
-                ),
-                if (subContent != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: CustomTextWidget(
-                      text: subContent!,
-                      fontSize: 14.0,
-                      color: Colors.white70,
-                    ),
-                  ),
-                const SizedBox(height: 24.0),
-                if (textFieldHints != null && textFieldHints!.isNotEmpty)
-                  ...textFieldHints!.map(
-                        (hint) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: hint,
-                          hintStyle: TextStyle(color: Colors.white70),
-                          filled: true,
-                          fillColor: Palette.subTitleGrey.withOpacity(0.2),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide.none,
-                          ),
-                          contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                        ),
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: 12.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextButton(
-                      onPressed: onCancel ?? () => Get.back(),
-                      child: CustomTextWidget(
-                        text: cancelText,
-                        color: Palette.mainAppColor,
-                      ),
+                    CustomTextWidget(
+                      text: title,
+                      color: Palette.mainAppColor,
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 8.0),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Palette.mainAppColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0),
+                    const SizedBox(height: 12.0),
+                    CustomTextWidget(
+                      text: content,
+                      fontSize: 16.0,
+                      color: Colors.white,
+                    ),
+                    if (subContent != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: CustomTextWidget(
+                          text: subContent!,
+                          fontSize: 14.0,
+                          color: Colors.white70,
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
                       ),
-                      onPressed: onConfirm ?? () => Get.back(),
-                      child: Text(
-                        confirmText,
-                        style: TextStyle(fontSize: 16.0),
+                    const SizedBox(height: 24.0),
+                    if (textFieldHints != null && textFieldHints!.isNotEmpty)
+                      ...textFieldHints!.map(
+                        (hint) => Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: hint,
+                              hintStyle: const TextStyle(color: Colors.white70),
+                              filled: true,
+                              fillColor: Palette.subTitleGrey.withOpacity(0.2),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 12.0, horizontal: 16.0),
+                            ),
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ),
+                    const SizedBox(height: 12.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: onCancel ?? () => Get.back(),
+                          child: CustomTextWidget(
+                            text: cancelText,
+                            color: Palette.mainAppColor,
+                          ),
+                        ),
+                        const SizedBox(width: 8.0),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Palette.mainAppColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 12.0),
+                          ),
+                          onPressed: onConfirm ?? () => Get.back(),
+                          child: Text(
+                            confirmText,
+                            style: const TextStyle(fontSize: 16.0),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }

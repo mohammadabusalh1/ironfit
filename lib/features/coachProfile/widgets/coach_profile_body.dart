@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presention/style/palette.dart';
 import 'package:ironfit/core/presention/widgets/custom_text_widget.dart';
-import 'package:ironfit/features/profile/controllers/profile_controller.dart';
+import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
 
-class ProfileBody extends StatelessWidget {
-  const ProfileBody({super.key});
+class CoachProfileBody extends StatelessWidget {
+  const CoachProfileBody({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ProfileController controller = Get.find();
+    final CoachProfileController controller = Get.find();
 
     return Scaffold(
       backgroundColor: Palette.black,

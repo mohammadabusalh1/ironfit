@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ironfit/core/presention/widgets/nav_bar.dart';
+import 'package:ironfit/core/presention/widgets/coach_nav_bar.dart';
 import 'package:ironfit/features/plan/widgets/plan_body.dart';
 
 class PlanScreen extends StatelessWidget {
@@ -8,8 +8,8 @@ class PlanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PlanBody(),
-      bottomNavigationBar: NavBar(),
+      body: const PlanBody(),
+      bottomNavigationBar: CoachNavBar(),
     );
   }
 }

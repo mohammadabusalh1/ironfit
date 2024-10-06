@@ -14,10 +14,10 @@ import 'package:ironfit/features/dashboard/screens/trainer_dashboard.dart';
 import 'package:ironfit/features/my_gym/screens/my_gym_screen.dart';
 import 'package:ironfit/features/plan/screens/plan_screen.dart';
 import 'package:ironfit/features/preLoginScreens/screens/pre_login_screen.dart';
-import 'package:ironfit/features/profile/screens/profile_screen.dart';
+import 'package:ironfit/features/coachProfile/screens/coach_profile_screen.dart';
 import 'package:ironfit/features/regestraion/login/screens/login_screen.dart';
 import 'package:ironfit/features/regestraion/register/screens/sing_up_screen.dart';
-import 'package:ironfit/features/profile/controllers/profile_controller.dart';
+import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ironfit/features/traineesGroupsbyAge/screens/trainees_groups_by_age_screen.dart';
 import 'package:ironfit/features/userStatistics/screens/user_statistics_screen.dart';
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Get.put(NavController());
     Get.lazyPut(() => CoachDashboardController());
-    Get.lazyPut(() => ProfileController());
+    Get.lazyPut(() => CoachProfileController());
 
     return FutureBuilder<String>(
       future: _checkFirstTimeUser(), // Check if pre-login has been shown
@@ -79,7 +79,7 @@ class MyApp extends StatelessWidget {
             ),
             // initialRoute: snapshot.data, // Dynamically set the initial route
             initialRoute:
-                Routes.coachDashboard, // Dynamically set the initial route
+                Routes.trainees, // Dynamically set the initial route
             getPages: [
               GetPage(
                   name: Routes.home,
@@ -92,7 +92,7 @@ class MyApp extends StatelessWidget {
                       textDirection: TextDirection.rtl,
                       child: TrainerDashboard())),
               GetPage(name: Routes.myGym, page: () => MyGymScreen()),
-              GetPage(name: Routes.profile, page: () => ProfileScreen()),
+              GetPage(name: Routes.profile, page: () => CoachProfileScreen()),
               GetPage(
                   name: Routes.singUp,
                   page: () => const Directionality(
@@ -102,7 +102,10 @@ class MyApp extends StatelessWidget {
                   page: () => const Directionality(
                       textDirection: TextDirection.rtl, child: LoginScreen())),
               GetPage(
-                  name: Routes.trainees, page: () => const TraineesScreen()),
+                  name: Routes.trainees,
+                  page: () => const Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: TraineesScreen())),
               GetPage(
                   name: Routes.traineesGroupsByAge,
                   page: () => const TraineesGroupsByAgeScreen()),

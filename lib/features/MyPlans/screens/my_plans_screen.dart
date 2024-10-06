@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ironfit/features/MyPlans/widgets/my_plans_body.dart';
-import 'package:ironfit/core/presention/widgets/nav_bar.dart';
+import 'package:ironfit/core/presention/widgets/coach_nav_bar.dart';
 
 class MyPlansScreen extends StatelessWidget {
   const MyPlansScreen({super.key});
@@ -8,8 +8,8 @@ class MyPlansScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: MyPlansBody(),
-      bottomNavigationBar: NavBar(),
+      body: const MyPlansBody(),
+      bottomNavigationBar: CoachNavBar(),
     );
   }
 }

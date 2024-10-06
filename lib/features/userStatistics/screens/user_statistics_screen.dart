@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presention/widgets/app_bar.dart';
-import 'package:ironfit/core/presention/widgets/nav_bar.dart';
+import 'package:ironfit/core/presention/widgets/coach_nav_bar.dart';
 import 'package:ironfit/features/userStatistics/widgets/user_statistics_body.dart';
 class UserStatisticsScreen extends StatelessWidget {
   const UserStatisticsScreen({super.key});
@@ -9,7 +9,6 @@ class UserStatisticsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: UserStatisticsBody(),
-      bottomNavigationBar: NavBar(),
     );
   }
 }

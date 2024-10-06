@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presention/dialogs/main_pop_up.dart';
 import 'package:ironfit/core/presention/style/assets.dart';
+import 'package:ironfit/core/presention/style/palette.dart';
+import 'package:ironfit/core/routes/routes.dart';
 
 class TraineesBody extends StatefulWidget {
   const TraineesBody({super.key});
@@ -14,21 +16,168 @@ class _TraineesBodyState extends State<TraineesBody> {
   final PageController _pageController = PageController(initialPage: 0);
   final int _currentPage = 0;
 
+  TextEditingController startDateController = TextEditingController();
+  TextEditingController endDateController = TextEditingController();
+  Future<void> _selectDate(
+      BuildContext context, TextEditingController controller) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        controller.text =
+            "${picked.toLocal()}".split(' ')[0]; // Format as yyyy-mm-dd
+      });
+    }
+  }
+
   void showAddTraineeDialog(BuildContext context) {
-    Get.dialog(
-      MainPopUp(
-        title: 'Add New Trainee',
-        content: 'Please fill in the details to add a new trainee:',
-        textFieldHints: ['Trainee Name', 'Age', 'Email', 'Phone Number'],
-        confirmText: 'Add Trainee',
-        cancelText: 'Cancel',
-        onConfirm: () {
-          Get.back(); // You can replace this with the actual logic to add the trainee
-        },
-        onCancel: () {
-          Get.back();
-        },
-      ),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Theme(
+            data: Theme.of(context).copyWith(
+                // Customize the dialog theme here
+                dialogBackgroundColor:
+                    Colors.grey[900], // Dialog background color
+                textTheme: const TextTheme(
+                  bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
+                  bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
+                  headlineLarge: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24),
+                ),
+                elevatedButtonTheme: ElevatedButtonThemeData(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        const Color(0xFFFFBB02), // Customize button color
+                    foregroundColor:
+                        const Color(0xFF1C1503), // Customize text color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                inputDecorationTheme: const InputDecorationTheme(
+                  filled: true, // Fill the text field background
+                  fillColor: Palette
+                      .secondaryColor, // Background color of the text field
+                  labelStyle: TextStyle(
+                      color: Colors.white, fontSize: 14), // Label text style
+                  enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color:
+                              Colors.transparent), // Border color when enabled
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(12),
+                      )),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.yellow,
+                        width: 2), // Border color when focused
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Colors.red), // Border color on error
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.red,
+                        width: 2), // Border color on error when focused
+                  ),
+                ),
+                textButtonTheme: TextButtonThemeData(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white, // Customize text color
+                  ),
+                )),
+            child: Expanded(
+              child: SingleChildScrollView(
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: AlertDialog(
+                    title: const Text('إضافة متدرب جديد',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold)),
+                    content: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('يرجى ملئ البيانات المطلوبة',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w500)),
+                        const SizedBox(height: 16),
+                        const TextField(
+                          decoration: InputDecoration(
+                            labelText: 'الإيميل',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: startDateController,
+                          decoration: const InputDecoration(
+                            labelText: "تاريخ البدء",
+                            border: OutlineInputBorder(),
+                          ),
+                          readOnly: true, // User cannot manually edit
+                          onTap: () {
+                            _selectDate(context, startDateController);
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: endDateController,
+                          decoration: const InputDecoration(
+                            labelText: "تاريخ الانتهاء",
+                            border: OutlineInputBorder(),
+                          ),
+                          readOnly: true,
+                          onTap: () {
+                            _selectDate(context, endDateController);
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        const TextField(
+                          decoration: InputDecoration(
+                            labelText: 'المبلغ المدفوع',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const TextField(
+                          decoration: InputDecoration(
+                            labelText: 'الديون',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text('حفظ'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text('إلغاء'),
+                      ),
+                    ],
+                    actionsAlignment: MainAxisAlignment.start,
+                  ),
+                ),
+              ),
+            ));
+      },
     );
   }
 
@@ -61,8 +210,28 @@ class _TraineesBodyState extends State<TraineesBody> {
                           padding: const EdgeInsets.fromLTRB(24, 50, 24, 50),
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  Get.back();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF1C1503),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 8),
+                                  elevation: 0,
+                                ),
+                                child: const Icon(
+                                  Icons.arrow_left,
+                                  color: Color(0xFFFFBB02),
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
                               const Opacity(
                                 opacity: 0.8,
                                 child: Text(
@@ -82,26 +251,6 @@ class _TraineesBodyState extends State<TraineesBody> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              ElevatedButton(
-                                onPressed: () {
-                                  print('Button pressed ...');
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF1C1503),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 8),
-                                  elevation: 0,
-                                ),
-                                child: const Icon(
-                                  Icons.arrow_right,
-                                  color: Color(0xFFFFBB02),
-                                  size: 24,
-                                ),
-                              ),
                             ],
                           ),
                         ),
@@ -115,6 +264,36 @@ class _TraineesBodyState extends State<TraineesBody> {
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        Expanded(
+                          flex: 1,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              showAddTraineeDialog(context);
+                            },
+                            label: const Text(''),
+                            icon: const Icon(
+                              Icons.add,
+                              size: 22,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: const Color(0xFF1C1503),
+                              backgroundColor: const Color(0xFFFFBB02),
+                              padding:
+                                  const EdgeInsetsDirectional.only(start: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              textStyle: const TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 0.0,
+                              ),
+                              minimumSize: const Size(double.infinity, 50),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
                         Expanded(
                           flex: 1,
                           child: ElevatedButton.icon(
@@ -172,36 +351,6 @@ class _TraineesBodyState extends State<TraineesBody> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          flex: 1,
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              showAddTraineeDialog(context);
-                            },
-                            label: const Text(''),
-                            icon: const Icon(
-                              Icons.add,
-                              size: 22,
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: const Color(0xFF1C1503),
-                              backgroundColor: const Color(0xFFFFBB02),
-                              padding:
-                                  const EdgeInsetsDirectional.only(start: 8),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              textStyle: const TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 0.0,
-                              ),
-                              minimumSize: const Size(double.infinity, 50),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -210,32 +359,17 @@ class _TraineesBodyState extends State<TraineesBody> {
                     padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
                     child: Container(
                       child: TextFormField(
-                        autofocus: false,
-                        obscureText: false,
                         decoration: InputDecoration(
                           isDense: true,
                           labelStyle: const TextStyle(
                             fontFamily: 'Inter',
-                            letterSpacing: 0.0,
                           ),
                           hintText: 'البحث',
                           hintStyle: const TextStyle(
                             fontFamily: 'Inter',
-                            letterSpacing: 0.0,
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Color(0xFFFFBB02),
-                              width: 1,
-                            ),
                             borderRadius: BorderRadius.circular(14),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Colors.transparent,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
                           ),
                           errorBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
@@ -258,9 +392,8 @@ class _TraineesBodyState extends State<TraineesBody> {
                         ),
                         style: const TextStyle(
                           fontFamily: 'Inter',
-                          letterSpacing: 0.0,
                         ),
-                        textAlign: TextAlign.end,
+                        textAlign: TextAlign.start,
                         cursorColor: Theme.of(context)
                             .primaryColor, // Assuming the primary text color
                       ),
@@ -275,7 +408,9 @@ class _TraineesBodyState extends State<TraineesBody> {
                       scrollDirection: Axis.vertical,
                       children: [
                         buildCard(context, 'محمد أبو صالح', 'مشترك الأن',
-                            Assets.myGymImage),
+                            Assets.myGymImage, () {
+                          Get.toNamed(Routes.plan);
+                        }),
                       ],
                     ),
                   ),
@@ -291,38 +426,43 @@ class _TraineesBodyState extends State<TraineesBody> {
 }
 
 Widget buildCard(
-    BuildContext context, String name, String status, String imagePath) {
-  return Card(
-    clipBehavior: Clip.antiAliasWithSaveLayer,
-    color: const Color(0x38454038),
-    elevation: 0,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: Stack(
-      children: [
-        Align(
-          alignment: const AlignmentDirectional(0, 0),
-          child: Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                  size: 24,
-                ),
-                Row(
-                  children: [
-                    const Align(
-                      alignment: AlignmentDirectional(0, 0),
-                      child: Column(
+    BuildContext context, String name, String status, String imagePath, onTap) {
+  return InkWell(
+    onTap: onTap,
+    child: Card(
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      color: const Color(0x38454038),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Stack(
+        children: [
+          Align(
+            alignment: const AlignmentDirectional(0, 0),
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          Assets.myGymImage,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Column(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'محمد أبو صالح',
@@ -344,25 +484,20 @@ Widget buildCard(
                             ),
                           ),
                         ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        Assets.myGymImage,
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover,
-                      ),
-                    ), // Replaces the divide function
-                  ],
-                )
-              ],
+                      ), // Replaces the divide function
+                    ],
+                  ),
+                  const Icon(
+                    Icons.arrow_forward,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }

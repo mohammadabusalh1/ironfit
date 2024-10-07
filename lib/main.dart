@@ -4,10 +4,12 @@ import 'package:ironfit/core/presention/controllers/nav_bar_controller.dart';
 import 'package:ironfit/core/presention/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/MyPlans/screens/my_plans_screen.dart';
+import 'package:ironfit/features/Trainee/screens/trainee_screen.dart';
 import 'package:ironfit/features/Trainees/screens/Trainees_screen.dart';
 import 'package:ironfit/features/UserMyPlan/screens/user_my_plan_screen.dart';
 import 'package:ironfit/features/UserPalnExercises/screens/user_plan_exercises_screen.dart';
 import 'package:ironfit/features/coachEnteInfo/screens/coach_ente_info_screen.dart';
+import 'package:ironfit/features/createPlan/screens/create_plan_screen.dart';
 import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
 import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
 import 'package:ironfit/features/dashboard/screens/trainer_dashboard.dart';
@@ -78,8 +80,7 @@ class MyApp extends StatelessWidget {
               ),
             ),
             // initialRoute: snapshot.data, // Dynamically set the initial route
-            initialRoute:
-                Routes.trainees, // Dynamically set the initial route
+            initialRoute: Routes.myPlans, // Dynamically set the initial route
             getPages: [
               GetPage(
                   name: Routes.home,
@@ -109,8 +110,15 @@ class MyApp extends StatelessWidget {
               GetPage(
                   name: Routes.traineesGroupsByAge,
                   page: () => const TraineesGroupsByAgeScreen()),
-              GetPage(name: Routes.myPlans, page: () => const MyPlansScreen()),
-              GetPage(name: Routes.plan, page: () => const PlanScreen()),
+              GetPage(
+                  name: Routes.myPlans,
+                  page: () => const Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: MyPlansScreen())),
+              GetPage(
+                  name: Routes.plan,
+                  page: () => const Directionality(
+                      textDirection: TextDirection.rtl, child: PlanScreen())),
               GetPage(
                   name: Routes.coachEnteInfo,
                   page: () => Directionality(
@@ -130,6 +138,15 @@ class MyApp extends StatelessWidget {
               GetPage(
                   name: Routes.userPlanExercises,
                   page: () => const UserPalnExercisesScreen()),
+              GetPage(
+                  name: Routes.createPlan,
+                  page: () => const Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: CreatePlanScreen())),
+              GetPage(
+                  name: Routes.trainee,
+                  page: () => const Directionality(
+                      textDirection: TextDirection.rtl, child: TraineeScreen()))
             ],
           );
         } else {

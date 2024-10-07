@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presention/dialogs/main_pop_up.dart';
 import 'package:ironfit/core/presention/style/assets.dart';
+import 'package:ironfit/core/presention/style/palette.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class TraineeBody extends StatefulWidget {
@@ -14,25 +15,154 @@ class TraineeBody extends StatefulWidget {
 class _TraineeBodyState extends State<TraineeBody> {
   final PageController _pageController = PageController(initialPage: 0);
   final int _currentPage = 0;
-  void showCreatePlanDialog(BuildContext context) {
-    Get.dialog(
-      MainPopUp(
-        title: 'Create Plan',
-        content: 'Please fill in the details to create a new plan:',
-        textFieldHints: const [
-          'Plan Name',
-          'Duration (in days)',
-          'Description'
-        ],
-        confirmText: 'Create Plan',
-        cancelText: 'Cancel',
-        onConfirm: () {
-          Get.back();
-        },
-        onCancel: () {
-          Get.back();
-        },
-      ),
+  void showAddPlanDialog(BuildContext context) {
+    String? selectedValue;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Theme(
+            data: Theme.of(context).copyWith(
+                // Customize the dialog theme here
+                dialogBackgroundColor:
+                    Colors.grey[900], // Dialog background color
+                textTheme: const TextTheme(
+                  bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
+                  bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
+                  headlineLarge: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24),
+                ),
+                elevatedButtonTheme: ElevatedButtonThemeData(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        const Color(0xFFFFBB02), // Customize button color
+                    foregroundColor:
+                        const Color(0xFF1C1503), // Customize text color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                inputDecorationTheme: const InputDecorationTheme(
+                  filled: true, // Fill the text field background
+                  fillColor: Palette
+                      .secondaryColor, // Background color of the text field
+                  labelStyle: TextStyle(
+                      color: Colors.white, fontSize: 14), // Label text style
+                  enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color:
+                              Colors.transparent), // Border color when enabled
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(12),
+                      )),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.yellow,
+                        width: 2), // Border color when focused
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Colors.red), // Border color on error
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.red,
+                        width: 2), // Border color on error when focused
+                  ),
+                ),
+                textButtonTheme: TextButtonThemeData(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white, // Customize text color
+                  ),
+                )),
+            child: Expanded(
+              child: SingleChildScrollView(
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: AlertDialog(
+                    title: Row(
+                      children: [
+                        const Text('اضافة خطة',
+                            style: const TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.bold)),
+                        const Spacer(),
+                        IconButton(
+                          onPressed: () {
+                            print('Pressed'); // Close the dialog
+                          },
+                          icon: const Icon(Icons.add),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Palette.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    content: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('يرجى ملئ البيانات المطلوبة',
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w500)),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          dropdownColor: Palette.secondaryColor,
+                          decoration: const InputDecoration(
+                            labelText:
+                                "الخطط الخاصة بك", // Label for the dropdown
+                            border: OutlineInputBorder(),
+                          ),
+                          value: selectedValue, // Selected value from dropdown
+                          items: <String>[
+                            'برنامج المبتدئين',
+                            'برنامج المتوسط',
+                            'برنامج المتقدم',
+                            'برنامج خاص'
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Align(
+                                alignment: AlignmentDirectional
+                                    .centerEnd, // Align to the right
+                                child: Text(
+                                  value,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            selectedValue = newValue;
+                          },
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text('حفظ'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text('إلغاء'),
+                      ),
+                    ],
+                    actionsAlignment: MainAxisAlignment.start,
+                  ),
+                ),
+              ),
+            ));
+      },
     );
   }
 
@@ -129,45 +259,41 @@ class _TraineeBodyState extends State<TraineeBody> {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
-                    child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Expanded(
-                            child: Align(
-                              alignment: const AlignmentDirectional(0, 0),
-                              child: LinearPercentIndicator(
-                                percent: 0.5,
-                                lineHeight: 24,
-                                animation: true,
-                                animateFromLastPercent: true,
-                                progressColor: const Color(0xFFFFBB02),
-                                backgroundColor: const Color(
-                                    0xFFBBDEFB), // Example color for background
-                                center: const Text(
-                                  '50%',
-                                  style: TextStyle(
-                                    fontFamily: 'Inter Tight',
-                                    color: Color(0xFF1C1503),
-                                    fontSize: 14,
-                                    letterSpacing: 0.0,
-                                  ),
-                                ),
-                                barRadius: const Radius.circular(12),
-                                padding: EdgeInsets.zero,
-                              ),
-                            ),
-                          ),
-                        ]),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  // const SizedBox(height: 20),
+                  // Padding(
+                  //   padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
+                  //   child: Row(
+                  //       mainAxisSize: MainAxisSize.max,
+                  //       mainAxisAlignment: MainAxisAlignment.end,
+                  //       children: [
+                  //         Expanded(
+                  //           child: Align(
+                  //             alignment: const AlignmentDirectional(0, 0),
+                  //             child: LinearPercentIndicator(
+                  //               percent: 0.5,
+                  //               lineHeight: 24,
+                  //               animation: true,
+                  //               animateFromLastPercent: true,
+                  //               progressColor: const Color(0xFFFFBB02),
+                  //               backgroundColor: const Color(
+                  //                   0xFFBBDEFB), // Example color for background
+                  //               center: const Text(
+                  //                 '50%',
+                  //                 style: TextStyle(
+                  //                   fontFamily: 'Inter Tight',
+                  //                   color: Color(0xFF1C1503),
+                  //                   fontSize: 14,
+                  //                   letterSpacing: 0.0,
+                  //                 ),
+                  //               ),
+                  //               barRadius: const Radius.circular(12),
+                  //               padding: EdgeInsets.zero,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ]),
+                  // ),
+                  const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
                     child: Row(
@@ -195,7 +321,6 @@ class _TraineeBodyState extends State<TraineeBody> {
                               style: TextStyle(
                                 fontFamily: 'Inter Tight',
                                 color: Colors.white,
-                                letterSpacing: 1,
                               ),
                             ),
                           ),
@@ -205,7 +330,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                           flex: 1,
                           child: ElevatedButton(
                             onPressed: () {
-                              showCreatePlanDialog(context);
+                              showAddPlanDialog(context);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
@@ -222,7 +347,6 @@ class _TraineeBodyState extends State<TraineeBody> {
                               style: TextStyle(
                                 fontFamily: 'Inter Tight',
                                 color: Color(0xFF1C1503),
-                                letterSpacing: 1,
                               ),
                             ),
                           ),
@@ -230,14 +354,12 @@ class _TraineeBodyState extends State<TraineeBody> {
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height *
-                          0.4, // Adjust height as needed
+                          0.43, // Adjust height as needed
                       child: ListView(
                         padding: EdgeInsets.zero,
                         children: [
@@ -283,18 +405,19 @@ Widget _buildCard(BuildContext context, String day) {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-            size: 24,
-          ),
           Row(
             mainAxisSize: MainAxisSize.max,
             children: [
+              const Icon(
+                Icons.date_range,
+                color: Colors.white,
+                size: 40,
+              ),
+              const SizedBox(width: 16),
               Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     day,
@@ -317,13 +440,12 @@ Widget _buildCard(BuildContext context, String day) {
                   ),
                 ],
               ),
-              const SizedBox(width: 16),
-              const Icon(
-                Icons.date_range,
-                color: Colors.white,
-                size: 40,
-              ),
             ],
+          ),
+          const Icon(
+            Icons.arrow_forward,
+            color: Colors.white,
+            size: 24,
           ),
         ],
       ),

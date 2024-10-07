@@ -367,6 +367,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                           hintText: 'البحث',
                           hintStyle: const TextStyle(
                             fontFamily: 'Inter',
+                            fontSize: 14,
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
@@ -409,7 +410,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                       children: [
                         buildCard(context, 'محمد أبو صالح', 'مشترك الأن',
                             Assets.myGymImage, () {
-                          Get.toNamed(Routes.plan);
+                          Get.toNamed(Routes.trainee);
                         }),
                       ],
                     ),

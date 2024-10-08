@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
               ),
             ),
             // initialRoute: snapshot.data, // Dynamically set the initial route
-            initialRoute: Routes.myPlans, // Dynamically set the initial route
+            initialRoute: Routes.myGym, // Dynamically set the initial route
             getPages: [
               GetPage(
                   name: Routes.home,
@@ -92,8 +92,15 @@ class MyApp extends StatelessWidget {
                   page: () => Directionality(
                       textDirection: TextDirection.rtl,
                       child: TrainerDashboard())),
-              GetPage(name: Routes.myGym, page: () => MyGymScreen()),
-              GetPage(name: Routes.profile, page: () => CoachProfileScreen()),
+              GetPage(
+                  name: Routes.myGym,
+                  page: () => Directionality(
+                      textDirection: TextDirection.rtl, child: MyGymScreen())),
+              GetPage(
+                  name: Routes.profile,
+                  page: () => Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: CoachProfileScreen())),
               GetPage(
                   name: Routes.singUp,
                   page: () => const Directionality(

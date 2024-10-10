@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:ironfit/core/presention/style/assets.dart';
-import 'package:ironfit/domain/enteites/profile_user.dart';
+import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/domain/entities/profile_user.dart';
 import 'package:ironfit/features/regestraion/register/screens/sing_up_screen.dart';
 
 class CoachProfileController extends GetxController {

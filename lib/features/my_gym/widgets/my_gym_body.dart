@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presention/style/assets.dart';
-import 'package:ironfit/core/presention/style/palette.dart';
-import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/features/coachEnteInfo/controllers/coach_ente_info_controller.dart';
-// MyGymBody
 
 class MyGymBody extends StatelessWidget {
   const MyGymBody({super.key});

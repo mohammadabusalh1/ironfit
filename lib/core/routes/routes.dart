@@ -3,7 +3,7 @@ class Routes {
   static const String coachDashboard = '/coachDashboard';
   static const String trainerDashboard = '/trainerDashboard';
   static const String myGym = '/gymScreen';
-  static const String profile = '/profileScreen';
+  static const String coachProfile = '/profileScreen';
   static const String singUp = '/singUpScreen';
   static const String singIn = '/singInScreen';
   static const String trainees = '/traineesScreen';
@@ -17,7 +17,7 @@ class Routes {
   static const String userMyPlan = '/userMyPlan';
   static const String userPlanExercises = '/userPlnExercises';
   static const String preLoginScreens = '/preLoginScreens';
-  static const String coachEnteInfo = '/coachEnteInfo';
+  static const String coachEnterInfo = '/coachEnteInfo';
   static const String createPlan = '/createPlan';
   static const String myGyms = '/myGyms';
 }

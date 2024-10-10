@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:ironfit/core/presention/style/assets.dart';
-import 'package:ironfit/core/presention/style/palette.dart';
+import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
 
 class UserMyPlanBody extends StatefulWidget {
   const UserMyPlanBody({super.key});

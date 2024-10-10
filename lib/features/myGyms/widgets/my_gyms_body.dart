@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presention/style/assets.dart';
-import 'package:ironfit/core/presention/style/palette.dart';
+import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 
 class MyGymsBody extends StatefulWidget {
@@ -328,7 +328,7 @@ class CustomCard extends StatelessWidget {
       onTap: onPressed,
       child: Card(
         clipBehavior: Clip.antiAliasWithSaveLayer,
-        color: const Color(0x38454038),
+        color: Palette.secondaryColor,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),

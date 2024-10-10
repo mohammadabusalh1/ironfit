@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presention/dialogs/main_pop_up.dart';
-import 'package:ironfit/core/presention/style/assets.dart';
-import 'package:ironfit/core/presention/style/palette.dart';
+import 'package:ironfit/core/presentation/dialogs/main_pop_up.dart';
+import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 
 class MyPlansBody extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presention/style/palette.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/features/splash/controllers/splash_controller.dart';
 import 'package:ironfit/features/splash/widgets/splash_body.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presention/controllers/nav_bar_controller.dart';
-import 'package:ironfit/core/presention/style/palette.dart';
+import 'package:ironfit/core/presentation/controllers/nav_bar_controller.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/MyPlans/screens/my_plans_screen.dart';
 import 'package:ironfit/features/Trainee/screens/trainee_screen.dart';
@@ -26,148 +26,172 @@ import 'package:ironfit/features/traineesGroupsbyAge/screens/trainees_groups_by_
 import 'package:ironfit/features/userStatistics/screens/user_statistics_screen.dart';
 
 void main() {
+  // This function is the entry point of the app.
+  // It starts the app by running the MyApp widget.
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  // This function checks if the user has already seen the pre-login screen.
+  // It saves this info in something called "shared preferences" (a place to store small data).
+  // If the user has seen the pre-login screen, it returns the login route.
+  // Otherwise, it returns the pre-login screen route.
   Future<String> _checkFirstTimeUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool hasSeenPreLoginScreen =
         prefs.getBool('hasSeenPreLoginScreen') ?? false;
 
     if (hasSeenPreLoginScreen) {
-      return Routes.singIn;
+      return Routes.singIn; // Direct to the login screen
     } else {
-      return Routes.preLoginScreens;
+      return Routes.preLoginScreens; // Direct to the pre-login screen
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    Get.put(NavController());
-    Get.lazyPut(() => CoachDashboardController());
-    Get.lazyPut(() => CoachProfileController());
+    // This "Get" package helps manage app navigation and state.
+    // Here, we're preparing controllers for navigation and other features.
+    Get.put(NavController()); // Prepares the navigation bar controller
+    Get.lazyPut(
+        () => CoachDashboardController()); // Prepares the dashboard controller
+    Get.lazyPut(
+        () => CoachProfileController()); // Prepares the profile controller
 
+    // This widget decides what the app should display based on whether the user
+    // has seen the pre-login screen or not.
     return FutureBuilder<String>(
-      future: _checkFirstTimeUser(), // Check if pre-login has been shown
+      future:
+          _checkFirstTimeUser(), // Call the function to check if the user is new
       builder: (context, snapshot) {
-        // While loading the decision, show a loading screen (or splash)
+        // While the app is figuring out if the user has seen the pre-login screen,
+        // it shows a loading animation.
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const MaterialApp(
             home: Scaffold(
               body: Center(
-                  child: CircularProgressIndicator()), // Loading indicator
+                  child: CircularProgressIndicator()), // Shows loading spinner
             ),
           );
         }
 
-        // Once the decision is ready, show the appropriate initial route
+        // Once the app knows where to start, it shows the correct screen (route).
         if (snapshot.hasData) {
           return GetMaterialApp(
             title: 'IronFit',
-            debugShowCheckedModeBanner: false,
+            debugShowCheckedModeBanner:
+                false, // Hides the debug banner in the corner
             theme: ThemeData(
-              primaryColor: Palette.mainAppColor,
-              scaffoldBackgroundColor: Palette.black,
+              primaryColor: Palette.mainAppColor, // Main color theme
+              scaffoldBackgroundColor: Palette.black, // Background color
               floatingActionButtonTheme: const FloatingActionButtonThemeData(
-                backgroundColor: Palette.black,
+                backgroundColor: Palette.black, // Button background color
               ),
               appBarTheme: const AppBarTheme(
-                backgroundColor: Palette.mainAppColor,
-                titleTextStyle: TextStyle(color: Palette.black, fontSize: 20),
-                iconTheme: IconThemeData(color: Palette.black),
+                backgroundColor: Palette.mainAppColor, // App bar color
+                titleTextStyle: TextStyle(
+                    color: Palette.black, fontSize: 20), // Title style
+                iconTheme: IconThemeData(color: Palette.black), // Icon color
               ),
             ),
-            // initialRoute: snapshot.data, // Dynamically set the initial route
-            initialRoute: Routes.myGyms, // Dynamically set the initial route
+            initialRoute:
+                Routes.coachDashboard, // Initial route (screen) the app will show
             getPages: [
+              // Here we define different screens (pages) and routes for navigation.
               GetPage(
-                  name: Routes.home,
+                  name: Routes.coachDashboard,
                   page: () => Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: CoachDashboard())),
+                      textDirection:
+                          TextDirection.rtl, // RTL = Right to Left (Arabic)
+                      child: CoachDashboard())), // Coach's dashboard page
               GetPage(
                   name: Routes.trainerDashboard,
                   page: () => Directionality(
                       textDirection: TextDirection.rtl,
-                      child: TrainerDashboard())),
+                      child: TrainerDashboard())), // Trainer's dashboard
               GetPage(
                   name: Routes.myGym,
                   page: () => Directionality(
-                      textDirection: TextDirection.rtl, child: MyGymScreen())),
+                      textDirection: TextDirection.rtl,
+                      child: MyGymScreen())), // MyGym page
               GetPage(
-                  name: Routes.profile,
+                  name: Routes.coachProfile,
                   page: () => Directionality(
                       textDirection: TextDirection.rtl,
-                      child: CoachProfileScreen())),
+                      child: CoachProfileScreen())), // Coach's profile
               GetPage(
                   name: Routes.singUp,
                   page: () => const Directionality(
-                      textDirection: TextDirection.rtl, child: SignUpScreen())),
+                      textDirection: TextDirection.rtl,
+                      child: SignUpScreen())), // Sign-up page
               GetPage(
                   name: Routes.singIn,
                   page: () => const Directionality(
-                      textDirection: TextDirection.rtl, child: LoginScreen())),
+                      textDirection: TextDirection.rtl,
+                      child: LoginScreen())), // Login page
               GetPage(
                   name: Routes.trainees,
                   page: () => const Directionality(
                       textDirection: TextDirection.rtl,
-                      child: TraineesScreen())),
+                      child: TraineesScreen())), // Trainees screen
               GetPage(
                   name: Routes.traineesGroupsByAge,
-                  page: () => const TraineesGroupsByAgeScreen()),
+                  page: () =>
+                      const TraineesGroupsByAgeScreen()), // Trainees by age group
               GetPage(
                   name: Routes.myPlans,
                   page: () => const Directionality(
                       textDirection: TextDirection.rtl,
-                      child: MyPlansScreen())),
+                      child: MyPlansScreen())), // My plans
               GetPage(
                   name: Routes.plan,
                   page: () => const Directionality(
-                      textDirection: TextDirection.rtl, child: PlanScreen())),
+                      textDirection: TextDirection.rtl,
+                      child: PlanScreen())), // Plan screen
               GetPage(
-                  name: Routes.coachEnteInfo,
+                  name: Routes.coachEnterInfo,
                   page: () => Directionality(
                       textDirection: TextDirection.rtl,
-                      child: CoachEnterInfoScreen())),
+                      child: CoachEnterInfoScreen())), // Coach info
               GetPage(
                   name: Routes.userStatistics,
                   page: () => const Directionality(
                       textDirection: TextDirection.rtl,
-                      child: UserStatisticsScreen())),
+                      child: UserStatisticsScreen())), // User stats
               GetPage(
                   name: Routes.userMyPlan,
-                  page: () => const UserMyPlanScreen()),
+                  page: () => const UserMyPlanScreen()), // User's own plan
               GetPage(
                   name: Routes.preLoginScreens,
-                  page: () => const PreLoginScreen()),
+                  page: () => const PreLoginScreen()), // Pre-login screens
               GetPage(
                   name: Routes.userPlanExercises,
-                  page: () => const UserPalnExercisesScreen()),
+                  page: () =>
+                      const UserPalnExercisesScreen()), // Plan exercises
               GetPage(
                   name: Routes.createPlan,
                   page: () => const Directionality(
                       textDirection: TextDirection.rtl,
-                      child: CreatePlanScreen())),
+                      child: CreatePlanScreen())), // Create a new plan
               GetPage(
                   name: Routes.trainee,
                   page: () => const Directionality(
                       textDirection: TextDirection.rtl,
-                      child: TraineeScreen())),
+                      child: TraineeScreen())), // Trainee screen
               GetPage(
                   name: Routes.myGyms,
                   page: () => const Directionality(
                       textDirection: TextDirection.rtl,
-                      child: MyGymsScreen())),
+                      child: MyGymsScreen())), // My gyms screen
             ],
           );
         } else {
-          // In case something goes wrong, fallback to a safe screen
+          // If something goes wrong while loading, show an error message.
           return const MaterialApp(
             home: Scaffold(
-              body: Center(child: Text('Error loading app')),
+              body: Center(child: Text('Error loading app')), // Error message
             ),
           );
         }

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/custom_text_widget.dart';
 
-class GymTicket extends StatelessWidget {
-  final String name;
-  final String address;
-  final String imagePath;
-  final String description;
-  final VoidCallback onTap;
+class Ticket extends StatelessWidget {
+  final String name; // Name of the ticket holder
+  final String address; // Address of the ticket holder
+  final String imagePath; // Path to the image (if any)
+  final String description; // Description of the ticket
+  final VoidCallback onTap; // Callback function for tap event
 
-  const GymTicket({
+  const Ticket({
     super.key,
     required this.name,
     required this.address,
@@ -21,27 +21,35 @@ class GymTicket extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
-      child: Container(
-        height: 100,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Palette.mainAppColor, width: 2),
-        ),
-        child: Stack(
-          alignment: Alignment.topLeft,
-          children: [
-            _buildOverlay(),
-            _buildContent(),
-          ],
+      onTap: onTap, // Execute the onTap function when the ticket is tapped
+      child: Stack(
+        alignment: Alignment.topLeft,
+        children: [
+          _buildBackground(), // Build the background container
+          _buildDarkOverlay(), // Add a dark overlay on top of the background
+          _buildContent(), // Build the main content (image and text)
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBackground() {
+    // Builds the background container of the ticket
+    return Container(
+      height: 100,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Palette.mainAppColor,
+          width: 2,
         ),
       ),
     );
   }
 
-  // Build the dark overlay
-  Widget _buildOverlay() {
+  Widget _buildDarkOverlay() {
+    // Creates a dark overlay for the ticket
     return Container(
       height: 100,
       decoration: BoxDecoration(
@@ -51,23 +59,23 @@ class GymTicket extends StatelessWidget {
     );
   }
 
-  // Build the content with image/avatar and text
   Widget _buildContent() {
+    // Builds the content of the ticket, including image and text
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _buildImage(),
+          _buildImage(), // Build the image or avatar
           const SizedBox(width: 7),
-          _buildTextContent(),
+          _buildTextContent(), // Build the text content
         ],
       ),
     );
   }
 
-  // Build the image or avatar
   Widget _buildImage() {
+    // Builds the image or avatar section
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: imagePath.isNotEmpty
@@ -89,8 +97,8 @@ class GymTicket extends StatelessWidget {
     );
   }
 
-  // Build the text content
   Widget _buildTextContent() {
+    // Builds the text content section
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ironfit/core/presention/style/palette.dart';
-import 'package:ironfit/core/presention/widgets/custom_text_widget.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/custom_text_widget.dart';
 
 class CardWidget extends StatelessWidget {
   final String subtitle;

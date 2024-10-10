@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ironfit/core/presention/style/assets.dart';
+import 'package:ironfit/core/presentation/style/assets.dart';
 
 class TraineesGroupsByAgeBody extends StatefulWidget {
   const TraineesGroupsByAgeBody({super.key});

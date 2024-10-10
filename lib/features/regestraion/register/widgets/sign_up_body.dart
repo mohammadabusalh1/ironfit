@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presention/style/assets.dart';
-import 'package:ironfit/core/presention/style/palette.dart';
+import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 
 class SignUpBody extends StatefulWidget {
@@ -201,7 +201,7 @@ class _SignUpBodyState extends State<SignUpBody> {
           child: ElevatedButton(
             onPressed: () {
               if (isCoach) {
-                Get.toNamed(Routes.coachEnteInfo);
+                Get.toNamed(Routes.coachEnterInfo);
               } else {
                 Get.toNamed(Routes.trainerDashboard);
               }

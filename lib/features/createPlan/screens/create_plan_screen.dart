@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ironfit/core/presention/widgets/coach_nav_bar.dart';
+import 'package:ironfit/core/presentation/widgets/coach_nav_bar.dart';
 import 'package:ironfit/features/createPlan/widgets/create_plan_body.dart';
 
 class CreatePlanScreen extends StatelessWidget {

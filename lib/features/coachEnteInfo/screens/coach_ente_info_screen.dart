@@ -18,21 +18,21 @@ class CoachEnterInfoScreen extends StatelessWidget {
             onPressed: () {
               Get.toNamed(Routes.coachDashboard);
             },
-            icon: const Icon(
-              Icons.west,
-              size: 24,
-              color: Color(0xFF1C1503), // Icon color
-            ),
             label: const Text(
               'التالي',
               style: TextStyle(
                 fontFamily: 'Inter',
                 color: Color(0xFF1C1503), // Text color
                 fontSize: 18,
-                letterSpacing: 1,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            icon: const Icon(
+              Icons.west,
+              size: 24,
+              color: Color(0xFF1C1503), // Icon color
+            ),
+            iconAlignment: IconAlignment.end,
             style: ElevatedButton.styleFrom(
               foregroundColor: const Color(0xFF1C1503),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -40,7 +40,6 @@ class CoachEnterInfoScreen extends StatelessWidget {
               textStyle: const TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 14,
-                letterSpacing: 0,
                 fontWeight: FontWeight.bold,
               ),
               shape: RoundedRectangleBorder(

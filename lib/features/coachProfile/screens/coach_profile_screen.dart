@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presention/widgets/coach_nav_bar.dart';
+import 'package:ironfit/core/presentation/widgets/coach_nav_bar.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
 import 'package:ironfit/features/coachProfile/widgets/coach_profile_body.dart';
 

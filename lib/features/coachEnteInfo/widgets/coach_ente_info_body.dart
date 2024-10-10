@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CoachEnterInfoBody extends StatelessWidget {
   CoachEnterInfoBody({Key? key}) : super(key: key);
 
-  List<String> _labels = [
+  final List<String> _labels = [
     'الاسم الأول',
     'إسم العائلة',
     'العمر',
@@ -17,19 +17,21 @@ class CoachEnterInfoBody extends StatelessWidget {
         children: [
           _buildImageStack(),
           const SizedBox(height: 24),
-          _buildTitle('أكمل معلوماتك من فضلك'),
-          const SizedBox(height: 16),
-          for (var i = 0; i < _labels.length; i++)
-            Column(
-              children: [
-                _buildLabel(_labels[i]),
-                _buildTextField(
-                  label: _labels[i],
-                  hint: _labels[i],
-                ),
-                const SizedBox(height: 12),
-              ],
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: Align(
+              alignment: AlignmentDirectional.center,
+              child: Text('أكمل معلوماتك من فضلك',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  )),
             ),
+          ),
+          const SizedBox(height: 16),
+          ..._labels.map((label) => _buildLabelWithTextField(label)).toList(),
         ],
       ),
     );
@@ -57,41 +59,51 @@ class CoachEnterInfoBody extends StatelessWidget {
   }
 
   Widget _buildTitle(String text) {
-    return Align(
-      alignment: AlignmentDirectional.center,
-      child: Text(
+    return _buildCenteredText(
         text,
-        style: const TextStyle(
+        const TextStyle(
           fontFamily: 'Inter',
           color: Colors.white,
           fontSize: 14,
           fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
+        ));
   }
 
   Widget _buildLabel(String labelText) {
+    return _buildCenteredText(
+        labelText,
+        const TextStyle(
+          color: Colors.white,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ));
+  }
+
+  Widget _buildCenteredText(String text, TextStyle style) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Align(
         alignment: AlignmentDirectional.centerStart,
-        child: Text(
-          labelText,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        child: Text(text, style: style),
       ),
     );
   }
 
-  Widget _buildTextField(
-      {required String label,
-      required String hint,
-      TextInputType keyboardType = TextInputType.text}) {
+  Widget _buildLabelWithTextField(String label) {
+    return Column(
+      children: [
+        _buildLabel(label),
+        _buildTextField(label: label, hint: label),
+        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required String hint,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: TextFormField(
@@ -103,16 +115,18 @@ class CoachEnterInfoBody extends StatelessWidget {
           labelStyle: const TextStyle(color: Colors.white, fontSize: 14),
           filled: true,
           fillColor: const Color(0xFF454038),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Color(0xFFFFBB02), width: 1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+          enabledBorder: _buildInputBorder(const Color(0xFFFFBB02)),
+          focusedBorder: _buildInputBorder(Colors.white),
         ),
         style: const TextStyle(color: Colors.white, fontSize: 14),
       ),
+    );
+  }
+
+  OutlineInputBorder _buildInputBorder(Color borderColor) {
+    return OutlineInputBorder(
+      borderSide: BorderSide(color: borderColor, width: 1),
+      borderRadius: BorderRadius.circular(10),
     );
   }
 }

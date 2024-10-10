@@ -13,6 +13,7 @@ import 'package:ironfit/features/createPlan/screens/create_plan_screen.dart';
 import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
 import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
 import 'package:ironfit/features/dashboard/screens/trainer_dashboard.dart';
+import 'package:ironfit/features/myGyms/screens/my_gyms_screen.dart';
 import 'package:ironfit/features/my_gym/screens/my_gym_screen.dart';
 import 'package:ironfit/features/plan/screens/plan_screen.dart';
 import 'package:ironfit/features/preLoginScreens/screens/pre_login_screen.dart';
@@ -80,7 +81,7 @@ class MyApp extends StatelessWidget {
               ),
             ),
             // initialRoute: snapshot.data, // Dynamically set the initial route
-            initialRoute: Routes.myGym, // Dynamically set the initial route
+            initialRoute: Routes.myGyms, // Dynamically set the initial route
             getPages: [
               GetPage(
                   name: Routes.home,
@@ -153,7 +154,13 @@ class MyApp extends StatelessWidget {
               GetPage(
                   name: Routes.trainee,
                   page: () => const Directionality(
-                      textDirection: TextDirection.rtl, child: TraineeScreen()))
+                      textDirection: TextDirection.rtl,
+                      child: TraineeScreen())),
+              GetPage(
+                  name: Routes.myGyms,
+                  page: () => const Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: MyGymsScreen())),
             ],
           );
         } else {

@@ -45,6 +45,7 @@ flutter:
     - assets/images/IronFitLogo2.png
     - assets/images/dashboardBackground.jpg
     - assets/images/dashboardYellow.png
+    - assets/images/myGymImage.png
 
   # Fonts can also be added if required for custom typography
   # fonts:

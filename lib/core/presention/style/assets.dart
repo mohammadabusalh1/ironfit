@@ -12,5 +12,6 @@ class Assets {
   static const String signOne = 'assets/images/signOne.jpeg';
   static const String dashboardBackground = 'assets/images/dashboardBackground.jpg';
   static const String dashboardYellow = 'assets/images/dashboardYellow.png';
+  static const String myGymPageImage = 'assets/images/myGymImage.png';
 }
 

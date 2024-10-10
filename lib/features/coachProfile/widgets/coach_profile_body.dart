@@ -292,8 +292,8 @@ class CoachProfileBody extends StatelessWidget {
                     }),
                     const SizedBox(height: 4),
                     _buildButtonCard(
-                        context, 'الصالة الرياضية', Icons.location_on, () {
-                      Get.toNamed(Routes.myGym);
+                        context, 'الصالات الرياضية', Icons.location_on, () {
+                      Get.toNamed(Routes.myGyms);
                     }),
                     const SizedBox(height: 4),
                     _buildButtonCard(

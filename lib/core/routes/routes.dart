@@ -19,4 +19,5 @@ class Routes {
   static const String preLoginScreens = '/preLoginScreens';
   static const String coachEnteInfo = '/coachEnteInfo';
   static const String createPlan = '/createPlan';
+  static const String myGyms = '/myGyms';
 }

@@ -45,8 +45,8 @@ class CoachDashboardBody extends StatelessWidget {
             ]),
             const SizedBox(height: 24),
             CardWidget(
-              onTap: () => Get.toNamed(Routes.myGym),
-              subtitle: 'النادي الرياضي الخاص بي',
+              onTap: () => Get.toNamed(Routes.myGyms),
+              subtitle: 'الصالات الرياضية الخاص بي',
               imagePath: Assets.myGymImage,
               description: 'أضف معلومات النادي الرياضي الخاص بك',
             ),

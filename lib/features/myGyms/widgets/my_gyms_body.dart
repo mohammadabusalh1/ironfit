@@ -167,7 +167,9 @@ class _MyGymsBodyState extends State<MyGymsBody> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Get.back();
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFF1C1503),
                                       shape: RoundedRectangleBorder(

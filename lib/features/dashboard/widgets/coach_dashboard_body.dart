@@ -20,7 +20,7 @@ class CoachDashboardBody extends StatelessWidget {
         _buildDashboardHeader(),
         const SizedBox(height: 24),
         Container(
-          height: MediaQuery.of(context).size.height * 0.65,
+          height: MediaQuery.of(context).size.height * 0.63,
           margin: const EdgeInsets.symmetric(horizontal: 24),
           child: SingleChildScrollView(
             child: Column(
@@ -62,7 +62,7 @@ class CoachDashboardBody extends StatelessWidget {
     return Row(
       children: [
         _buildStatisticsCard("30", "متدرب", context),
-        const SizedBox(width: 24), // Adjusted for consistent spacing
+        Spacer(), // Adjusted for consistent spacing
         _buildStatisticsCard("+30%", "الإشتراك", context),
       ],
     );

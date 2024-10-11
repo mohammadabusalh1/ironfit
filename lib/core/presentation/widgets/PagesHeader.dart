@@ -19,6 +19,7 @@ class DashboardHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
+      alignment: Alignment.center,
       children: [
         _buildBackgroundImage(context),
         _buildTrainerInfo(context),
@@ -41,19 +42,15 @@ class DashboardHeader extends StatelessWidget {
 
   // Builds the trainer info and notification button
   Widget _buildTrainerInfo(BuildContext context) {
-    return Positioned(
-      right: 24,
-      left: 24,
-      top: MediaQuery.of(context).size.height * 0.07,
-      child: Row(
-        children: [
-          _buildTrainerImage(context),
-          const SizedBox(width: 12),
-          TrainerInfo(trainerName: trainerName, trainerEmail: trainerEmail),
-          const SizedBox(width: 40),
-          _buildNotificationButton(),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildTrainerImage(context),
+        const SizedBox(width: 12),
+        TrainerInfo(trainerName: trainerName, trainerEmail: trainerEmail),
+        const SizedBox(width: 40),
+        _buildNotificationButton(),
+      ],
     );
   }
 

@@ -80,7 +80,9 @@ class CoachProfileBody extends StatelessWidget {
                   child: AlertDialog(
                     title: const Text('تعديل المعلومات',
                         style: const TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold)),
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold)),
                     content: const Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,7 +211,9 @@ class CoachProfileBody extends StatelessWidget {
                   child: AlertDialog(
                     title: const Text('تغيير كلمة المرور',
                         style: const TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold)),
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold)),
                     content: const Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -420,7 +424,7 @@ class CoachProfileBody extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,

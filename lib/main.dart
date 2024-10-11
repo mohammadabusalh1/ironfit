@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/nav_bar_controller.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/CoachStatistics/screens/coach_statistics_screen.dart';
 import 'package:ironfit/features/MyPlans/screens/my_plans_screen.dart';
 import 'package:ironfit/features/Trainee/screens/trainee_screen.dart';
 import 'package:ironfit/features/Trainees/screens/Trainees_screen.dart';
@@ -97,7 +98,7 @@ class MyApp extends StatelessWidget {
               ),
             ),
             initialRoute:
-                Routes.coachDashboard, // Initial route (screen) the app will show
+                Routes.singIn, // Initial route (screen) the app will show
             getPages: [
               // Here we define different screens (pages) and routes for navigation.
               GetPage(
@@ -185,6 +186,10 @@ class MyApp extends StatelessWidget {
                   page: () => const Directionality(
                       textDirection: TextDirection.rtl,
                       child: MyGymsScreen())), // My gyms screen
+              GetPage(
+                  name: Routes.coachStatistics,
+                  page: () => const Directionality(
+                      textDirection: TextDirection.rtl, child: CoachStatisticsScreen())),
             ],
           );
         } else {

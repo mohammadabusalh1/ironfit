@@ -6,6 +6,7 @@ abstract class Palette {
 
   static const Color mainAppColor = Color(0xffffbb02);
   static const Color secondaryColor = Color(0xff454038);
+  static const Color darkGray = Color(0xFF2E2E2E);
   static const Color lightGrey = Color(0xffEFF4F6);
   static const Color white = Color(0xffffffff);
   static const Color black = Color(0xff000000);

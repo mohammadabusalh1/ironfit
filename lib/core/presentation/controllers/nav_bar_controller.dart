@@ -24,7 +24,7 @@ class NavController extends GetxController {
         Get.toNamed(Routes.myPlans);
         break;
       case 3:
-        Get.toNamed(Routes.myPlans);
+        Get.toNamed(Routes.coachStatistics);
         break;
       case 4:
         Get.toNamed(Routes.coachProfile);

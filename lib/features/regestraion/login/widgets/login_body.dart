@@ -41,8 +41,6 @@ class _LoginBodyState extends State<LoginBody> {
                   const SizedBox(height: 24),
                   _buildCoachSwitch(context),
                   const SizedBox(height: 24),
-                  // _buildPrivacyText(context),
-                  // const SizedBox(height: 12),
                   _buildLoginButton(),
                   const SizedBox(height: 12),
                   _buildGoogleRegisterButton(),
@@ -202,7 +200,7 @@ class _LoginBodyState extends State<LoginBody> {
           child: ElevatedButton(
             onPressed: () {
               if (isCoach) {
-                Get.toNamed(Routes.home);
+                Get.toNamed(Routes.coachDashboard);
               } else {
                 Get.toNamed(Routes.trainerDashboard);
               }

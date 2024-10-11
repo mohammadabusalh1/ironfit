@@ -20,4 +20,5 @@ class Routes {
   static const String coachEnterInfo = '/coachEnteInfo';
   static const String createPlan = '/createPlan';
   static const String myGyms = '/myGyms';
+    static const String coachStatistics = '/coachStatistics';
 }

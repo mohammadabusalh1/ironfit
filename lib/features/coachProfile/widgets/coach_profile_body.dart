@@ -81,34 +81,34 @@ class CoachProfileBody extends StatelessWidget {
                     title: const Text('تعديل المعلومات',
                         style: const TextStyle(
                             fontSize: 22, fontWeight: FontWeight.bold)),
-                    content: Column(
+                    content: const Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text('يرجى ملئ البيانات المطلوبة',
-                            style: const TextStyle(
+                        Text('يرجى ملئ البيانات المطلوبة',
+                            style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w500)),
-                        const SizedBox(height: 16),
-                        const TextField(
+                        SizedBox(height: 16),
+                        TextField(
                           decoration: InputDecoration(
                             hintText: 'الاسم الأول',
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        const TextField(
+                        SizedBox(height: 16),
+                        TextField(
                           decoration: InputDecoration(
                             hintText: 'الاسم الأخير',
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        const TextField(
+                        SizedBox(height: 16),
+                        TextField(
                           decoration: InputDecoration(
                             hintText: 'العمر',
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        const TextField(
+                        SizedBox(height: 16),
+                        TextField(
                             decoration: InputDecoration(
                           hintText: 'الخبرة',
                         ))
@@ -210,28 +210,28 @@ class CoachProfileBody extends StatelessWidget {
                     title: const Text('تغيير كلمة المرور',
                         style: const TextStyle(
                             fontSize: 22, fontWeight: FontWeight.bold)),
-                    content: Column(
+                    content: const Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text('يرجى ملئ البيانات المطلوبة',
-                            style: const TextStyle(
+                        Text('يرجى ملئ البيانات المطلوبة',
+                            style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w500)),
-                        const SizedBox(height: 16),
-                        const TextField(
+                        SizedBox(height: 16),
+                        TextField(
                           decoration: InputDecoration(
                             hintText: 'كلمة المرور القديمة',
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        const TextField(
+                        SizedBox(height: 16),
+                        TextField(
                           decoration: InputDecoration(
                             hintText: 'كلمة المرور الجديدة',
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        const TextField(
+                        SizedBox(height: 16),
+                        TextField(
                           decoration: InputDecoration(
                             hintText: 'تأكيد كلمة المرور الجديدة',
                           ),
@@ -297,33 +297,51 @@ class CoachProfileBody extends StatelessWidget {
                     const SizedBox(height: 4),
                     _buildButtonCard(
                         context, 'الإعدادات', Icons.settings, () {}),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        // Add your onPressed logic here
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Palette.redDelete,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(
+                              16), // More rounded edges for a modern feel
                         ),
                         maximumSize:
                             Size(MediaQuery.of(context).size.width, 55),
+                        elevation:
+                            5, // Adding some elevation for a shadow effect
                       ),
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(16, 12, 0, 12),
+                        padding: const EdgeInsets.fromLTRB(24, 12, 0, 12),
                         child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.start, // Center text and icon
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             const Text(
                               'تسجيل الخروج',
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight:
+                                    FontWeight.bold, // Bold text for emphasis
+                                letterSpacing:
+                                    0.5, // Slightly increased letter spacing for readability
+                              ),
                             ),
                             const Spacer(),
-                            Transform(
-                              transform: Matrix4.rotationY(3.14),
-                              child: const Icon(
-                                Icons.logout,
-                                color: Colors.white,
+                            AnimatedScale(
+                              scale:
+                                  1.1, // Button will slightly scale up on press
+                              duration: const Duration(
+                                  milliseconds:
+                                      150), // Smooth animation duration
+                              child: Transform(
+                                transform: Matrix4.rotationY(3.14),
+                                child: const Icon(
+                                  Icons.logout,
+                                  color: Colors.white,
+                                  size: 26, // Slightly larger icon
+                                ),
                               ),
                             ),
                           ],
@@ -357,7 +375,7 @@ class CoachProfileBody extends StatelessWidget {
         children: [
           SizedBox(height: MediaQuery.of(Get.context!).size.height * 0.1),
           ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(50),
             child: Image.asset(
               Assets.myTrainerImage,
               width: 100,
@@ -365,7 +383,7 @@ class CoachProfileBody extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           const Opacity(
             opacity: 0.8,
             child: Text(
@@ -373,7 +391,7 @@ class CoachProfileBody extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'Inter',
                 color: Colors.white,
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.w800,
                 shadows: [
                   Shadow(
@@ -396,7 +414,7 @@ class CoachProfileBody extends StatelessWidget {
       onTap: onClick,
       child: Card(
         clipBehavior: Clip.antiAliasWithSaveLayer,
-        color: const Color(0x38454038), // Transparent color
+        color: Palette.secondaryColor, // Transparent color
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),

@@ -98,7 +98,7 @@ class MyApp extends StatelessWidget {
               ),
             ),
             initialRoute:
-                Routes.singIn, // Initial route (screen) the app will show
+                Routes.coachProfile, // Initial route (screen) the app will show
             getPages: [
               // Here we define different screens (pages) and routes for navigation.
               GetPage(

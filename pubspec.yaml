@@ -47,6 +47,7 @@ flutter:
     - assets/images/dashboardBackground.jpg
     - assets/images/dashboardYellow.png
     - assets/images/myGymImage.png
+    - assets/images/placeholder.svg
 
   # Fonts can also be added if required for custom typography
   # fonts:

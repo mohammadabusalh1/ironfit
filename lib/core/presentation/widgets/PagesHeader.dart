@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
 
 // Reusable DashboardHeader Widget
 class DashboardHeader extends StatelessWidget {
@@ -41,7 +42,8 @@ class DashboardHeader extends StatelessWidget {
   // Builds the trainer info and notification button
   Widget _buildTrainerInfo(BuildContext context) {
     return Positioned(
-      right: 12,
+      right: 24,
+      left: 24,
       top: MediaQuery.of(context).size.height * 0.07,
       child: Row(
         children: [
@@ -75,7 +77,7 @@ class DashboardHeader extends StatelessWidget {
       child: Container(
         width: 40,
         height: 40,
-        color: Colors.black54,
+        color: Palette.mainAppColor,
         child: IconButton(
           onPressed: () {
             // Handle notification button action

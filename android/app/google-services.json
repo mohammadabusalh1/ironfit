@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "252100398371",
+    "project_id": "ironfit-edef8",
+    "storage_bucket": "ironfit-edef8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:252100398371:android:67c54a8531b1dc679cd096",
+        "android_client_info": {
+          "package_name": "com.android.ironfit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGuN_Alp1xNtyhvSUPl62bey9fyLKwzdA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

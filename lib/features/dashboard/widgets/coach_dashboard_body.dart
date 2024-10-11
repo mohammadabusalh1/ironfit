@@ -15,32 +15,37 @@ class CoachDashboardBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildDashboardHeader(),
-            const SizedBox(height: 24),
-            _buildStatisticsRow(context),
-            const SizedBox(height: 24),
-            _buildCardWidget(
-              onTap: () => Get.toNamed(Routes.myGyms),
-              subtitle: 'الصالات الرياضية الخاص بي',
-              imagePath: Assets.myGymImage,
-              description: 'أضف معلومات النادي الرياضي الخاص بك',
+    return Column(
+      children: [
+        _buildDashboardHeader(),
+        const SizedBox(height: 24),
+        Container(
+          height: MediaQuery.of(context).size.height * 0.65,
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildStatisticsRow(context),
+                const SizedBox(height: 24),
+                _buildCardWidget(
+                  onTap: () => Get.toNamed(Routes.myGyms),
+                  subtitle: 'الصالات الرياضية الخاص بي',
+                  imagePath: Assets.myGymImage,
+                  description: 'أضف معلومات النادي الرياضي الخاص بك',
+                ),
+                const SizedBox(height: 24),
+                _buildCardWidget(
+                  onTap: () => Get.toNamed(Routes.trainees),
+                  subtitle: 'المتدربين',
+                  imagePath: Assets.myTrainerImage,
+                  description: 'أضف معلومات المتدربين الخاصين بك',
+                ),
+                const SizedBox(height: 40),
+              ],
             ),
-            const SizedBox(height: 24),
-            _buildCardWidget(
-              onTap: () => Get.toNamed(Routes.trainees),
-              subtitle: 'المتدربين',
-              imagePath: Assets.myTrainerImage,
-              description: 'أضف معلومات المتدربين الخاصين بك',
-            ),
-            const SizedBox(height: 40),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // For Firebase Authentication
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
-import 'package:ironfit/features/coachEnteInfo/screens/coach_ente_info_screen.dart'; // To ensure Firebase is initialized
+import 'package:ironfit/features/coachEnteInfo/screens/coach_ente_info_screen.dart';
 
 class SignUpBody extends StatefulWidget {
   const SignUpBody({super.key});

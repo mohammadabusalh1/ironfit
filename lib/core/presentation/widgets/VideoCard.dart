@@ -49,7 +49,7 @@ class VideoCard extends StatelessWidget {
       ],
       borderRadius: BorderRadius.circular(18),
       border: Border.all(
-        color: const Color(0xFF98FFBB02),
+        color: const Color(0xff98ffbb02),
       ),
     );
   }

@@ -12,7 +12,7 @@ class MyGymScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: MyGymBody(),
+      body: const MyGymBody(),
       bottomNavigationBar: CoachNavBar(),
     );
   }

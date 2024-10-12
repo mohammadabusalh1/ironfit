@@ -185,14 +185,14 @@ class CustomCard extends StatelessWidget {
   final VoidCallback onPressed;
 
   const CustomCard({
-    Key? key,
+    super.key,
     required this.backgroundColor,
     required this.icon,
     required this.iconColor,
     required this.title,
     required this.subtitle,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -270,13 +270,13 @@ class LongCard extends StatelessWidget {
   final Color iconColor;
 
   const LongCard({
-    Key? key,
+    super.key,
     required this.percentage,
     required this.label,
     required this.icon,
     required this.onPressed,
     required this.iconColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

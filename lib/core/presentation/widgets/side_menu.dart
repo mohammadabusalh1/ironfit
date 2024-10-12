@@ -68,7 +68,7 @@ class SideMenu extends StatelessWidget {
 
 // Custom header widget for the drawer
 class _DrawerHeader extends StatelessWidget {
-  const _DrawerHeader({Key? key}) : super(key: key);
+  const _DrawerHeader({super.key});
 
   @override
   Widget build(BuildContext context) {

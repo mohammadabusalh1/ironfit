@@ -79,7 +79,7 @@ class CoachProfileBody extends StatelessWidget {
                   textDirection: TextDirection.rtl,
                   child: AlertDialog(
                     title: const Text('تعديل المعلومات',
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.bold)),
@@ -210,7 +210,7 @@ class CoachProfileBody extends StatelessWidget {
                   textDirection: TextDirection.rtl,
                   child: AlertDialog(
                     title: const Text('تغيير كلمة المرور',
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.bold)),

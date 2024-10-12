@@ -78,7 +78,7 @@ class MyGymBody extends StatelessWidget {
                   textDirection: TextDirection.rtl,
                   child: AlertDialog(
                     title: const Text('تعديل المعلومات',
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 22, fontWeight: FontWeight.bold)),
                     content: const Column(
                       mainAxisAlignment: MainAxisAlignment.start,

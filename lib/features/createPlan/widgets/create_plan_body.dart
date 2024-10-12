@@ -184,7 +184,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                 title: Text(exercise,
                     style: const TextStyle(color: Palette.white)),
               );
-            }).toList(),
+            }),
             const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerRight,
@@ -328,7 +328,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          title: Text("أضف تمرين"),
+          title: const Text("أضف تمرين"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

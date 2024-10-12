@@ -102,7 +102,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                                   width:
                                       MediaQuery.of(context).size.width * 0.4,
                                   height: 90),
-                              Spacer(),
+                              const Spacer(),
                               StatisticsCard(
                                   cardSubTitle: '20 متدرب',
                                   cardTitle: 'المتدربين الجدد',
@@ -130,7 +130,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(
+                            const Text(
                               'توزيع الأعمار',
                               style: TextStyle(
                                   fontFamily: 'Inter',
@@ -138,7 +138,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                                   fontWeight: FontWeight.bold,
                                   color: Palette.mainAppColor),
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             SizedBox(
                               height: MediaQuery.of(context).size.height * 0.21,
                               child: AgeDonutChart(),
@@ -157,6 +157,8 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
 }
 
 class AgeDonutChart extends StatelessWidget {
+  const AgeDonutChart({super.key});
+
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
@@ -171,7 +173,7 @@ class AgeDonutChart extends StatelessWidget {
               value: 30,
               title: '18-25',
               radius: 50,
-              titleStyle: TextStyle(
+              titleStyle: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: Colors.white),
@@ -181,7 +183,7 @@ class AgeDonutChart extends StatelessWidget {
               value: 40,
               title: '26-35',
               radius: 50,
-              titleStyle: TextStyle(
+              titleStyle: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: Colors.white),
@@ -191,7 +193,7 @@ class AgeDonutChart extends StatelessWidget {
               value: 20,
               title: '36-45',
               radius: 50,
-              titleStyle: TextStyle(
+              titleStyle: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: Colors.white),
@@ -201,7 +203,7 @@ class AgeDonutChart extends StatelessWidget {
               value: 10,
               title: '46+',
               radius: 50,
-              titleStyle: TextStyle(
+              titleStyle: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: Colors.white),

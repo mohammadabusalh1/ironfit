@@ -19,6 +19,10 @@ dependencies:
   flutter_native_splash: ^2.4.1
   shared_preferences: ^2.3.2
   fl_chart: ^0.69.0
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  cloud_firestore: ^5.4.4
+  google_sign_in: ^6.2.1
 
   # Add any other packages your project might need like HTTP for API calls
   # Example:
@@ -48,6 +52,7 @@ flutter:
     - assets/images/dashboardYellow.png
     - assets/images/myGymImage.png
     - assets/images/placeholder.svg
+    - assets/images/google-logo.png
 
   # Fonts can also be added if required for custom typography
   # fonts:

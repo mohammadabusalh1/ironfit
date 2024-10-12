@@ -8,12 +8,12 @@ class StatisticsCard extends StatefulWidget {
   final double height;
 
   const StatisticsCard({
-    Key? key,
+    super.key,
     required this.cardSubTitle,
     required this.cardTitle,
     required this.width,
     required this.height,
-  }) : super(key: key);
+  });
 
   @override
   _StatisticsCardState createState() => _StatisticsCardState();

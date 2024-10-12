@@ -1,8 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presentation/dialogs/main_pop_up.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
-import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 
 class TraineesBody extends StatefulWidget {
@@ -35,148 +34,149 @@ class _TraineesBodyState extends State<TraineesBody> {
   }
 
   void showAddTraineeDialog(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController startDateController = TextEditingController();
+    final TextEditingController endDateController = TextEditingController();
+    final TextEditingController amountPaidController = TextEditingController();
+    final TextEditingController debtsController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Theme(
-            data: Theme.of(context).copyWith(
-                // Customize the dialog theme here
-                dialogBackgroundColor:
-                    Colors.grey[900], // Dialog background color
-                textTheme: const TextTheme(
-                  bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
-                  bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
-                  headlineLarge: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24),
-                ),
-                elevatedButtonTheme: ElevatedButtonThemeData(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        const Color(0xFFFFBB02), // Customize button color
-                    foregroundColor:
-                        const Color(0xFF1C1503), // Customize text color
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                inputDecorationTheme: const InputDecorationTheme(
-                  filled: true, // Fill the text field background
-                  fillColor: Palette
-                      .secondaryColor, // Background color of the text field
-                  labelStyle: TextStyle(
-                      color: Colors.white, fontSize: 14), // Label text style
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color:
-                              Colors.transparent), // Border color when enabled
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(12),
-                      )),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.yellow,
-                        width: 2), // Border color when focused
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.red), // Border color on error
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.red,
-                        width: 2), // Border color on error when focused
-                  ),
-                ),
-                textButtonTheme: TextButtonThemeData(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.white, // Customize text color
-                  ),
-                )),
-            child: Expanded(
-              child: SingleChildScrollView(
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: AlertDialog(
-                    title: const Text('إضافة متدرب جديد',
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold)),
-                    content: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text('يرجى ملئ البيانات المطلوبة',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500)),
-                        const SizedBox(height: 16),
-                        const TextField(
-                          decoration: InputDecoration(
-                            labelText: 'الإيميل',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: startDateController,
-                          decoration: const InputDecoration(
-                            labelText: "تاريخ البدء",
-                            border: OutlineInputBorder(),
-                          ),
-                          readOnly: true, // User cannot manually edit
-                          onTap: () {
-                            _selectDate(context, startDateController);
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: endDateController,
-                          decoration: const InputDecoration(
-                            labelText: "تاريخ الانتهاء",
-                            border: OutlineInputBorder(),
-                          ),
-                          readOnly: true,
-                          onTap: () {
-                            _selectDate(context, endDateController);
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        const TextField(
-                          decoration: InputDecoration(
-                            labelText: 'المبلغ المدفوع',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        const TextField(
-                          decoration: InputDecoration(
-                            labelText: 'الديون',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
-                        },
-                        child: const Text('حفظ'),
+          data: Theme.of(context).copyWith(
+            dialogBackgroundColor: Colors.grey[900],
+            textTheme: const TextTheme(
+              bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
+              bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
+              headlineLarge: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24),
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFFBB02),
+                foregroundColor: const Color(0xFF1C1503),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            inputDecorationTheme: const InputDecorationTheme(
+              filled: true,
+              fillColor: Colors.grey,
+              labelStyle: TextStyle(color: Colors.white, fontSize: 14),
+              enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.transparent),
+                  borderRadius: BorderRadius.all(Radius.circular(12))),
+              focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.yellow, width: 2)),
+              errorBorder:
+                  OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
+              focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.red, width: 2)),
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(foregroundColor: Colors.white),
+            ),
+          ),
+          child: Expanded(
+            child: SingleChildScrollView(
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: AlertDialog(
+                  title: const Text('إضافة متدرب جديد',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold)),
+                  content: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('يرجى ملئ البيانات المطلوبة',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w500)),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: emailController,
+                        decoration: const InputDecoration(
+                            labelText: 'الإيميل', border: OutlineInputBorder()),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: startDateController,
+                        decoration: const InputDecoration(
+                            labelText: "تاريخ البدء",
+                            border: OutlineInputBorder()),
+                        readOnly: true,
+                        onTap: () {
+                          _selectDate(context, startDateController);
                         },
-                        child: const Text('إلغاء'),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: endDateController,
+                        decoration: const InputDecoration(
+                            labelText: "تاريخ الانتهاء",
+                            border: OutlineInputBorder()),
+                        readOnly: true,
+                        onTap: () {
+                          _selectDate(context, endDateController);
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: amountPaidController,
+                        decoration: const InputDecoration(
+                            labelText: 'المبلغ المدفوع',
+                            border: OutlineInputBorder()),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: debtsController,
+                        decoration: const InputDecoration(
+                            labelText: 'الديون', border: OutlineInputBorder()),
                       ),
                     ],
-                    actionsAlignment: MainAxisAlignment.start,
                   ),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        String email = emailController.text.trim();
+                        String startDate = startDateController.text.trim();
+                        String endDate = endDateController.text.trim();
+                        String amountPaid = amountPaidController.text.trim();
+                        String debts = debtsController.text.trim();
+
+                        await FirebaseFirestore.instance
+                            .collection('trainees')
+                            .add({
+                          'email': email,
+                          'start_date': startDate,
+                          'end_date': endDate,
+                          'amount_paid': amountPaid,
+                          'debts': debts,
+                        });
+
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: const Text('حفظ'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: const Text('إلغاء'),
+                    ),
+                  ],
+                  actionsAlignment: MainAxisAlignment.start,
                 ),
               ),
-            ));
+            ),
+          ),
+        );
       },
     );
   }

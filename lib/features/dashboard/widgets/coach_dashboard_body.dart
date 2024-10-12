@@ -62,7 +62,7 @@ class CoachDashboardBody extends StatelessWidget {
     return Row(
       children: [
         _buildStatisticsCard("30", "متدرب", context),
-        Spacer(), // Adjusted for consistent spacing
+        const Spacer(), // Adjusted for consistent spacing
         _buildStatisticsCard("+30%", "الإشتراك", context),
       ],
     );

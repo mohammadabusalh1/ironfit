@@ -85,7 +85,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                     title: Row(
                       children: [
                         const Text('اضافة خطة',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 22, fontWeight: FontWeight.bold)),
                         const Spacer(),
                         IconButton(
@@ -108,7 +108,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Text('يرجى ملئ البيانات المطلوبة',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w500)),
                         const SizedBox(height: 16),
                         DropdownButtonFormField<String>(

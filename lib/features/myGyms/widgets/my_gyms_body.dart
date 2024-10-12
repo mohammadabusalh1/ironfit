@@ -86,7 +86,7 @@ class _MyGymsBodyState extends State<MyGymsBody> {
                   textDirection: TextDirection.rtl,
                   child: AlertDialog(
                     title: const Text('إضافة صالة رياضية',
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 22, fontWeight: FontWeight.bold)),
                     content: const Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -315,12 +315,12 @@ class CustomCard extends StatelessWidget {
   final VoidCallback onPressed;
 
   const CustomCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.description,
     required this.icon,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

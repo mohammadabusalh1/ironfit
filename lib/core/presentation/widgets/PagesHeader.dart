@@ -9,12 +9,12 @@ class DashboardHeader extends StatelessWidget {
   final String trainerEmail; // Trainer's email.
 
   const DashboardHeader({
-    Key? key,
+    super.key,
     required this.backgroundImage,
     required this.trainerImage,
     required this.trainerName,
     required this.trainerEmail,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -96,10 +96,10 @@ class TrainerInfo extends StatelessWidget {
   final String trainerEmail; // Trainer's email.
 
   const TrainerInfo({
-    Key? key,
+    super.key,
     required this.trainerName,
     required this.trainerEmail,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

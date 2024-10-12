@@ -1,10 +1,5 @@
 import 'package:get/get.dart';
 import 'package:ironfit/core/routes/routes.dart';
-import 'package:ironfit/features/MyPlans/screens/my_plans_screen.dart';
-import 'package:ironfit/features/Trainees/screens/Trainees_screen.dart';
-import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
-import 'package:ironfit/features/coachProfile/screens/coach_profile_screen.dart';
-import 'package:ironfit/features/userStatistics/screens/user_statistics_screen.dart';
 
 class NavController extends GetxController {
   var selectedIndex = 0.obs;

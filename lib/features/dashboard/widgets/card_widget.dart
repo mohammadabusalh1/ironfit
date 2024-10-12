@@ -21,7 +21,7 @@ class CardWidget extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Stack(
-        alignment: AlignmentDirectional(-1, 1),
+        alignment: const AlignmentDirectional(-1, 1),
         children: [
           // Background image
           Container(
@@ -45,7 +45,7 @@ class CardWidget extends StatelessWidget {
           ),
           // Text Content
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Column(
               mainAxisSize: MainAxisSize.max, // Align content to the right
               children: [

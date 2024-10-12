@@ -14,5 +14,6 @@ class Assets {
   static const String dashboardYellow = 'assets/images/dashboardYellow.png';
   static const String myGymPageImage = 'assets/images/myGymImage.png';
   static const String placeholder = 'assets/images/placeholder.svg';
+  static const String googleLogo = 'assets/images/google-logo.png';
 }
 

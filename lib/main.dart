@@ -1,5 +1,8 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ironfit/core/presentation/controllers/nav_bar_controller.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
@@ -26,7 +29,27 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ironfit/features/traineesGroupsbyAge/screens/trainees_groups_by_age_screen.dart';
 import 'package:ironfit/features/userStatistics/screens/user_statistics_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+        options: FirebaseOptions(
+            apiKey: "AIzaSyD7c0gMFuZhSkiYZWcZxX6_EuUsrYicLPQ",
+            authDomain: "ironfit-edef8.firebaseapp.com",
+            projectId: "ironfit-edef8",
+            storageBucket: "ironfit-edef8.appspot.com",
+            messagingSenderId: "252100398371",
+            appId: "1:252100398371:web:bc04fec736142df19cd096",
+            measurementId: "G-5RB0H19GQF"));
+  } else {
+    await Firebase.initializeApp();
+  }
+
+  await GoogleSignIn(
+    clientId:
+        '741508899065-mqlsiob4n2jfvlrka1a44j8lovpnerq3.apps.googleusercontent.com',
+  );
+
   // This function is the entry point of the app.
   // It starts the app by running the MyApp widget.
   runApp(const MyApp());
@@ -97,8 +120,8 @@ class MyApp extends StatelessWidget {
                 iconTheme: IconThemeData(color: Palette.black), // Icon color
               ),
             ),
-            initialRoute:
-                Routes.coachProfile, // Initial route (screen) the app will show
+            initialRoute: Routes
+                .coachDashboard, // Initial route (screen) the app will show
             getPages: [
               // Here we define different screens (pages) and routes for navigation.
               GetPage(
@@ -150,12 +173,7 @@ class MyApp extends StatelessWidget {
                   name: Routes.plan,
                   page: () => const Directionality(
                       textDirection: TextDirection.rtl,
-                      child: PlanScreen())), // Plan screen
-              GetPage(
-                  name: Routes.coachEnterInfo,
-                  page: () => Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: CoachEnterInfoScreen())), // Coach info
+                      child: PlanScreen())), // Plan screen// Coach info
               GetPage(
                   name: Routes.userStatistics,
                   page: () => const Directionality(
@@ -189,7 +207,8 @@ class MyApp extends StatelessWidget {
               GetPage(
                   name: Routes.coachStatistics,
                   page: () => const Directionality(
-                      textDirection: TextDirection.rtl, child: CoachStatisticsScreen())),
+                      textDirection: TextDirection.rtl,
+                      child: CoachStatisticsScreen())),
             ],
           );
         } else {

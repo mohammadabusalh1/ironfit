@@ -257,12 +257,12 @@ class CustomCard extends StatelessWidget {
   final VoidCallback onPressed;
 
   const CustomCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.description,
     required this.icon,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -6,6 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginBody extends StatefulWidget {
   const LoginBody({super.key});
@@ -239,6 +240,9 @@ class _LoginBodyState extends State<LoginBody> {
                           .get();
 
                       if (userSnapshot.exists) {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        prefs.setString('coachId', user.uid);
                         // Navigate to coach dashboard
                         Get.toNamed(Routes.coachDashboard);
                       } else {

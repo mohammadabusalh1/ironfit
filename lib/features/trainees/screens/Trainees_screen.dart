@@ -8,7 +8,7 @@ class TraineesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const TraineesBody(),
+      body: TraineesBody(),
       bottomNavigationBar: CoachNavBar(),
     );
   }

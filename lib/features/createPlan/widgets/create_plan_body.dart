@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
@@ -15,8 +17,26 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   final TextEditingController _planDescriptionController =
       TextEditingController();
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   List<TrainingDay> trainingDays = [];
 
+  final List<String> exerciseList = [
+    'تمارين الضغط',
+    'القرفصاء',
+    'تمارين البطن',
+    'تمارين الظهر',
+    'رفع الأثقال',
+    'الجري',
+    'تمارين الذراعين',
+    'تمارين الكتفين',
+    'تمارين الساقين',
+    'تمارين التوازن',
+    // Add more exercises as needed
+  ];
+
+  @override
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -42,6 +62,8 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                   _buildAddDayButton(context),
                   const SizedBox(height: 24),
                   _buildTrainingDaysList(),
+                  const SizedBox(height: 24),
+                  _buildSavePlanButton(),
                 ],
               ),
             ),
@@ -116,6 +138,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   Widget _buildTextField(
       {required TextEditingController controller, required String label}) {
     return TextField(
+      style: const TextStyle(color: Palette.white, fontSize: 14),
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
@@ -138,7 +161,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       child: ElevatedButton(
         onPressed: () => _addTrainingDay(context),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Palette.mainAppColor,
+          backgroundColor: Palette.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -181,7 +204,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
             const SizedBox(height: 8),
             ...day.exercises.map((exercise) {
               return ListTile(
-                title: Text(exercise,
+                title: Text(exercise.name,
                     style: const TextStyle(color: Palette.white)),
               );
             }),
@@ -235,7 +258,8 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          title: const Text("إختر يوم التدريب"),
+          title: const Text("إختر يوم التدريب",
+              style: TextStyle(color: Colors.white)),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return DropdownButton<String>(
@@ -294,6 +318,89 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
     );
   }
 
+  Widget _buildSavePlanButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 45,
+      child: ElevatedButton(
+        onPressed: _savePlan,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Palette.mainAppColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+        ),
+        child: const Text("حفظ الخطة",
+            style: TextStyle(fontSize: 16, color: Colors.black)),
+      ),
+    );
+  }
+
+  void _savePlan() async {
+    if (_validatePlan()) {
+      try {
+        final User? user = _auth.currentUser;
+        if (user != null) {
+          final planData = {
+            'name': _planNameController.text,
+            'description': _planDescriptionController.text,
+            'createdAt': FieldValue.serverTimestamp(),
+            'trainingDays': trainingDays
+                .map((day) => {
+                      'day': day.day,
+                      'exercises': day.exercises
+                          .map((exercise) => {
+                                'name': exercise.name,
+                                'rounds': exercise.rounds,
+                                'repetitions': exercise.repetitions,
+                              })
+                          .toList(),
+                    })
+                .toList(),
+          };
+
+          await _firestore.collection('coaches').doc(user.uid).collection('plans').add(planData);
+          Get.back();
+          Get.snackbar('نجاح', 'تم حفظ الخطة بنجاح',
+              backgroundColor: Colors.green, colorText: Colors.white);
+        } else {
+          Get.snackbar('خطأ', 'يجب تسجيل الدخول لحفظ الخطة',
+              backgroundColor: Colors.red, colorText: Colors.white);
+        }
+      } catch (e) {
+        Get.snackbar('خطأ', 'حدث خطأ أثناء حفظ الخطة',
+            backgroundColor: Colors.red, colorText: Colors.white);
+      }
+    }
+  }
+
+  bool _validatePlan() {
+    if (_planNameController.text.isEmpty) {
+      Get.snackbar('خطأ', 'يرجى إدخال اسم الخطة',
+          backgroundColor: Colors.red, colorText: Colors.white);
+      return false;
+    }
+    if (_planDescriptionController.text.isEmpty) {
+      Get.snackbar('خطأ', 'يرجى إدخال وصف الخطة',
+          backgroundColor: Colors.red, colorText: Colors.white);
+      return false;
+    }
+    if (trainingDays.isEmpty) {
+      Get.snackbar('خطأ', 'يرجى إضافة يوم تدريب واحد على الأقل',
+          backgroundColor: Colors.red, colorText: Colors.white);
+      return false;
+    }
+    for (var day in trainingDays) {
+      if (day.exercises.isEmpty) {
+        Get.snackbar('خطأ', 'يرجى إضافة تمرين واحد على الأقل لكل يوم تدريب',
+            backgroundColor: Colors.red, colorText: Colors.white);
+        return false;
+      }
+    }
+    return true;
+  }
+
   void _addExerciseToDay(TrainingDay day) {
     showDialog(
       context: context,
@@ -302,8 +409,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   }
 
   Widget _buildExerciseDialog(TrainingDay day) {
-    final TextEditingController exerciseNameController =
-        TextEditingController();
+    String? selectedExercise;
     final TextEditingController roundsController = TextEditingController();
     final TextEditingController repetitionsController = TextEditingController();
 
@@ -328,13 +434,38 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          title: const Text("أضف تمرين"),
+          title: const Text("أضف تمرين", style: TextStyle(color: Colors.white)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildTextField(
-                  controller: exerciseNameController, // Use the new controller
-                  label: "اسم التمرين"),
+              DropdownButtonFormField<String>(
+                value: selectedExercise,
+                decoration: InputDecoration(
+                  labelText: "اختر التمرين",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      width: 1,
+                      color: Palette.mainAppColor,
+                    ),
+                  ),
+                  labelStyle: const TextStyle(
+                      color: Palette.subTitleGrey, fontSize: 14),
+                ),
+                dropdownColor: Colors.grey[800],
+                items: exerciseList.map((String exercise) {
+                  return DropdownMenuItem<String>(
+                    value: exercise,
+                    child: Text(exercise,
+                        style: const TextStyle(color: Colors.white)),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedExercise = newValue;
+                  });
+                },
+              ),
               const SizedBox(height: 16),
               _buildTextField(
                   controller: roundsController, label: "عدد الجولات"),
@@ -348,13 +479,14 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                final newExercise =
-                    exerciseNameController.text; // Get text from controller
-                print(newExercise);
-                if (newExercise.isNotEmpty) {
-                  // Check if it's not empty
+                if (_validateExercise(selectedExercise!, roundsController.text,
+                    repetitionsController.text)) {
                   setState(() {
-                    day.exercises.add(newExercise);
+                    day.exercises.add(Exercise(
+                      name: selectedExercise!,
+                      rounds: int.parse(roundsController.text),
+                      repetitions: int.parse(repetitionsController.text),
+                    ));
                   });
                   Navigator.pop(context);
                 }
@@ -372,11 +504,39 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       ),
     );
   }
+
+  bool _validateExercise(String name, String rounds, String repetitions) {
+    if (name.isEmpty) {
+      Get.snackbar('خطأ', 'يرجى إدخال اسم التمرين',
+          backgroundColor: Colors.red, colorText: Colors.white);
+      return false;
+    }
+    if (rounds.isEmpty || int.tryParse(rounds) == null) {
+      Get.snackbar('خطأ', 'يرجى إدخال عدد صحيح للجولات',
+          backgroundColor: Colors.red, colorText: Colors.white);
+      return false;
+    }
+    if (repetitions.isEmpty || int.tryParse(repetitions) == null) {
+      Get.snackbar('خطأ', 'يرجى إدخال عدد صحيح للتكرارات',
+          backgroundColor: Colors.red, colorText: Colors.white);
+      return false;
+    }
+    return true;
+  }
 }
 
 class TrainingDay {
   final String day;
-  final List<String> exercises;
+  final List<Exercise> exercises;
 
   TrainingDay({required this.day, required this.exercises});
+}
+
+class Exercise {
+  final String name;
+  final int rounds;
+  final int repetitions;
+
+  Exercise(
+      {required this.name, required this.rounds, required this.repetitions});
 }

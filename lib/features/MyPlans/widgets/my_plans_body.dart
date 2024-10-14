@@ -1,8 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presentation/dialogs/main_pop_up.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
-import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 
 class MyPlansBody extends StatefulWidget {
@@ -13,8 +13,29 @@ class MyPlansBody extends StatefulWidget {
 }
 
 class _MyPlansBodyState extends State<MyPlansBody> {
-  final PageController _pageController = PageController(initialPage: 0);
-  final int _currentPage = 0;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Stream<QuerySnapshot> getPlans() {
+    return _firestore
+        .collection('coaches')
+        .doc(_auth.currentUser?.uid)
+        .collection('plans')
+        .snapshots();
+  }
+
+  Future<void> deletePlan(String planId) async {
+    try {
+      await _firestore
+          .collection('coaches')
+          .doc(_auth.currentUser?.uid)
+          .collection('plans')
+          .doc(planId)
+          .delete();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,13 +59,14 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                               child: Image.asset(
                                 Assets.header,
                                 width: double.infinity,
-                                height: 132,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.2,
                                 fit: BoxFit.fitWidth,
                               ),
                             ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(24, 50, 24, 50),
+                            Container(
+                              height: MediaQuery.of(context).size.height * 0.2,
+                              padding: EdgeInsets.symmetric(horizontal: 24),
                               child: Row(
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -88,7 +110,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                                   ),
                                 ],
                               ),
-                            ),
+                            )
                           ],
                         ),
                       ),
@@ -162,80 +184,36 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                       Padding(
                         padding:
                             const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
-                        child: ListView(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          children: [
-                            CustomCard(
-                              title: 'برنامج المبتدئين',
-                              description: 'وصف الخطة',
-                              icon: Icons.arrow_back,
-                              onPressed: () {
-                                print('Button for برنامج المبتدئين pressed');
-                              },
-                            ),
-                            const SizedBox(height: 8),
-                            CustomCard(
-                              title: 'برنامج الشهر الأول',
-                              description: 'وصف الخطة',
-                              icon: Icons.arrow_back,
-                              onPressed: () {
-                                print('Button for برنامج الشهر الأول pressed');
-                              },
-                            ),
-                            CustomCard(
-                              title: 'برنامج المبتدئين',
-                              description: 'وصف الخطة',
-                              icon: Icons.arrow_back,
-                              onPressed: () {
-                                print('Button for برنامج المبتدئين pressed');
-                              },
-                            ),
-                            const SizedBox(height: 8),
-                            CustomCard(
-                              title: 'برنامج الشهر الأول',
-                              description: 'وصف الخطة',
-                              icon: Icons.arrow_back,
-                              onPressed: () {
-                                print('Button for برنامج الشهر الأول pressed');
-                              },
-                            ),
-                            CustomCard(
-                              title: 'برنامج المبتدئين',
-                              description: 'وصف الخطة',
-                              icon: Icons.arrow_back,
-                              onPressed: () {
-                                print('Button for برنامج المبتدئين pressed');
-                              },
-                            ),
-                            const SizedBox(height: 8),
-                            CustomCard(
-                              title: 'برنامج الشهر الأول',
-                              description: 'وصف الخطة',
-                              icon: Icons.arrow_back,
-                              onPressed: () {
-                                print('Button for برنامج الشهر الأول pressed');
-                              },
-                            ),
-                            const SizedBox(height: 8),
-                            CustomCard(
-                              title: 'برنامج المتوسط',
-                              description: 'وصف الخطة',
-                              icon: Icons.arrow_back,
-                              onPressed: () {
-                                print('Button for برنامج المتوسط pressed');
-                              },
-                            ),
-                            const SizedBox(height: 8),
-                            CustomCard(
-                              title: 'برنامج المتقدم',
-                              description: 'وصف الخطة',
-                              icon: Icons.arrow_back,
-                              onPressed: () {
-                                print('Button for برنامج المتقدم pressed');
-                              },
-                            ),
-                          ],
+                        child: StreamBuilder<QuerySnapshot>(
+                          stream: getPlans(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            }
+
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            }
+
+                            return ListView(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              children: snapshot.data!.docs
+                                  .map((DocumentSnapshot document) {
+                                Map<String, dynamic> data =
+                                    document.data()! as Map<String, dynamic>;
+                                return CustomCard(
+                                  title: data['title'],
+                                  description: data['description'],
+                                  icon: Icons.arrow_back,
+                                  onPressed: () {
+                                    deletePlan(document.id);
+                                  },
+                                );
+                              }).toList(),
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(height: 24),

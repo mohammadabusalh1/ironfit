@@ -6,6 +6,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/regestraion/login/widgets/buildHeaderImages.dart';
+import 'package:ironfit/features/regestraion/login/widgets/buildWelcomeText.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginBody extends StatefulWidget {
@@ -17,11 +19,8 @@ class LoginBody extends StatefulWidget {
 
 class _LoginBodyState extends State<LoginBody> {
   final TextEditingController emailController = TextEditingController();
-
   final TextEditingController passwordController = TextEditingController();
-
   bool passwordVisibility = false;
-
   bool isCoach = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -35,13 +34,13 @@ class _LoginBodyState extends State<LoginBody> {
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                _buildHeaderImages(),
+                AnimatedScreen(),
                 const SizedBox(height: 24),
                 Padding(
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     children: [
-                      _buildWelcomeText(context),
+                      WelcomeText(),
                       const SizedBox(height: 24),
                       _buildEmailTextField(context),
                       const SizedBox(height: 12),
@@ -53,52 +52,13 @@ class _LoginBodyState extends State<LoginBody> {
                       const SizedBox(height: 12),
                       _buildGoogleRegisterButton(),
                       const SizedBox(height: 24),
-                      _buildLoginText(context),
+                      LoginTextWidget(),
                     ],
                   ),
                 ),
               ],
             ),
           )),
-    );
-  }
-
-  Widget _buildHeaderImages() {
-    return Stack(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.asset(
-            Assets.singUpImage,
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.3,
-            fit: BoxFit.cover,
-          ),
-        ),
-        Center(
-          // Wrap the logo in Center
-          child: ClipRRect(
-            child: Image.asset(
-              Assets.ironFitLogo,
-              width: MediaQuery.of(context).size.height * 0.3,
-              height: MediaQuery.of(context).size.height * 0.3,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildWelcomeText(BuildContext context) {
-    return const Text(
-      'مرحباً بك، يرجى إدخال بياناتك',
-      style: TextStyle(
-        fontFamily: 'Inter',
-        color: Colors.white,
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-      ),
     );
   }
 
@@ -198,17 +158,6 @@ class _LoginBodyState extends State<LoginBody> {
     );
   }
 
-  Widget _buildPrivacyText(BuildContext context) {
-    return const Opacity(
-      opacity: 0.7,
-      child: Text(
-        'بتسجيلك أنت موافق على سياسة الخصوصية وشروط الإستخدام',
-        textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.white, fontSize: 14, height: 1.5),
-      ),
-    );
-  }
-
   Widget _buildLoginButton() {
     return SizedBox(
       child: Align(
@@ -292,7 +241,7 @@ class _LoginBodyState extends State<LoginBody> {
               textStyle: const TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w400,
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -346,8 +295,10 @@ class _LoginBodyState extends State<LoginBody> {
               }
             },
             style: ElevatedButton.styleFrom(
-              elevation: 0,
               backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -369,24 +320,68 @@ class _LoginBodyState extends State<LoginBody> {
       ),
     );
   }
+}
 
-  Widget _buildLoginText(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          'ليس لدي حساب! ',
-          style: TextStyle(color: Colors.white, fontSize: 14),
-        ),
-        const SizedBox(width: 4),
-        InkWell(
-          onTap: () => Get.toNamed(Routes.singUp),
-          child: const Text(
-            'إنشاء حساب',
-            style: TextStyle(color: Color(0xFFFFBB02), fontSize: 14),
+class LoginTextWidget extends StatefulWidget {
+  const LoginTextWidget({Key? key}) : super(key: key);
+
+  @override
+  _LoginTextWidgetState createState() => _LoginTextWidgetState();
+}
+
+class _LoginTextWidgetState extends State<LoginTextWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize the AnimationController and the Fade Animation
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+
+    _fadeAnimation = Tween(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeIn,
+      ),
+    );
+
+    // Start the animation
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose(); // Clean up the controller
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'ليس لدي حساب! ',
+            style: TextStyle(color: Colors.white, fontSize: 14),
           ),
-        ),
-      ],
+          const SizedBox(width: 4),
+          InkWell(
+            onTap: () => Get.toNamed(Routes.singUp), // Use your desired route
+            child: const Text(
+              'إنشاء حساب',
+              style: TextStyle(color: Color(0xFFFFBB02), fontSize: 14),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -56,26 +56,40 @@ class CoachNavBar extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Icon with color and size animation.
+              // Icon with rotation, scale, and color animation.
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                child: Icon(
-                  icon,
-                  color: isSelected ? Palette.mainAppColor : Palette.white,
-                  size: isSelected ? 35 : 25,
+                child: Transform.rotate(
+                  angle:
+                      isSelected ? 0.1 : 0.0, // Small rotation when selected.
+                  child: AnimatedScale(
+                    duration: const Duration(milliseconds: 300),
+                    scale: isSelected ? 1.2 : 1.0, // Scale animation on tap.
+                    child: Icon(
+                      icon,
+                      color: isSelected ? Palette.mainAppColor : Palette.white,
+                      size: isSelected ? 35 : 25,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 2),
-              AnimatedDefaultTextStyle(
+              // Fade effect for text.
+              AnimatedOpacity(
+                opacity: isSelected ? 1.0 : 0.6,
                 duration: const Duration(milliseconds: 300),
-                style: TextStyle(
-                  color: isSelected
-                      ? Palette.mainAppColor
-                      : Palette.white.withOpacity(0.6),
-                  fontSize: isSelected ? 12 : 10,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 300),
+                  style: TextStyle(
+                    color: isSelected
+                        ? Palette.mainAppColor
+                        : Palette.white.withOpacity(0.6),
+                    fontSize: isSelected ? 12 : 10,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                  child: Text(_getNavItemLabel(index)),
                 ),
-                child: Text(_getNavItemLabel(index)),
               ),
             ],
           ),

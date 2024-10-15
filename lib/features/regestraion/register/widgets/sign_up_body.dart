@@ -6,6 +6,8 @@ import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/coachEnteInfo/screens/coach_ente_info_screen.dart';
+import 'package:ironfit/features/regestraion/login/widgets/buildHeaderImages.dart';
+import 'package:ironfit/features/regestraion/login/widgets/buildWelcomeText.dart';
 
 class SignUpBody extends StatefulWidget {
   const SignUpBody({super.key});
@@ -152,13 +154,13 @@ class _SignUpBodyState extends State<SignUpBody> {
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            _buildHeaderImages(),
+            AnimatedScreen(),
             const SizedBox(height: 24),
             Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
-                  _buildWelcomeText(context),
+                  WelcomeText(),
                   const SizedBox(height: 24),
                   _buildEmailTextField(context),
                   const SizedBox(height: 12),
@@ -176,44 +178,6 @@ class _SignUpBodyState extends State<SignUpBody> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeaderImages() {
-    return Stack(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.asset(
-            Assets.singUpImage,
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.3,
-            fit: BoxFit.cover,
-          ),
-        ),
-        Center(
-          child: ClipRRect(
-            child: Image.asset(
-              Assets.ironFitLogo,
-              width: MediaQuery.of(context).size.height * 0.3,
-              height: MediaQuery.of(context).size.height * 0.3,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildWelcomeText(BuildContext context) {
-    return const Text(
-      'مرحباً بك، يرجى إدخال بياناتك',
-      style: TextStyle(
-        fontFamily: 'Inter',
-        color: Colors.white,
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
       ),
     );
   }
@@ -316,6 +280,11 @@ class _SignUpBodyState extends State<SignUpBody> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
+              textStyle: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
             ),
             child: const Text(
               'تسجيل',
@@ -365,19 +334,29 @@ class _SignUpBodyState extends State<SignUpBody> {
   Widget _buildLoginText(BuildContext context) {
     return Align(
       alignment: AlignmentDirectional(0, 1),
-      child: GestureDetector(
-        onTap: () {
-          Get.toNamed(Routes.singIn); // Navigate to sign-in screen
-        },
-        child: const Text(
-          'تسجيل الدخول',
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 16,
-            color: Color(0xFFFFBB02),
-            fontWeight: FontWeight.w500,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'لديك حساب بالفعل؟',
+            style: TextStyle(color: Colors.white, fontSize: 14),
           ),
-        ),
+          SizedBox(width: 8),
+          GestureDetector(
+            onTap: () {
+              Get.toNamed(Routes.singIn); // Navigate to sign-in screen
+            },
+            child: const Text(
+              'تسجيل الدخول',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 16,
+                color: Color(0xFFFFBB02),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

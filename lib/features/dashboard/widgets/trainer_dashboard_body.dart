@@ -39,7 +39,7 @@ class TrainerDashboardBody extends StatelessWidget {
   }
 
   Widget _buildDashboardHeader() {
-    return const DashboardHeader(
+    return DashboardHeader(
       backgroundImage: Assets.dashboardBackground,
       trainerImage: Assets.myTrainerImage,
       trainerName: "محمد ابو صالح",

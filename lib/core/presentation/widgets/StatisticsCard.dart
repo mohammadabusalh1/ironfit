@@ -67,10 +67,10 @@ class _StatisticsCardState extends State<StatisticsCard> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _buildCardText(
-              widget.cardSubTitle, 14, FontWeight.w600, Colors.white),
+              widget.cardSubTitle, 14, FontWeight.w600, Palette.mainAppColor),
           const SizedBox(height: 4),
           _buildCardText(
-              widget.cardTitle, 12, FontWeight.w800, Palette.mainAppColor),
+              widget.cardTitle, 12, FontWeight.w800, Palette.white),
         ],
       ),
     );

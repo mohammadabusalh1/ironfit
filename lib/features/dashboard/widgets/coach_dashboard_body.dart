@@ -134,7 +134,7 @@ class CoachDashboardBody extends StatelessWidget {
   }
 
   Widget _buildDashboardHeader() {
-    return const DashboardHeader(
+    return  DashboardHeader(
       backgroundImage: Assets.dashboardBackground, // Background image path
       trainerImage: Assets.myTrainerImage, // Trainer image path
       trainerName: "محمد ابو صالح", // Trainer's name

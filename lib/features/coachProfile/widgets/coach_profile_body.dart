@@ -451,15 +451,13 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                         backgroundColor: Palette.redDelete,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                              16), // More rounded edges for a modern feel
+                              8), // More rounded edges for a modern feel
                         ),
                         maximumSize:
-                            Size(MediaQuery.of(context).size.width, 55),
-                        elevation:
-                            5, // Adding some elevation for a shadow effect
+                            Size(MediaQuery.of(context).size.width * 0.94, 55),// Adding some elevation for a shadow effect
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 12, 0, 12),
+                        padding: const EdgeInsets.fromLTRB(12, 12, 0, 12),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -485,7 +483,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                                 child: const Icon(
                                   Icons.logout,
                                   color: Colors.white,
-                                  size: 26, // Slightly larger icon
+                                  size: 24, // Slightly larger icon
                                 ),
                               ),
                             ),
@@ -520,7 +518,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
         children: [
           SizedBox(height: MediaQuery.of(Get.context!).size.height * 0.1),
           ClipRRect(
-            borderRadius: BorderRadius.circular(50),
+            borderRadius: BorderRadius.circular(24),
             child: Image.asset(
               Assets.myTrainerImage,
               width: 100,

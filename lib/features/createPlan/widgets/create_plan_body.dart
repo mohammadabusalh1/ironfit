@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/features/createPlan/widgets/DropdownSearch.dart';
+import 'package:ironfit/features/createPlan/widgets/ex.dart';
 
 class CreatePlanBody extends StatefulWidget {
   const CreatePlanBody({super.key});
@@ -22,21 +25,6 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
 
   List<TrainingDay> trainingDays = [];
 
-  final List<String> exerciseList = [
-    'تمارين الضغط',
-    'القرفصاء',
-    'تمارين البطن',
-    'تمارين الظهر',
-    'رفع الأثقال',
-    'الجري',
-    'تمارين الذراعين',
-    'تمارين الكتفين',
-    'تمارين الساقين',
-    'تمارين التوازن',
-    // Add more exercises as needed
-  ];
-
-  @override
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -360,17 +348,54 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                 .toList(),
           };
 
-          await _firestore.collection('coaches').doc(user.uid).collection('plans').add(planData);
+          await _firestore
+              .collection('coaches')
+              .doc(user.uid)
+              .collection('plans')
+              .add(planData);
           Get.back();
           Get.snackbar('نجاح', 'تم حفظ الخطة بنجاح',
-              backgroundColor: Colors.green, colorText: Colors.white);
+              messageText: Text(
+                'تم حفظ الخطة بنجاح',
+                style: TextStyle(color: Colors.white),
+                textAlign: TextAlign.right,
+              ),
+              titleText: Text(
+                'نجاح',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+                textAlign: TextAlign.right,
+              ),
+              backgroundColor: Colors.green,
+              colorText: Colors.white);
         } else {
           Get.snackbar('خطأ', 'يجب تسجيل الدخول لحفظ الخطة',
-              backgroundColor: Colors.red, colorText: Colors.white);
+              messageText: Text(
+                'يجب تسجيل الدخول لحفظ الخطة',
+                style: TextStyle(color: Colors.white),
+                textAlign: TextAlign.right,
+              ),
+              titleText: Text(
+                'خطأ',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+                textAlign: TextAlign.right,
+              ),
+              backgroundColor: Colors.red,
+              colorText: Colors.white);
         }
       } catch (e) {
         Get.snackbar('خطأ', 'حدث خطأ أثناء حفظ الخطة',
-            backgroundColor: Colors.red, colorText: Colors.white);
+            messageText: Text(
+              'حدث خطأ أثناء حفظ الخطة',
+              style: TextStyle(color: Colors.white),
+              textAlign: TextAlign.right,
+            ),
+            titleText: Text(
+              'خطاء',
+              style: TextStyle(color: Colors.white, fontSize: 20),
+              textAlign: TextAlign.right,
+            ),
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
       }
     }
   }
@@ -378,23 +403,63 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   bool _validatePlan() {
     if (_planNameController.text.isEmpty) {
       Get.snackbar('خطأ', 'يرجى إدخال اسم الخطة',
-          backgroundColor: Colors.red, colorText: Colors.white);
+          messageText: Text(
+            'يرجى إدخال اسم الخطة',
+            style: TextStyle(color: Colors.white),
+            textAlign: TextAlign.right,
+          ),
+          titleText: Text(
+            'خطأ',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+            textAlign: TextAlign.right,
+          ),
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
       return false;
     }
     if (_planDescriptionController.text.isEmpty) {
       Get.snackbar('خطأ', 'يرجى إدخال وصف الخطة',
-          backgroundColor: Colors.red, colorText: Colors.white);
+          messageText: Text(
+            'يرجى إدخال وصف الخطة',
+            style: TextStyle(color: Colors.white),
+            textAlign: TextAlign.right,
+          ),
+          titleText: Text(
+            'خطأ',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+            textAlign: TextAlign.right,
+          ),
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
       return false;
     }
     if (trainingDays.isEmpty) {
       Get.snackbar('خطأ', 'يرجى إضافة يوم تدريب واحد على الأقل',
-          backgroundColor: Colors.red, colorText: Colors.white);
+          messageText: Text(
+            'يرجى إضافة يوم تدريب واحد على الأقل',
+            style: TextStyle(color: Colors.white),
+            textAlign: TextAlign.right,
+          ),
+          titleText: Text(
+            'خطأ',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+            textAlign: TextAlign.right,
+            
+          ),
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
       return false;
     }
     for (var day in trainingDays) {
       if (day.exercises.isEmpty) {
         Get.snackbar('خطأ', 'يرجى إضافة تمرين واحد على الأقل لكل يوم تدريب',
-            backgroundColor: Colors.red, colorText: Colors.white);
+            messageText: Text(
+              'يرجى إضافة تمرين واحد على الأقل لكل يوم تدريب',
+              style: TextStyle(color: Colors.white),
+              textAlign: TextAlign.right,
+            ),
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
         return false;
       }
     }
@@ -409,7 +474,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   }
 
   Widget _buildExerciseDialog(TrainingDay day) {
-    String? selectedExercise;
+    final TextEditingController nameController = TextEditingController();
     final TextEditingController roundsController = TextEditingController();
     final TextEditingController repetitionsController = TextEditingController();
 
@@ -435,55 +500,30 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
         textDirection: TextDirection.rtl,
         child: AlertDialog(
           title: const Text("أضف تمرين", style: TextStyle(color: Colors.white)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DropdownButtonFormField<String>(
-                value: selectedExercise,
-                decoration: InputDecoration(
-                  labelText: "اختر التمرين",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      width: 1,
-                      color: Palette.mainAppColor,
-                    ),
-                  ),
-                  labelStyle: const TextStyle(
-                      color: Palette.subTitleGrey, fontSize: 14),
-                ),
-                dropdownColor: Colors.grey[800],
-                items: exerciseList.map((String exercise) {
-                  return DropdownMenuItem<String>(
-                    value: exercise,
-                    child: Text(exercise,
-                        style: const TextStyle(color: Colors.white)),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedExercise = newValue;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                  controller: roundsController, label: "عدد الجولات"),
-              const SizedBox(height: 16),
-              _buildTextField(
-                  controller: repetitionsController, label: "عدد التكرارات"),
-              const SizedBox(height: 16),
-              const Image(image: AssetImage(Assets.IronFitLogo2)),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildTextField(
+                    controller: nameController, label: "إسم التمرين"),
+                const SizedBox(height: 16),
+                _buildTextField(
+                    controller: roundsController, label: "عدد الجولات"),
+                const SizedBox(height: 16),
+                _buildTextField(
+                    controller: repetitionsController, label: "عدد التكرارات"),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
           actions: [
             ElevatedButton(
               onPressed: () {
-                if (_validateExercise(selectedExercise!, roundsController.text,
-                    repetitionsController.text)) {
+                if (_validateExercise(nameController.text,
+                    roundsController.text, repetitionsController.text)) {
                   setState(() {
                     day.exercises.add(Exercise(
-                      name: selectedExercise!,
+                      name: nameController.text,
                       rounds: int.parse(roundsController.text),
                       repetitions: int.parse(repetitionsController.text),
                     ));
@@ -507,18 +547,51 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
 
   bool _validateExercise(String name, String rounds, String repetitions) {
     if (name.isEmpty) {
-      Get.snackbar('خطأ', 'يرجى إدخال اسم التمرين',
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar('', '',
+          messageText: Text(
+            'يرجى إدخال اسم التمرين',
+            style: TextStyle(color: Colors.white),
+            textAlign: TextAlign.right,
+          ),
+          titleText: Text(
+            'خطأ',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+            textAlign: TextAlign.right,
+          ),
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
       return false;
     }
     if (rounds.isEmpty || int.tryParse(rounds) == null) {
-      Get.snackbar('خطأ', 'يرجى إدخال عدد صحيح للجولات',
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar('', '',
+          messageText: Text(
+            'يرجى إدخال عدد صحيح للجولات',
+            style: TextStyle(color: Colors.white),
+            textAlign: TextAlign.right,
+          ),
+          titleText: Text(
+            'خطأ',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+            textAlign: TextAlign.right,
+          ),
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
       return false;
     }
     if (repetitions.isEmpty || int.tryParse(repetitions) == null) {
-      Get.snackbar('خطأ', 'يرجى إدخال عدد صحيح للتكرارات',
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar('', '',
+          messageText: Text(
+            'يرجى إدخال عدد صحيح للتكرارات',
+            style: TextStyle(color: Colors.white),
+            textAlign: TextAlign.right,
+          ),
+          titleText: Text(
+            'خطأ',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+            textAlign: TextAlign.right,
+          ),
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
       return false;
     }
     return true;

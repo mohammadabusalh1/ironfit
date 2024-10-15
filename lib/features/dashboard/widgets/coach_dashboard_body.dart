@@ -17,20 +17,36 @@ class CoachDashboardBody extends StatelessWidget {
   Future<Map<String, dynamic>> fetchStatisticsData() async {
     try {
       // Fetch statistics data from Firebase
-      DocumentSnapshot doc = await FirebaseFirestore.instance
-          .collection('coaches')
-          .doc(await fetchCoachId())
-          .get();
+      CollectionReference<Map<String, dynamic>> subscriptions =
+          await FirebaseFirestore.instance
+              .collection('coaches')
+              .doc(await fetchCoachId())
+              .collection('subscriptions');
 
-      if (doc.exists) {
-        var data = doc.data() as Map<String, dynamic>;
-        return {
-          'trainees': data['trainees'] ?? 0,
-          'subscriptions': data['subscriptions'] ?? 0,
-        };
-      } else {
-        throw Exception('Document not found');
-      }
+      QuerySnapshot<Map<String, dynamic>> snapshot = await subscriptions.get();
+
+      DateTime currentDate = DateTime.now();
+      int currentMonth = currentDate.month;
+      int previousMonth = currentDate.month -1;
+      int currentYear = currentDate.year;
+
+      // QuerySnapshot<Map<String, dynamic>> thisMonthSubscriptions =
+      //     await subscriptions
+      //         .where('startDate', isGreaterThanOrEqualTo: '$currentYear-$currentMonth-01')
+      //         .where('endDate', isLessThanOrEqualTo: '$currentYear-$currentMonth-31')
+      //         .get();
+
+      //   QuerySnapshot<Map<String, dynamic>> previousMonthSubscriptions =
+      //     await subscriptions
+      //         .where('startDate', isGreaterThanOrEqualTo: '$currentYear-$previousMonth-01')
+      //         .where('endDate', isLessThanOrEqualTo: '$currentYear-$previousMonth-31')
+      //         .get();
+
+      // Return statistics data
+      return {
+        'trainees': snapshot.size,
+        'subscriptions': snapshot.size,
+      };
     } catch (e) {
       print('Error fetching data: $e');
       return {'trainees': 0, 'subscriptions': 0}; // Default values

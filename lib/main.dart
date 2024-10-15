@@ -120,7 +120,7 @@ class MyApp extends StatelessWidget {
               ),
             ),
             initialRoute: Routes
-                .singIn, // Initial route (screen) the app will show
+                .singUp, // Initial route (screen) the app will show
             getPages: [
               // Here we define different screens (pages) and routes for navigation.
               GetPage(

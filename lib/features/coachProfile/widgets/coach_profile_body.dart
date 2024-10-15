@@ -8,8 +8,50 @@ import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
 
-class CoachProfileBody extends StatelessWidget {
-  const CoachProfileBody({super.key});
+class CoachProfileBody extends StatefulWidget {
+  const CoachProfileBody({Key? key}) : super(key: key);
+
+  @override
+  _CoachProfileBodyState createState() => _CoachProfileBodyState();
+}
+
+class _CoachProfileBodyState extends State<CoachProfileBody> {
+  final CoachProfileController controller = Get.find();
+  String? fullName;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserName();
+  }
+
+  Future<void> fetchUserName() async {
+    String? coachId = await fetchCoachId();
+    if (coachId != null) {
+      // Get user data from Firestore
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection(
+              'coaches') // or 'coaches', depending on where you store user data
+          .doc(coachId)
+          .get();
+
+      if (userDoc.exists) {
+        String? firstName = userDoc['firstName'];
+        String? lastName = userDoc['lastName'];
+
+        setState(() {
+          fullName = '$firstName $lastName';
+        });
+      } else {
+        print("User data not found");
+        return null;
+      }
+    } else {
+      print("No user is logged in");
+      return null;
+    }
+  }
 
   void showEditInfoDialog(BuildContext context) {
     final _formKey = GlobalKey<FormState>(); // Form validation key
@@ -153,6 +195,8 @@ class CoachProfileBody extends StatelessWidget {
                                 'lastName': lastNameController.text,
                                 'age': ageController.text,
                                 'experience': experienceController.text,
+                              }).then((value) {
+                                fetchUserName();
                               });
                               Navigator.of(context).pop();
                             }
@@ -470,31 +514,6 @@ class CoachProfileBody extends StatelessWidget {
     );
   }
 
-  Future<String?> fetchUserName() async {
-    String? coachId = await fetchCoachId();
-    if (coachId != null) {
-      // Get user data from Firestore
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection(
-              'coaches') // or 'coaches', depending on where you store user data
-          .doc(coachId)
-          .get();
-
-      if (userDoc.exists) {
-        String? firstName = userDoc['firstName'];
-        String? lastName = userDoc['lastName'];
-
-        return '$firstName $lastName'; // Return the full name
-      } else {
-        print("User data not found");
-        return null;
-      }
-    } else {
-      print("No user is logged in");
-      return null;
-    }
-  }
-
   Widget _buildProfileContent(BuildContext context) {
     return Align(
       child: Column(
@@ -511,46 +530,25 @@ class CoachProfileBody extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           // Use FutureBuilder to display the fetched user name
-          FutureBuilder<String?>(
-            future: fetchUserName(), // Call the fetchUserName function
-            builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                // Show a loading indicator while fetching data
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return Text(
-                  'Error: ${snapshot.error}', // Display error message if something went wrong
-                  style: const TextStyle(color: Colors.white),
-                );
-              } else if (snapshot.hasData) {
-                // Display the full name if data is fetched successfully
-                return Opacity(
-                  opacity: 0.8,
-                  child: Text(
-                    snapshot.data ??
-                        'لا يوجد اسم', // If no name, display a default message
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      shadows: [
-                        Shadow(
-                          color: Color(0xFF2F3336),
-                          offset: Offset(4.0, 4.0),
-                          blurRadius: 2.0,
-                        ),
-                      ],
-                    ),
+          Opacity(
+            opacity: 0.8,
+            child: Text(
+              fullName ??
+                  'لا يوجد اسم', // If no name, display a default message
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                shadows: [
+                  Shadow(
+                    color: Color(0xFF2F3336),
+                    offset: Offset(4.0, 4.0),
+                    blurRadius: 2.0,
                   ),
-                );
-              } else {
-                return const Text(
-                  'No name available',
-                  style: TextStyle(color: Colors.white),
-                );
-              }
-            },
+                ],
+              ),
+            ),
           ),
         ],
       ),

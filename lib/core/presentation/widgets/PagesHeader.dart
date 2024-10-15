@@ -42,15 +42,18 @@ class DashboardHeader extends StatelessWidget {
 
   // Builds the trainer info and notification button
   Widget _buildTrainerInfo(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildTrainerImage(context),
-        const SizedBox(width: 12),
-        TrainerInfo(trainerName: trainerName, trainerEmail: trainerEmail),
-        const SizedBox(width: 40),
-        _buildNotificationButton(),
-      ],
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildTrainerImage(context),
+          const SizedBox(width: 12),
+          TrainerInfo(trainerName: trainerName, trainerEmail: trainerEmail),
+          Spacer(),
+          _buildNotificationButton(),
+        ],
+      ),
     );
   }
 

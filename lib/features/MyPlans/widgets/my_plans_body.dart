@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/editPlan/screens/edit_plan_screen.dart';
 
 class MyPlansBody extends StatefulWidget {
   const MyPlansBody({super.key});
@@ -15,14 +17,7 @@ class MyPlansBody extends StatefulWidget {
 class _MyPlansBodyState extends State<MyPlansBody> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Stream<QuerySnapshot> getPlans() {
-    return _firestore
-        .collection('coaches')
-        .doc(_auth.currentUser?.uid)
-        .collection('plans')
-        .snapshots();
-  }
+  bool isDateSortUp = true;
 
   Future<void> deletePlan(String planId) async {
     try {
@@ -35,6 +30,47 @@ class _MyPlansBodyState extends State<MyPlansBody> {
     } catch (e) {
       print(e.toString());
     }
+  }
+
+  Future<void> editPlan(String planId, Map<String, dynamic> data) async {
+    try {
+      await _firestore
+          .collection('coaches')
+          .doc(_auth.currentUser?.uid)
+          .collection('plans')
+          .doc(planId)
+          .update(data);
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  void _sortBySubscription() {
+    // Firestore query to fetch the data sorted by subscription date
+    final order = isDateSortUp ? 'asc' : 'desc';
+
+    setState(() {
+      // Update the StreamBuilder to use the sorted query
+      // This will trigger a rebuild of the widget with the new sorting order.
+      getPlans();
+    });
+  }
+
+  Stream<QuerySnapshot> getPlans() {
+    // Firestore query for sorted plans based on subscriptionDate
+    return _firestore
+        .collection('coaches')
+        .doc(_auth.currentUser?.uid)
+        .collection('plans')
+        .orderBy('createdAt',
+            descending: !isDateSortUp) // Sort based on the 'subscriptionDate'
+        .snapshots();
+  }
+
+  void toggleDateSort() {
+    setState(() {
+      isDateSortUp = !isDateSortUp;
+    });
   }
 
   @override
@@ -129,6 +165,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                                   Get.toNamed(Routes.createPlan);
                                 },
                                 style: ElevatedButton.styleFrom(
+                                  fixedSize: Size(double.infinity, 40),
                                   backgroundColor: const Color(0xFFFFBB02),
                                   padding:
                                       const EdgeInsets.fromLTRB(0, 15, 0, 15),
@@ -151,10 +188,13 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                               flex: 1,
                               child: ElevatedButton.icon(
                                 onPressed: () {
-                                  print('Button pressed ...');
+                                  _sortBySubscription();
+                                  toggleDateSort();
                                 },
-                                icon: const Icon(
-                                  Icons.north_outlined,
+                                icon: Icon(
+                                  isDateSortUp
+                                      ? Icons.north_outlined
+                                      : Icons.south_outlined,
                                   size: 15,
                                   color: Color(0xFF1C1503),
                                 ),
@@ -168,6 +208,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                                   ),
                                 ),
                                 style: ElevatedButton.styleFrom(
+                                  fixedSize: Size(double.infinity, 40),
                                   backgroundColor: Colors.white,
                                   padding: const EdgeInsets.fromLTRB(
                                       0, 15, 0, 15), // Remove padding
@@ -185,30 +226,64 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                         padding:
                             const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
                         child: StreamBuilder<QuerySnapshot>(
-                          stream: getPlans(),
+                          stream:
+                              getPlans(), // Assuming getPlans() returns a valid stream.
                           builder: (context, snapshot) {
+                            // 1. Error Handling: Check for errors first.
                             if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             }
 
+                            // 2. Loading State: Show a loading indicator while waiting for data.
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               return const CircularProgressIndicator();
                             }
 
+                            // 3. Null Safety: Check if the snapshot contains data.
+                            if (!snapshot.hasData ||
+                                snapshot.data!.docs.isEmpty) {
+                              return const Text('لا يوجد برامج متاحة',
+                                  style: TextStyle(
+                                      color: Palette
+                                          .white)); // Handle empty data case.
+                            }
+
+                            // 4. Build ListView with a non-nullable data check.
                             return ListView(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               children: snapshot.data!.docs
                                   .map((DocumentSnapshot document) {
-                                Map<String, dynamic> data =
-                                    document.data()! as Map<String, dynamic>;
+                                // 5. Check that the document data is not null.
+                                Map<String, dynamic>? data =
+                                    document.data() as Map<String, dynamic>?;
+
+                                if (data == null) {
+                                  return const Text(
+                                      'Error: Invalid plan data'); // Handle null data.
+                                }
+
+                                // 6. Fallbacks for null fields.
+                                String title = data['name'] ??
+                                    'لا يوجد عنوان'; // Provide default values if null.
+                                String description = data['description'] ??
+                                    'لا يوجد وصف'; // Provide default values if null.
+
                                 return CustomCard(
-                                  title: data['title'],
-                                  description: data['description'],
+                                  onPressedEdit: () {
+                                    Get.to(Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: EditPlanScreen(
+                                            planId: document.id)));
+                                  },
+                                  title: title, // Use non-nullable strings.
+                                  description:
+                                      description, // Use non-nullable strings.
                                   icon: Icons.arrow_back,
                                   onPressed: () {
-                                    deletePlan(document.id);
+                                    deletePlan(document
+                                        .id); // Assuming deletePlan is implemented correctly.
                                   },
                                 );
                               }).toList(),
@@ -233,6 +308,7 @@ class CustomCard extends StatelessWidget {
   final String description;
   final IconData icon;
   final VoidCallback onPressed;
+  final VoidCallback onPressedEdit;
 
   const CustomCard({
     super.key,
@@ -240,83 +316,87 @@ class CustomCard extends StatelessWidget {
     required this.description,
     required this.icon,
     required this.onPressed,
+    required this.onPressedEdit,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      color: const Color(0x38454038),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Stack(
-        children: [
-          Align(
-            alignment: const AlignmentDirectional(0, 0),
-            child: Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 8),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Align(
-                        alignment: const AlignmentDirectional(0, 0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              title,
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                color: Color(0xFFFFBB02),
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
+    return InkWell(
+      onTap: onPressedEdit,
+      child: Card(
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        color: const Color(0x38454038),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Stack(
+          children: [
+            Align(
+              alignment: const AlignmentDirectional(0, 0),
+              child: Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Align(
+                          alignment: const AlignmentDirectional(0, 0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                style: const TextStyle(
+                                  fontFamily: 'Inter',
+                                  color: Color(0xFFFFBB02),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            Text(
-                              description,
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                color: Color(0x93FFFFFF),
-                                fontSize: 10,
+                              Text(
+                                description,
+                                style: const TextStyle(
+                                  fontFamily: 'Inter',
+                                  color: Color(0x93FFFFFF),
+                                  fontSize: 10,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.remove_circle,
-                          color: Colors.red,
+                      ],
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.remove_circle,
+                            color: Colors.red,
+                            size: 24,
+                          ),
+                          onPressed: onPressed,
+                        ),
+                        const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
                           size: 24,
                         ),
-                        onPressed: onPressed,
-                      ),
-                      const Icon(
-                        Icons.arrow_forward,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

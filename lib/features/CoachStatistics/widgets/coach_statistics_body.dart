@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
@@ -30,17 +31,31 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
     String? coachId = await fetchCoachId();
     try {
       // Fetch data from Firestore
-      DocumentSnapshot coachStats = await FirebaseFirestore.instance
-          .collection('coaches')
-          .doc(coachId) // Get current user ID
-          .get();
+      QuerySnapshot<Map<String, dynamic>> subscriptionsSnapshot =
+          await FirebaseFirestore.instance
+              .collection('coaches')
+              .doc(coachId)
+              .collection('subscriptions')
+              .get();
 
-      if (coachStats.exists) {
-        var data = coachStats.data() as Map<String, dynamic>;
+      List<Map<String, dynamic>> subscriptionsList =
+          subscriptionsSnapshot.docs.map((doc) => doc.data()).toList();
+
+      List<Map<String, dynamic>> newTrainees =
+          subscriptionsList.where((subscription) {
+        return DateTime.parse(subscription['startDate'])
+            .isAfter(DateTime.now().subtract(Duration(days: 30)));
+      }).toList();
+
+      int income = subscriptionsList
+          .map((subscription) => int.parse(subscription['amountPaid']))
+          .reduce((a, b) => a + b);
+
+      if (subscriptionsList.isNotEmpty) {
         return {
-          'trainees': data['trainees'] ?? 0,
-          'new_trainees': data['new_trainees'] ?? 0,
-          'income': data['income'] ?? 0.0,
+          'trainees': subscriptionsList.length ?? 0,
+          'new_trainees': newTrainees.length ?? 0,
+          'income': income ?? 0.0,
         };
       } else {
         throw Exception('No data found for this coach');
@@ -57,17 +72,42 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
 
   Future<Map<String, double>> fetchAgeDistributionData() async {
     try {
-      DocumentSnapshot doc = await FirebaseFirestore.instance
-          .collection('coaches')
-          .doc(await fetchCoachId())
-          .get();
+      FirebaseAuth auth = FirebaseAuth.instance;
 
-      if (doc.exists) {
-        // Example data from Firestore document, make sure these fields exist in your Firestore document.
-        double age18to25 = doc['trainees']?.toDouble() ?? 1;
-        double age26to35 = doc['26-35']?.toDouble() ?? 1;
-        double age36to45 = doc['36-45']?.toDouble() ?? 1;
-        double age46Plus = doc['46+']?.toDouble() ?? 1;
+      CollectionReference<Map<String, dynamic>> subscriptions =
+          await FirebaseFirestore.instance
+              .collection('coaches')
+              .doc(auth.currentUser?.uid)
+              .collection('subscriptions');
+
+      QuerySnapshot<Map<String, dynamic>> snapshot = await subscriptions.get();
+      List<Map<String, dynamic>> subscriptionsList =
+          snapshot.docs.map((doc) => doc.data()).toList();
+
+      if (subscriptions != null) {
+        double age18to25 = (subscriptionsList.where((subscription) {
+          String ageString = subscription['age'];
+          int? age = int.tryParse(ageString);
+          return age! >= 18 && age! <= 25;
+        }).length) as double;
+
+        double age26to35 = (subscriptionsList.where((subscription) {
+          String ageString = subscription['age'];
+          int? age = int.tryParse(ageString);
+          return age! >= 26 && age! <= 35;
+        }).length) as double;
+
+        double age36to45 = (subscriptionsList.where((subscription) {
+          String ageString = subscription['age'];
+          int? age = int.tryParse(ageString);
+          return age! >= 36 && age! <= 45;
+        }).length) as double;
+
+        double age46Plus = (subscriptionsList.where((subscription) {
+          String ageString = subscription['age'];
+          int? age = int.tryParse(ageString);
+          return age! >= 46;
+        }).length) as double;
 
         return {
           '18-25': age18to25,
@@ -187,7 +227,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                             child: Row(
                               children: [
                                 StatisticsCard(
-                                  cardSubTitle: '${data['trainees']} متدرب',
+                                  cardSubTitle: '${data['trainees']}',
                                   cardTitle: 'المتدربين',
                                   width:
                                       MediaQuery.of(context).size.width * 0.4,
@@ -195,8 +235,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                                 ),
                                 const Spacer(),
                                 StatisticsCard(
-                                  cardSubTitle:
-                                      '${data['new_trainees']} متدرب جديد',
+                                  cardSubTitle: '${data['new_trainees']}',
                                   cardTitle: 'المتدربين الجدد',
                                   width:
                                       MediaQuery.of(context).size.width * 0.4,
@@ -208,16 +247,11 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                           const SizedBox(height: 24),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: Row(
-                              children: [
-                                StatisticsCard(
-                                  cardSubTitle: '${data['income']} شيكل',
-                                  cardTitle: 'الدخل هذا الشهر',
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.86,
-                                  height: 90,
-                                ),
-                              ],
+                            child: StatisticsCard(
+                              cardSubTitle: '${data['income']} شيكل',
+                              cardTitle: 'الدخل هذا الشهر',
+                              width: MediaQuery.of(context).size.width * 0.86,
+                              height: 90,
                             ),
                           ),
                           const SizedBox(height: 24),
@@ -294,7 +328,7 @@ class AgeDonutChart extends StatelessWidget {
             PieChartSectionData(
               color: Colors.blue,
               // value: ageData['18-25'] ?? 1,
-              value: 20,
+              value: ageData['18-25'] ?? 0,
               title: '18-25',
               radius: 50,
               titleStyle: const TextStyle(
@@ -306,7 +340,7 @@ class AgeDonutChart extends StatelessWidget {
             PieChartSectionData(
               color: Colors.green,
               // value: ageData['26-35'] ?? 1,
-              value: 36,
+              value: ageData['26-35'] ?? 0,
               title: '26-35',
               radius: 50,
               titleStyle: const TextStyle(
@@ -318,7 +352,7 @@ class AgeDonutChart extends StatelessWidget {
             PieChartSectionData(
               color: Colors.orange,
               // value: ageData['36-45'] ?? 1,
-              value: 15,
+              value: ageData['36-45'] ?? 0,
               title: '36-45',
               radius: 50,
               titleStyle: const TextStyle(

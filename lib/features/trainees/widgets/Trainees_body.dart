@@ -14,6 +14,21 @@ class TraineesBody extends StatefulWidget {
 class _TraineesBodyState extends State<TraineesBody> {
   List<Map<String, dynamic>> trainees = [];
 
+  bool isNameSortUp = true;
+  bool isSubscriptionSortUp = true;
+
+  void toggleNameSort() {
+    setState(() {
+      isNameSortUp = !isNameSortUp;
+    });
+  }
+
+  void toggleSubscriptionSort() {
+    setState(() {
+      isSubscriptionSortUp = !isSubscriptionSortUp;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -383,9 +398,22 @@ class _TraineesBodyState extends State<TraineesBody> {
         children: [
           Expanded(child: _buildAddButton()),
           const SizedBox(width: 12),
-          Expanded(child: _buildSortButton('الإسم', Icons.north_rounded)),
+          Expanded(
+              child: _buildSortButton('الإسم',
+                  isNameSortUp ? Icons.north_rounded : Icons.south_rounded, () {
+            _sortByName();
+            toggleNameSort();
+          })),
           const SizedBox(width: 12),
-          Expanded(child: _buildSortButton('الإشتراك', Icons.north_outlined)),
+          Expanded(
+              child: _buildSortButton(
+                  'الإشتراك',
+                  isSubscriptionSortUp
+                      ? Icons.north_outlined
+                      : Icons.south_outlined, () {
+            _sortBySubscription();
+            toggleSubscriptionSort();
+          })),
         ],
       ),
     );
@@ -411,9 +439,9 @@ class _TraineesBodyState extends State<TraineesBody> {
     );
   }
 
-  Widget _buildSortButton(String label, IconData icon) {
+  Widget _buildSortButton(String label, IconData icon, Function onPressed) {
     return ElevatedButton.icon(
-      onPressed: () => print('Button pressed ...'),
+      onPressed: () => onPressed(), // Invoke the passed sorting function
       icon: Icon(icon, size: 15),
       label: Text(label),
       style: ElevatedButton.styleFrom(
@@ -431,10 +459,24 @@ class _TraineesBodyState extends State<TraineesBody> {
     );
   }
 
+  void _sortByName() {
+    setState(() {
+      trainees.sort((a, b) => a['fullName'].compareTo(b['fullName']));
+    });
+  }
+
+  void _sortBySubscription() {
+    setState(() {
+      trainees.sort((a, b) => a['subscription'].compareTo(b['subscription']));
+    });
+  }
+
   Widget _buildSearchField(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: TextFormField(
+        onChanged:
+            _filterTrainees, // Call the filter function on every input change
         decoration: InputDecoration(
           isDense: true,
           hintText: 'البحث',
@@ -458,6 +500,19 @@ class _TraineesBodyState extends State<TraineesBody> {
         cursorColor: Theme.of(context).primaryColor,
       ),
     );
+  }
+
+  void _filterTrainees(String searchTerm) {
+    setState(() {
+      if (searchTerm.isEmpty) {
+        fetchTrainees(); // Reset list if search is empty
+      } else {
+        trainees = trainees.where((trainee) {
+          final name = trainee['fullName'].toLowerCase();
+          return name.contains(searchTerm.toLowerCase());
+        }).toList();
+      }
+    });
   }
 
   Widget _buildTraineesList() {

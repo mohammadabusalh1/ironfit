@@ -16,40 +16,64 @@ class CoachDashboardBody extends StatelessWidget {
   // Future to fetch data from Firestore
   Future<Map<String, dynamic>> fetchStatisticsData() async {
     try {
-      // Fetch statistics data from Firebase
+      // Fetch statistics data from Firebase for the current month
       CollectionReference<Map<String, dynamic>> subscriptions =
-          await FirebaseFirestore.instance
+          FirebaseFirestore.instance
               .collection('coaches')
               .doc(await fetchCoachId())
               .collection('subscriptions');
 
       QuerySnapshot<Map<String, dynamic>> snapshot = await subscriptions.get();
 
-      DateTime currentDate = DateTime.now();
-      int currentMonth = currentDate.month;
-      int previousMonth = currentDate.month -1;
-      int currentYear = currentDate.year;
+      DateTime thisMonthDate =
+          DateTime.now().subtract(Duration(days: DateTime.now().day - 1));
 
-      // QuerySnapshot<Map<String, dynamic>> thisMonthSubscriptions =
-      //     await subscriptions
-      //         .where('startDate', isGreaterThanOrEqualTo: '$currentYear-$currentMonth-01')
-      //         .where('endDate', isLessThanOrEqualTo: '$currentYear-$currentMonth-31')
-      //         .get();
+      DateTime nextMonthDate = thisMonthDate.add(Duration(days: 30));
+      DateTime previousMonthDate = thisMonthDate.subtract(Duration(days: 30));
 
-      //   QuerySnapshot<Map<String, dynamic>> previousMonthSubscriptions =
-      //     await subscriptions
-      //         .where('startDate', isGreaterThanOrEqualTo: '$currentYear-$previousMonth-01')
-      //         .where('endDate', isLessThanOrEqualTo: '$currentYear-$previousMonth-31')
-      //         .get();
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> currentMonthFillter =
+          snapshot.docs.where((element) {
+        DateTime startDate = DateTime.parse(element.data()['startDate']);
+        DateTime endDate = DateTime.parse(element.data()['endDate']);
+        int thisMonthIsBigThanStartDate = thisMonthDate.compareTo(startDate);
+        int nextMonthIsMoreThanEndDate = nextMonthDate.compareTo(endDate);
+        return thisMonthIsBigThanStartDate <= 0 &&
+            nextMonthIsMoreThanEndDate >= 0;
+      }).toList();
 
-      // Return statistics data
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> previousMonthFillter =
+          snapshot.docs.where((element) {
+        DateTime startDate = DateTime.parse(element.data()['startDate']);
+        DateTime endDate = DateTime.parse(element.data()['endDate']);
+        int preMonthIsBigThanStartDate = previousMonthDate.compareTo(startDate);
+        int thisMonthIsMoreThanEndDate = thisMonthDate.compareTo(endDate);
+        return preMonthIsBigThanStartDate <= 0 &&
+            thisMonthIsMoreThanEndDate >= 0;
+      }).toList();
+
+      int currentMonthTrainees = currentMonthFillter.length;
+      int previousMonthTrainees = previousMonthFillter.length;
+
+      print(currentMonthTrainees);
+      print(previousMonthTrainees);
+
+      double percentageDifference = previousMonthTrainees > 0
+          ? ((currentMonthTrainees - previousMonthTrainees) /
+                  previousMonthTrainees) *
+              100
+          : 100; // Avoid division by zero
+
+      // Return the result with percentage difference
       return {
         'trainees': snapshot.size,
-        'subscriptions': snapshot.size,
+        'subscriptions': percentageDifference,
       };
     } catch (e) {
       print('Error fetching data: $e');
-      return {'trainees': 0, 'subscriptions': 0}; // Default values
+      return {
+        'trainees': 0,
+        'subscriptions': 0
+      }; // Default values in case of an error
     }
   }
 
@@ -124,7 +148,7 @@ class CoachDashboardBody extends StatelessWidget {
         _buildStatisticsCard(data['trainees'].toString(), "متدرب", context),
         const Spacer(), // Adjusted for consistent spacing
         _buildStatisticsCard(
-            data['subscriptions'].toString(), "الإشتراك", context),
+            data['subscriptions'].toString() + "+%", "الإشتراك", context),
       ],
     );
   }

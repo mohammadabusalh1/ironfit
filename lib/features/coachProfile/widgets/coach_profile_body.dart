@@ -262,7 +262,8 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
             ),
             inputDecorationTheme: const InputDecorationTheme(
               filled: true,
-              fillColor: Colors.grey, // Adjust color
+              fillColor: Colors.grey,
+              // Adjust color
               labelStyle: TextStyle(color: Colors.white, fontSize: 14),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.transparent),
@@ -445,7 +446,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                     const SizedBox(height: 12),
                     ElevatedButton(
                       onPressed: () {
-                        // Add your onPressed logic here
+                      _logout();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Palette.redDelete,
@@ -453,24 +454,25 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                           borderRadius: BorderRadius.circular(
                               8), // More rounded edges for a modern feel
                         ),
-                        maximumSize:
-                            Size(MediaQuery.of(context).size.width * 0.94, 55),// Adding some elevation for a shadow effect
+                        maximumSize: Size(
+                            MediaQuery.of(context).size.width * 0.94,
+                            55), // Adding some elevation for a shadow effect
                       ),
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(12, 12, 0, 12),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            const Text(
-                              'تسجيل الخروج',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight:
-                                    FontWeight.bold, // Bold text for emphasis
-                                letterSpacing:
-                                    0.5, // Slightly increased letter spacing for readability
-                              ),
-                            ),
+                             const Text(
+                               'تسجيل الخروج',
+                               style: TextStyle(
+                                 color: Colors.white,
+                                 fontWeight:
+                                     FontWeight.bold, // Bold text for emphasis
+                                 letterSpacing:
+                                     0.5, // Slightly increased letter spacing for readability
+                               ),
+                             ),
                             const Spacer(),
                             AnimatedScale(
                               scale:
@@ -559,7 +561,8 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
       onTap: onClick,
       child: Card(
         clipBehavior: Clip.antiAliasWithSaveLayer,
-        color: Palette.secondaryColor, // Transparent color
+        color: Palette.secondaryColor,
+        // Transparent color
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -599,5 +602,14 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
         ),
       ),
     );
+  }
+
+  Future<void> _logout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Get.off(Routes.singUp);
+    } catch (e) {
+      Get.snackbar('خطأ', 'فشل تسجيل الخروج.',colorText: Colors.red);
+    }
   }
 }

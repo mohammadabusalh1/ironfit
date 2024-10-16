@@ -25,6 +25,7 @@ dependencies:
   google_sign_in: ^6.2.1
   firebase_storage: ^12.3.3
   image_picker: ^1.1.2
+  carousel_slider: ^5.0.0
 
   # Add any other packages your project might need like HTTP for API calls
   # Example:

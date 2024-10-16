@@ -60,8 +60,6 @@ class _UserProfileBodyState extends State<UserProfileBody> {
     final TextEditingController ageController = TextEditingController();
     final TextEditingController experienceController = TextEditingController();
 
-    String? selectedValue;
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -422,76 +420,33 @@ class _UserProfileBodyState extends State<UserProfileBody> {
             const SizedBox(height: 24),
             Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildButtonCard(context, 'المعلومات الشخصية', Icons.person,
-                        () {
-                      showEditInfoDialog(context);
-                    }),
-                    const SizedBox(height: 4),
-                    _buildButtonCard(
-                        context, 'تغيير كلمة المرور', Icons.vpn_key, () {
-                      showEditPasswordDialog(context);
-                    }),
-                    const SizedBox(height: 4),
-                    _buildButtonCard(
-                        context, 'الصالات الرياضية', Icons.location_on, () {
-                      Get.toNamed(Routes.myGyms);
-                    }),
-                    const SizedBox(height: 4),
-                    _buildButtonCard(
-                        context, 'الإعدادات', Icons.settings, () {}),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Add your onPressed logic here
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Palette.redDelete,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              8), // More rounded edges for a modern feel
-                        ),
-                        maximumSize:
-                            Size(MediaQuery.of(context).size.width * 0.94, 55),// Adding some elevation for a shadow effect
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 12, 0, 12),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'تسجيل الخروج',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight:
-                                    FontWeight.bold, // Bold text for emphasis
-                                letterSpacing:
-                                    0.5, // Slightly increased letter spacing for readability
-                              ),
-                            ),
-                            const Spacer(),
-                            AnimatedScale(
-                              scale:
-                                  1.1, // Button will slightly scale up on press
-                              duration: const Duration(
-                                  milliseconds:
-                                      150), // Smooth animation duration
-                              child: Transform(
-                                transform: Matrix4.rotationY(3.14),
-                                child: const Icon(
-                                  Icons.logout,
-                                  color: Colors.white,
-                                  size: 24, // Slightly larger icon
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildButtonCard(
+                            context, 'المعلومات الشخصية', Icons.person, () {
+                          showEditInfoDialog(context);
+                        }),
+                        const SizedBox(height: 4),
+                        _buildButtonCard(
+                            context, 'تغيير كلمة المرور', Icons.vpn_key, () {
+                          showEditPasswordDialog(context);
+                        }),
+                        const SizedBox(height: 4),
+                        _buildButtonCard(
+                            context, 'الصالات الرياضية', Icons.location_on, () {
+                          Get.toNamed(Routes.myGyms);
+                        }),
+                        const SizedBox(height: 4),
+                        _buildButtonCard(
+                            context, 'الإعدادات', Icons.settings, () {}),
+                        const SizedBox(height: 12),
+                      ],
                     ),
-                  ],
+                  ),
                 )),
           ],
         ));
@@ -502,11 +457,21 @@ class _UserProfileBodyState extends State<UserProfileBody> {
       alignment: const AlignmentDirectional(0, -1),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: Image.asset(
-          Assets.header,
-          width: double.infinity,
-          height: MediaQuery.of(Get.context!).size.height * 0.35,
-          fit: BoxFit.cover,
+        child: Stack(
+          children: [
+            Image.asset(
+              Assets.header,
+              width: double.infinity,
+              height: MediaQuery.of(Get.context!).size.height * 0.35,
+              fit: BoxFit.cover,
+            ),
+            Container(
+              width: double.infinity,
+              height: MediaQuery.of(Get.context!).size.height * 0.35,
+              color: Colors.black
+                  .withOpacity(0.5), // Black filter with 50% opacity
+            ),
+          ],
         ),
       ),
     );
@@ -516,36 +481,46 @@ class _UserProfileBodyState extends State<UserProfileBody> {
     return Align(
       child: Column(
         children: [
-          SizedBox(height: MediaQuery.of(Get.context!).size.height * 0.1),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: Image.asset(
-              Assets.myTrainerImage,
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
+          SizedBox(height: MediaQuery.of(Get.context!).size.height * 0.26),
+          Container(
+            width: 104, // Add extra width to accommodate the border
+            height: 104, // Add extra height to accommodate the border
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Palette.black, // Replace with your desired border color
+                width: 4.0, // Border width
+              ),
+              borderRadius:
+                  BorderRadius.circular(50), // Same as ClipRRect borderRadius
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50), // Match the borderRadius
+              child: Image.asset(
+                Assets.myTrainerImage,
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
+
           const SizedBox(height: 10),
           // Use FutureBuilder to display the fetched user name
-          Opacity(
-            opacity: 0.8,
-            child: Text(
-              fullName ??
-                  'لا يوجد اسم', // If no name, display a default message
-              style: const TextStyle(
-                fontFamily: 'Inter',
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                shadows: [
-                  Shadow(
-                    color: Color(0xFF2F3336),
-                    offset: Offset(4.0, 4.0),
-                    blurRadius: 2.0,
-                  ),
-                ],
-              ),
+          Text(
+            fullName ?? 'لا يوجد اسم', // If no name, display a default message
+            style: const TextStyle(
+              color: Palette.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'abusa@gmail.com', // If no name, display a default message
+            style: const TextStyle(
+              color: Palette.subTitleGrey,
+              fontSize: 14,
+              fontWeight: FontWeight.w100,
             ),
           ),
         ],
@@ -557,45 +532,33 @@ class _UserProfileBodyState extends State<UserProfileBody> {
       BuildContext context, String tilte, IconData icon, VoidCallback onClick) {
     return InkWell(
       onTap: onClick,
-      child: Card(
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        color: Palette.secondaryColor, // Transparent color
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    icon,
-                    color: Palette.mainAppColor,
-                    size: 24,
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    tilte,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      color: Palette.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              const Icon(
-                Icons.arrow_forward,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 32,
+            ),
+            const SizedBox(width: 24), // Space between icon and text
+            Text(
+              tilte,
+              style: const TextStyle(
+                fontFamily: 'Inter',
                 color: Colors.white,
-                size: 24,
-              )
-            ],
-          ),
+                letterSpacing: 0.0,
+              ),
+            ),
+            Spacer(), // Space between text and trailing icon
+            Icon(
+              Icons.arrow_forward_ios_outlined,
+              color: Colors.grey, // Replace with the theme color if needed
+              size: 16,
+            ),
+          ],
         ),
       ),
     );

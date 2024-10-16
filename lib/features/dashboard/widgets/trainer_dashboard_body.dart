@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/widgets/PagesHeader.dart';
-import 'package:ironfit/core/presentation/widgets/VideoCard.dart';
+import 'package:ironfit/core/presentation/widgets/exersiceCarousel.dart';
 import 'package:ironfit/features/dashboard/controllers/trainer_dashboard_controller.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 
@@ -19,7 +19,7 @@ class TrainerDashboardBody extends StatelessWidget {
       body: Column(
         children: [
           _buildDashboardHeader(),
-          const SizedBox(height: 12),
+          const SizedBox(height: 24),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -27,8 +27,8 @@ class TrainerDashboardBody extends StatelessWidget {
                   _buildDashboardImage(context),
                   const SizedBox(height: 24),
                   _buildTodayExercisesButton(),
-                  const SizedBox(height: 12),
-                  _buildVideoCards(),
+                  const SizedBox(height: 24),
+                  ExerciseCarousel(),
                 ],
               ),
             ),
@@ -39,7 +39,7 @@ class TrainerDashboardBody extends StatelessWidget {
   }
 
   Widget _buildDashboardHeader() {
-    return DashboardHeader(
+    return const DashboardHeader(
       backgroundImage: Assets.dashboardBackground,
       trainerImage: Assets.myTrainerImage,
       trainerName: "محمد ابو صالح",
@@ -54,8 +54,8 @@ class TrainerDashboardBody extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         child: Image.asset(
           Assets.dashboardYellow,
-          width: MediaQuery.of(context).size.height * 0.7,
-          height: MediaQuery.of(context).size.height * 0.2,
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height * 0.23,
           fit: BoxFit.cover,
         ),
       ),
@@ -70,36 +70,14 @@ class TrainerDashboardBody extends StatelessWidget {
         alignment: Alignment.center,
         height: 40,
         decoration: BoxDecoration(
-          color: Palette.mainAppColor,
+          color: Palette.secondaryColor,
           borderRadius: BorderRadius.circular(16),
         ),
         child: const Text(
           'تمارين اليوم',
-          style: TextStyle(fontSize: 14, color: Palette.black),
+          style: TextStyle(
+              fontSize: 16, color: Palette.white, fontWeight: FontWeight.w500),
         ),
-      ),
-    );
-  }
-
-  Widget _buildVideoCards() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        children: [
-          VideoCard(
-            videoUrl: 'https://your_video_url.mp4',
-            title: 'Dumbbell Row Unilateral',
-            roundText: '3 جولات',
-            repetitionText: '12 عدة',
-          ),
-          SizedBox(height: 24),
-          VideoCard(
-            videoUrl: 'https://your_video_url.mp4',
-            title: 'Dumbbell Row Unilateral',
-            roundText: '3 جولات',
-            repetitionText: '12 عدة',
-          ),
-        ],
       ),
     );
   }

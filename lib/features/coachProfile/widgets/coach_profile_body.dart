@@ -479,7 +479,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                                   1.1, // Button will slightly scale up on press
                               duration: const Duration(
                                   milliseconds:
-                                      150), // Smooth animation duration
+                                      150),
                               child: Transform(
                                 transform: Matrix4.rotationY(3.14),
                                 child: const Icon(

@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:ironfit/core/presentation/controllers/nav_bar_controller.dart';
+import 'package:ironfit/core/presentation/controllers/coach_nav_bar_controller.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/CoachStatistics/screens/coach_statistics_screen.dart';
@@ -24,6 +24,8 @@ import 'package:ironfit/features/coachProfile/screens/coach_profile_screen.dart'
 import 'package:ironfit/features/regestraion/login/screens/login_screen.dart';
 import 'package:ironfit/features/regestraion/register/screens/sing_up_screen.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
+import 'package:ironfit/features/userEnteInfo/screens/user_ente_info_screen.dart';
+import 'package:ironfit/features/userProfile/screens/user_profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ironfit/features/traineesGroupsbyAge/screens/trainees_groups_by_age_screen.dart';
 import 'package:ironfit/features/userStatistics/screens/user_statistics_screen.dart';
@@ -77,7 +79,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // This "Get" package helps manage app navigation and state.
     // Here, we're preparing controllers for navigation and other features.
-    Get.put(NavController()); // Prepares the navigation bar controller
+    Get.put(CoachNavController()); // Prepares the navigation bar controller
     Get.lazyPut(
         () => CoachDashboardController()); // Prepares the dashboard controller
     Get.lazyPut(
@@ -119,8 +121,8 @@ class MyApp extends StatelessWidget {
                 iconTheme: IconThemeData(color: Palette.black), // Icon color
               ),
             ),
-            initialRoute: Routes
-                .coachProfile, // Initial route (screen) the app will show
+            initialRoute:
+                Routes.trainerDashboard, // Initial route (screen) the app will show
             getPages: [
               // Here we define different screens (pages) and routes for navigation.
               GetPage(
@@ -208,6 +210,11 @@ class MyApp extends StatelessWidget {
                   page: () => const Directionality(
                       textDirection: TextDirection.rtl,
                       child: CoachStatisticsScreen())),
+              GetPage(
+                  name: Routes.userProfile,
+                  page: () => Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: UserProfileScreen())),
             ],
           );
         } else {

@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:ironfit/core/routes/routes.dart';
 
-class NavController extends GetxController {
+class CoachNavController extends GetxController {
   var selectedIndex = 0.obs;
 
   void updateIndex(int index) {

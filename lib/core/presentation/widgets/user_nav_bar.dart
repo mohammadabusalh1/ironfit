@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presentation/controllers/coach_nav_bar_controller.dart';
+import 'package:ironfit/core/presentation/controllers/user_nav_bar_controller.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 
-class CoachNavBar extends StatelessWidget {
-  final CoachNavController navController =
-      Get.find(); // Find the NavController instance.
+class UserNavBar extends StatelessWidget {
+  final UserNavController navController =
+      Get.put(UserNavController()); // Find the NavController instance.
 
-  CoachNavBar({super.key});
+  UserNavBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +29,8 @@ class CoachNavBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _buildNavItem(Icons.home_filled, 0),
-            _buildNavItem(Icons.people, 1),
-            _buildNavItem(Icons.pending_actions, 2),
-            _buildNavItem(Icons.pie_chart, 3),
-            _buildNavItem(Icons.person, 4),
+            _buildNavItem(Icons.pending_actions, 1),
+            _buildNavItem(Icons.person, 2),
           ],
         ),
       ),
@@ -104,12 +102,8 @@ class CoachNavBar extends StatelessWidget {
       case 0:
         return 'الرئيسية';
       case 1:
-        return 'المتدربين';
-      case 2:
         return 'البرامج';
-      case 3:
-        return 'إحصائيات';
-      case 4:
+      case 2:
         return 'الحساب';
       default:
         return '';

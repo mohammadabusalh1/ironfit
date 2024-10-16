@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presentation/dialogs/main_pop_up.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 
@@ -12,8 +11,6 @@ class PlanBody extends StatefulWidget {
 }
 
 class _PlanBodyState extends State<PlanBody> {
-  final PageController _pageController = PageController(initialPage: 0);
-  final int _currentPage = 0;
   void showCreatePlanDialog(BuildContext context) {
     String? selectedValue;
     showDialog(

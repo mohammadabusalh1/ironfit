@@ -17,9 +17,11 @@ class Routes {
   static const String userMyPlan = '/userMyPlan';
   static const String userPlanExercises = '/userPlnExercises';
   static const String preLoginScreens = '/preLoginScreens';
-  static const String coachEnterInfo = '/coachEnteInfo';
+  static const String coachEnterInfo = '/coachEnterInfo';
   static const String createPlan = '/createPlan';
   static const String myGyms = '/myGyms';
-    static const String coachStatistics = '/coachStatistics';
-    static const String editPlan = '/editPlan';
+  static const String coachStatistics = '/coachStatistics';
+  static const String editPlan = '/editPlan';
+  static const String userEnterInfo = '/userEnterInfo';
+  static const String userProfile= '/userProfile';
 }

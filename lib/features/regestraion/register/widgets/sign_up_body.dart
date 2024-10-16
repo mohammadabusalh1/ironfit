@@ -8,6 +8,7 @@ import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/coachEnteInfo/screens/coach_ente_info_screen.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildHeaderImages.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildWelcomeText.dart';
+import 'package:ironfit/features/userEnteInfo/screens/user_ente_info_screen.dart';
 
 class SignUpBody extends StatefulWidget {
   const SignUpBody({super.key});
@@ -101,8 +102,12 @@ class _SignUpBodyState extends State<SignUpBody> {
             ),
           );
         } else {
-          saveTraineeData();
-          Get.toNamed(Routes.trainerDashboard);
+          await saveTraineeData();
+          Get.to(Directionality(
+              textDirection: TextDirection.rtl,
+              child: UserEnterInfoScreen(
+                userId: userCredential.user!.uid,
+              )));
         }
       } catch (e) {
         // Handle errors

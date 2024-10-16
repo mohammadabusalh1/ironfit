@@ -29,36 +29,37 @@ class _LoginBodyState extends State<LoginBody> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Form(
-          key: _formKey, // Add this
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                AnimatedScreen(),
-                const SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    children: [
-                      WelcomeText(),
-                      const SizedBox(height: 24),
-                      _buildEmailTextField(context),
-                      const SizedBox(height: 12),
-                      _buildPasswordTextField(context),
-                      const SizedBox(height: 24),
-                      _buildCoachSwitch(context),
-                      const SizedBox(height: 24),
-                      _buildLoginButton(),
-                      const SizedBox(height: 12),
-                      _buildGoogleRegisterButton(),
-                      const SizedBox(height: 24),
-                      LoginTextWidget(),
-                    ],
-                  ),
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              AnimatedScreen(),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    WelcomeText(),
+                    const SizedBox(height: 24),
+                    _buildEmailTextField(context),
+                    const SizedBox(height: 12),
+                    _buildPasswordTextField(context),
+                    const SizedBox(height: 24),
+                    _buildCoachSwitch(context),
+                    const SizedBox(height: 24),
+                    _buildLoginButton(),
+                    const SizedBox(height: 12),
+                    _buildGoogleRegisterButton(),
+                    const SizedBox(height: 24),
+                    LoginTextWidget(),
+                  ],
                 ),
-              ],
-            ),
-          )),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -86,9 +87,9 @@ class _LoginBodyState extends State<LoginBody> {
           return 'لا يمكنك ترك الحقل فارغ';
         }
         if (!RegExp(
-                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
             .hasMatch(value)) {
-          return 'الأيميل غير صالح';
+          return 'الإيميل غير صالح';
         }
         return null;
       },
@@ -172,8 +173,8 @@ class _LoginBodyState extends State<LoginBody> {
                   // Step 1: Sign in the user with FirebaseAuth
                   UserCredential userCredential = await FirebaseAuth.instance
                       .signInWithEmailAndPassword(
-                          email: emailController.text,
-                          password: passwordController.text);
+                      email: emailController.text,
+                      password: passwordController.text);
 
                   // Step 2: Get the current user from FirebaseAuth
                   User? user = userCredential.user;
@@ -190,7 +191,7 @@ class _LoginBodyState extends State<LoginBody> {
 
                       if (userSnapshot.exists) {
                         SharedPreferences prefs =
-                            await SharedPreferences.getInstance();
+                        await SharedPreferences.getInstance();
                         prefs.setString('coachId', user.uid);
                         // Navigate to coach dashboard
                         Get.toNamed(Routes.coachDashboard);
@@ -260,7 +261,7 @@ class _LoginBodyState extends State<LoginBody> {
 
     if (googleUser != null) {
       final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      await googleUser.authentication;
 
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -269,7 +270,7 @@ class _LoginBodyState extends State<LoginBody> {
 
       return await FirebaseAuth.instance.signInWithCredential(credential);
     } else {
-      throw Exception("Google sign-in failed");
+      throw Exception("فشل تسجيل الدخول باستخدام جوجل");
     }
   }
 
@@ -282,38 +283,42 @@ class _LoginBodyState extends State<LoginBody> {
           constraints: const BoxConstraints(
             minHeight: 45,
           ),
-          child: ElevatedButton(
+          child: ElevatedButton.icon(
+            icon: Image.asset(
+              Assets.googleLogo,
+              width: 24,
+              height: 24,
+            ),
             onPressed: () async {
               try {
                 await signInWithGoogle();
-                Get.snackbar('Success', 'Google Sign-In Successful',
-                    backgroundColor: Colors.green, colorText: Colors.white);
+                Get.snackbar('نجح', 'تم تسجيل الدخول باستخدام Google',
+                    snackPosition: SnackPosition.BOTTOM,
+                    colorText: Colors.white,
+                    backgroundColor: Colors.green);
               } catch (e) {
-                print(e.toString());
-                Get.snackbar('Error', e.toString(),
-                    backgroundColor: Colors.red, colorText: Colors.white);
+                Get.snackbar('فشل', 'يتعذر تسجيل الدخول باستخدام Google',
+                    snackPosition: SnackPosition.BOTTOM,
+                    colorText: Colors.white,
+                    backgroundColor: Colors.red);
               }
             },
             style: ElevatedButton.styleFrom(
+              foregroundColor: const Color(0xFF1C1503),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               backgroundColor: Colors.white,
+              textStyle: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  Assets.googleLogo, // Add your Google logo image here
-                  width: 20,
-                  height: 20,
-                ),
-                const SizedBox(width: 10),
-                const Text(
-                  'التسجيل باستخدام جوجل',
-                  style: TextStyle(color: Colors.black),
-                ),
-              ],
+            label: const Text(
+              'التسجيل باستخدام جوجل',
+              style: TextStyle(color: Colors.black),
             ),
           ),
         ),

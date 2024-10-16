@@ -55,7 +55,6 @@ flutter:
     - assets/images/myGymImage.png
     - assets/images/placeholder.svg
     - assets/images/google-logo.png
-    - assets/exercises.json
 
   # Fonts can also be added if required for custom typography
   # fonts:

@@ -4,10 +4,10 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
-import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/coachEnteInfo/screens/coach_ente_info_screen.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildHeaderImages.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildWelcomeText.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ironfit/features/userEnteInfo/screens/user_ente_info_screen.dart';
 
 class SignUpBody extends StatefulWidget {
@@ -20,8 +20,7 @@ class SignUpBody extends StatefulWidget {
 class _SignUpBodyState extends State<SignUpBody> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(); // Form Key for Validation
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // Form Key for Validation
 
   bool passwordVisibility = false;
   bool isCoach = false;
@@ -29,48 +28,32 @@ class _SignUpBodyState extends State<SignUpBody> {
   // Firebase Auth instance
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  // Method to save coach data
   Future<String> saveCoachData() async {
     User? user = FirebaseAuth.instance.currentUser;
-
     if (user != null) {
-      // Get a reference to the Firestore "coaches" collection
-      CollectionReference users =
-          FirebaseFirestore.instance.collection('coaches');
-
-      // Add the coach's data to Firestore
+      CollectionReference users = FirebaseFirestore.instance.collection('coaches');
       await users.doc(user.uid).set({
-        'email': user.email, // Store the coach's email
-        'createdAt':
-            FieldValue.serverTimestamp(), // Store account creation timestamp
+        'email': user.email,
+        'createdAt': FieldValue.serverTimestamp(),
       });
-
-      // Return the coach's user ID after saving the data
       return user.uid;
     } else {
-      // Return null if the user is not signed in
       return '';
     }
   }
 
+  // Method to save trainee data
   Future<String> saveTraineeData() async {
     User? user = FirebaseAuth.instance.currentUser;
-
     if (user != null) {
-      // Get a reference to the Firestore "trainees" collection
-      CollectionReference users =
-          FirebaseFirestore.instance.collection('trainees');
-
-      // Add the user's data to Firestore
+      CollectionReference users = FirebaseFirestore.instance.collection('trainees');
       await users.doc(user.uid).set({
-        'email': user.email, // Store the user's email
-        'createdAt':
-            FieldValue.serverTimestamp(), // Store account creation timestamp
+        'email': user.email,
+        'createdAt': FieldValue.serverTimestamp(),
       });
-
-      // Return the user's ID after saving the data
       return user.uid;
     } else {
-      // Return null if the user is not signed in
       return '';
     }
   }
@@ -79,14 +62,12 @@ class _SignUpBodyState extends State<SignUpBody> {
   Future<void> _registerUser() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
-        // Create user with email and password
-        UserCredential userCredential =
-            await _auth.createUserWithEmailAndPassword(
+        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
         );
 
-        // Now save user type to Firestore (use 'coach' or 'trainee' based on the switch)
+        // Save data based on the user type (coach/trainee)
         if (isCoach) {
           String userId = await saveCoachData();
           if (userId.isEmpty) {
@@ -150,14 +131,32 @@ class _SignUpBodyState extends State<SignUpBody> {
     return null;
   }
 
+  // Google sign-in method
+  Future<User?> _signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+
+      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      return userCredential.user;
+    } catch (e) {
+      Get.snackbar('Error', 'Google Sign-In failed');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Form(
-        key: _formKey, // Attach the form key for validation
+        key: _formKey,
         child: Column(
-          mainAxisSize: MainAxisSize.max,
           children: [
             AnimatedScreen(),
             const SizedBox(height: 24),
@@ -206,7 +205,7 @@ class _SignUpBodyState extends State<SignUpBody> {
         ),
       ),
       style: const TextStyle(color: Colors.white, fontSize: 14),
-      validator: _validateEmail, // Attach validator
+      validator: _validateEmail,
     );
   }
 
@@ -232,16 +231,14 @@ class _SignUpBodyState extends State<SignUpBody> {
             });
           },
           child: Icon(
-            passwordVisibility
-                ? Icons.visibility_outlined
-                : Icons.visibility_off_outlined,
+            passwordVisibility ? Icons.visibility_outlined : Icons.visibility_off_outlined,
             size: 20,
             color: Palette.white,
           ),
         ),
       ),
       style: const TextStyle(color: Colors.white, fontSize: 14),
-      validator: _validatePassword, // Attach validator
+      validator: _validatePassword,
     );
   }
 
@@ -261,7 +258,6 @@ class _SignUpBodyState extends State<SignUpBody> {
             });
           },
           activeColor: const Color(0xFFFFBB02),
-          inactiveTrackColor: Colors.grey,
         ),
       ],
     );
@@ -277,18 +273,12 @@ class _SignUpBodyState extends State<SignUpBody> {
             minHeight: 45,
           ),
           child: ElevatedButton(
-            onPressed: _registerUser, // Call the register method
+            onPressed: _registerUser,
             style: ElevatedButton.styleFrom(
-              foregroundColor: const Color(0xFF1C1503),
               padding: const EdgeInsets.symmetric(vertical: 12),
               backgroundColor: const Color(0xFFFFBB02),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
-              ),
-              textStyle: const TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
               ),
             ),
             child: const Text(
@@ -309,25 +299,19 @@ class _SignUpBodyState extends State<SignUpBody> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: ElevatedButton(
-        onPressed: () async {
-          // Add Google Sign-In functionality here
-        },
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          backgroundColor: Colors.white,
-        ),
+      child: InkWell(
+        onTap: _signInWithGoogle,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              Assets.googleLogo, // Add your Google logo image here
-              width: 20,
-              height: 20,
+              Assets.googleLogo,
+              height: 25,
+              width: 25,
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
             const Text(
-              'التسجيل باستخدام جوجل',
+              'Sign up with Google',
               style: TextStyle(color: Colors.black),
             ),
           ],
@@ -337,32 +321,23 @@ class _SignUpBodyState extends State<SignUpBody> {
   }
 
   Widget _buildLoginText(BuildContext context) {
-    return Align(
-      alignment: AlignmentDirectional(0, 1),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            'لديك حساب بالفعل؟',
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          'Already have an account?',
+          style: TextStyle(color: Colors.white, fontSize: 14),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text(
+            'Login',
             style: TextStyle(color: Colors.white, fontSize: 14),
           ),
-          SizedBox(width: 8),
-          GestureDetector(
-            onTap: () {
-              Get.toNamed(Routes.singIn); // Navigate to sign-in screen
-            },
-            child: const Text(
-              'تسجيل الدخول',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 16,
-                color: Color(0xFFFFBB02),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          )
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

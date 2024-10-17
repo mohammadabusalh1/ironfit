@@ -1,20 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 
 class ExrciseCard extends StatelessWidget {
+  final String image;
+  final String title;
+  final String subtitle1;
+  final String subtitle2;
+  final bool withIconButton;
+  final double padding;
+  final double spaceBetweenItems;
+
+  const ExrciseCard({
+    Key? key,
+    required this.image,
+    required this.title,
+    required this.subtitle1,
+    required this.subtitle2,
+    this.withIconButton = true,
+    this.padding = 24,
+    this.spaceBetweenItems = 24,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      padding: EdgeInsets.symmetric(horizontal: padding),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           buildImage(),
-          SizedBox(width: 24), // Space between image and text content
+          SizedBox(width: spaceBetweenItems), // Space between image and text content
           buildTextColumn(context),
-          SizedBox(width: 24), // Space between text and icon button
-          buildIconButton(context),
+          SizedBox(width: spaceBetweenItems), // Space between text and icon button
+          withIconButton ? buildIconButton(context) : Container(),
         ],
       ),
     );
@@ -25,8 +45,8 @@ class ExrciseCard extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Image.network(
-        'https://picsum.photos/seed/551/600',
-        width: 94,
+        image,
+        width: MediaQuery.of(Get.context!).size.width * 0.24,
         height: 70,
         fit: BoxFit.cover,
       ),
@@ -40,7 +60,7 @@ class ExrciseCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Rickshaw Carry',
+            title,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14,
@@ -58,9 +78,9 @@ class ExrciseCard extends StatelessWidget {
   Widget buildIconRow(BuildContext context) {
     return Row(
       children: [
-        buildIconText(context, Icons.access_time_filled, '3 جولات'),
+        buildIconText(context, Icons.access_time_filled, subtitle1),
         SizedBox(width: 8), // Space between the two icon-text pairs
-        buildIconText(context, Icons.electric_bolt_sharp, '12 تكرار'),
+        buildIconText(context, Icons.electric_bolt_sharp, subtitle2),
       ],
     );
   }
@@ -90,7 +110,7 @@ class ExrciseCard extends StatelessWidget {
   Widget buildIconButton(BuildContext context) {
     return IconButton(
       style: IconButton.styleFrom(
-        backgroundColor: Palette.greenBackGround,
+        backgroundColor: Palette.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/editPlan/screens/edit_plan_screen.dart';
 
@@ -90,16 +91,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                         width: double.infinity,
                         child: Stack(
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                Assets.header,
-                                width: double.infinity,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.2,
-                                fit: BoxFit.fitWidth,
-                              ),
-                            ),
+                            HeaderImage(),
                             Container(
                               height: MediaQuery.of(context).size.height * 0.2,
                               padding: EdgeInsets.symmetric(horizontal: 24),
@@ -108,7 +100,9 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Get.back();
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFF1C1503),
                                       shape: RoundedRectangleBorder(
@@ -116,7 +110,6 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                                       ),
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8),
-                                      elevation: 0,
                                     ),
                                     child: const Icon(
                                       Icons.arrow_left,
@@ -165,7 +158,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                                   Get.toNamed(Routes.createPlan);
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  fixedSize: Size(double.infinity, 40),
+                                  fixedSize: Size(double.infinity, 50),
                                   backgroundColor: const Color(0xFFFFBB02),
                                   padding:
                                       const EdgeInsets.fromLTRB(0, 15, 0, 15),
@@ -208,7 +201,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                                   ),
                                 ),
                                 style: ElevatedButton.styleFrom(
-                                  fixedSize: Size(double.infinity, 40),
+                                  fixedSize: Size(double.infinity, 50),
                                   backgroundColor: Colors.white,
                                   padding: const EdgeInsets.fromLTRB(
                                       0, 15, 0, 15), // Remove padding

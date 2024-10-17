@@ -6,6 +6,7 @@ import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/StatisticsCard.dart';
 import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
+import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 
 class CoachStatisticsBody extends StatefulWidget {
   const CoachStatisticsBody({super.key});
@@ -160,15 +161,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                             width: double.infinity,
                             child: Stack(
                               children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.asset(
-                                    Assets.header,
-                                    width: double.infinity,
-                                    height: 132,
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                ),
+                                HeaderImage(),
                                 Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(24, 50, 24, 50),

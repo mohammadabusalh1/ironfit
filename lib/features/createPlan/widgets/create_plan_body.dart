@@ -1,11 +1,14 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
-import 'package:ironfit/features/createPlan/widgets/DropdownSearch.dart';
+import 'package:ironfit/core/presentation/widgets/exrciseCard.dart';
+import 'package:ironfit/core/presentation/widgets/hederImage.dart';
+import 'package:ironfit/features/createPlan/widgets/deopdown.dart';
 import 'package:ironfit/features/createPlan/widgets/ex.dart';
 
 class CreatePlanBody extends StatefulWidget {
@@ -66,15 +69,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       width: double.infinity,
       child: Stack(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              Assets.header,
-              width: double.infinity,
-              height: 132,
-              fit: BoxFit.fitWidth,
-            ),
-          ),
+          HeaderImage(),
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 50, 24, 50),
             child: Row(
@@ -176,7 +171,6 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   Widget _buildTrainingDayCard(TrainingDay day) {
     return Card(
       color: Palette.secondaryColor,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -190,12 +184,29 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                   fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            ...day.exercises.map((exercise) {
-              return ListTile(
-                title: Text(exercise.name,
-                    style: const TextStyle(color: Palette.white)),
-              );
-            }),
+            Column(
+              children: day.exercises.map((exercise) {
+                return Row(
+                  children: [
+                    Expanded(
+                      child: ExrciseCard(
+                        spaceBetweenItems: 5,
+                        padding: 0,
+                        withIconButton: false,
+                        title: exercise.name,
+                        subtitle1: "${exercise.rounds} جولات",
+                        subtitle2: "${exercise.repetitions} تكرار",
+                        image: exercise.image!,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => _removeExercise(day, exercise),
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
             const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerRight,
@@ -215,6 +226,12 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
         ),
       ),
     );
+  }
+
+  void _removeExercise(TrainingDay day, Exercise exercise) {
+    setState(() {
+      day.exercises.remove(exercise);
+    });
   }
 
   void _addTrainingDay(BuildContext context) {
@@ -342,6 +359,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                                 'name': exercise.name,
                                 'rounds': exercise.rounds,
                                 'repetitions': exercise.repetitions,
+                                'image': exercise.image
                               })
                           .toList(),
                     })
@@ -444,7 +462,6 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
             'خطأ',
             style: TextStyle(color: Colors.white, fontSize: 20),
             textAlign: TextAlign.right,
-            
           ),
           backgroundColor: Colors.red,
           colorText: Colors.white);
@@ -467,16 +484,22 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   }
 
   void _addExerciseToDay(TrainingDay day) {
+    List<Map<String, dynamic>> exercisesJson =
+        List<Map<String, dynamic>>.from(jsonDecode(jsonString));
     showDialog(
       context: context,
-      builder: (context) => _buildExerciseDialog(day),
+      builder: (context) => _buildExerciseDialog(day, exercisesJson),
     );
   }
 
-  Widget _buildExerciseDialog(TrainingDay day) {
-    final TextEditingController nameController = TextEditingController();
+  Widget _buildExerciseDialog(
+      TrainingDay day, List<Map<String, dynamic>> exercisesJson) {
     final TextEditingController roundsController = TextEditingController();
     final TextEditingController repetitionsController = TextEditingController();
+
+    String? selectedExerciseName;
+    String? selectedExerciseImage;
+    String? selectedExerciseImage1;
 
     return Theme(
       data: Theme.of(context).copyWith(
@@ -504,9 +527,25 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildTextField(
-                    controller: nameController, label: "إسم التمرين"),
+                // Dropdown for exercise selection
+                SearchableDropdown(
+                    items: exercisesJson,
+                    value: selectedExerciseName,
+                    onChanged: (selectedExercise) {
+                      setState(() {
+                        selectedExerciseName = selectedExercise;
+                        selectedExerciseImage = exercisesJson.firstWhere(
+                              (exercise) =>
+                                  exercise['Exercise_Name'] ==
+                                  selectedExerciseName,
+                              orElse: () => {},
+                            )['Exercise_Image'] ??
+                            'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+                      });
+                    },
+                    labelText: "التمرين"),
                 const SizedBox(height: 16),
+                // TextFields for rounds and repetitions
                 _buildTextField(
                     controller: roundsController, label: "عدد الجولات"),
                 const SizedBox(height: 16),
@@ -519,13 +558,16 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                if (_validateExercise(nameController.text,
-                    roundsController.text, repetitionsController.text)) {
+                if (selectedExerciseName != null &&
+                    _validateExercise(selectedExerciseName!,
+                        roundsController.text, repetitionsController.text)) {
                   setState(() {
                     day.exercises.add(Exercise(
-                      name: nameController.text,
+                      name: selectedExerciseName!,
                       rounds: int.parse(roundsController.text),
                       repetitions: int.parse(repetitionsController.text),
+                      image: selectedExerciseImage ??
+                          'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg',
                     ));
                   });
                   Navigator.pop(context);
@@ -609,7 +651,12 @@ class Exercise {
   final String name;
   final int rounds;
   final int repetitions;
+  final String? image;
 
-  Exercise(
-      {required this.name, required this.rounds, required this.repetitions});
+  Exercise({
+    required this.name,
+    required this.rounds,
+    required this.repetitions,
+    this.image,
+  });
 }

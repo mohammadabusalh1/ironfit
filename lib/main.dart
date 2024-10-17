@@ -24,7 +24,6 @@ import 'package:ironfit/features/coachProfile/screens/coach_profile_screen.dart'
 import 'package:ironfit/features/regestraion/login/screens/login_screen.dart';
 import 'package:ironfit/features/regestraion/register/screens/sing_up_screen.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
-import 'package:ironfit/features/userEnteInfo/screens/user_ente_info_screen.dart';
 import 'package:ironfit/features/userProfile/screens/user_profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ironfit/features/traineesGroupsbyAge/screens/trainees_groups_by_age_screen.dart';
@@ -122,7 +121,7 @@ class MyApp extends StatelessWidget {
               ),
             ),
             initialRoute:
-                Routes.userProfile, // Initial route (screen) the app will show
+                Routes.createPlan, // Initial route (screen) the app will show
             getPages: [
               // Here we define different screens (pages) and routes for navigation.
               GetPage(

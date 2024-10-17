@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/coachEnteInfo/screens/coach_ente_info_screen.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildHeaderImages.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildWelcomeText.dart';
@@ -20,7 +21,8 @@ class SignUpBody extends StatefulWidget {
 class _SignUpBodyState extends State<SignUpBody> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // Form Key for Validation
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(); // Form Key for Validation
 
   bool passwordVisibility = false;
   bool isCoach = false;
@@ -32,7 +34,8 @@ class _SignUpBodyState extends State<SignUpBody> {
   Future<String> saveCoachData() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      CollectionReference users = FirebaseFirestore.instance.collection('coaches');
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('coaches');
       await users.doc(user.uid).set({
         'email': user.email,
         'createdAt': FieldValue.serverTimestamp(),
@@ -47,7 +50,8 @@ class _SignUpBodyState extends State<SignUpBody> {
   Future<String> saveTraineeData() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      CollectionReference users = FirebaseFirestore.instance.collection('trainees');
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('trainees');
       await users.doc(user.uid).set({
         'email': user.email,
         'createdAt': FieldValue.serverTimestamp(),
@@ -62,7 +66,8 @@ class _SignUpBodyState extends State<SignUpBody> {
   Future<void> _registerUser() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
-        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await _auth.createUserWithEmailAndPassword(
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
         );
@@ -135,17 +140,35 @@ class _SignUpBodyState extends State<SignUpBody> {
   Future<User?> _signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
 
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
 
-      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
       return userCredential.user;
     } catch (e) {
-      Get.snackbar('Error', 'Google Sign-In failed');
+      print('Error signing in with Google: $e');
+      Get.snackbar('فشل', 'يتعذر تسجيل الدخول باستخدام Google',
+          titleText: const Text(
+            'فشل',
+            textAlign: TextAlign.right,
+            textDirection: TextDirection.rtl,
+            style: TextStyle(color: Colors.white),
+          ),
+          messageText: const Text(
+            'يتعذر تسجيل الدخول باستخدام Google',
+            textAlign: TextAlign.right,
+            textDirection: TextDirection.rtl,
+            style: TextStyle(color: Colors.white),
+          ),
+          snackPosition: SnackPosition.BOTTOM,
+          colorText: Colors.white,
+          backgroundColor: Colors.red);
       return null;
     }
   }
@@ -155,34 +178,35 @@ class _SignUpBodyState extends State<SignUpBody> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            AnimatedScreen(),
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  WelcomeText(),
-                  const SizedBox(height: 24),
-                  _buildEmailTextField(context),
-                  const SizedBox(height: 12),
-                  _buildPasswordTextField(context),
-                  const SizedBox(height: 24),
-                  _buildCoachSwitch(context),
-                  const SizedBox(height: 24),
-                  _buildRegisterButton(),
-                  const SizedBox(height: 12),
-                  _buildGoogleRegisterButton(),
-                  const SizedBox(height: 24),
-                  _buildLoginText(context),
-                ],
-              ),
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                AnimatedScreen(),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    children: [
+                      WelcomeText(),
+                      const SizedBox(height: 24),
+                      _buildEmailTextField(context),
+                      const SizedBox(height: 12),
+                      _buildPasswordTextField(context),
+                      const SizedBox(height: 24),
+                      _buildCoachSwitch(context),
+                      const SizedBox(height: 24),
+                      _buildRegisterButton(),
+                      const SizedBox(height: 12),
+                      _buildGoogleRegisterButton(),
+                      const SizedBox(height: 24),
+                      _buildLoginText(context),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          )),
     );
   }
 
@@ -231,7 +255,9 @@ class _SignUpBodyState extends State<SignUpBody> {
             });
           },
           child: Icon(
-            passwordVisibility ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+            passwordVisibility
+                ? Icons.visibility_outlined
+                : Icons.visibility_off_outlined,
             size: 20,
             color: Palette.white,
           ),
@@ -311,7 +337,7 @@ class _SignUpBodyState extends State<SignUpBody> {
             ),
             const SizedBox(width: 8),
             const Text(
-              'Sign up with Google',
+              'إنشاء حساب باستخدام جوجل',
               style: TextStyle(color: Colors.black),
             ),
           ],
@@ -325,16 +351,16 @@ class _SignUpBodyState extends State<SignUpBody> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
-          'Already have an account?',
+          'لديك حساب؟',
           style: TextStyle(color: Colors.white, fontSize: 14),
         ),
         TextButton(
           onPressed: () {
-            Navigator.pop(context);
+            Get.toNamed(Routes.singIn);
           },
           child: const Text(
-            'Login',
-            style: TextStyle(color: Colors.white, fontSize: 14),
+            'تسجيل الدخول',
+            style: TextStyle(color: Palette.mainAppColor, fontSize: 14),
           ),
         ),
       ],

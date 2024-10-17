@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
+import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
 
@@ -413,7 +414,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
           children: [
             Stack(
               children: [
-                _buildBackgroundImage(),
+                HeaderImage(),
                 _buildProfileContent(context),
               ],
             ),
@@ -452,36 +453,11 @@ class _UserProfileBodyState extends State<UserProfileBody> {
         ));
   }
 
-  Widget _buildBackgroundImage() {
-    return Align(
-      alignment: const AlignmentDirectional(0, -1),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Stack(
-          children: [
-            Image.asset(
-              Assets.header,
-              width: double.infinity,
-              height: MediaQuery.of(Get.context!).size.height * 0.35,
-              fit: BoxFit.cover,
-            ),
-            Container(
-              width: double.infinity,
-              height: MediaQuery.of(Get.context!).size.height * 0.35,
-              color: Colors.black
-                  .withOpacity(0.5), // Black filter with 50% opacity
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildProfileContent(BuildContext context) {
     return Align(
       child: Column(
         children: [
-          SizedBox(height: MediaQuery.of(Get.context!).size.height * 0.26),
+          SizedBox(height: MediaQuery.of(Get.context!).size.height * 0.12),
           Container(
             width: 104, // Add extra width to accommodate the border
             height: 104, // Add extra height to accommodate the border

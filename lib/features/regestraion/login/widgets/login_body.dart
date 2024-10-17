@@ -87,7 +87,7 @@ class _LoginBodyState extends State<LoginBody> {
           return 'لا يمكنك ترك الحقل فارغ';
         }
         if (!RegExp(
-            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
             .hasMatch(value)) {
           return 'الإيميل غير صالح';
         }
@@ -173,8 +173,8 @@ class _LoginBodyState extends State<LoginBody> {
                   // Step 1: Sign in the user with FirebaseAuth
                   UserCredential userCredential = await FirebaseAuth.instance
                       .signInWithEmailAndPassword(
-                      email: emailController.text,
-                      password: passwordController.text);
+                          email: emailController.text,
+                          password: passwordController.text);
 
                   // Step 2: Get the current user from FirebaseAuth
                   User? user = userCredential.user;
@@ -191,7 +191,7 @@ class _LoginBodyState extends State<LoginBody> {
 
                       if (userSnapshot.exists) {
                         SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
+                            await SharedPreferences.getInstance();
                         prefs.setString('coachId', user.uid);
                         // Navigate to coach dashboard
                         Get.toNamed(Routes.coachDashboard);
@@ -261,7 +261,7 @@ class _LoginBodyState extends State<LoginBody> {
 
     if (googleUser != null) {
       final GoogleSignInAuthentication googleAuth =
-      await googleUser.authentication;
+          await googleUser.authentication;
 
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -298,6 +298,18 @@ class _LoginBodyState extends State<LoginBody> {
                     backgroundColor: Colors.green);
               } catch (e) {
                 Get.snackbar('فشل', 'يتعذر تسجيل الدخول باستخدام Google',
+                    titleText: const Text(
+                      'فشل',
+                      textAlign: TextAlign.right,
+                      textDirection: TextDirection.rtl,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    messageText: const Text(
+                      'يتعذر تسجيل الدخول باستخدام Google',
+                      textAlign: TextAlign.right,
+                      textDirection: TextDirection.rtl,
+                      style: TextStyle(color: Colors.white),
+                    ),
                     snackPosition: SnackPosition.BOTTOM,
                     colorText: Colors.white,
                     backgroundColor: Colors.red);

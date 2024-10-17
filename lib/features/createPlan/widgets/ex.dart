@@ -1,56 +1,3 @@
-import 'dart:convert';
-
-class OutExercise {
-  final String exerciseName;
-  final String exerciseImage;
-  final String exerciseImage1;
-
-  OutExercise({
-    required this.exerciseName,
-    required this.exerciseImage,
-    required this.exerciseImage1,
-  });
-
-  factory OutExercise.fromJson(Map<String, dynamic> json) {
-    return OutExercise(
-      exerciseName: json['Exercise_Name'],
-      exerciseImage: json['Exercise_Image'],
-      exerciseImage1: json['Exercise_Image1'],
-    );
-  }
-}
-
-class ExerciseManager {
-  late final List<OutExercise> _exercises; // Cache exercises
-  late final Map<String, OutExercise> _exerciseMap; // Map for quick lookups
-
-  ExerciseManager(String jsonString) {
-    _exercises = _parseExercises(jsonString);
-    _exerciseMap = _buildExerciseMap(_exercises);
-  }
-
-  // Return the cached list of exercises
-  List<OutExercise> getExercises() {
-    return _exercises;
-  }
-
-  // Return the image URL by exercise name
-  String getImageUrl(String exerciseName) {
-    return _exerciseMap[exerciseName]?.exerciseImage ?? '';
-  }
-
-  // Parse exercises from JSON string
-  List<OutExercise> _parseExercises(String jsonString) {
-    final List<dynamic> jsonList = json.decode(jsonString);
-    return jsonList.map((item) => OutExercise.fromJson(item)).toList();
-  }
-
-  // Build a map of exercise names to exercise objects
-  Map<String, OutExercise> _buildExerciseMap(List<OutExercise> exercises) {
-    return {for (var exercise in exercises) exercise.exerciseName: exercise};
-  }
-}
-
 String jsonString = '''
   [
     {
@@ -108,13 +55,6 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-61d-dumbbell-front-raise-to-lateral-raise-m2-square-600x600.jpg",
       "Exercise_Image1":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-61d-dumbbell-front-raise-to-lateral-raise-m3-square-600x600.jpg"
-    },
-    {
-      "Exercise_Name": "Clean from Blocks",
-      "Exercise_Image":
-          "https://www.bodybuilding.com/exercises/exerciseImages/sequences/746/Male/m/746_1.jpg",
-      "Exercise_Image1":
-          "https://www.bodybuilding.com/exercises/exerciseImages/sequences/746/Male/m/746_2.jpg"
     },
     {
       "Exercise_Name": "Incline Hammer Curls",
@@ -234,31 +174,6 @@ String jsonString = '''
       "Exercise_Name": "Suspended ab fall-out",
       "Exercise_Image":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/2019-xdb-158s-suspended-ab-fall-out-m2-600x600.jpg",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Military press",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Power snatch-",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Sumo deadlift",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Hang Clean",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Dumbbell V-Sit Cross Jab",
-      "Exercise_Image": "",
       "Exercise_Image1": ""
     },
     {
@@ -748,37 +663,6 @@ String jsonString = '''
     {
       "Exercise_Name": "Bear crawl sled drag",
       "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Rocky Pull-Ups/Pulldowns",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Snatch-Grip Behind-The-Neck Overhead Press",
-      "Exercise_Image":
-          "https://www.bodybuilding.com/exercises/exerciseImages/sequences/4571/Male/m/4571_1.jpg",
-      "Exercise_Image1":
-          "https://www.bodybuilding.com/exercises/exerciseImages/sequences/4571/Male/m/4571_2.jpg"
-    },
-    {
-      "Exercise_Name": "Box Squat with Bands",
-      "Exercise_Image":
-          "https://www.bodybuilding.com/exercises/exerciseImages/sequences/666/Male/m/666_1.jpg",
-      "Exercise_Image1":
-          "https://www.bodybuilding.com/exercises/exerciseImages/sequences/666/Male/m/666_2.jpg"
-    },
-    {
-      "Exercise_Name": "Flexor Incline Dumbbell Curls",
-      "Exercise_Image":
-          "https://www.bodybuilding.com/exercises/exerciseImages/sequences/285/Male/m/285_1.jpg",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Seated One-Arm Dumbbell Palms-Up Wrist Curl",
-      "Exercise_Image":
-          "https://www.bodybuilding.com/exercises/exerciseImages/sequences/386/Male/m/386_1.jpg",
       "Exercise_Image1": ""
     },
     {
@@ -2546,11 +2430,6 @@ String jsonString = '''
       "Exercise_Image1": ""
     },
     {
-      "Exercise_Name": "Single-arm kettlebell clean and jerk",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
       "Exercise_Name": "Side To Side Chins",
       "Exercise_Image": "",
       "Exercise_Image1": ""
@@ -2712,89 +2591,6 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-13n-incline-dumbbell-reverse-fly-m1-square-600x600.jpg",
       "Exercise_Image1":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-13n-incline-dumbbell-reverse-fly-m2-square-600x600.jpg"
-    },
-    {
-      "Exercise_Name": "Dumbbell preacher curl",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Front Raise And Pullover",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Dumbbell seated box jump",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Middle Back Shrug",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Incline face-down bar front raise",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {"Exercise_Name": "Butt-Ups", "Exercise_Image": "", "Exercise_Image1": ""},
-    {
-      "Exercise_Name": "Band Good Morning (Pull Through)",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Bodyweight Reverse Lunge",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Seated One-Arm Dumbbell Palms-Down Wrist Curl",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Glute Kickback",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Treadmill jogging",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Plate Pinch",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Yates Row Reverse Grip",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Linear Acceleration Wall Drill",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Reverse-grip bench press",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Leverage Decline Chest Press",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Chain Handle Extension",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
     }
-  ]
+]
   ''';
-ExerciseManager exerciseManager = ExerciseManager(jsonString);
-List<OutExercise> exercises = exerciseManager.getExercises();

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
+import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 
 class TraineesBody extends StatefulWidget {
@@ -330,15 +331,7 @@ class _TraineesBodyState extends State<TraineesBody> {
       width: double.infinity,
       child: Stack(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              Assets.header,
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.2,
-              fit: BoxFit.fitWidth,
-            ),
-          ),
+          HeaderImage(),
           Container(
             height: MediaQuery.of(context).size.height * 0.2,
             padding: EdgeInsets.symmetric(horizontal: 24),

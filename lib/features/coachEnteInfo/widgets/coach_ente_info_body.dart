@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,12 +18,12 @@ class CoachEnterInfoBody extends StatefulWidget {
 
 class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
   final _formKey = GlobalKey<FormState>();
-
-  // Controllers for the form fields
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _experienceController = TextEditingController();
+  String? _uploadedImageUrl;
+  int stage = 1;
 
   final List<String> _labels = [
     'الاسم الأول',
@@ -40,28 +42,31 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Collect form data from controllers
-      Map<String, dynamic> coachData = {
-        'firstName': _firstNameController.text,
-        'lastName': _lastNameController.text,
-        'age': int.parse(_ageController.text),
-        'experience': _experienceController.text,
-      };
-
       try {
-        // Call the update function with the collected form data
-        await updateCoachInfo(widget.coachId, coachData);
+        if (stage == 1) {
+          setState(() {
+            stage = 2;
+          });
+        } else {
+          Map<String, dynamic> coachData = {
+            'firstName': _firstNameController.text,
+            'lastName': _lastNameController.text,
+            'age': int.parse(_ageController.text),
+            'experience': _experienceController.text,
+            'profileImageUrl': _uploadedImageUrl,
+          };
 
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
-        );
+          await updateCoachInfo(widget.coachId, coachData);
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
+          );
 
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('coachId', widget.coachId);
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('coachId', widget.coachId);
 
-        Get.toNamed(Routes.coachDashboard);
-
+          Get.toNamed(Routes.coachDashboard);
+        }
         // Navigate to the next page or perform any other action
       } catch (e) {
         // Handle any errors that occur during the update
@@ -85,6 +90,16 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
         child: Column(
           children: [
             _buildImageStack(),
+            stage == 2 ? SizedBox(height: 24) : Container(),
+            stage == 2
+                ? ImagePickerComponent(
+                    userId: widget.coachId,
+                    onImageUploaded: (imageUrl) {
+                      setState(() {
+                        _uploadedImageUrl = imageUrl;
+                      });
+                    })
+                : Container(),
             SizedBox(height: 24),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
@@ -101,13 +116,21 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 ),
               ),
             ),
-            SizedBox(height: 16),
-            _buildLabelWithTextField('الاسم الأول', _firstNameController),
-            _buildLabelWithTextField('إسم العائلة', _lastNameController),
-            _buildLabelWithTextField('العمر', _ageController,
-                keyboardType: TextInputType.number),
-            _buildLabelWithTextField('الخبرة', _experienceController),
-            SizedBox(height: 16),
+            SizedBox(height: 24),
+            stage == 1
+                ? _buildLabelWithTextField('الاسم الأول', _firstNameController)
+                : Container(),
+            stage == 1
+                ? _buildLabelWithTextField('إسم العائلة', _lastNameController)
+                : Container(),
+            stage == 1
+                ? _buildLabelWithTextField('العمر', _ageController,
+                    keyboardType: TextInputType.number)
+                : Container(),
+            stage == 1
+                ? _buildLabelWithTextField('الخبرة', _experienceController,
+                    keyboardType: TextInputType.number)
+                : Container(),
             SizedBox(
               width: double.infinity,
               child: Padding(
@@ -118,21 +141,21 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                     'التالي',
                     style: TextStyle(
                       fontFamily: 'Inter',
-                      color: Palette.black, // Text color
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      color: Palette.white, // Text color
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   icon: const Icon(
                     Icons.west,
                     size: 22,
-                    color: Palette.black, // Icon color
+                    color: Palette.white, // Icon color
                   ),
                   iconAlignment: IconAlignment.end,
                   style: ElevatedButton.styleFrom(
                     foregroundColor: const Color(0xFF1C1503),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 10),
                     backgroundColor: const Color(0xFFFFBB02),
                     textStyle: const TextStyle(
                       fontFamily: 'Inter',
@@ -179,10 +202,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
     return Column(
       children: [
         _buildTextField(
-            label: label,
-            hint: label,
-            controller: controller,
-            keyboardType: keyboardType),
+            label: label, controller: controller, keyboardType: keyboardType),
         const SizedBox(height: 24),
       ],
     );
@@ -190,7 +210,6 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
 
   Widget _buildTextField({
     required String label,
-    required String hint,
     required TextEditingController controller,
     TextInputType keyboardType = TextInputType.text,
   }) {
@@ -201,9 +220,8 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
         keyboardType: keyboardType,
         decoration: InputDecoration(
           labelText: label,
-          hintText: hint,
-          hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-          labelStyle: const TextStyle(color: Colors.white, fontSize: 14),
+          labelStyle:
+              const TextStyle(color: Palette.subTitleGrey, fontSize: 14),
           filled: true,
           fillColor: const Color(0xFF454038),
           enabledBorder: _buildInputBorder(const Color(0xFFFFBB02)),

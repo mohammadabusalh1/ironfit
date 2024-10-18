@@ -6,6 +6,7 @@ import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/Trainee/screens/trainee_screen.dart';
 
 class TraineesBody extends StatefulWidget {
   @override
@@ -315,11 +316,10 @@ class _TraineesBodyState extends State<TraineesBody> {
       child: Column(
         children: [
           _buildHeader(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
           _buildActionButtons(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
           _buildSearchField(context),
-          const SizedBox(height: 24),
           _buildTraineesList(),
         ],
       ),
@@ -333,7 +333,7 @@ class _TraineesBodyState extends State<TraineesBody> {
         children: [
           HeaderImage(),
           Container(
-            height: MediaQuery.of(context).size.height * 0.2,
+            height: MediaQuery.of(context).size.height * 0.22,
             padding: EdgeInsets.symmetric(horizontal: 24),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -444,8 +444,8 @@ class _TraineesBodyState extends State<TraineesBody> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         textStyle: const TextStyle(
           fontFamily: 'Inter',
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
         ),
         minimumSize: const Size(double.infinity, 50),
       ),
@@ -524,7 +524,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                   ? 'مشترك'
                   : 'غير مشترك ' ?? '',
               Assets.myGymImage,
-              () => Get.toNamed(Routes.trainee),
+              () => Get.to(TraineeScreen(email: trainee['email'])),
             );
           },
         ),
@@ -536,13 +536,12 @@ class _TraineesBodyState extends State<TraineesBody> {
       String imagePath, VoidCallback onTap) {
     return Card(
       clipBehavior: Clip.antiAliasWithSaveLayer,
-      color: const Color(0x38454038),
-      elevation: 0,
+      color: Palette.secondaryColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

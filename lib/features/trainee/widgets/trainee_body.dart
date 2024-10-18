@@ -1,20 +1,117 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presentation/dialogs/main_pop_up.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:ironfit/core/presentation/widgets/hederImage.dart';
+import 'package:ironfit/core/routes/routes.dart';
 
 class TraineeBody extends StatefulWidget {
-  const TraineeBody({super.key});
+  final String email;
+  const TraineeBody({super.key, required this.email});
 
   @override
   _TraineeBodyState createState() => _TraineeBodyState();
 }
 
 class _TraineeBodyState extends State<TraineeBody> {
-  final PageController _pageController = PageController(initialPage: 0);
-  final int _currentPage = 0;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  late List _plans;
+  late int _numberOfDaysUserHave;
+
+  @override
+  void initState() {
+    super.initState();
+    _plans = [];
+    _numberOfDaysUserHave = 0;
+    fetchPlans();
+    fetchNumberOfDays();
+  }
+
+  Future<void> fetchNumberOfDays() async {
+    final user = await _firestore
+        .collection('coaches')
+        .doc(_auth.currentUser?.uid)
+        .collection('subscriptions')
+        .where(
+          'email',
+          isEqualTo: widget.email,
+        )
+        .get();
+
+    setState(() {
+      _numberOfDaysUserHave = DateTime.parse(user.docs[0]['endDate'])
+          .difference(DateTime.now())
+          .inDays;
+    });
+  }
+
+  Future<void> fetchPlans() async {
+    final plans = await _firestore
+        .collection('coaches')
+        .doc(_auth.currentUser?.uid)
+        .collection('plans')
+        .get();
+
+    setState(() {
+      _plans = plans.docs.map((doc) {
+        return {
+          'id': doc.id, // The document ID
+          ...doc.data(), // The document data
+        };
+      }).toList();
+    });
+  }
+
+  Future<void> cancelSubscription(BuildContext context, String email) async {
+    try {
+      // Retrieve the user's subscription data
+      final subscriptionDoc = await _firestore
+          .collection('coaches')
+          .doc(_auth.currentUser?.uid)
+          .collection('subscriptions')
+          .where('email', isEqualTo: email)
+          .get();
+
+      if (subscriptionDoc.docs.isNotEmpty) {
+        // Delete the subscription document
+        await _firestore
+            .collection('coaches')
+            .doc(_auth.currentUser?.uid)
+            .collection('subscriptions')
+            .doc(subscriptionDoc.docs[0].id)
+            .delete();
+
+        // Show a confirmation message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('تم الغاء الاشتراك بنجاح'),
+          ),
+        );
+
+        Get.back();
+      } else {
+        // No subscription found for the user
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('لا يوجد اشتراك لهذا المستخدم'),
+          ),
+        );
+      }
+    } catch (e) {
+      // Show error message if something goes wrong
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("حدث خطأ"),
+        ),
+      );
+    }
+  }
+
   void showAddPlanDialog(BuildContext context) {
     String? selectedValue;
     showDialog(
@@ -90,7 +187,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                         const Spacer(),
                         IconButton(
                           onPressed: () {
-                            print('Pressed'); // Close the dialog
+                            Get.toNamed(Routes.myPlans);
                           },
                           icon: const Icon(Icons.add),
                           style: ElevatedButton.styleFrom(
@@ -119,26 +216,56 @@ class _TraineeBodyState extends State<TraineeBody> {
                             border: OutlineInputBorder(),
                           ),
                           value: selectedValue, // Selected value from dropdown
-                          items: <String>[
-                            'برنامج المبتدئين',
-                            'برنامج المتوسط',
-                            'برنامج المتقدم',
-                            'برنامج خاص'
-                          ].map<DropdownMenuItem<String>>((String value) {
+                          items: _plans
+                              .map<DropdownMenuItem<String>>((dynamic value) {
                             return DropdownMenuItem<String>(
-                              value: value,
+                              value: value['id']
+                                  as String, // Casting dynamic to String
                               child: Align(
                                 alignment: AlignmentDirectional
                                     .centerEnd, // Align to the right
                                 child: Text(
-                                  value,
+                                  value['name'],
                                   style: const TextStyle(color: Colors.white),
                                 ),
                               ),
                             );
                           }).toList(),
-                          onChanged: (newValue) {
-                            selectedValue = newValue;
+
+                          onChanged: (newValue) async {
+                            await _firestore
+                                .collection('coaches')
+                                .doc(_auth.currentUser?.uid)
+                                .collection('subscriptions')
+                                .where('email', isEqualTo: widget.email)
+                                .get()
+                                .then((querySnapshot) async {
+                              // Check if any document matches the query
+                              if (querySnapshot.docs.isNotEmpty) {
+                                // Get the document reference of the first matching document
+                                var docRef = querySnapshot.docs.first.reference;
+
+                                // Update the document
+                                await docRef.update(
+                                  {'planId': newValue},
+                                );
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('تم التعديل بنجاح'),
+                                  ),
+                                );
+
+                                Navigator.of(context).pop();
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('لم يتم العثور على الخطة'),
+                                  ),
+                                );
+                                 Navigator.of(context).pop();
+                              }
+                            });
                           },
                         ),
                       ],
@@ -146,7 +273,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                     actions: [
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
+                          if (selectedValue != null) {}
                         },
                         child: const Text('حفظ'),
                       ),
@@ -183,26 +310,14 @@ class _TraineeBodyState extends State<TraineeBody> {
                     child: SizedBox(
                       width: double.infinity,
                       child: Stack(
-                        alignment: const AlignmentDirectional(0, 1),
                         children: [
-                          Align(
-                            alignment: const AlignmentDirectional(0, -1),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                Assets.header,
-                                width: double.infinity,
-                                height: 231,
-                                fit: BoxFit.fitWidth,
-                                alignment: const Alignment(0, 0),
-                              ),
-                            ),
-                          ),
+                          const HeaderImage(),
                           Align(
                             alignment: const AlignmentDirectional(0, 0),
                             child: Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  0, 0, 0, 16),
+                              padding: EdgeInsets.only(
+                                  top:
+                                      MediaQuery.of(context).size.height * 0.1),
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -221,6 +336,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                                       ),
                                     ),
                                   ),
+                                  const SizedBox(height: 8),
                                   const Opacity(
                                     opacity: 0.8,
                                     child: Text(
@@ -240,11 +356,11 @@ class _TraineeBodyState extends State<TraineeBody> {
                                       ),
                                     ),
                                   ),
-                                  const Align(
-                                    alignment: AlignmentDirectional(0, 0),
+                                  Align(
+                                    alignment: const AlignmentDirectional(0, 0),
                                     child: Text(
-                                      ' تبقى له 21 يوم من الإشتراك',
-                                      style: TextStyle(
+                                      'تبقى له ${_numberOfDaysUserHave} يوم من الإشتراك',
+                                      style: const TextStyle(
                                         fontFamily: 'Inter',
                                         color: Color(0xA0FFFFFF),
                                         fontSize: 12,
@@ -259,40 +375,6 @@ class _TraineeBodyState extends State<TraineeBody> {
                       ),
                     ),
                   ),
-                  // const SizedBox(height: 20),
-                  // Padding(
-                  //   padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
-                  //   child: Row(
-                  //       mainAxisSize: MainAxisSize.max,
-                  //       mainAxisAlignment: MainAxisAlignment.end,
-                  //       children: [
-                  //         Expanded(
-                  //           child: Align(
-                  //             alignment: const AlignmentDirectional(0, 0),
-                  //             child: LinearPercentIndicator(
-                  //               percent: 0.5,
-                  //               lineHeight: 24,
-                  //               animation: true,
-                  //               animateFromLastPercent: true,
-                  //               progressColor: const Color(0xFFFFBB02),
-                  //               backgroundColor: const Color(
-                  //                   0xFFBBDEFB), // Example color for background
-                  //               center: const Text(
-                  //                 '50%',
-                  //                 style: TextStyle(
-                  //                   fontFamily: 'Inter Tight',
-                  //                   color: Color(0xFF1C1503),
-                  //                   fontSize: 14,
-                  //                   letterSpacing: 0.0,
-                  //                 ),
-                  //               ),
-                  //               barRadius: const Radius.circular(12),
-                  //               padding: EdgeInsets.zero,
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ]),
-                  // ),
                   const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
@@ -304,7 +386,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                           flex: 1,
                           child: ElevatedButton(
                             onPressed: () {
-                              print('Cancel subscription button pressed ...');
+                              cancelSubscription(context, widget.email);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
@@ -352,32 +434,6 @@ class _TraineeBodyState extends State<TraineeBody> {
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height *
-                          0.43, // Adjust height as needed
-                      child: ListView(
-                        padding: EdgeInsets.zero,
-                        children: [
-                          _buildCard(context, 'الأحد'),
-                          const SizedBox(height: 8),
-                          _buildCard(context, 'الإثنين'),
-                          const SizedBox(height: 8),
-                          _buildCard(context, 'الثلاثاء'),
-                          const SizedBox(height: 8),
-                          _buildCard(context, 'الأربعاء'),
-                          const SizedBox(height: 8),
-                          _buildCard(context, 'الخميس'),
-                          const SizedBox(height: 8),
-                          _buildCard(context, 'الجمعة'),
-                          const SizedBox(height: 8),
-                          _buildCard(context, 'السبت'),
-                        ],
-                      ),
                     ),
                   ),
                 ],

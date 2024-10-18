@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/StatisticsCard.dart';
 import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
@@ -17,7 +16,7 @@ class CoachStatisticsBody extends StatefulWidget {
 
 class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
   late Future<Map<String, dynamic>> statistics;
-  late Future<Map<String, double>> ageDistributionData;
+  late Future<Map<String, int>> ageDistributionData;
 
   @override
   void initState() {
@@ -71,7 +70,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
     }
   }
 
-  Future<Map<String, double>> fetchAgeDistributionData() async {
+  Future<Map<String, int>> fetchAgeDistributionData() async {
     try {
       FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -86,29 +85,29 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
           snapshot.docs.map((doc) => doc.data()).toList();
 
       if (subscriptions != null) {
-        double age18to25 = (subscriptionsList.where((subscription) {
+        int age18to25 = (subscriptionsList.where((subscription) {
           String ageString = subscription['age'];
           int? age = int.tryParse(ageString);
           return age! >= 18 && age! <= 25;
-        }).length) as double;
+        }).length);
 
-        double age26to35 = (subscriptionsList.where((subscription) {
+        int age26to35 = (subscriptionsList.where((subscription) {
           String ageString = subscription['age'];
           int? age = int.tryParse(ageString);
           return age! >= 26 && age! <= 35;
-        }).length) as double;
+        }).length);
 
-        double age36to45 = (subscriptionsList.where((subscription) {
+        int age36to45 = (subscriptionsList.where((subscription) {
           String ageString = subscription['age'];
           int? age = int.tryParse(ageString);
           return age! >= 36 && age! <= 45;
-        }).length) as double;
+        }).length);
 
-        double age46Plus = (subscriptionsList.where((subscription) {
+        int age46Plus = (subscriptionsList.where((subscription) {
           String ageString = subscription['age'];
           int? age = int.tryParse(ageString);
           return age! >= 46;
-        }).length) as double;
+        }).length);
 
         return {
           '18-25': age18to25,
@@ -122,10 +121,10 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
     } catch (e) {
       print('Error fetching age distribution: $e');
       return {
-        '18-25': 0.0,
-        '26-35': 0.0,
-        '36-45': 0.0,
-        '46+': 0.0,
+        '18-25': 0,
+        '26-35': 0,
+        '36-45': 0,
+        '46+': 0,
       };
     }
   }
@@ -260,7 +259,8 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                                   color: Palette.mainAppColor,
                                 ),
                               ),
-                              FutureBuilder<Map<String, double>>(
+                              const SizedBox(height: 24),
+                              FutureBuilder<Map<String, int>>(
                                 future: ageDistributionData,
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
@@ -276,7 +276,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                                   }
 
                                   if (snapshot.hasData) {
-                                    Map<String, double> data = snapshot.data!;
+                                    Map<String, int> data = snapshot.data!;
                                     return AgeDonutChart(ageData: data);
                                   }
 
@@ -305,23 +305,23 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
 
 // Pie Chart for Age Distribution
 class AgeDonutChart extends StatelessWidget {
-  final Map<String, double> ageData;
+  final Map<String, int> ageData;
 
   const AgeDonutChart({super.key, required this.ageData});
 
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 2.3,
+      aspectRatio: 2.7,
       child: PieChart(
         PieChartData(
           sectionsSpace: 0,
-          centerSpaceRadius: 40,
+          centerSpaceRadius: 30,
           sections: [
             PieChartSectionData(
               color: Colors.blue,
               // value: ageData['18-25'] ?? 1,
-              value: ageData['18-25'] ?? 0,
+              value: double.parse(ageData['18-25'].toString()) ?? 0,
               title: '18-25',
               radius: 50,
               titleStyle: const TextStyle(
@@ -333,7 +333,7 @@ class AgeDonutChart extends StatelessWidget {
             PieChartSectionData(
               color: Colors.green,
               // value: ageData['26-35'] ?? 1,
-              value: ageData['26-35'] ?? 0,
+              value: double.parse(ageData['26-35'].toString()) ?? 0,
               title: '26-35',
               radius: 50,
               titleStyle: const TextStyle(
@@ -345,7 +345,7 @@ class AgeDonutChart extends StatelessWidget {
             PieChartSectionData(
               color: Colors.orange,
               // value: ageData['36-45'] ?? 1,
-              value: ageData['36-45'] ?? 0,
+              value: double.parse(ageData['36-45'].toString()) ?? 0,
               title: '36-45',
               radius: 50,
               titleStyle: const TextStyle(
@@ -356,7 +356,7 @@ class AgeDonutChart extends StatelessWidget {
             ),
             PieChartSectionData(
               color: Colors.red,
-              value: ageData['46+'] ?? 1,
+              value: double.parse(ageData['46+'].toString()) ?? 0,
               title: '46+',
               radius: 50,
               titleStyle: const TextStyle(

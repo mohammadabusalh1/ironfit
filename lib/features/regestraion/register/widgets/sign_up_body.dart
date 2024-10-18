@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -152,6 +154,7 @@ class _SignUpBodyState extends State<SignUpBody> {
           await _auth.signInWithCredential(credential);
       return userCredential.user;
     } catch (e) {
+      log(e.toString());
       print('Error signing in with Google: $e');
       Get.snackbar('فشل', 'يتعذر تسجيل الدخول باستخدام Google',
           titleText: const Text(

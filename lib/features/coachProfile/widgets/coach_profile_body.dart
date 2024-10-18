@@ -19,11 +19,13 @@ class CoachProfileBody extends StatefulWidget {
 class _CoachProfileBodyState extends State<CoachProfileBody> {
   final CoachProfileController controller = Get.find();
   String? fullName;
+  late String email;
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    email = '';
     fetchUserName();
   }
 
@@ -43,6 +45,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
 
         setState(() {
           fullName = '$firstName $lastName';
+          email = userDoc['email'];
         });
       } else {
         print("User data not found");
@@ -234,10 +237,6 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
     final TextEditingController confirmPasswordController =
         TextEditingController();
 
-    String? oldPassword;
-    String? newPassword;
-    String? confirmPassword;
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -263,7 +262,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
             ),
             inputDecorationTheme: const InputDecorationTheme(
               filled: true,
-              fillColor: Colors.grey,
+              fillColor: Palette.secondaryColor,
               // Adjust color
               labelStyle: TextStyle(color: Colors.white, fontSize: 14),
               enabledBorder: OutlineInputBorder(
@@ -490,7 +489,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
           ),
           const SizedBox(height: 4),
           Text(
-            'abusa@gmail.com', // If no name, display a default message
+            email ?? 'لا يوجد بريد', // If no name, display a default message
             style: const TextStyle(
               color: Palette.subTitleGrey,
               fontSize: 14,

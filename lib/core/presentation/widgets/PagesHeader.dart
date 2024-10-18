@@ -46,7 +46,8 @@ class DashboardHeader extends StatelessWidget {
   // Builds the trainer info and notification button
   Widget _buildTrainerInfo(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24),
+      padding: EdgeInsets.fromLTRB(
+          24, MediaQuery.of(context).size.height * 0.03, 24, 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

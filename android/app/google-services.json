@@ -7,12 +7,25 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:252100398371:android:67c54a8531b1dc679cd096",
+        "mobilesdk_app_id": "1:252100398371:android:a1d52754a2ae30659cd096",
         "android_client_info": {
           "package_name": "com.example.ironfit"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "252100398371-401kha82l8iobhe9uvibi1iadv92ii87.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ironfit",
+            "certificate_hash": "c2e1be7cfeb690d5dd5ada0a7fcdcf9024e87418"
+          }
+        },
+        {
+          "client_id": "252100398371-5n1eiqd8c240003e7v9igujf05vbmpku.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDGuN_Alp1xNtyhvSUPl62bey9fyLKwzdA"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "252100398371-5n1eiqd8c240003e7v9igujf05vbmpku.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

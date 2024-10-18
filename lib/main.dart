@@ -12,6 +12,7 @@ import 'package:ironfit/features/Trainee/screens/trainee_screen.dart';
 import 'package:ironfit/features/Trainees/screens/Trainees_screen.dart';
 import 'package:ironfit/features/UserMyPlan/screens/user_my_plan_screen.dart';
 import 'package:ironfit/features/UserPalnExercises/screens/user_plan_exercises_screen.dart';
+import 'package:ironfit/features/coachEnteInfo/screens/coach_ente_info_screen.dart';
 import 'package:ironfit/features/createPlan/screens/create_plan_screen.dart';
 import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
 import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
@@ -45,10 +46,15 @@ void main() async {
     await Firebase.initializeApp();
   }
 
-  await GoogleSignIn(
-    clientId:
-        '741508899065-mqlsiob4n2jfvlrka1a44j8lovpnerq3.apps.googleusercontent.com',
-  );
+  try {
+    await GoogleSignIn(
+      clientId:
+          '252100398371-401kha82l8iobhe9uvibi1iadv92ii87.apps.googleusercontent.com',
+    );
+  } catch (e) {
+    print("GoogleSignIn: ");
+    print(e);
+  }
 
   // This function is the entry point of the app.
   // It starts the app by running the MyApp widget.
@@ -84,14 +90,10 @@ class MyApp extends StatelessWidget {
     Get.lazyPut(
         () => CoachProfileController()); // Prepares the profile controller
 
-    // This widget decides what the app should display based on whether the user
-    // has seen the pre-login screen or not.
     return FutureBuilder<String>(
       future:
           _checkFirstTimeUser(), // Call the function to check if the user is new
       builder: (context, snapshot) {
-        // While the app is figuring out if the user has seen the pre-login screen,
-        // it shows a loading animation.
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const MaterialApp(
             home: Scaffold(
@@ -120,8 +122,8 @@ class MyApp extends StatelessWidget {
                 iconTheme: IconThemeData(color: Palette.black), // Icon color
               ),
             ),
-            initialRoute:
-                Routes.createPlan, // Initial route (screen) the app will show
+            initialRoute: Routes
+                .trainees, // Initial route (screen) the app will show
             getPages: [
               // Here we define different screens (pages) and routes for navigation.
               GetPage(
@@ -193,12 +195,7 @@ class MyApp extends StatelessWidget {
                   name: Routes.createPlan,
                   page: () => const Directionality(
                       textDirection: TextDirection.rtl,
-                      child: CreatePlanScreen())), // Create a new plan
-              GetPage(
-                  name: Routes.trainee,
-                  page: () => const Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: TraineeScreen())), // Trainee screen
+                      child: CreatePlanScreen())), // Create a new plan // Trainee screen
               GetPage(
                   name: Routes.myGyms,
                   page: () => const Directionality(

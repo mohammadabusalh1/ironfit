@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,10 +24,8 @@ class UserEnterInfoBody extends StatefulWidget {
 
 class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
   final _formKey = GlobalKey<FormState>();
-  final ImagePicker _picker = ImagePicker(); // Initialize Image Picker
-  File? _selectedImage; // To store the selected image
   String? _uploadedImageUrl;
-  int stage = 2; // Store the uploaded image URL
+  int stage = 1;
 
   // Controllers for the form fields
   final TextEditingController _firstNameController = TextEditingController();
@@ -42,66 +41,23 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
         .update(data);
   }
 
-  Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
-    }
-  }
-
-  void _removeImage() {
-    setState(() {
-      _selectedImage = null; // Reset the selected image to null
-    });
-
-    // Optionally, you can show a message to the user indicating the image has been removed
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('تمت إزالة الصورة بنجاح'),
-      ),
-    );
-  }
-
-  Future<void> _uploadImage(String userId) async {
-    if (_selectedImage != null) {
-      try {
-        final storageRef =
-            FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
-        await storageRef.putFile(_selectedImage!);
-        _uploadedImageUrl = await storageRef.getDownloadURL();
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error uploading image: $e')),
-        );
-      }
-    }
-  }
-
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Upload the image first
-      await _uploadImage(widget.userId);
-
-      // Collect form data from controllers
-      Map<String, dynamic> userData = {
-        'firstName': _firstNameController.text,
-        'lastName': _lastNameController.text,
-        'age': int.parse(_ageController.text),
-        'weight': double.parse(_weightController.text),
-        'length': double.parse(_lengthController.text),
-        'profileImageUrl': _uploadedImageUrl, // Add the image URL
-      };
-
       try {
         if (stage == 1) {
-          await updateCoachInfo(widget.userId, userData);
-
           setState(() {
             stage = 2;
           });
         } else {
+          Map<String, dynamic> userData = {
+            'firstName': _firstNameController.text,
+            'lastName': _lastNameController.text,
+            'age': int.parse(_ageController.text),
+            'weight': double.parse(_weightController.text),
+            'length': double.parse(_lengthController.text),
+            'profileImageUrl': _uploadedImageUrl, // Add the image URL
+          };
+          await updateCoachInfo(widget.userId, userData);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
           );
@@ -132,7 +88,13 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
           _buildImageStack(),
           const SizedBox(height: 24),
           stage == 2
-              ? _buildImagePickerCard()
+              ? ImagePickerComponent(
+                  userId: widget.userId,
+                  onImageUploaded: (imageUrl) {
+                    setState(() {
+                      _uploadedImageUrl = imageUrl;
+                    });
+                  })
               : Container(), // Add the image picker button here
           const SizedBox(height: 24),
           stage == 1
@@ -193,111 +155,6 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  // Widget to pick image from gallery
-  Widget _buildImagePickerCard() {
-    return Center(
-      child: Card(
-        elevation: 5,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        margin: const EdgeInsets.symmetric(horizontal: 24),
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.of(context).size.width * 0.1,
-              vertical: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Excited Title
-              const Text(
-                'أضف صورتك الشخصية!',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF454038), // Darker shade for title
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-
-              // Happy Description
-              Text(
-                'أضف صورة إلى ملفك الشخصي! ما عليك سوى النقر على هذا الزر واختيار صورتك المفضلة!',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey.shade700, // Softer tone for description
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-
-              _selectedImage != null
-                  ? ClipRRect(
-                      borderRadius:
-                          BorderRadius.circular(75), // Rounded corners
-                      child: Image.file(
-                        _selectedImage!,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  : const CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Color(0xFFFFBB02), // Updated color
-                      child: Icon(
-                        Icons.person,
-                        size: 50,
-                        color: Colors.black, // Contrast with background
-                      ),
-                    ),
-              const SizedBox(height: 16),
-
-              ElevatedButton.icon(
-                onPressed: _pickImage,
-                icon: const Icon(
-                  Icons.upload,
-                  color: Colors.white,
-                ),
-                label: const Text(
-                  'اختر صورة',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                  backgroundColor:
-                      const Color(0xFF454038), // Dark color from the palette
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-              if (_selectedImage != null) ...[
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _removeImage,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    'إزالة الصورة',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
       ),
     );
   }

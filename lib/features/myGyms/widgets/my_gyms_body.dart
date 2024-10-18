@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 
 class MyGymsBody extends StatefulWidget {
@@ -12,9 +13,6 @@ class MyGymsBody extends StatefulWidget {
 }
 
 class _MyGymsBodyState extends State<MyGymsBody> {
-  final PageController _pageController = PageController(initialPage: 0);
-  final int _currentPage = 0;
-
   void showEditInfoDialog(BuildContext context) {
     String? selectedValue;
     showDialog(
@@ -150,15 +148,7 @@ class _MyGymsBodyState extends State<MyGymsBody> {
                         width: double.infinity,
                         child: Stack(
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                Assets.header,
-                                width: double.infinity,
-                                height: 132,
-                                fit: BoxFit.fitWidth,
-                              ),
-                            ),
+                            HeaderImage(),
                             Padding(
                               padding:
                                   const EdgeInsets.fromLTRB(24, 50, 24, 50),
@@ -252,7 +242,7 @@ class _MyGymsBodyState extends State<MyGymsBody> {
                                 },
                                 icon: const Icon(
                                   Icons.north_outlined,
-                                  size: 15,
+                                  size: 20,
                                   color: Color(0xFF1C1503),
                                 ),
                                 label: const Text(
@@ -260,8 +250,8 @@ class _MyGymsBodyState extends State<MyGymsBody> {
                                   style: TextStyle(
                                     fontFamily: 'Inter',
                                     color: Color(0xFF1C1503),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                                 style: ElevatedButton.styleFrom(

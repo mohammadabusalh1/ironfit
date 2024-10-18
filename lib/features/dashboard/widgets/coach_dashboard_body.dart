@@ -27,41 +27,38 @@ class CoachDashboardBody extends StatelessWidget {
 
       DateTime thisMonthDate =
           DateTime.now().subtract(Duration(days: DateTime.now().day - 1));
-
-      DateTime nextMonthDate = thisMonthDate.add(Duration(days: 30));
       DateTime previousMonthDate = thisMonthDate.subtract(Duration(days: 30));
 
       List<QueryDocumentSnapshot<Map<String, dynamic>>> currentMonthFillter =
           snapshot.docs.where((element) {
         DateTime startDate = DateTime.parse(element.data()['startDate']);
-        DateTime endDate = DateTime.parse(element.data()['endDate']);
-        int thisMonthIsBigThanStartDate = thisMonthDate.compareTo(startDate);
-        int nextMonthIsMoreThanEndDate = nextMonthDate.compareTo(endDate);
-        return thisMonthIsBigThanStartDate <= 0 &&
-            nextMonthIsMoreThanEndDate >= 0;
+        bool isInthisMonth = startDate.month == thisMonthDate.month;
+        return isInthisMonth;
       }).toList();
 
       List<QueryDocumentSnapshot<Map<String, dynamic>>> previousMonthFillter =
           snapshot.docs.where((element) {
         DateTime startDate = DateTime.parse(element.data()['startDate']);
-        DateTime endDate = DateTime.parse(element.data()['endDate']);
-        int preMonthIsBigThanStartDate = previousMonthDate.compareTo(startDate);
-        int thisMonthIsMoreThanEndDate = thisMonthDate.compareTo(endDate);
-        return preMonthIsBigThanStartDate <= 0 &&
-            thisMonthIsMoreThanEndDate >= 0;
+        bool isInPreMonth = startDate.month == previousMonthDate.month;
+        return isInPreMonth;
       }).toList();
 
       int currentMonthTrainees = currentMonthFillter.length;
       int previousMonthTrainees = previousMonthFillter.length;
 
-      print(currentMonthTrainees);
-      print(previousMonthTrainees);
-
-      double percentageDifference = previousMonthTrainees > 0
+      if (previousMonthTrainees == 0 && currentMonthTrainees > 0) {
+        return {
+          'trainees': snapshot.size,
+          'subscriptions': 100,
+        };
+      }
+      double percentageDifference = currentMonthTrainees > 0
           ? ((currentMonthTrainees - previousMonthTrainees) /
                   previousMonthTrainees) *
               100
-          : 100; // Avoid division by zero
+          : 0;
+
+      // Avoid division by zero
 
       // Return the result with percentage difference
       return {
@@ -134,7 +131,7 @@ class CoachDashboardBody extends StatelessWidget {
   }
 
   Widget _buildDashboardHeader() {
-    return  DashboardHeader(
+    return DashboardHeader(
       backgroundImage: Assets.dashboardBackground, // Background image path
       trainerImage: Assets.myTrainerImage, // Trainer image path
       trainerName: "محمد ابو صالح", // Trainer's name

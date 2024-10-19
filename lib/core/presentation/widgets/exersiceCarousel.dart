@@ -1,35 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
 
 class ExerciseCarousel extends StatelessWidget {
-  final List<Map<String, String>> carouselItems = [
-    {
-      'image': Assets.preLogin1,
-      'title': 'Rickshaw Carry',
-      'subtitle': 'Wednesday',
-    },
-    {
-      'image': Assets.preLogin2,
-      'title': 'Single Leg Press',
-      'subtitle': 'Thursday',
-    },
-    {
-      'image': Assets.preLogin3,
-      'title': 'Landmine Twist',
-      'subtitle': 'Friday',
-    },
-  ];
+  final List<Map<String, String>> exercises;
+
+  // Constructor to accept the list of exercises
+  ExerciseCarousel({required this.exercises});
 
   @override
   Widget build(BuildContext context) {
+    // Check if exercises are empty
+    if (exercises.isEmpty) {
+      return Container(
+        width: double.infinity,
+        height: 200,
+        alignment: Alignment.center,
+        child: Text(
+          'No exercises available',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
+
     return Container(
       width: double.infinity,
       height: 200,
       child: CarouselSlider(
-        items: carouselItems
-            .map((item) => buildCarouselItem(item, context))
-            .toList(),
+        items:
+            exercises.map((item) => buildCarouselItem(item, context)).toList(),
         options: CarouselOptions(
           initialPage: 1,
           viewportFraction: 0.5,
@@ -45,12 +48,17 @@ class ExerciseCarousel extends StatelessWidget {
   }
 
   Widget buildCarouselItem(Map<String, String> item, BuildContext context) {
+    // Ensure that the keys exist before accessing them
+    String image = item['image'] ?? 'https://example.com/default_image.jpg';
+    String title = item['name'] ?? 'No Name';
+    String subtitle = item['subtitle'] ?? 'No Info Available';
+
     return Stack(
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: Image.asset(
-            item['image']!,
+          child: Image.network(
+            image, // Changed to network to load from URL, replace with asset if needed
             width: double.infinity,
             height: 200,
             fit: BoxFit.cover,
@@ -64,8 +72,8 @@ class ExerciseCarousel extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                buildText(item['title']!, context, true),
-                buildText(item['subtitle']!, context, false),
+                buildText(title, context, true),
+                buildText(subtitle, context, false),
               ],
             ),
           ),
@@ -75,21 +83,28 @@ class ExerciseCarousel extends StatelessWidget {
   }
 
   Widget buildText(String text, BuildContext context, bool isTitle) {
-    return Text(
-      text,
-      style: TextStyle(
-        color: isTitle ? Colors.white : Colors.grey[400],
-        fontSize: isTitle ? 16 : 12,
-        fontWeight: isTitle ? FontWeight.bold : FontWeight.normal,
-        shadows: isTitle
-            ? [
-                Shadow(
-                  color: Colors.black,
-                  offset: Offset(2, 2),
-                  blurRadius: 2,
-                ),
-              ]
-            : null,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 0),
+      child: Align(
+        alignment: AlignmentDirectional.topEnd,
+        child: Text(
+          textAlign: TextAlign.end,
+          text,
+          style: TextStyle(
+            color: isTitle ? Palette.white : Colors.grey,
+            fontSize: isTitle ? 14 : 12,
+            fontWeight: isTitle ? FontWeight.bold : FontWeight.normal,
+            shadows: isTitle
+                ? [
+                    Shadow(
+                      color: Colors.black,
+                      offset: Offset(2, 2),
+                      blurRadius: 2,
+                    ),
+                  ]
+                : null,
+          ),
+        ),
       ),
     );
   }

@@ -2,12 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProfileBody extends StatefulWidget {
   const UserProfileBody({Key? key}) : super(key: key);
@@ -20,6 +22,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
   final CoachProfileController controller = Get.find();
   String? fullName;
   bool isLoading = true;
+  PreferencesService preferencesService = PreferencesService();
 
   @override
   void initState() {
@@ -437,13 +440,10 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                           showEditPasswordDialog(context);
                         }),
                         const SizedBox(height: 4),
-                        _buildButtonCard(
-                            context, 'الصالات الرياضية', Icons.location_on, () {
-                          Get.toNamed(Routes.myGyms);
+                        _buildButtonCard(context, 'تسجيل الخروج', Icons.login_outlined,
+                            () {
+                          _logout();
                         }),
-                        const SizedBox(height: 4),
-                        _buildButtonCard(
-                            context, 'الإعدادات', Icons.settings, () {}),
                         const SizedBox(height: 12),
                       ],
                     ),
@@ -538,5 +538,24 @@ class _UserProfileBodyState extends State<UserProfileBody> {
         ),
       ),
     );
+  }
+
+  Future<void> _logout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      SharedPreferences prefs = await preferencesService.getPreferences();
+      prefs.clear();
+      Get.toNamed(Routes.singIn);
+    } catch (e) {
+      Get.snackbar('خطأ', 'فشل تسجيل الخروج.',
+          titleText: Text(
+            'خطأ',
+            textAlign: TextAlign.right,
+          ),
+          messageText: Text(
+            'فشل تسجيل الخروج.',
+            textAlign: TextAlign.right,
+          ));
+    }
   }
 }

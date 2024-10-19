@@ -119,8 +119,11 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   }
 
   Widget _buildTextField(
-      {required TextEditingController controller, required String label}) {
+      {required TextEditingController controller,
+      required String label,
+      TextInputType? keyboardType}) {
     return TextField(
+      keyboardType: keyboardType ?? TextInputType.text,
       style: const TextStyle(color: Palette.white, fontSize: 14),
       controller: controller,
       decoration: InputDecoration(
@@ -169,6 +172,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   }
 
   Widget _buildTrainingDayCard(TrainingDay day) {
+    final splitDay = day.day!.split('-');
     return Card(
       color: Palette.secondaryColor,
       child: Padding(
@@ -177,7 +181,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              day.day,
+              splitDay[0],
               style: const TextStyle(
                   color: Palette.white,
                   fontSize: 18,
@@ -278,19 +282,19 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                   });
                 },
                 items: const [
-                  'الأحد',
-                  'الإثنين',
-                  'الثلاثاء',
-                  'الأربعاء',
-                  'الخميس',
-                  'الجمعة',
-                  'السبت',
+                  {'value': 'sun', 'label': 'الأحد'},
+                  {'value': 'mon', 'label': 'الأثنين'},
+                  {'value': 'tue', 'label': 'الثلاثاء'},
+                  {'value': 'wed', 'label': 'الأربعاء'},
+                  {'value': 'thu', 'label': 'الخميس'},
+                  {'value': 'fri', 'label': 'الجمعة'},
+                  {'value': 'sat', 'label': 'السبت'},
                 ]
                     .map((day) => DropdownMenuItem(
-                          value: day,
+                          value: '${day['label']}-${day['value']}',
                           child: Align(
                             alignment: AlignmentDirectional.centerEnd,
-                            child: Text(day,
+                            child: Text(day['label']!,
                                 style: const TextStyle(color: Colors.white)),
                           ),
                         ))
@@ -351,19 +355,20 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
             'name': _planNameController.text,
             'description': _planDescriptionController.text,
             'createdAt': FieldValue.serverTimestamp(),
-            'trainingDays': trainingDays
-                .map((day) => {
-                      'day': day.day,
-                      'exercises': day.exercises
-                          .map((exercise) => {
-                                'name': exercise.name,
-                                'rounds': exercise.rounds,
-                                'repetitions': exercise.repetitions,
-                                'image': exercise.image
-                              })
-                          .toList(),
-                    })
-                .toList(),
+            // ignore: prefer_for_elements_to_map_fromiterable
+            'trainingDays': Map.fromIterable(trainingDays,
+                key: (day) => day.day.toString().split('-')[1],
+                value: (day) {
+                  return day.exercises.map((exercise) {
+                    return {
+                      'name': exercise.name, // Exercise name
+                      'repetitions':
+                          exercise.repetitions, // Number of repetitions
+                      'rounds': exercise.rounds, // Number of rounds
+                      'image': exercise.image // Image for the exercise
+                    };
+                  }).toList(); // Convert the exercises to a list
+                }),
           };
 
           await _firestore
@@ -401,6 +406,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
               colorText: Colors.white);
         }
       } catch (e) {
+        print(e);
         Get.snackbar('خطأ', 'حدث خطأ أثناء حفظ الخطة',
             messageText: Text(
               'حدث خطأ أثناء حفظ الخطة',
@@ -499,7 +505,6 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
 
     String? selectedExerciseName;
     String? selectedExerciseImage;
-    String? selectedExerciseImage1;
 
     return Theme(
       data: Theme.of(context).copyWith(
@@ -547,10 +552,14 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                 const SizedBox(height: 16),
                 // TextFields for rounds and repetitions
                 _buildTextField(
-                    controller: roundsController, label: "عدد الجولات"),
+                    controller: roundsController,
+                    label: "عدد الجولات",
+                    keyboardType: TextInputType.number),
                 const SizedBox(height: 16),
                 _buildTextField(
-                    controller: repetitionsController, label: "عدد التكرارات"),
+                    controller: repetitionsController,
+                    label: "عدد التكرارات",
+                    keyboardType: TextInputType.number),
                 const SizedBox(height: 16),
               ],
             ),

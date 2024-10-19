@@ -22,14 +22,17 @@ class _TraineeBodyState extends State<TraineeBody> {
 
   late List _plans;
   late int _numberOfDaysUserHave;
+  late String planName;
 
   @override
   void initState() {
     super.initState();
     _plans = [];
+    planName = '';
     _numberOfDaysUserHave = 0;
     fetchPlans();
     fetchNumberOfDays();
+    fetchUserPlan();
   }
 
   Future<void> fetchNumberOfDays() async {
@@ -109,6 +112,35 @@ class _TraineeBodyState extends State<TraineeBody> {
           content: Text("حدث خطأ"),
         ),
       );
+    }
+  }
+
+  Future<void> fetchUserPlan() async {
+    final user = await _firestore
+        .collection('trainees')
+        .where('email', isEqualTo: widget.email)
+        .get();
+    if (user.docs.isNotEmpty && user.docs[0]['plan'] != null) {
+      planName = user.docs[0]['plan']['name'] ??
+          'Default Plan Name'; // Fallback to default if 'name' is missing
+    } else {
+      planName = 'لا يوجد خطة!';
+    }
+  }
+
+  Future<void> removePlan() async {
+    try {
+      await _firestore
+          .collection('trainees')
+          .where('email', isEqualTo: widget.email)
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          _firestore.collection('trainees').doc(doc.id).update({'plan': null});
+        });
+      });
+    } catch (e) {
+      print(e.toString());
     }
   }
 
@@ -234,9 +266,7 @@ class _TraineeBodyState extends State<TraineeBody> {
 
                           onChanged: (newValue) async {
                             await _firestore
-                                .collection('coaches')
-                                .doc(_auth.currentUser?.uid)
-                                .collection('subscriptions')
+                                .collection('trainees')
                                 .where('email', isEqualTo: widget.email)
                                 .get()
                                 .then((querySnapshot) async {
@@ -245,14 +275,26 @@ class _TraineeBodyState extends State<TraineeBody> {
                                 // Get the document reference of the first matching document
                                 var docRef = querySnapshot.docs.first.reference;
 
+                                DocumentSnapshot<Map<String, dynamic>> plans =
+                                    await _firestore
+                                        .collection('coaches')
+                                        .doc(_auth.currentUser?.uid)
+                                        .collection('plans')
+                                        .doc(newValue)
+                                        .get();
+
                                 // Update the document
-                                await docRef.update(
-                                  {'planId': newValue},
-                                );
+                                await docRef.update({
+                                  'plan': {
+                                    ...(plans.data() ??
+                                        {}), // If plans.data() is null, an empty map is used
+                                    'coachId': _auth.currentUser?.uid,
+                                  },
+                                });
 
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('تم التعديل بنجاح'),
+                                    content: Text('تم إضافة الخطة بنجاح'),
                                   ),
                                 );
 
@@ -263,7 +305,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                                     content: Text('لم يتم العثور على الخطة'),
                                   ),
                                 );
-                                 Navigator.of(context).pop();
+                                Navigator.of(context).pop();
                               }
                             });
                           },
@@ -436,6 +478,23 @@ class _TraineeBodyState extends State<TraineeBody> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 20),
+                  Text('الخطة المضافة',
+                      textAlign: TextAlign.right,
+                      textDirection: TextDirection.rtl,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      )),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: _buildCard(context, planName, () {
+                      removePlan();
+                      fetchUserPlan();
+                    }),
+                  ),
                 ],
               ),
             ),
@@ -446,65 +505,37 @@ class _TraineeBodyState extends State<TraineeBody> {
   }
 }
 
-Widget _buildCard(BuildContext context, String day) {
+Widget _buildCard(BuildContext context, String planName, Function onTap) {
   return Card(
     clipBehavior: Clip.antiAliasWithSaveLayer,
-    color: const Color(0x38454038),
+    color: Palette.secondaryColor,
     elevation: 0,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(8),
     ),
     child: Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 8),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              const Icon(
-                Icons.date_range,
-                color: Colors.white,
-                size: 40,
-              ),
-              const SizedBox(width: 16),
-              Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    day,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      color: Color(0xFFFFBB02),
-                      fontSize: 14,
-                      letterSpacing: 0.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Text(
-                    'ظهر + باي',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      color: Color(0x93FFFFFF),
-                      fontSize: 10,
-                      letterSpacing: 0.0,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const Icon(
-            Icons.arrow_forward,
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 12),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Text(
+          planName,
+          style: const TextStyle(
+            fontFamily: 'Inter',
             color: Colors.white,
-            size: 24,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
           ),
-        ],
-      ),
+        ),
+        planName == 'لا يوجد خطة!'
+            ? const SizedBox()
+            : InkWell(
+                onTap: () => onTap(),
+                child: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                  size: 24,
+                ),
+              ),
+      ]),
     ),
   );
 }

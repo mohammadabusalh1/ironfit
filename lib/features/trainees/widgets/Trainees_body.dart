@@ -524,7 +524,9 @@ class _TraineesBodyState extends State<TraineesBody> {
                   ? 'مشترك'
                   : 'غير مشترك ' ?? '',
               Assets.myGymImage,
-              () => Get.to(TraineeScreen(email: trainee['email'])),
+              () => Get.to(Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: TraineeScreen(email: trainee['email']))),
             );
           },
         ),

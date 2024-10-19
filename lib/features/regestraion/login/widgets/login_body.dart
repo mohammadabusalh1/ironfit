@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
@@ -23,6 +24,28 @@ class _LoginBodyState extends State<LoginBody> {
   bool passwordVisibility = false;
   bool isCoach = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  PreferencesService preferencesService = PreferencesService();
+
+  @override
+  void initState() {
+    super.initState();
+    // _checkToken();
+  }
+
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token != null) {
+      bool isCoach = prefs.getBool('isCoach') ?? false;
+      // If the token exists, navigate to the respective dashboard
+      if (isCoach) {
+        Get.toNamed(Routes.coachDashboard); // Navigate to coach dashboard
+      } else {
+        Get.toNamed(Routes.trainerDashboard); // Navigate to trainer dashboard
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -191,8 +214,10 @@ class _LoginBodyState extends State<LoginBody> {
 
                       if (userSnapshot.exists) {
                         SharedPreferences prefs =
-                            await SharedPreferences.getInstance();
+                            await preferencesService.getPreferences();
                         prefs.setString('coachId', user.uid);
+                        prefs.setString('token', userSnapshot.id);
+                        prefs.setBool('isCoach', true);
                         // Navigate to coach dashboard
                         Get.toNamed(Routes.coachDashboard);
                       } else {
@@ -208,7 +233,10 @@ class _LoginBodyState extends State<LoginBody> {
                           .get();
 
                       if (userSnapshot.exists) {
-                        // Navigate to trainee dashboard
+                        SharedPreferences prefs =
+                            await preferencesService.getPreferences();
+                        prefs.setString('token', userSnapshot.id);
+                        prefs.setBool('isCoach', false);
                         Get.toNamed(Routes.trainerDashboard);
                       } else {
                         throw Exception('المستخدم غير موجود');

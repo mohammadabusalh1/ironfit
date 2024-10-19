@@ -2,12 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CoachProfileBody extends StatefulWidget {
   const CoachProfileBody({Key? key}) : super(key: key);
@@ -21,6 +23,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   String? fullName;
   late String email;
   bool isLoading = true;
+  PreferencesService preferencesService = PreferencesService();
 
   @override
   void initState() {
@@ -441,8 +444,10 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                             context, 'الصالات الرياضية', Icons.location_on, () {
                           Get.toNamed(Routes.myGyms);
                         }, Icons.arrow_forward_ios_outlined),
-                        _buildButtonCard(context, 'تسجيل الخروج', Icons.logout_outlined,
-                            () {}, Icons.arrow_forward_ios_outlined),
+                        _buildButtonCard(
+                            context, 'تسجيل الخروج', Icons.logout_outlined, () {
+                          _logout();
+                        }, Icons.arrow_forward_ios_outlined),
                       ],
                     ),
                   ),
@@ -450,6 +455,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
           ],
         ));
   }
+
   Widget _buildProfileContent(BuildContext context) {
     return Align(
       child: Column(
@@ -540,9 +546,19 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   Future<void> _logout() async {
     try {
       await FirebaseAuth.instance.signOut();
-      Get.off(Routes.singUp);
+      SharedPreferences prefs = await preferencesService.getPreferences();
+      prefs.clear();
+      Get.toNamed(Routes.singIn);
     } catch (e) {
-      Get.snackbar('خطأ', 'فشل تسجيل الخروج.', colorText: Colors.red);
+      Get.snackbar('خطأ', 'فشل تسجيل الخروج.',
+          titleText: Text(
+            'خطأ',
+            textAlign: TextAlign.right,
+          ),
+          messageText: Text(
+            'فشل تسجيل الخروج.',
+            textAlign: TextAlign.right,
+          ));
     }
   }
 }

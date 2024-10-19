@@ -116,32 +116,31 @@ class MyApp extends StatelessWidget {
                 backgroundColor: Palette.black, // Button background color
               ),
               appBarTheme: const AppBarTheme(
-                backgroundColor: Palette.mainAppColor, // App bar color
+                backgroundColor: Palette.mainAppColor,
                 titleTextStyle: TextStyle(
-                    color: Palette.black, fontSize: 20), // Title style
-                iconTheme: IconThemeData(color: Palette.black), // Icon color
+                    color: Palette.black, fontSize: 20),
+                iconTheme: IconThemeData(color: Palette.black),
               ),
             ),
             initialRoute: Routes
-                .trainees, // Initial route (screen) the app will show
+                .trainerDashboard,
             getPages: [
-              // Here we define different screens (pages) and routes for navigation.
               GetPage(
                   name: Routes.coachDashboard,
                   page: () => Directionality(
                       textDirection:
-                          TextDirection.rtl, // RTL = Right to Left (Arabic)
-                      child: CoachDashboard())), // Coach's dashboard page
+                          TextDirection.rtl, 
+                      child: CoachDashboard())), 
               GetPage(
                   name: Routes.trainerDashboard,
                   page: () => Directionality(
                       textDirection: TextDirection.rtl,
-                      child: TrainerDashboard())), // Trainer's dashboard
+                      child: TrainerDashboard())),
               GetPage(
                   name: Routes.myGym,
                   page: () => Directionality(
                       textDirection: TextDirection.rtl,
-                      child: MyGymScreen())), // MyGym page
+                      child: MyGymScreen())),
               GetPage(
                   name: Routes.coachProfile,
                   page: () => Directionality(

@@ -1,14 +1,24 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/exrciseCard.dart';
+import 'package:ironfit/core/presentation/widgets/hederImage.dart';
+import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/createPlan/widgets/create_plan_body.dart';
+import 'package:ironfit/features/createPlan/widgets/deopdown.dart';
+import 'package:ironfit/features/createPlan/widgets/ex.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditPlanBody extends StatefulWidget {
-  final String planId; // Plan ID to identify which plan to edit.
   const EditPlanBody({super.key, required this.planId});
+
+  final String planId;
 
   @override
   _EditPlanBodyState createState() => _EditPlanBodyState();
@@ -27,47 +37,44 @@ class _EditPlanBodyState extends State<EditPlanBody> {
   @override
   void initState() {
     super.initState();
-    _loadPlanData();
+    _fetchPlanData();
   }
 
-  Future<void> _loadPlanData() async {
+  Future<void> _fetchPlanData() async {
     try {
       final user = _auth.currentUser;
       if (user != null) {
-        DocumentSnapshot planSnapshot = await _firestore
+        final planDoc = await _firestore
             .collection('coaches')
             .doc(user.uid)
             .collection('plans')
-            .doc(widget.planId) // Fetch plan using planId
+            .doc(widget.planId)
             .get();
 
-        if (planSnapshot.exists) {
-          var planData = planSnapshot.data() as Map<String, dynamic>;
+        if (planDoc.exists) {
+          final planData = planDoc.data()!;
           _planNameController.text = planData['name'];
           _planDescriptionController.text = planData['description'];
 
-          // Load training days and exercises
-          var daysData = planData['trainingDays'] as List;
           setState(() {
-            trainingDays = daysData
-                .map((dayData) => TrainingDay(
-                      day: dayData['day'],
-                      exercises: (dayData['exercises'] as List)
-                          .map((exerciseData) => Exercise(
-                              name: exerciseData['name'],
-                              rounds: exerciseData['rounds'],
-                              repetitions: exerciseData['repetitions']))
-                          .toList(),
-                    ))
-                .toList();
+            trainingDays = (planData['trainingDays'] as Map).entries.map((e) {
+              final day = e.key;
+              final exercises = (e.value as List)
+                  .map((exercise) => Exercise(
+                        name: exercise['name'],
+                        rounds: exercise['rounds'],
+                        repetitions: exercise['repetitions'],
+                        image: exercise['image'],
+                      ))
+                  .toList();
+              return TrainingDay(day: day, exercises: exercises);
+            }).toList();
           });
         }
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load plan data',
-          messageText: Text('Failed to load plan data'),
-          backgroundColor: Colors.red,
-          colorText: Colors.white);
+      Get.snackbar('Error', 'Failed to fetch plan data: $e',
+          backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
 
@@ -112,15 +119,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
       width: double.infinity,
       child: Stack(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              Assets.header,
-              width: double.infinity,
-              height: 132,
-              fit: BoxFit.fitWidth,
-            ),
-          ),
+          HeaderImage(),
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 50, 24, 50),
             child: Row(
@@ -145,7 +144,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                 const Opacity(
                   opacity: 0.8,
                   child: Text(
-                    'تعديل الخطة',
+                    'البرامج الخاصة بي',
                     style: TextStyle(
                       fontFamily: 'Inter',
                       color: Colors.white,
@@ -170,8 +169,11 @@ class _EditPlanBodyState extends State<EditPlanBody> {
   }
 
   Widget _buildTextField(
-      {required TextEditingController controller, required String label}) {
+      {required TextEditingController controller,
+      required String label,
+      TextInputType? keyboardType}) {
     return TextField(
+      keyboardType: keyboardType ?? TextInputType.text,
       style: const TextStyle(color: Palette.white, fontSize: 14),
       controller: controller,
       decoration: InputDecoration(
@@ -201,7 +203,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24),
         ),
-        child: const Text("أضف يوم",
+        child: const Text("اضافة يوم",
             style: TextStyle(fontSize: 16, color: Colors.black)),
       ),
     );
@@ -219,59 +221,63 @@ class _EditPlanBodyState extends State<EditPlanBody> {
     );
   }
 
-  Widget _buildTrainingDayCard(TrainingDay day, int dayIndex) {
+  Widget _buildTrainingDayCard(TrainingDay day, int index) {
     return Card(
       color: Palette.secondaryColor,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  day.day,
-                  style: const TextStyle(
-                      color: Palette.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => _editDay(day, dayIndex),
-                      icon: const Icon(Icons.edit, color: Palette.white),
-                    ),
-                    IconButton(
-                      onPressed: () => _removeDay(dayIndex),
-                      icon: const Icon(Icons.delete, color: Palette.redDelete),
-                    ),
-                  ],
-                ),
-              ],
+            Text(
+              day.day == 'sun'
+                  ? 'الاحد'
+                  : day.day == 'mon'
+                      ? 'الاثنين'
+                      : day.day == 'tue'
+                          ? 'الثلاثاء'
+                          : day.day == 'wed'
+                              ? 'الاربعاء'
+                              : day.day == 'thu'
+                                  ? 'الخميس'
+                                  : day.day == 'fri'
+                                      ? 'الجمعة'
+                                      : 'السبت',
+              style: const TextStyle(
+                  color: Palette.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            ...day.exercises.map((exercise) {
-              return ListTile(
-                title: Text(exercise.name,
-                    style: const TextStyle(color: Palette.white)),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
+            Column(
+              children: day.exercises.map((exercise) {
+                return Column(
                   children: [
-                    IconButton(
-                      onPressed: () => _editExercise(day, exercise),
-                      icon: const Icon(Icons.edit, color: Palette.white),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ExrciseCard(
+                            spaceBetweenItems: 5,
+                            padding: 0,
+                            withIconButton: false,
+                            title: exercise.name,
+                            subtitle1: "${exercise.rounds} جولات",
+                            subtitle2: "${exercise.repetitions} تكرار",
+                            image: exercise.image!,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => _removeExercise(day, exercise),
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                        ),
+                      ],
                     ),
-                    IconButton(
-                      onPressed: () => _removeExercise(day, exercise),
-                      icon: const Icon(Icons.delete, color: Palette.redDelete),
-                    ),
+                    // Add space between rows
+                    SizedBox(height: 10), // Adjust the height as per your need
                   ],
-                ),
-              );
-            }),
+                );
+              }).toList(),
+            ),
             const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerRight,
@@ -283,185 +289,19 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text("أضف التدريب",
+                child: const Text("أضف تمرين",
                     style: TextStyle(color: Palette.black)),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _editDay(TrainingDay day, int dayIndex) {
-    showDialog(
-      context: context,
-      builder: (context) => _buildDayEditDialog(day, dayIndex),
-    );
-  }
-
-  Widget _buildDayEditDialog(TrainingDay day, int dayIndex) {
-    String? selectedDay = day.day; // Initialize with the current day's value
-
-    return Theme(
-      data: Theme.of(context).copyWith(
-        dialogBackgroundColor: Colors.grey[900],
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
-          bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
-          headlineLarge: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Palette.mainAppColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-      ),
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: AlertDialog(
-          title:
-              const Text('تعديل اليوم', style: TextStyle(color: Colors.white)),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return DropdownButton<String>(
-                dropdownColor: Colors.grey[800],
-                hint: const Text("إختر اليوم",
-                    style: TextStyle(color: Colors.white)),
-                value: selectedDay,
-                onChanged: (newValue) {
-                  setState(() {
-                    selectedDay = newValue;
-                  });
-                },
-                items: const [
-                  'الأحد',
-                  'الإثنين',
-                  'الثلاثاء',
-                  'الأربعاء',
-                  'الخميس',
-                  'الجمعة',
-                  'السبت',
-                ].map((day) {
-                  return DropdownMenuItem<String>(
-                    value: day,
-                    child: Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: Text(day,
-                          style: const TextStyle(color: Colors.white)),
-                    ),
-                  );
-                }).toList(),
-              );
-            },
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                if (selectedDay != null) {
-                  setState(() {
-                    trainingDays[dayIndex].day = selectedDay!;
-                  });
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text('حفظ', style: TextStyle(color: Palette.black)),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child:
-                  const Text('إلغاء', style: TextStyle(color: Palette.white)),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: ElevatedButton(
+                  onPressed: () => _removeTrainingDay(index),
+                  child: const Text("حذف",
+                      style: TextStyle(color: Palette.redDelete))),
             ),
           ],
-          actionsAlignment: MainAxisAlignment.start,
-        ),
-      ),
-    );
-  }
-
-  void _removeDay(int dayIndex) {
-    setState(() {
-      trainingDays.removeAt(dayIndex);
-    });
-  }
-
-  void _editExercise(TrainingDay day, Exercise exercise) {
-    showDialog(
-      context: context,
-      builder: (context) => _buildExerciseEditDialog(day, exercise),
-    );
-  }
-
-  Widget _buildExerciseEditDialog(TrainingDay day, Exercise exercise) {
-    TextEditingController _exerciseController =
-        TextEditingController(text: exercise.name);
-    TextEditingController _roundsController =
-        TextEditingController(text: exercise.rounds.toString());
-    TextEditingController _repsController =
-        TextEditingController(text: exercise.repetitions.toString());
-
-    return Theme(
-      data: Theme.of(context).copyWith(
-        dialogBackgroundColor: Colors.grey[900],
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
-          bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
-          headlineLarge: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Palette.mainAppColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-      ),
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: AlertDialog(
-          title: const Text("تعديل التمرين",
-              style: TextStyle(color: Colors.white)),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildTextField(
-                    controller: _exerciseController, label: "التمرين"),
-                const SizedBox(height: 16),
-                _buildTextField(
-                    controller: _roundsController, label: "عدد الجولات"),
-                const SizedBox(height: 16),
-                _buildTextField(
-                    controller: _repsController, label: "عدد التكرارات"),
-                const SizedBox(height: 16),
-              ],
-            ),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  exercise.name = _exerciseController.text;
-                  exercise.rounds = int.parse(_roundsController.text);
-                  exercise.repetitions = int.parse(_repsController.text);
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('حفظ', style: TextStyle(color: Palette.black)),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child:
-                  const Text('إلغاء', style: TextStyle(color: Palette.white)),
-            ),
-          ],
-          actionsAlignment: MainAxisAlignment.start,
         ),
       ),
     );
@@ -470,6 +310,12 @@ class _EditPlanBodyState extends State<EditPlanBody> {
   void _removeExercise(TrainingDay day, Exercise exercise) {
     setState(() {
       day.exercises.remove(exercise);
+    });
+  }
+
+  void _removeTrainingDay(int index) {
+    setState(() {
+      trainingDays.removeAt(index);
     });
   }
 
@@ -517,19 +363,19 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                   });
                 },
                 items: const [
-                  'الأحد',
-                  'الإثنين',
-                  'الثلاثاء',
-                  'الأربعاء',
-                  'الخميس',
-                  'الجمعة',
-                  'السبت',
+                  {'value': 'sun', 'label': 'الأحد'},
+                  {'value': 'mon', 'label': 'الأثنين'},
+                  {'value': 'tue', 'label': 'الثلاثاء'},
+                  {'value': 'wed', 'label': 'الأربعاء'},
+                  {'value': 'thu', 'label': 'الخميس'},
+                  {'value': 'fri', 'label': 'الجمعة'},
+                  {'value': 'sat', 'label': 'السبت'},
                 ]
                     .map((day) => DropdownMenuItem(
-                          value: day,
+                          value: '${day['label']}-${day['value']}',
                           child: Align(
                             alignment: AlignmentDirectional.centerEnd,
-                            child: Text(day,
+                            child: Text(day['label']!,
                                 style: const TextStyle(color: Colors.white)),
                           ),
                         ))
@@ -563,16 +409,21 @@ class _EditPlanBodyState extends State<EditPlanBody> {
   }
 
   void _addExerciseToDay(TrainingDay day) {
+    List<Map<String, dynamic>> exercisesJson =
+        List<Map<String, dynamic>>.from(jsonDecode(jsonString));
     showDialog(
       context: context,
-      builder: (context) => _buildExerciseDialog(day),
+      builder: (context) => _buildExerciseDialog(day, exercisesJson),
     );
   }
 
-  Widget _buildExerciseDialog(TrainingDay day) {
-    final TextEditingController nameController = TextEditingController();
+  Widget _buildExerciseDialog(
+      TrainingDay day, List<Map<String, dynamic>> exercisesJson) {
     final TextEditingController roundsController = TextEditingController();
     final TextEditingController repetitionsController = TextEditingController();
+
+    String? selectedExerciseName;
+    String? selectedExerciseImage;
 
     return Theme(
       data: Theme.of(context).copyWith(
@@ -600,28 +451,71 @@ class _EditPlanBodyState extends State<EditPlanBody> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Dropdown for exercise selection
+                SearchableDropdown(
+                    items: exercisesJson,
+                    value: selectedExerciseName,
+                    onChanged: (selectedExercise) async {
+                      PreferencesService prefsService = PreferencesService();
+                      SharedPreferences prefs =
+                          await prefsService.getPreferences();
+
+                      prefs
+                          .setString('selectedExerciseName', selectedExercise!)
+                          .then((v) {
+                        if (v) {
+                          String? selectedExerciseImage =
+                              exercisesJson.firstWhere(
+                            (exercise) =>
+                                exercise['Exercise_Name'] ==
+                                prefs.getString('selectedExerciseName'),
+                            orElse: () => {},
+                          )['Exercise_Image'];
+                          prefs.setString(
+                              'selectedExerciseImage',
+                              selectedExerciseImage ??
+                                  'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg');
+                        } else {
+                          prefs.setString('selectedExerciseImage',
+                              'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg');
+                        }
+                      });
+                    },
+                    labelText: "التمرين"),
+                const SizedBox(height: 16),
+                // TextFields for rounds and repetitions
                 _buildTextField(
-                    controller: nameController, label: "إسم التمرين"),
+                    controller: roundsController,
+                    label: "عدد الجولات",
+                    keyboardType: TextInputType.number),
                 const SizedBox(height: 16),
                 _buildTextField(
-                    controller: roundsController, label: "عدد الجولات"),
-                const SizedBox(height: 16),
-                _buildTextField(
-                    controller: repetitionsController, label: "عدد التكرارات"),
+                    controller: repetitionsController,
+                    label: "عدد التكرارات",
+                    keyboardType: TextInputType.number),
                 const SizedBox(height: 16),
               ],
             ),
           ),
           actions: [
             ElevatedButton(
-              onPressed: () {
-                if (_validateExercise(nameController.text,
-                    roundsController.text, repetitionsController.text)) {
+              onPressed: () async {
+                PreferencesService prefsService = PreferencesService();
+                SharedPreferences prefs = await prefsService.getPreferences();
+                selectedExerciseName = prefs.getString('selectedExerciseName');
+                selectedExerciseImage =
+                    prefs.getString('selectedExerciseImage');
+                print(selectedExerciseImage);
+                if (selectedExerciseName != null &&
+                    _validateExercise(selectedExerciseName!,
+                        roundsController.text, repetitionsController.text)) {
                   setState(() {
                     day.exercises.add(Exercise(
-                      name: nameController.text,
+                      name: selectedExerciseName!,
                       rounds: int.parse(roundsController.text),
                       repetitions: int.parse(repetitionsController.text),
+                      image: selectedExerciseImage ??
+                          'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg',
                     ));
                   });
                   Navigator.pop(context);
@@ -698,15 +592,16 @@ class _EditPlanBodyState extends State<EditPlanBody> {
       width: double.infinity,
       height: 45,
       child: ElevatedButton(
-        onPressed: _savePlan,
+        onPressed: () => _savePlan(),
         style: ElevatedButton.styleFrom(
           backgroundColor: Palette.mainAppColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
         ),
-        child: const Text("حفظ الخطة",
-            style: TextStyle(fontSize: 16, color: Colors.white)),
+        child: const Text("حفظ التعديلات",
+            style: TextStyle(fontSize: 16, color: Colors.black)),
       ),
     );
   }
@@ -719,71 +614,29 @@ class _EditPlanBodyState extends State<EditPlanBody> {
             .collection('coaches')
             .doc(user.uid)
             .collection('plans')
-            .doc(widget.planId) // Use planId to save data
+            .doc(widget.planId)
             .update({
           'name': _planNameController.text,
           'description': _planDescriptionController.text,
-          'trainingDays': trainingDays
-              .map((day) => {
-                    'day': day.day,
-                    'exercises': day.exercises
-                        .map((exercise) => {
-                              'name': exercise.name,
-                              'rounds': exercise.rounds,
-                              'repetitions': exercise.repetitions
-                            })
-                        .toList()
-                  })
-              .toList(),
+          'trainingDays': {
+            for (var day in trainingDays)
+              (day.day.contains('-') ? day.day.split('-')[1] : day.day): day.exercises
+                  .map((e) => {
+                        'name': e.name,
+                        'rounds': e.rounds,
+                        'repetitions': e.repetitions,
+                        'image': e.image,
+                      })
+                  .toList()
+          }
         });
-        Get.snackbar('تم', 'تم حفظ التعديلات بنجاح',
-            backgroundColor: Palette.greenActive,
-            colorText: Colors.white,
-            titleText: Text(
-              'تم',
-              style: TextStyle(color: Colors.white),
-              textDirection: TextDirection.rtl,
-              textAlign: TextAlign.right,
-            ),
-            messageText: Text(
-              'تم حفظ التعديلات بنجاح',
-              style: TextStyle(color: Colors.white),
-              textDirection: TextDirection.rtl,
-              textAlign: TextAlign.right,
-            ));
+        Get.snackbar('نجاح', 'تم حفظ التعديلات بنجاح',
+            backgroundColor: Colors.green, colorText: Colors.white);
+        Get.toNamed(Routes.myPlans);
       }
     } catch (e) {
-      Get.snackbar('خطأ', 'فشل حفظ التعديلات',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-          titleText: Text(
-            'خطاء',
-            style: TextStyle(color: Colors.white),
-            textDirection: TextDirection.rtl,
-            textAlign: TextAlign.right,
-          ),
-          messageText: Text(
-            'فشل حفظ التعديلات',
-            style: TextStyle(color: Colors.white),
-            textDirection: TextDirection.rtl,
-            textAlign: TextAlign.right,
-          ));
+      Get.snackbar('خطأ', 'حدث خطأ أثناء حفظ البيانات: $e',
+          backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
-}
-
-class TrainingDay {
-  String day;
-  List<Exercise> exercises;
-
-  TrainingDay({required this.day, required this.exercises});
-}
-
-class Exercise {
-  String name;
-  int rounds;
-  int repetitions;
-
-  Exercise(
-      {required this.name, required this.rounds, required this.repetitions});
 }

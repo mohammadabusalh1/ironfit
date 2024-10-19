@@ -123,7 +123,7 @@ class MyApp extends StatelessWidget {
               ),
             ),
             initialRoute: Routes
-                .trainerDashboard,
+                .userProfile,
             getPages: [
               GetPage(
                   name: Routes.coachDashboard,

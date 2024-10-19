@@ -668,4 +668,13 @@ class Exercise {
     required this.repetitions,
     this.image,
   });
+
+  factory Exercise.fromMap(Map<String, dynamic> map) {
+    return Exercise(
+      name: map['name'] as String,
+      image: map['image'] as String?,
+      rounds: map['rounds'] as int,
+      repetitions: map['repetitions'] as int,
+    );
+  }
 }

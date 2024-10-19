@@ -5,10 +5,8 @@ import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
-import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
-import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProfileBody extends StatefulWidget {
@@ -19,8 +17,8 @@ class UserProfileBody extends StatefulWidget {
 }
 
 class _UserProfileBodyState extends State<UserProfileBody> {
-  final CoachProfileController controller = Get.find();
   String? fullName;
+  String email = FirebaseAuth.instance.currentUser!.email ?? 'لا يوجد';
   bool isLoading = true;
   PreferencesService preferencesService = PreferencesService();
 
@@ -31,13 +29,14 @@ class _UserProfileBodyState extends State<UserProfileBody> {
   }
 
   Future<void> fetchUserName() async {
-    String? coachId = await fetchCoachId();
-    if (coachId != null) {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    String? userId = _auth.currentUser?.uid;
+    if (userId != null) {
       // Get user data from Firestore
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection(
-              'coaches') // or 'coaches', depending on where you store user data
-          .doc(coachId)
+              'trainees') // or 'coaches', depending on where you store user data
+          .doc(userId)
           .get();
 
       if (userDoc.exists) {
@@ -62,7 +61,8 @@ class _UserProfileBodyState extends State<UserProfileBody> {
     final TextEditingController firstNameController = TextEditingController();
     final TextEditingController lastNameController = TextEditingController();
     final TextEditingController ageController = TextEditingController();
-    final TextEditingController experienceController = TextEditingController();
+    final TextEditingController wightController = TextEditingController();
+    final TextEditingController heightController = TextEditingController();
 
     showDialog(
       context: context,
@@ -131,8 +131,9 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                       children: [
                         TextFormField(
                           controller: firstNameController,
-                          decoration:
-                              const InputDecoration(hintText: 'الاسم الأول'),
+                          decoration: const InputDecoration(
+                              label: Text('الاسم الأول',
+                                  style: TextStyle(color: Colors.grey))),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'الرجاء إدخال الاسم الأول';
@@ -143,8 +144,9 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: lastNameController,
-                          decoration:
-                              const InputDecoration(hintText: 'الاسم الأخير'),
+                          decoration: const InputDecoration(
+                              label: Text('الاسم الأخير',
+                                  style: TextStyle(color: Colors.grey))),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'الرجاء إدخال الاسم الأخير';
@@ -155,7 +157,9 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: ageController,
-                          decoration: const InputDecoration(hintText: 'العمر'),
+                          decoration: const InputDecoration(
+                              label: Text('العمر',
+                                  style: TextStyle(color: Colors.grey))),
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -169,12 +173,28 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         ),
                         const SizedBox(height: 16),
                         TextFormField(
-                          controller: experienceController,
+                          controller: wightController,
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(hintText: 'الخبرة'),
+                          decoration: const InputDecoration(
+                              label: Text('الوزن',
+                                  style: TextStyle(color: Colors.grey))),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'الرجاء إدخال الخبرة';
+                              return 'الرجاء إدخال الوزن';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: heightController,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                              label: Text('الطول',
+                                  style: TextStyle(color: Colors.grey))),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'الرجاء إدخال الطول';
                             }
                             return null;
                           },
@@ -186,17 +206,19 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
-                          String? coachId = await fetchCoachId();
+                          final FirebaseAuth _auth = FirebaseAuth.instance;
+                          String? userId = _auth.currentUser?.uid;
                           try {
-                            if (coachId != null) {
+                            if (userId != null) {
                               await FirebaseFirestore.instance
-                                  .collection('coaches')
-                                  .doc(coachId)
+                                  .collection('trainees')
+                                  .doc(userId)
                                   .update({
                                 'firstName': firstNameController.text,
                                 'lastName': lastNameController.text,
                                 'age': ageController.text,
-                                'experience': experienceController.text,
+                                'weight': wightController.text,
+                                'height': heightController.text
                               }).then((value) {
                                 fetchUserName();
                               });
@@ -264,7 +286,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
             ),
             inputDecorationTheme: const InputDecorationTheme(
               filled: true,
-              fillColor: Colors.grey, // Adjust color
+              fillColor: Palette.secondaryColor, // Adjust color
               labelStyle: TextStyle(color: Colors.white, fontSize: 14),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.transparent),
@@ -312,7 +334,9 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                           controller: oldPasswordController,
                           obscureText: true,
                           decoration: const InputDecoration(
-                              hintText: 'كلمة المرور القديمة'),
+                            label: Text('كلمة المرور القديمة',
+                                style: TextStyle(color: Colors.grey)),
+                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'يرجى إدخال كلمة المرور القديمة';
@@ -325,7 +349,9 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                           controller: newPasswordController,
                           obscureText: true,
                           decoration: const InputDecoration(
-                              hintText: 'كلمة المرور الجديدة'),
+                            label: Text('كلمة المرور الجديدة',
+                                style: TextStyle(color: Colors.grey)),
+                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'يرجى إدخال كلمة المرور الجديدة';
@@ -341,7 +367,9 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                           controller: confirmPasswordController,
                           obscureText: true,
                           decoration: const InputDecoration(
-                              hintText: 'تأكيد كلمة المرور الجديدة'),
+                            label: Text('تأكيد كلمة المرور',
+                                style: TextStyle(color: Colors.grey)),
+                          ),
                           validator: (value) {
                             if (value != newPasswordController.text) {
                               return 'كلمة المرور غير متطابقة';
@@ -410,7 +438,6 @@ class _UserProfileBodyState extends State<UserProfileBody> {
 
   @override
   Widget build(BuildContext context) {
-    final CoachProfileController controller = Get.find();
     return Scaffold(
         backgroundColor: Palette.black,
         body: Column(
@@ -440,8 +467,8 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                           showEditPasswordDialog(context);
                         }),
                         const SizedBox(height: 4),
-                        _buildButtonCard(context, 'تسجيل الخروج', Icons.login_outlined,
-                            () {
+                        _buildButtonCard(
+                            context, 'تسجيل الخروج', Icons.login_outlined, () {
                           _logout();
                         }),
                         const SizedBox(height: 12),
@@ -492,7 +519,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
           ),
           const SizedBox(height: 4),
           Text(
-            'abusa@gmail.com', // If no name, display a default message
+            email,
             style: const TextStyle(
               color: Palette.subTitleGrey,
               fontSize: 14,

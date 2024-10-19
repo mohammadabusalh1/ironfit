@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
@@ -11,6 +13,35 @@ class UserMyPlanBody extends StatefulWidget {
 }
 
 class _UserMyPlanBodyState extends State<UserMyPlanBody> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  late Map<String, dynamic> plan;
+
+  @override
+  void initState() {
+    super.initState();
+    plan = {};
+    _fetchPlan();
+  }
+
+  Future<void> _fetchPlan() async {
+    try {
+      User? user = _auth.currentUser; // Fetch current user
+      if (user != null) {
+        DocumentSnapshot userDoc =
+            await _firestore.collection('trainees').doc(user.uid).get();
+
+        // Fetch user details and exercises
+        setState(() {
+          plan = userDoc.data() as Map<String, dynamic>? ?? {};
+        });
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -106,7 +137,7 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
                       ],
                     ),
                   ),
-                  CustomTabBarWidget()
+                  CustomTabBarWidget(plan: plan['plan']),
                 ],
               ),
             ),

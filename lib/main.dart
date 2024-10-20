@@ -8,11 +8,9 @@ import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/CoachStatistics/screens/coach_statistics_screen.dart';
 import 'package:ironfit/features/MyPlans/screens/my_plans_screen.dart';
-import 'package:ironfit/features/Trainee/screens/trainee_screen.dart';
 import 'package:ironfit/features/Trainees/screens/Trainees_screen.dart';
 import 'package:ironfit/features/UserMyPlan/screens/user_my_plan_screen.dart';
 import 'package:ironfit/features/UserPalnExercises/screens/user_plan_exercises_screen.dart';
-import 'package:ironfit/features/coachEnteInfo/screens/coach_ente_info_screen.dart';
 import 'package:ironfit/features/createPlan/screens/create_plan_screen.dart';
 import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
 import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
@@ -25,6 +23,7 @@ import 'package:ironfit/features/coachProfile/screens/coach_profile_screen.dart'
 import 'package:ironfit/features/regestraion/login/screens/login_screen.dart';
 import 'package:ironfit/features/regestraion/register/screens/sing_up_screen.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
+import 'package:ironfit/features/userEnteInfo/screens/user_ente_info_screen.dart';
 import 'package:ironfit/features/userProfile/screens/user_profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ironfit/features/traineesGroupsbyAge/screens/trainees_groups_by_age_screen.dart';
@@ -117,20 +116,17 @@ class MyApp extends StatelessWidget {
               ),
               appBarTheme: const AppBarTheme(
                 backgroundColor: Palette.mainAppColor,
-                titleTextStyle: TextStyle(
-                    color: Palette.black, fontSize: 20),
+                titleTextStyle: TextStyle(color: Palette.black, fontSize: 20),
                 iconTheme: IconThemeData(color: Palette.black),
               ),
             ),
-            initialRoute: Routes
-                .userProfile,
+            initialRoute: Routes.preLoginScreens,
             getPages: [
               GetPage(
                   name: Routes.coachDashboard,
                   page: () => Directionality(
-                      textDirection:
-                          TextDirection.rtl, 
-                      child: CoachDashboard())), 
+                      textDirection: TextDirection.rtl,
+                      child: CoachDashboard())),
               GetPage(
                   name: Routes.trainerDashboard,
                   page: () => Directionality(
@@ -139,8 +135,7 @@ class MyApp extends StatelessWidget {
               GetPage(
                   name: Routes.myGym,
                   page: () => Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: MyGymScreen())),
+                      textDirection: TextDirection.rtl, child: MyGymScreen())),
               GetPage(
                   name: Routes.coachProfile,
                   page: () => Directionality(
@@ -185,7 +180,9 @@ class MyApp extends StatelessWidget {
                   page: () => const UserMyPlanScreen()), // User's own plan
               GetPage(
                   name: Routes.preLoginScreens,
-                  page: () => const PreLoginScreen()), // Pre-login screens
+                  page: () => Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: const PreLoginScreen())), // Pre-login screens
               GetPage(
                   name: Routes.userPlanExercises,
                   page: () =>
@@ -194,7 +191,8 @@ class MyApp extends StatelessWidget {
                   name: Routes.createPlan,
                   page: () => const Directionality(
                       textDirection: TextDirection.rtl,
-                      child: CreatePlanScreen())), // Create a new plan // Trainee screen
+                      child:
+                          CreatePlanScreen())), // Create a new plan // Trainee screen
               GetPage(
                   name: Routes.myGyms,
                   page: () => const Directionality(

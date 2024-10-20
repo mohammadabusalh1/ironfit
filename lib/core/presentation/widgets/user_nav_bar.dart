@@ -102,7 +102,7 @@ class UserNavBar extends StatelessWidget {
       case 0:
         return 'الرئيسية';
       case 1:
-        return 'البرامج';
+        return 'البرنامج';
       case 2:
         return 'الحساب';
       default:

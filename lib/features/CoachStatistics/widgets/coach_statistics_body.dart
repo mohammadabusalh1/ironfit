@@ -29,6 +29,15 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
   // Method to fetch statistics data from Firestore
   Future<Map<String, dynamic>> fetchStatistics() async {
     String? coachId = await fetchCoachId();
+    if (coachId == null) {
+      print("No coach ID found.");
+      return {
+        'trainees': 0,
+        'new_trainees': 0,
+        'income': 0.0,
+      };
+    }
+
     try {
       // Fetch data from Firestore
       QuerySnapshot<Map<String, dynamic>> subscriptionsSnapshot =
@@ -38,30 +47,53 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
               .collection('subscriptions')
               .get();
 
+      // Handle empty snapshots
+      if (subscriptionsSnapshot.docs.isEmpty) {
+        print("No subscriptions found for coach ID: $coachId");
+        return {
+          'trainees': 0,
+          'new_trainees': 0,
+          'income': 0.0,
+        };
+      }
+
       List<Map<String, dynamic>> subscriptionsList =
           subscriptionsSnapshot.docs.map((doc) => doc.data()).toList();
 
       List<Map<String, dynamic>> newTrainees =
           subscriptionsList.where((subscription) {
-        return DateTime.parse(subscription['startDate'])
-            .isAfter(DateTime.now().subtract(Duration(days: 30)));
+        try {
+          return DateTime.parse(subscription['startDate'])
+              .isAfter(DateTime.now().subtract(Duration(days: 30)));
+        } catch (e) {
+          print(
+              "Error parsing date for subscription: ${subscription['startDate']} - $e");
+          return false; // Fallback if date parsing fails
+        }
       }).toList();
 
-      int income = subscriptionsList
-          .map((subscription) => int.parse(subscription['amountPaid']))
-          .reduce((a, b) => a + b);
-
-      if (subscriptionsList.isNotEmpty) {
-        return {
-          'trainees': subscriptionsList.length ?? 0,
-          'new_trainees': newTrainees.length ?? 0,
-          'income': income ?? 0.0,
-        };
-      } else {
-        throw Exception('No data found for this coach');
+      // Safely handle potential parsing errors
+      int income = 0;
+      try {
+        income = subscriptionsList
+            .map((subscription) => int.parse(subscription['amountPaid'] ?? '0'))
+            .reduce((a, b) => a + b);
+      } catch (e) {
+        print("Error calculating income: $e");
+        income = 0; // Default to 0 if parsing fails
       }
-    } catch (e) {
+
+      return {
+        'trainees': subscriptionsList.length,
+        'new_trainees': newTrainees.length,
+        'income': income.toDouble(), // Ensure income is returned as a double
+      };
+    } catch (e, stackTrace) {
+      // Log the error and stack trace for better debugging
       print("Error fetching statistics: $e");
+      print("Stack trace: $stackTrace");
+
+      // Return default values in case of an error
       return {
         'trainees': 0,
         'new_trainees': 0,
@@ -74,52 +106,86 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
     try {
       FirebaseAuth auth = FirebaseAuth.instance;
 
+      // Get the current user's UID
+      String? userId = auth.currentUser?.uid;
+      if (userId == null) {
+        print("User is not logged in.");
+        return {
+          '18-25': 0,
+          '26-35': 0,
+          '36-45': 0,
+          '46+': 0,
+        };
+      }
+
+      // Get the subscriptions collection for the coach
       CollectionReference<Map<String, dynamic>> subscriptions =
-          await FirebaseFirestore.instance
+          FirebaseFirestore.instance
               .collection('coaches')
-              .doc(auth.currentUser?.uid)
+              .doc(userId)
               .collection('subscriptions');
 
+      // Fetch data from Firestore
       QuerySnapshot<Map<String, dynamic>> snapshot = await subscriptions.get();
+
+      // If no data, log and return default values
+      if (snapshot.docs.isEmpty) {
+        print("No subscriptions found for coach with ID: $userId");
+        return {
+          '18-25': 0,
+          '26-35': 0,
+          '36-45': 0,
+          '46+': 0,
+        };
+      }
+
       List<Map<String, dynamic>> subscriptionsList =
           snapshot.docs.map((doc) => doc.data()).toList();
 
-      if (subscriptions != null) {
-        int age18to25 = (subscriptionsList.where((subscription) {
-          String ageString = subscription['age'];
-          int? age = int.tryParse(ageString);
-          return age! >= 18 && age! <= 25;
-        }).length);
+      // Calculate age distribution
+      int age18to25 = 0;
+      int age26to35 = 0;
+      int age36to45 = 0;
+      int age46Plus = 0;
 
-        int age26to35 = (subscriptionsList.where((subscription) {
-          String ageString = subscription['age'];
-          int? age = int.tryParse(ageString);
-          return age! >= 26 && age! <= 35;
-        }).length);
+      for (var subscription in subscriptionsList) {
+        String? ageString = subscription['age'];
+        if (ageString == null) {
+          print("Age field is missing in subscription: $subscription");
+          continue; // Skip invalid subscriptions
+        }
 
-        int age36to45 = (subscriptionsList.where((subscription) {
-          String ageString = subscription['age'];
-          int? age = int.tryParse(ageString);
-          return age! >= 36 && age! <= 45;
-        }).length);
+        int? age = int.tryParse(ageString);
+        if (age == null) {
+          print(
+              "Invalid age value: $ageString for subscription: $subscription");
+          continue; // Skip invalid age values
+        }
 
-        int age46Plus = (subscriptionsList.where((subscription) {
-          String ageString = subscription['age'];
-          int? age = int.tryParse(ageString);
-          return age! >= 46;
-        }).length);
-
-        return {
-          '18-25': age18to25,
-          '26-35': age26to35,
-          '36-45': age36to45,
-          '46+': age46Plus,
-        };
-      } else {
-        throw Exception('Document not found');
+        // Count based on age ranges
+        if (age >= 18 && age <= 25) {
+          age18to25++;
+        } else if (age >= 26 && age <= 35) {
+          age26to35++;
+        } else if (age >= 36 && age <= 45) {
+          age36to45++;
+        } else if (age >= 46) {
+          age46Plus++;
+        }
       }
-    } catch (e) {
-      print('Error fetching age distribution: $e');
+
+      return {
+        '18-25': age18to25,
+        '26-35': age26to35,
+        '36-45': age36to45,
+        '46+': age46Plus,
+      };
+    } catch (e, stackTrace) {
+      // Log detailed error and stack trace for debugging
+      print("Error fetching age distribution: $e");
+      print("Stack trace: $stackTrace");
+
+      // Return default values when an error occurs
       return {
         '18-25': 0,
         '26-35': 0,

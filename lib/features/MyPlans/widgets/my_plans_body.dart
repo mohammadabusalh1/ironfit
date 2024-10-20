@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
@@ -20,16 +19,83 @@ class _MyPlansBodyState extends State<MyPlansBody> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool isDateSortUp = true;
 
-  Future<void> deletePlan(String planId) async {
+  Future<void> deletePlan(BuildContext context, String planId) async {
     try {
+      // Show a confirmation dialog before deletion
+      bool confirmCancel = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            alignment: Alignment.center,
+            title: const Text(
+              'تأكيد الإلغاء',
+              textAlign: TextAlign.center,
+            ),
+            content: const Text(
+              'هل أنت متأكد أنك تريد حذف الخطة؟',
+              textAlign: TextAlign.end,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false); // User canceled
+                },
+                child:
+                    const Text('إلغاء', style: TextStyle(color: Palette.black)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Palette.redDelete,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(true); // User confirmed
+                },
+                child:
+                    const Text('تأكيد', style: TextStyle(color: Palette.white)),
+              ),
+            ],
+          );
+        },
+      );
+
+      // If the user cancels, return early
+      if (!confirmCancel) {
+        return;
+      }
+
+      // Check for null planId or current user
+      if (planId.isEmpty || _auth.currentUser == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('المستخدم غير مسجل دخول أو رقم الخطة مفقود')),
+        );
+        return;
+      }
+
+      // Try to delete the plan from Firestore
       await _firestore
           .collection('coaches')
           .doc(_auth.currentUser?.uid)
           .collection('plans')
           .doc(planId)
           .delete();
+
+      // Notify the user of success
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم حذف الخطة بنجاح')),
+      );
+    } on FirebaseException catch (e) {
+      // Handle Firebase-specific errors
+      print('Firebase error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ أثناء حذف الخطة: ${e.message}')),
+      );
     } catch (e) {
-      print(e.toString());
+      // Handle other types of errors
+      print('Unexpected error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('حدث خطأ غير متوقع أثناء حذف الخطة')),
+      );
     }
   }
 
@@ -57,15 +123,27 @@ class _MyPlansBodyState extends State<MyPlansBody> {
     });
   }
 
-  Stream<QuerySnapshot> getPlans() {
-    // Firestore query for sorted plans based on subscriptionDate
-    return _firestore
-        .collection('coaches')
-        .doc(_auth.currentUser?.uid)
-        .collection('plans')
-        .orderBy('createdAt',
-            descending: !isDateSortUp) // Sort based on the 'subscriptionDate'
-        .snapshots();
+  Stream<QuerySnapshot>? getPlans() {
+    // Ensure user is authenticated before attempting to fetch plans
+    final user = _auth.currentUser;
+    if (user == null) {
+      // You can return null or throw an error stream depending on how you want to handle it
+      return null; // or Stream.error('User not authenticated');
+    }
+
+    try {
+      // Firestore query for sorted plans based on subscriptionDate
+      return _firestore
+          .collection('coaches')
+          .doc(user.uid)
+          .collection('plans')
+          .orderBy('createdAt', descending: !isDateSortUp)
+          .snapshots();
+    } catch (e) {
+      // Log the error and return an error stream
+      print('Error fetching plans: $e');
+      return Stream.error('Failed to fetch plans: $e');
+    }
   }
 
   void toggleDateSort() {
@@ -275,8 +353,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                                       description, // Use non-nullable strings.
                                   icon: Icons.arrow_back,
                                   onPressed: () {
-                                    deletePlan(document
-                                        .id); // Assuming deletePlan is implemented correctly.
+                                    deletePlan(context, document.id);
                                   },
                                 );
                               }).toList(),

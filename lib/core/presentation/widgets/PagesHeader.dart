@@ -68,12 +68,11 @@ class DashboardHeader extends StatelessWidget {
       duration: Duration(seconds: 1),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
-        child: Image.asset(
-          trainerImage,
-          width: MediaQuery.of(context).size.height * 0.09,
-          height: MediaQuery.of(context).size.height * 0.09,
-          fit: BoxFit.cover,
-        ),
+        child: Image.network(
+            trainerImage,
+            width: MediaQuery.of(context).size.width * 0.16,
+            height: MediaQuery.of(context).size.height * 0.08,
+            fit: BoxFit.cover),
       ),
     );
   }

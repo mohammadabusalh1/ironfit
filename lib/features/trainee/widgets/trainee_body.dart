@@ -9,8 +9,10 @@ import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 
 class TraineeBody extends StatefulWidget {
-  final String email;
-  const TraineeBody({super.key, required this.email});
+  final String username;
+  final Function fetchTrainees;
+  const TraineeBody(
+      {super.key, required this.username, required this.fetchTrainees});
 
   @override
   _TraineeBodyState createState() => _TraineeBodyState();
@@ -36,21 +38,54 @@ class _TraineeBodyState extends State<TraineeBody> {
   }
 
   Future<void> fetchNumberOfDays() async {
-    final user = await _firestore
-        .collection('coaches')
-        .doc(_auth.currentUser?.uid)
-        .collection('subscriptions')
-        .where(
-          'email',
-          isEqualTo: widget.email,
-        )
-        .get();
+    try {
+      // Fetch the user's subscription document
+      final user = await _firestore
+          .collection('coaches')
+          .doc(_auth.currentUser?.uid)
+          .collection('subscriptions')
+          .where('username', isEqualTo: widget.username)
+          .get();
 
-    setState(() {
-      _numberOfDaysUserHave = DateTime.parse(user.docs[0]['endDate'])
-          .difference(DateTime.now())
-          .inDays;
-    });
+      // Check if any document was returned
+      if (user.docs.isNotEmpty) {
+        // Safely extract the end date and calculate the difference
+        var endDateStr = user.docs[0]['endDate'];
+        if (endDateStr != null) {
+          try {
+            // Parse the end date and calculate the difference in days
+            setState(() {
+              _numberOfDaysUserHave =
+                  DateTime.parse(endDateStr).difference(DateTime.now()).inDays;
+            });
+          } catch (e) {
+            // Handle the case where 'endDate' could not be parsed
+            print('Error parsing endDate: $e');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('تاريخ الانتهاء غير صالح')),
+            );
+          }
+        } else {
+          // Handle the case where 'endDate' is null
+          print('Error: endDate is null');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('تاريخ الانتهاء غير موجود')),
+          );
+        }
+      } else {
+        // Handle the case where no documents were returned
+        print('No subscriptions found for this user');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('لم يتم العثور على الاشتراك')),
+        );
+      }
+    } catch (e) {
+      // Catch any errors during the Firestore request or network issues
+      print('Error fetching user subscription: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ أثناء جلب البيانات')),
+      );
+    }
   }
 
   Future<void> fetchPlans() async {
@@ -70,46 +105,121 @@ class _TraineeBodyState extends State<TraineeBody> {
     });
   }
 
-  Future<void> cancelSubscription(BuildContext context, String email) async {
-    try {
-      // Retrieve the user's subscription data
-      final subscriptionDoc = await _firestore
-          .collection('coaches')
-          .doc(_auth.currentUser?.uid)
-          .collection('subscriptions')
-          .where('email', isEqualTo: email)
-          .get();
+  Future<void> cancelSubscription(BuildContext context, String username) async {
+    // Show a confirmation dialog before canceling
+    bool confirmCancel = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          alignment: Alignment.center,
+          title: Text(
+            'تأكيد الإلغاء',
+            textAlign: TextAlign.center,
+          ),
+          content: Text(
+            'هل أنت متأكد أنك تريد إلغاء الاشتراك لهذا المستخدم؟',
+            textAlign: TextAlign.end,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User canceled
+              },
+              child: Text('إلغاء', style: TextStyle(color: Palette.black)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Palette.redDelete,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(true); // User confirmed
+              },
+              child: Text('تأكيد', style: TextStyle(color: Palette.white)),
+            ),
+          ],
+        );
+      },
+    );
 
-      if (subscriptionDoc.docs.isNotEmpty) {
-        // Delete the subscription document
-        await _firestore
-            .collection('coaches')
-            .doc(_auth.currentUser?.uid)
-            .collection('subscriptions')
-            .doc(subscriptionDoc.docs[0].id)
-            .delete();
-
-        // Show a confirmation message
+    // If the user confirms cancellation
+    if (confirmCancel) {
+      try {
+        // Show a loading indicator while canceling
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('تم الغاء الاشتراك بنجاح'),
+            content: Text('جاري الغاء الاشتراك...'),
           ),
         );
 
-        Get.back();
-      } else {
-        // No subscription found for the user
+        // Call removePlan function
+        await removePlan();
+
+        // Fetch current user ID
+        String? coachId = _auth.currentUser?.uid;
+        if (coachId == null) {
+          throw Exception("لا يوجد مستخدم مسجل الدخول");
+        }
+
+        // Retrieve the user's subscription data
+        final subscriptionDoc = await _firestore
+            .collection('coaches')
+            .doc(coachId)
+            .collection('subscriptions')
+            .where('username', isEqualTo: username)
+            .get();
+
+        if (subscriptionDoc.docs.isNotEmpty) {
+          // Delete the subscription document
+          await _firestore
+              .collection('coaches')
+              .doc(coachId)
+              .collection('subscriptions')
+              .doc(subscriptionDoc.docs[0].id)
+              .delete();
+
+          // Show a success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('تم الغاء الاشتراك بنجاح'),
+            ),
+          );
+
+          widget.fetchTrainees();
+
+          // Navigate back after success
+          Get.back();
+        } else {
+          // No subscription found for the user
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('لا يوجد اشتراك بهذا الاسم'),
+            ),
+          );
+        }
+      } catch (e) {
+        String errorMessage;
+
+        // Handle Firebase and network-related errors specifically
+        if (e is FirebaseException) {
+          errorMessage = 'خطأ في الاتصال بقاعدة البيانات: ${e.message}';
+        } else if (e is NetworkImageLoadException) {
+          errorMessage = 'فشل الاتصال بالشبكة، تحقق من اتصالك بالإنترنت';
+        } else {
+          errorMessage = 'حدث خطأ غير متوقع: $e';
+        }
+
+        // Show detailed error message
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('لا يوجد اشتراك لهذا المستخدم'),
+          SnackBar(
+            content: Text(errorMessage),
           ),
         );
       }
-    } catch (e) {
-      // Show error message if something goes wrong
+    } else {
+      // User canceled the operation
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("حدث خطأ"),
+        const SnackBar(
+          content: Text('تم إلغاء عملية الحذف'),
         ),
       );
     }
@@ -118,11 +228,22 @@ class _TraineeBodyState extends State<TraineeBody> {
   Future<void> fetchUserPlan() async {
     final user = await _firestore
         .collection('trainees')
-        .where('email', isEqualTo: widget.email)
+        .where('username', isEqualTo: widget.username)
         .get();
-    if (user.docs.isNotEmpty && user.docs[0]['plan'] != null) {
-      planName = user.docs[0]['plan']['name'] ??
-          'Default Plan Name'; // Fallback to default if 'name' is missing
+    if (user.docs.isNotEmpty) {
+      // Get the document snapshot
+      var userDoc = user.docs[0].data();
+
+      // Check if 'plan' field exists in the document snapshot
+      if (userDoc != null && userDoc.containsKey('plan')) {
+        var plan = userDoc['plan'];
+        planName = plan != null && plan.containsKey('name')
+            ? plan['name'] ??
+                'Default Plan Name' // Fallback to default if 'name' is missing
+            : 'لا يوجد خطة!';
+      } else {
+        planName = 'لا يوجد خطة!';
+      }
     } else {
       planName = 'لا يوجد خطة!';
     }
@@ -130,17 +251,160 @@ class _TraineeBodyState extends State<TraineeBody> {
 
   Future<void> removePlan() async {
     try {
-      await _firestore
+      // Show confirmation dialog
+      bool confirmCancel = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            alignment: Alignment.center,
+            title: Text(
+              'تأكيد الإلغاء',
+              textAlign: TextAlign.center,
+            ),
+            content: Text(
+              'هل أنت متأكد أنك تريد حذف الخطة لهذا المستخدم؟',
+              textAlign: TextAlign.end,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false); // User canceled
+                },
+                child: Text('إلغاء', style: TextStyle(color: Palette.black)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Palette.redDelete,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(true); // User confirmed
+                },
+                child: Text('تأكيد', style: TextStyle(color: Palette.white)),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (!confirmCancel) {
+        return; // If user cancels, exit the method
+      }
+
+      // Fetch the user based on the username
+      var querySnapshot = await _firestore
           .collection('trainees')
-          .where('email', isEqualTo: widget.email)
-          .get()
-          .then((querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
-          _firestore.collection('trainees').doc(doc.id).update({'plan': null});
-        });
-      });
+          .where('username', isEqualTo: widget.username)
+          .get();
+
+      // Check if any documents are found
+      if (querySnapshot.docs.isEmpty) {
+        // If no user is found, notify the user
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('لا يوجد مستخدم بهذا الاسم!')),
+        );
+        return;
+      }
+
+      // Update 'plan' field to null for each found document
+      for (var doc in querySnapshot.docs) {
+        try {
+          await _firestore
+              .collection('trainees')
+              .doc(doc.id)
+              .update({'plan': null});
+        } catch (e) {
+          // If there is an error while updating the Firestore document, log it
+          print('Error removing plan for user ${doc.id}: $e');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('فشل حذف الخطة للمستخدم ${doc.id}')),
+          );
+        }
+      }
+
+      // Fetch updated data
+      await fetchUserPlan();
+      await fetchPlans();
+
+      // Notify the user of success
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('تم حذف الخطة بنجاح!')),
+      );
     } catch (e) {
-      print(e.toString());
+      // Catch any unexpected errors that occur in the try block
+      print('Error in removePlan: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ أثناء إلغاء الخطة')),
+      );
+    }
+  }
+
+  Future<void> _updatePlan(newValue) async {
+    try {
+      // Get the query snapshot
+      var querySnapshot = await _firestore
+          .collection('trainees')
+          .where('username', isEqualTo: widget.username)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Get the document reference of the first matching document
+        var docRef = querySnapshot.docs.first.reference;
+
+        // Fetch the plan document from the 'coaches' collection
+        DocumentSnapshot<Map<String, dynamic>> plans = await _firestore
+            .collection('coaches')
+            .doc(_auth.currentUser?.uid)
+            .collection('plans')
+            .doc(newValue)
+            .get();
+
+        // Check if the plan exists
+        if (plans.exists && plans.data() != null) {
+          // Update the document with the plan data
+          await docRef.update({
+            'plan': {
+              ...plans.data()!,
+              'coachId': _auth.currentUser?.uid,
+            },
+          });
+
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('تم إضافة الخطة بنجاح'),
+            ),
+          );
+
+          // Refresh data
+          fetchUserPlan();
+          fetchPlans();
+          Navigator.of(context).pop();
+        } else {
+          // Handle case where plan doesn't exist
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('لم يتم العثور على الخطة'),
+            ),
+          );
+          Navigator.of(context).pop();
+        }
+      } else {
+        // Handle case where trainee document is not found
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('لم يتم العثور على المتدرب'),
+          ),
+        );
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      // Catch any errors that occur during Firestore operations
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('حدث خطأ أثناء تحديث الخطة: $e'),
+        ),
+      );
     }
   }
 
@@ -264,51 +528,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                             );
                           }).toList(),
 
-                          onChanged: (newValue) async {
-                            await _firestore
-                                .collection('trainees')
-                                .where('email', isEqualTo: widget.email)
-                                .get()
-                                .then((querySnapshot) async {
-                              // Check if any document matches the query
-                              if (querySnapshot.docs.isNotEmpty) {
-                                // Get the document reference of the first matching document
-                                var docRef = querySnapshot.docs.first.reference;
-
-                                DocumentSnapshot<Map<String, dynamic>> plans =
-                                    await _firestore
-                                        .collection('coaches')
-                                        .doc(_auth.currentUser?.uid)
-                                        .collection('plans')
-                                        .doc(newValue)
-                                        .get();
-
-                                // Update the document
-                                await docRef.update({
-                                  'plan': {
-                                    ...(plans.data() ??
-                                        {}), // If plans.data() is null, an empty map is used
-                                    'coachId': _auth.currentUser?.uid,
-                                  },
-                                });
-
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('تم إضافة الخطة بنجاح'),
-                                  ),
-                                );
-
-                                Navigator.of(context).pop();
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('لم يتم العثور على الخطة'),
-                                  ),
-                                );
-                                Navigator.of(context).pop();
-                              }
-                            });
-                          },
+                          onChanged: _updatePlan,
                         ),
                       ],
                     ),
@@ -428,7 +648,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                           flex: 1,
                           child: ElevatedButton(
                             onPressed: () {
-                              cancelSubscription(context, widget.email);
+                              cancelSubscription(context, widget.username);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor:

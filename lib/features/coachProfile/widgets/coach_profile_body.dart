@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
-import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:path/path.dart' as path;
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
@@ -21,6 +25,7 @@ class CoachProfileBody extends StatefulWidget {
 class _CoachProfileBodyState extends State<CoachProfileBody> {
   final CoachProfileController controller = Get.find();
   String? fullName;
+  late String imageUrl;
   late String email;
   bool isLoading = true;
   PreferencesService preferencesService = PreferencesService();
@@ -29,7 +34,85 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   void initState() {
     super.initState();
     email = '';
+    imageUrl =
+        'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
     fetchUserName();
+  }
+
+  Future<void> changeUserImage() async {
+    final ImagePicker _picker = ImagePicker();
+
+    // Pick an image from the gallery
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        isLoading = true;
+      });
+
+      try {
+        if (imageUrl != null) {
+          try {
+            Get.dialog(Center(child: CircularProgressIndicator()),
+                barrierDismissible: false);
+            final storageRef = FirebaseStorage.instance.ref().child(
+                'profile_images/${FirebaseAuth.instance.currentUser!.uid}.jpg');
+            await storageRef.putFile(File(pickedFile.path)!).then(
+              (snapshot) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('تم تحميل الصورة بنجاح')),
+                );
+              },
+            );
+            final downloadUrl = await storageRef.getDownloadURL();
+
+            setState(() {
+              imageUrl = downloadUrl;
+            });
+
+            // Update the image URL in the Firestore database
+            String? coachId = await fetchCoachId();
+            if (coachId != null) {
+              await FirebaseFirestore.instance
+                  .collection('coaches')
+                  .doc(coachId)
+                  .update({
+                'profileImageUrl': downloadUrl,
+              });
+
+              setState(() {
+                imageUrl = downloadUrl;
+                isLoading = false;
+              });
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('تم تحديث الصورة بنجاح!')),
+              );
+            }
+
+            Get.back();
+          } catch (e) {
+            Get.back();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('حدث خطأ ما')),
+            );
+          }
+        }
+      } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('حدث خطأ أثناء تحميل الصورة: $e')),
+        );
+      }
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> fetchUserName() async {
@@ -49,6 +132,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
         setState(() {
           fullName = '$firstName $lastName';
           email = userDoc['email'];
+          imageUrl = userDoc['profileImageUrl'];
         });
       } else {
         print("User data not found");
@@ -472,13 +556,34 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
               borderRadius:
                   BorderRadius.circular(50), // Same as ClipRRect borderRadius
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50), // Match the borderRadius
-              child: Image.asset(
-                Assets.myTrainerImage,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
+            child: InkWell(
+              onTap: changeUserImage,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: imageUrl.isEmpty
+                    ? CircularProgressIndicator() // Show loading indicator if image is empty
+                    : Image.network(
+                        imageUrl,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) {
+                            return child;
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        (loadingProgress.expectedTotalBytes ??
+                                            1)
+                                    : null,
+                              ),
+                            );
+                          }
+                        },
+                      ),
               ),
             ),
           ),

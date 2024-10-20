@@ -20,6 +20,8 @@ class _UserProfileBodyState extends State<UserProfileBody> {
   String? fullName;
   String email = FirebaseAuth.instance.currentUser!.email ?? 'لا يوجد';
   bool isLoading = true;
+  String trainerImage =
+      'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
   PreferencesService preferencesService = PreferencesService();
 
   @override
@@ -45,6 +47,8 @@ class _UserProfileBodyState extends State<UserProfileBody> {
 
         setState(() {
           fullName = '$firstName $lastName';
+          trainerImage = userDoc['profileImageUrl'] ??
+              'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
         });
       } else {
         print("User data not found");
@@ -256,10 +260,6 @@ class _UserProfileBodyState extends State<UserProfileBody> {
     final TextEditingController newPasswordController = TextEditingController();
     final TextEditingController confirmPasswordController =
         TextEditingController();
-
-    String? oldPassword;
-    String? newPassword;
-    String? confirmPassword;
 
     showDialog(
       context: context,
@@ -498,8 +498,8 @@ class _UserProfileBodyState extends State<UserProfileBody> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(50), // Match the borderRadius
-              child: Image.asset(
-                Assets.myTrainerImage,
+              child: Image.network(
+                trainerImage,
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,

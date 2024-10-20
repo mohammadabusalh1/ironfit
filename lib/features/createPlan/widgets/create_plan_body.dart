@@ -504,7 +504,8 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
     final TextEditingController repetitionsController = TextEditingController();
 
     String? selectedExerciseName;
-    String? selectedExerciseImage;
+    String selectedExerciseImage =
+        'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
 
     return Theme(
       data: Theme.of(context).copyWith(
@@ -537,16 +538,61 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                     items: exercisesJson,
                     value: selectedExerciseName,
                     onChanged: (selectedExercise) {
-                      setState(() {
-                        selectedExerciseName = selectedExercise;
-                        selectedExerciseImage = exercisesJson.firstWhere(
-                              (exercise) =>
-                                  exercise['Exercise_Name'] ==
-                                  selectedExerciseName,
-                              orElse: () => {},
-                            )['Exercise_Image'] ??
-                            'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
-                      });
+                      if (selectedExercise == null ||
+                          selectedExercise.isEmpty) {
+                        Get.snackbar('', '',
+                            snackPosition: SnackPosition.TOP,
+                            messageText: Text(
+                              'الرجاء اختيار تمرين صالح',
+                              style: TextStyle(color: Colors.white),
+                              textAlign: TextAlign.right,
+                            ),
+                            titleText: Text(
+                              'خطأ',
+                              style: TextStyle(color: Colors.white),
+                              textAlign: TextAlign.right,
+                            ));
+                        return;
+                      }
+
+                      try {
+                        setState(() {
+                          // Search for the selected exercise in exercisesJson
+                          selectedExerciseName = selectedExercise;
+
+                          // Use firstWhere safely, and fallback if exercise not found
+                          final exerciseData = exercisesJson.firstWhere(
+                            (exercise) =>
+                                exercise['Exercise_Name'] ==
+                                selectedExerciseName,
+                            orElse: () => {
+                              'Exercise_Name': selectedExerciseName,
+                              'Exercise_Image':
+                                  'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg'
+                            },
+                          );
+
+                          // Assign exercise image, either found or fallback
+                          selectedExerciseImage = exerciseData[
+                                  'Exercise_Image'] ??
+                              'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+                        });
+                      } catch (e) {
+                        // Log the error and show a message to the user
+                        print("Error finding exercise image: $e");
+                        Get.snackbar('', '',
+                            snackPosition: SnackPosition.TOP,
+                            messageText: Text(
+                              'حدث خطأ أثناء جلب صورة التمرين',
+                              style: TextStyle(color: Colors.white),
+                              textAlign: TextAlign.right,
+                            ),
+                            titleText: Text(
+                              'خطأ',
+                              style: TextStyle(color: Colors.white),
+                              textAlign: TextAlign.right,
+                            ));
+                      }
                     },
                     labelText: "التمرين"),
                 const SizedBox(height: 16),
@@ -570,16 +616,73 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                 if (selectedExerciseName != null &&
                     _validateExercise(selectedExerciseName!,
                         roundsController.text, repetitionsController.text)) {
-                  setState(() {
-                    day.exercises.add(Exercise(
-                      name: selectedExerciseName!,
-                      rounds: int.parse(roundsController.text),
-                      repetitions: int.parse(repetitionsController.text),
-                      image: selectedExerciseImage ??
-                          'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg',
-                    ));
-                  });
-                  Navigator.pop(context);
+                  try {
+                    // Validate rounds and repetitions input
+                    final int rounds = int.parse(roundsController.text);
+                    final int repetitions =
+                        int.parse(repetitionsController.text);
+
+                    // Fallback to default image if selectedExerciseImage is invalid
+                    final String imageUrl = selectedExerciseImage.isEmpty
+                        ? 'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg'
+                        : selectedExerciseImage;
+
+                    // Update the state with validated data
+                    setState(() {
+                      day.exercises.add(Exercise(
+                        name: selectedExerciseName!,
+                        rounds: rounds,
+                        repetitions: repetitions,
+                        image: imageUrl,
+                      ));
+                    });
+
+                    // Close the dialog after successfully adding the exercise
+                    Navigator.pop(context);
+                  } on FormatException catch (e) {
+                    // Handle specific parsing error
+                    print("Invalid number format: $e");
+                    Get.snackbar('', '',
+                        snackPosition: SnackPosition.TOP,
+                        messageText: Text(
+                          'الرجاء إدخال قيم صحيحة للجولات والتكرارات',
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.right,
+                        ),
+                        titleText: Text(
+                          'خطأ',
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.right,
+                        ));
+                  } on Exception catch (e) {
+                    // Handle other generic errors
+                    print("Error: $e");
+                    Get.snackbar('', '',
+                        snackPosition: SnackPosition.TOP,
+                        messageText: Text(
+                          'الرجاء اختيار تمرين صحيح وإدخال جميع البيانات',
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.right,
+                        ),
+                        titleText: Text(
+                          'خطأ',
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.right,
+                        ));
+                  }
+                } else {
+                  Get.snackbar('', '',
+                      snackPosition: SnackPosition.TOP,
+                      messageText: Text(
+                        'الرجاء اختيار تمرين صحيح وإدخال جميع البيانات',
+                        style: TextStyle(color: Colors.white),
+                        textAlign: TextAlign.right,
+                      ),
+                      titleText: Text(
+                        'خطأ',
+                        style: TextStyle(color: Colors.white),
+                        textAlign: TextAlign.right,
+                      ));
                 }
               },
               child: const Text('حفظ', style: TextStyle(color: Palette.black)),
@@ -660,19 +763,20 @@ class Exercise {
   final String name;
   final int rounds;
   final int repetitions;
-  final String? image;
+  final String image;
 
   Exercise({
     required this.name,
     required this.rounds,
     required this.repetitions,
-    this.image,
+    this.image =
+        'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg',
   });
 
   factory Exercise.fromMap(Map<String, dynamic> map) {
     return Exercise(
       name: map['name'] as String,
-      image: map['image'] as String?,
+      image: map['image'] as String,
       rounds: map['rounds'] as int,
       repetitions: map['repetitions'] as int,
     );

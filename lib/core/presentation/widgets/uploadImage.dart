@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -27,6 +28,7 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
+        _uploadImage();
       });
     }
   }
@@ -46,6 +48,8 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
   Future<void> _uploadImage() async {
     if (_selectedImage != null) {
       try {
+        Get.dialog(Center(child: CircularProgressIndicator()),
+            barrierDismissible: false);
         final storageRef = FirebaseStorage.instance
             .ref()
             .child('profile_images/${widget.userId}.jpg');
@@ -66,7 +70,10 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
         if (widget.onImageUploaded != null) {
           widget.onImageUploaded!(imageUrl);
         }
+
+        Get.back();
       } catch (e) {
+        Get.back();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('حدث خطأ ما')),
         );
@@ -166,19 +173,6 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _uploadImage,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    'رفع الصورة',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
               ],
             ],
           ),

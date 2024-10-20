@@ -27,6 +27,7 @@ dependencies:
   image_picker: ^1.1.2
   carousel_slider: ^5.0.0
   dropdown_search: ^6.0.1
+  flutter_launcher_icons: ^0.14.1
 
   # Add any other packages your project might need like HTTP for API calls
   # Example:
@@ -66,8 +67,11 @@ flutter:
 
 flutter_native_splash:
   color: "#ffbb02"  # Background color
-  image: assets\images\IronFitLogo2.png  # Logo or image you want to display
+  image: assets\images\Welcome-to.png  # Logo or image you want to display
   android: true  # Enable splash screen for Android
   ios: true  # Enable splash screen for iOS
   
-
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo.png"

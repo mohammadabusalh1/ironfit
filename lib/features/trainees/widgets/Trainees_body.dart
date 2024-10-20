@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
-import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/Trainee/screens/trainee_screen.dart';
 
 class TraineesBody extends StatefulWidget {
@@ -52,9 +50,6 @@ class _TraineesBodyState extends State<TraineesBody> {
     });
   }
 
-  final PageController _pageController = PageController(initialPage: 0);
-  final int _currentPage = 0;
-
   final _formKey = GlobalKey<FormState>(); // Form key for validation
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
@@ -75,7 +70,7 @@ class _TraineesBodyState extends State<TraineesBody> {
   }
 
   void showAddTraineeDialog(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
+    final TextEditingController usernameController = TextEditingController();
     final TextEditingController startDateController = TextEditingController();
     final TextEditingController endDateController = TextEditingController();
     final TextEditingController amountPaidController = TextEditingController();
@@ -143,21 +138,14 @@ class _TraineesBodyState extends State<TraineesBody> {
                                 fontSize: 14, fontWeight: FontWeight.w500)),
                         const SizedBox(height: 16),
                         TextFormField(
-                          controller: emailController,
+                          controller: usernameController,
                           decoration: const InputDecoration(
-                            labelText: 'الإيميل',
+                            labelText: 'إسم الحساب',
                             border: OutlineInputBorder(),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'يرجى إدخال الإيميل';
-                            }
-                            // Email RegEx for validation
-                            String pattern =
-                                r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-                            RegExp regExp = RegExp(pattern);
-                            if (!regExp.hasMatch(value)) {
-                              return 'يرجى إدخال إيميل صالح';
                             }
                             return null;
                           },
@@ -243,7 +231,21 @@ class _TraineesBodyState extends State<TraineesBody> {
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
-                          String email = emailController.text.trim();
+                          Get.dialog(Center(child: CircularProgressIndicator()),
+                              barrierDismissible: false);
+                          String username = usernameController.text.trim();
+
+                          if (trainees.any(
+                              (trainee) => trainee['username'] == username)) {
+                            Navigator.of(context).pop();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('المتدرب موجود بالفعل')),
+                            );
+                            Navigator.of(context).pop();
+                            return;
+                          }
+
                           String startDate = startDateController.text.trim();
                           String endDate = endDateController.text.trim();
                           String amountPaid = amountPaidController.text.trim();
@@ -252,25 +254,28 @@ class _TraineesBodyState extends State<TraineesBody> {
 
                           var existingUser = await FirebaseFirestore.instance
                               .collection('trainees')
-                              .doc(email)
+                              .where('username', isEqualTo: username)
                               .get();
 
-                          if (existingUser.exists) {
+                          if (existingUser.docs.isNotEmpty) {
                             // Add the new trainee to Firestore
                             await FirebaseFirestore.instance
                                 .collection('coaches')
                                 .doc(coachId)
                                 .collection('subscriptions')
                                 .add({
-                              'fullName': existingUser.data()?['firstName'] +
-                                  ' ' +
-                                  existingUser.data()?['lastName'],
-                              'age': existingUser.data()?['age'],
-                              'email': email,
+                              'fullName': existingUser.docs.first['firstName'] +
+                                      ' ' +
+                                      existingUser.docs.first['lastName'] ??
+                                  ['lastName'],
+                              'age': existingUser.docs.first['age'],
+                              'username': username,
                               'startDate': startDate,
                               'endDate': endDate,
                               'amountPaid': amountPaid,
                               'debts': debts,
+                              'profileImageUrl':
+                                  existingUser.docs.first['profileImageUrl'],
                             });
 
                             // Refresh the trainee list
@@ -281,6 +286,9 @@ class _TraineesBodyState extends State<TraineesBody> {
                               const SnackBar(
                                   content: Text('تمت إضافة المتدرب بنجاح')),
                             );
+
+                            // Close the dialog
+                            Navigator.of(context).pop();
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -522,11 +530,11 @@ class _TraineesBodyState extends State<TraineesBody> {
               DateTime.parse(trainee['endDate']).millisecondsSinceEpoch >
                       DateTime.now().millisecondsSinceEpoch
                   ? 'مشترك'
-                  : 'غير مشترك ' ?? '',
-              Assets.myGymImage,
+                  : 'غير مشترك ',
+              trainee['profileImageUrl'],
               () => Get.to(Directionality(
                   textDirection: TextDirection.rtl,
-                  child: TraineeScreen(email: trainee['email']))),
+                  child: TraineeScreen(username: trainee['username'], fetchTrainees: fetchTrainees))),
             );
           },
         ),
@@ -551,7 +559,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(imagePath,
+                    child: Image.network(imagePath,
                         width: 40, height: 40, fit: BoxFit.cover),
                   ),
                   const SizedBox(width: 12),

@@ -43,35 +43,60 @@ class _EditPlanBodyState extends State<EditPlanBody> {
   Future<void> _fetchPlanData() async {
     try {
       final user = _auth.currentUser;
-      if (user != null) {
-        final planDoc = await _firestore
-            .collection('coaches')
-            .doc(user.uid)
-            .collection('plans')
-            .doc(widget.planId)
-            .get();
 
-        if (planDoc.exists) {
-          final planData = planDoc.data()!;
-          _planNameController.text = planData['name'];
-          _planDescriptionController.text = planData['description'];
-
-          setState(() {
-            trainingDays = (planData['trainingDays'] as Map).entries.map((e) {
-              final day = e.key;
-              final exercises = (e.value as List)
-                  .map((exercise) => Exercise(
-                        name: exercise['name'],
-                        rounds: exercise['rounds'],
-                        repetitions: exercise['repetitions'],
-                        image: exercise['image'],
-                      ))
-                  .toList();
-              return TrainingDay(day: day, exercises: exercises);
-            }).toList();
-          });
-        }
+      if (user == null) {
+        Get.snackbar('Error', 'User is not authenticated',
+            backgroundColor: Colors.red, colorText: Colors.white);
+        return;
       }
+
+      final planDoc = await _firestore
+          .collection('coaches')
+          .doc(user.uid)
+          .collection('plans')
+          .doc(widget.planId)
+          .get();
+
+      if (!planDoc.exists) {
+        Get.snackbar('Error', 'The requested plan does not exist.',
+            backgroundColor: Colors.red, colorText: Colors.white);
+        return;
+      }
+
+      final planData = planDoc.data();
+
+      if (planData == null || planData.isEmpty) {
+        Get.snackbar('Error', 'Plan data is missing or empty',
+            backgroundColor: Colors.red, colorText: Colors.white);
+        return;
+      }
+
+      // Safely access fields and provide fallback values
+      final planName = planData['name'] ?? 'No plan name';
+      final planDescription =
+          planData['description'] ?? 'No description available';
+
+      _planNameController.text = planName;
+      _planDescriptionController.text = planDescription;
+
+      setState(() {
+        trainingDays = (planData['trainingDays'] as Map?)?.entries.map((e) {
+              final day = e.key;
+              final exercises = (e.value as List?)?.map((exercise) {
+                    return Exercise(
+                      name: exercise['name'] ?? 'Unnamed exercise',
+                      rounds: exercise['rounds'] ?? 0,
+                      repetitions: exercise['repetitions'] ?? 0,
+                      image:
+                          exercise['image'] ?? 'https://default-image-url.jpg',
+                    );
+                  }).toList() ??
+                  [];
+
+              return TrainingDay(day: day, exercises: exercises);
+            }).toList() ??
+            [];
+      });
     } catch (e) {
       Get.snackbar('Error', 'Failed to fetch plan data: $e',
           backgroundColor: Colors.red, colorText: Colors.white);
@@ -222,6 +247,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
   }
 
   Widget _buildTrainingDayCard(TrainingDay day, int index) {
+    String dayName = day.day.contains('-') ? day.day.split('-')[1] : day.day;
     return Card(
       color: Palette.secondaryColor,
       child: Padding(
@@ -230,17 +256,17 @@ class _EditPlanBodyState extends State<EditPlanBody> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              day.day == 'sun'
+              dayName == 'sun'
                   ? 'الاحد'
-                  : day.day == 'mon'
+                  : dayName == 'mon'
                       ? 'الاثنين'
-                      : day.day == 'tue'
+                      : dayName == 'tue'
                           ? 'الثلاثاء'
-                          : day.day == 'wed'
+                          : dayName == 'wed'
                               ? 'الاربعاء'
-                              : day.day == 'thu'
+                              : dayName == 'thu'
                                   ? 'الخميس'
-                                  : day.day == 'fri'
+                                  : dayName == 'fri'
                                       ? 'الجمعة'
                                       : 'السبت',
               style: const TextStyle(
@@ -313,7 +339,47 @@ class _EditPlanBodyState extends State<EditPlanBody> {
     });
   }
 
-  void _removeTrainingDay(int index) {
+  void _removeTrainingDay(int index) async {
+    bool confirmCancel = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          alignment: Alignment.center,
+          title: const Text(
+            'تأكيد الإلغاء',
+            textAlign: TextAlign.center,
+          ),
+          content: const Text(
+            'هل أنت متأكد أنك تريد الحذف؟',
+            textAlign: TextAlign.end,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User canceled
+              },
+              child:
+                  const Text('إلغاء', style: TextStyle(color: Palette.black)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Palette.redDelete,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(true); // User confirmed
+              },
+              child:
+                  const Text('تأكيد', style: TextStyle(color: Palette.white)),
+            ),
+          ],
+        );
+      },
+    );
+
+    // If the user cancels, return early
+    if (!confirmCancel) {
+      return;
+    }
     setState(() {
       trainingDays.removeAt(index);
     });
@@ -419,8 +485,8 @@ class _EditPlanBodyState extends State<EditPlanBody> {
 
   Widget _buildExerciseDialog(
       TrainingDay day, List<Map<String, dynamic>> exercisesJson) {
-    final TextEditingController roundsController = TextEditingController();
-    final TextEditingController repetitionsController = TextEditingController();
+    TextEditingController roundsController = TextEditingController();
+    TextEditingController repetitionsController = TextEditingController();
 
     String? selectedExerciseName;
     String? selectedExerciseImage;
@@ -456,30 +522,48 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                     items: exercisesJson,
                     value: selectedExerciseName,
                     onChanged: (selectedExercise) async {
-                      PreferencesService prefsService = PreferencesService();
-                      SharedPreferences prefs =
-                          await prefsService.getPreferences();
+                      try {
+                        // Ensure selectedExercise is not null
+                        if (selectedExercise == null) {
+                          throw Exception('Selected exercise is null');
+                        }
 
-                      prefs
-                          .setString('selectedExerciseName', selectedExercise!)
-                          .then((v) {
-                        if (v) {
-                          String? selectedExerciseImage =
+                        PreferencesService prefsService = PreferencesService();
+                        SharedPreferences prefs =
+                            await prefsService.getPreferences();
+
+                        // Store selectedExerciseName in preferences
+                        bool success = await prefs.setString(
+                            'selectedExerciseName', selectedExercise);
+
+                        if (success) {
+                          // Safely access exercise data from the JSON list
+                          String selectedExerciseImage =
                               exercisesJson.firstWhere(
                             (exercise) =>
-                                exercise['Exercise_Name'] ==
-                                prefs.getString('selectedExerciseName'),
-                            orElse: () => {},
+                                exercise['Exercise_Name'] == selectedExercise,
+                            orElse: () => {
+                              'Exercise_Name': selectedExercise,
+                              'Exercise_Image':
+                                  'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg'
+                            },
                           )['Exercise_Image'];
-                          prefs.setString(
+
+                          // Save selected exercise image to preferences
+                          await prefs.setString(
                               'selectedExerciseImage',
                               selectedExerciseImage ??
                                   'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg');
                         } else {
-                          prefs.setString('selectedExerciseImage',
+                          // If saving selectedExerciseName failed, use default image URL
+                          await prefs.setString('selectedExerciseImage',
                               'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg');
                         }
-                      });
+                      } catch (e) {
+                        // Log the error for debugging purposes
+                        print(
+                            "An error occurred while saving selected exercise: $e");
+                      }
                     },
                     labelText: "التمرين"),
                 const SizedBox(height: 16),
@@ -505,7 +589,12 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                 selectedExerciseName = prefs.getString('selectedExerciseName');
                 selectedExerciseImage =
                     prefs.getString('selectedExerciseImage');
-                print(selectedExerciseImage);
+
+                if (selectedExerciseImage == null ||
+                    selectedExerciseImage!.isEmpty) {
+                  selectedExerciseImage =
+                      'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+                }
                 if (selectedExerciseName != null &&
                     _validateExercise(selectedExerciseName!,
                         roundsController.text, repetitionsController.text)) {
@@ -514,8 +603,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                       name: selectedExerciseName!,
                       rounds: int.parse(roundsController.text),
                       repetitions: int.parse(repetitionsController.text),
-                      image: selectedExerciseImage ??
-                          'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg',
+                      image: selectedExerciseImage!,
                     ));
                   });
                   Navigator.pop(context);
@@ -620,14 +708,15 @@ class _EditPlanBodyState extends State<EditPlanBody> {
           'description': _planDescriptionController.text,
           'trainingDays': {
             for (var day in trainingDays)
-              (day.day.contains('-') ? day.day.split('-')[1] : day.day): day.exercises
-                  .map((e) => {
-                        'name': e.name,
-                        'rounds': e.rounds,
-                        'repetitions': e.repetitions,
-                        'image': e.image,
-                      })
-                  .toList()
+              (day.day.contains('-') ? day.day.split('-')[1] : day.day):
+                  day.exercises
+                      .map((e) => {
+                            'name': e.name,
+                            'rounds': e.rounds,
+                            'repetitions': e.repetitions,
+                            'image': e.image,
+                          })
+                      .toList()
           }
         });
         Get.snackbar('نجاح', 'تم حفظ التعديلات بنجاح',

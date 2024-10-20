@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/widgets/PagesHeader.dart';
 import 'package:ironfit/core/presentation/widgets/exersiceCarousel.dart';
-import 'package:ironfit/features/dashboard/controllers/trainer_dashboard_controller.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 
 class TrainerDashboardBody extends StatefulWidget {
@@ -16,14 +14,13 @@ class TrainerDashboardBody extends StatefulWidget {
 }
 
 class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
-  final TrainerDashboardController controller =
-      Get.put(TrainerDashboardController());
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   String trainerName = '';
   String trainerEmail = '';
-  String trainerImage = '';
+  String trainerImage =
+      'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
   List<Map<String, String>> exercises = [];
 
   @override
@@ -36,55 +33,61 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
   Future<void> _fetchTrainerData() async {
     try {
       User? user = _auth.currentUser;
-      if (user != null) {
-        DocumentSnapshot userDoc =
-            await _firestore.collection('trainees').doc(user.uid).get();
-
-        // Fetch user details
-        setState(() {
-          trainerName = userDoc['firstName'] ??
-              'لا يوجد' + ' ' + userDoc['lastName'] ??
-              'لا يوجد';
-          trainerEmail = userDoc['email'] ?? 'البريد الإلكتروني';
-          trainerImage = userDoc['profileImageUrl'] ??
-              'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
-        });
-
-        //get today
-        DateTime now = DateTime.now();
-        List<String> weekdays = [
-          'mon',
-          'tue',
-          'wed',
-          'thu',
-          'fri',
-          'sat',
-          'sun'
-        ];
-
-        var dynamicExercises =
-            userDoc['plan']['trainingDays'][weekdays[now.weekday - 1]] ?? [];
-
-        if (dynamicExercises is List) {
-          // Convert each item from Map<dynamic, dynamic> to Map<String, String>
-          setState(() {
-            exercises = dynamicExercises.map((exercise) {
-              if (exercise is Map) {
-                // Convert each entry from dynamic to String
-                return exercise.map(
-                    (key, value) => MapEntry(key.toString(), value.toString()));
-              }
-              return <String,
-                  String>{}; // Return an empty map if the structure doesn't match
-            }).toList();
-            print(exercises);
-          });
-        } else {
-          print("Error: Expected a list of exercises but got something else.");
-        }
+      if (user == null) {
+        print('User is not logged in');
+        return;
       }
+
+      // Fetch user document from Firestore
+      DocumentSnapshot userDoc =
+          await _firestore.collection('trainees').doc(user.uid).get();
+
+      if (!userDoc.exists) {
+        print('User document does not exist');
+        return;
+      }
+
+      // Fetch user details with null safety checks
+      setState(() {
+        trainerName =
+            '${userDoc['firstName'] ?? 'لا يوجد'} ${userDoc['lastName'] ?? 'لا يوجد'}';
+        trainerEmail = userDoc['email'] ?? 'البريد الإلكتروني';
+        trainerImage = userDoc['profileImageUrl'] ??
+            'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+      });
+
+      // Get the current day of the week
+      DateTime now = DateTime.now();
+      List<String> weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+      // Safely fetch today's exercises
+      var dynamicExercises =
+          userDoc['plan']['trainingDays'][weekdays[now.weekday - 1]] ?? [];
+
+      // Check if dynamicExercises is a List before processing it
+      if (dynamicExercises is List) {
+        setState(() {
+          exercises = dynamicExercises.map((exercise) {
+            if (exercise is Map) {
+              // Safely convert the exercise from dynamic to String
+              return exercise.map(
+                  (key, value) => MapEntry(key.toString(), value.toString()));
+            }
+            return <String,
+                String>{}; // Return an empty map if the structure doesn't match
+          }).toList();
+          print(exercises);
+        });
+      } else {
+        print("Error: Expected a list of exercises but got something else.");
+      }
+    } on FirebaseException catch (e) {
+      print('Firebase error: ${e.message}');
+      // Optionally, show a snackbar or an alert to notify the user
+      // ShowSnackbar or use other Flutter UI components for user-friendly error messages
     } catch (e) {
       print('Error fetching user data: $e');
+      // You can log this error to a logging system or crash reporting service like Firebase Crashlytics
     }
   }
 
@@ -119,9 +122,9 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
   Widget _buildDashboardHeader() {
     return DashboardHeader(
       backgroundImage: Assets.dashboardBackground,
-      trainerImage: Assets.myTrainerImage,
-      trainerName: trainerName,
-      trainerEmail: trainerEmail,
+      trainerImage: trainerImage,
+      trainerName: 'a',
+      trainerEmail: 'b',
     );
   }
 

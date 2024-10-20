@@ -232,11 +232,6 @@ String jsonString = '''
     },
     {"Exercise_Name": "Pullups", "Exercise_Image": "", "Exercise_Image1": ""},
     {
-      "Exercise_Name": "Decline reverse crunch",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
       "Exercise_Name": "Dumbbell Bench Press",
       "Exercise_Image": "",
       "Exercise_Image1": ""
@@ -301,43 +296,7 @@ String jsonString = '''
       "Exercise_Image1": ""
     },
     {
-      "Exercise_Name": "Single Leg Push-off",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Hip Circles (Prone)",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Reverse-grip bent-over row",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
       "Exercise_Name": "Seated Two-Arm Palms-Up Low-Pulley Wrist Curl",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Back extension",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Close-grip bench press",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {"Exercise_Name": "Cocoons", "Exercise_Image": "", "Exercise_Image1": ""},
-    {
-      "Exercise_Name": "Cross-Body Crunch",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Dumbbell Flyes",
       "Exercise_Image": "",
       "Exercise_Image1": ""
     },
@@ -368,18 +327,6 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/2019-xdb-107c-single-arm-high-cable-side-bend-m1-600x600.jpg",
       "Exercise_Image1":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/2019-xdb-107c-single-arm-high-cable-side-bend-m2-600x600.jpg"
-    },
-    {
-      "Exercise_Name": "Seated Dumbbell Press",
-      "Exercise_Image":
-          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-50e-seated-dumbbell-shoulder-press-m1-square-600x600.jpg",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Standing dumbbell shoulder press",
-      "Exercise_Image":
-          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-104d-standing-dumbbell-shoulder-press-m1-square-600x600.jpg",
-      "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Single Leg Push-off",
@@ -434,17 +381,6 @@ String jsonString = '''
       "Exercise_Name": "Dumbbell Flyes",
       "Exercise_Image":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-31e-dumbbell-chest-fly-m1-square-600x600.jpg",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Hammer Curls",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Incline dumbbell bench press",
-      "Exercise_Image":
-          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-3n-incline-dumbbell-bench-press-m2-square-600x600.jpg",
       "Exercise_Image1": ""
     },
     {
@@ -761,11 +697,6 @@ String jsonString = '''
     },
     {
       "Exercise_Name": "Machine Bicep Curl",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Seated Palms-Down Barbell Wrist Curl",
       "Exercise_Image": "",
       "Exercise_Image1": ""
     },
@@ -1453,11 +1384,6 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-115d-standing-dumbbell-shrug-m2-square-600x600.jpg"
     },
     {
-      "Exercise_Name": "Calf Press On The Leg Press Machine",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
       "Exercise_Name": "Barbell step-up",
       "Exercise_Image": "",
       "Exercise_Image1": ""
@@ -1472,7 +1398,6 @@ String jsonString = '''
       "Exercise_Image": "",
       "Exercise_Image1": ""
     },
-    {"Exercise_Name": "Crunches", "Exercise_Image": "", "Exercise_Image1": ""},
     {
       "Exercise_Name": "Dumbbell Alternate Bicep Curl",
       "Exercise_Image": "",
@@ -1515,11 +1440,6 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-18t-smith-machine-back-squat-m2-square-600x600.jpg"
     },
     {
-      "Exercise_Name": "Incline dumbbell front raise",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
       "Exercise_Name": "Alternate Incline Dumbbell Curl",
       "Exercise_Image":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-26n-alternating-incline-dumbbell-biceps-curl-m1-square-600x600.jpg",
@@ -1553,16 +1473,6 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-11c-incline-cable-chest-press-m1-square-600x600.jpg",
       "Exercise_Image1":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-11c-incline-cable-chest-press-m2-square-600x600.jpg"
-    },
-    {
-      "Exercise_Name": "Rope climb",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Single-arm dumbbell preacher curl",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Step-up with knee raise",
@@ -1869,31 +1779,11 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-61e-dumbbell-bulgarian-split-squat-m2-square-600x600.jpg"
     },
     {
-      "Exercise_Name": "Standing One-Arm Dumbbell Curl Over Incline Bench",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Standing Olympic Plate Hand Squeeze",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Sledgehammer swing",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
       "Exercise_Name": "Kneeling Squat",
       "Exercise_Image":
           "https://www.bodybuilding.com/exercises/exerciseImages/sequences/697/Male/m/697_1.jpg",
       "Exercise_Image1":
           "https://www.bodybuilding.com/exercises/exerciseImages/sequences/697/Male/m/697_2.jpg"
-    },
-    {
-      "Exercise_Name": "Single-arm kettlebell snatch",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Close-grip barbell curl",
@@ -1902,28 +1792,12 @@ String jsonString = '''
       "Exercise_Image1":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-20b-close-grip-barbell-curl-m2-square-600x600.jpg"
     },
-    {"Exercise_Name": "Box jump", "Exercise_Image": "", "Exercise_Image1": ""},
-    {
-      "Exercise_Name": "Standing cable crunch",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
     {
       "Exercise_Name": "Leverage Incline Chest Press",
       "Exercise_Image":
           "https://www.bodybuilding.com/exercises/exerciseImages/sequences/893/Male/m/893_1.jpg",
       "Exercise_Image1":
           "https://www.bodybuilding.com/exercises/exerciseImages/sequences/893/Male/m/893_2.jpg"
-    },
-    {
-      "Exercise_Name": "Standing barbell overhead triceps extension",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Lying cable triceps extension",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Kettlebell Turkish Get-Up (Squat style)",
@@ -2010,17 +1884,6 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-62c-lying-cable-triceps-extension-m2-square-600x600.jpg"
     },
     {
-      "Exercise_Name": "Close push-up to wide push-up",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Single-arm dumbbell triceps extension",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {"Exercise_Name": "Butterfly", "Exercise_Image": "", "Exercise_Image1": ""},
-    {
       "Exercise_Name": "Decline dumbbell bench press",
       "Exercise_Image":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-33n-decline-dumbbell-bench-press-m1-square-600x600.jpg",
@@ -2033,11 +1896,6 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-76a-v-up-m1-square-600x600.jpg",
       "Exercise_Image1":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-76a-v-up-m2-square-600x600.jpg"
-    },
-    {
-      "Exercise_Name": "Seated face pull",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Barbell Bulgarian split squat",
@@ -2130,12 +1988,6 @@ String jsonString = '''
       "Exercise_Image1":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-70c-seated-face-pull-m2-square-600x600.jpg"
     },
-    {
-      "Exercise_Name": "Rack Pull with Bands",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {"Exercise_Name": "Drag curl", "Exercise_Image": "", "Exercise_Image1": ""},
     {
       "Exercise_Name": "Hang Clean - Below the Knees",
       "Exercise_Image": "",

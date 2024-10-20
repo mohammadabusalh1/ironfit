@@ -68,6 +68,9 @@ class _SignUpBodyState extends State<SignUpBody> {
   Future<void> _registerUser() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
+        Get.dialog(Center(child: CircularProgressIndicator()),
+            barrierDismissible: false);
+
         UserCredential userCredential =
             await _auth.createUserWithEmailAndPassword(
           email: emailController.text.trim(),
@@ -98,14 +101,17 @@ class _SignUpBodyState extends State<SignUpBody> {
               )));
         }
       } catch (e) {
+
+        Navigator.pop(context);
+
         // Handle errors
-        Get.snackbar('خطأ', 'يتعذر تسجيل الدخول',
+        Get.snackbar('خطأ', 'يتعذر  إنشاء حساب',
             snackPosition: SnackPosition.BOTTOM,
             colorText: Palette.white,
             margin: EdgeInsets.all(10),
             titleText: const Text(
               textDirection: TextDirection.rtl,
-              'يتعذر تسجيل الدخول',
+              'يتعذر  إنشاء حساب',
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
             messageText: Text(
@@ -202,7 +208,7 @@ class _SignUpBodyState extends State<SignUpBody> {
                       _buildRegisterButton(),
                       const SizedBox(height: 12),
                       _buildGoogleRegisterButton(),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 12),
                       _buildLoginText(context),
                     ],
                   ),
@@ -219,16 +225,25 @@ class _SignUpBodyState extends State<SignUpBody> {
       decoration: InputDecoration(
         labelText: 'الإيميل',
         hintText: 'abc@gmail.com',
-        hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-        labelStyle: const TextStyle(color: Colors.white, fontSize: 14),
+        hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
+        labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
         filled: true,
         fillColor: const Color(0xFF454038),
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFFFFBB02), width: 1),
-          borderRadius: BorderRadius.circular(10),
+          borderSide:
+              const BorderSide(color: Palette.mainAppColorBorder, width: 1),
+          borderRadius: BorderRadius.circular(16),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        prefixIcon: const Padding(
+          padding: EdgeInsets.all(10.0), // Adjust padding if needed
+          child: Icon(
+            Icons.email_outlined,
+            color: Palette.gray,
+            size: 20,
+          ),
         ),
       ),
       style: const TextStyle(color: Colors.white, fontSize: 14),
@@ -243,13 +258,14 @@ class _SignUpBodyState extends State<SignUpBody> {
       decoration: InputDecoration(
         labelText: 'كلمة المرور',
         hintText: '**',
-        hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-        labelStyle: const TextStyle(color: Colors.white, fontSize: 14),
+        hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
+        labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
         filled: true,
         fillColor: const Color(0xFF454038),
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFFFFBB02), width: 1),
-          borderRadius: BorderRadius.circular(10),
+          borderSide:
+              const BorderSide(color: Palette.mainAppColorBorder, width: 1),
+          borderRadius: BorderRadius.circular(16),
         ),
         suffixIcon: InkWell(
           onTap: () {
@@ -261,8 +277,16 @@ class _SignUpBodyState extends State<SignUpBody> {
             passwordVisibility
                 ? Icons.visibility_outlined
                 : Icons.visibility_off_outlined,
-            size: 20,
+            size: 18,
             color: Palette.white,
+          ),
+        ),
+        prefixIcon: const Padding(
+          padding: EdgeInsets.all(10.0), // Adjust padding if needed
+          child: Icon(
+            Icons.lock_outlined,
+            color: Palette.gray,
+            size: 20,
           ),
         ),
       ),
@@ -299,7 +323,7 @@ class _SignUpBodyState extends State<SignUpBody> {
         child: Container(
           width: double.infinity,
           constraints: const BoxConstraints(
-            minHeight: 45,
+            minHeight: 50,
           ),
           child: ElevatedButton(
             onPressed: _registerUser,
@@ -307,11 +331,11 @@ class _SignUpBodyState extends State<SignUpBody> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               backgroundColor: const Color(0xFFFFBB02),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
             child: const Text(
-              'تسجيل',
+              'إنشاء حساب',
               style: TextStyle(color: Colors.white),
             ),
           ),
@@ -322,11 +346,11 @@ class _SignUpBodyState extends State<SignUpBody> {
 
   Widget _buildGoogleRegisterButton() {
     return Container(
-      height: 45,
+      height: 50,
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: InkWell(
         onTap: _signInWithGoogle,

@@ -75,7 +75,7 @@ class _LoginBodyState extends State<LoginBody> {
                     const SizedBox(height: 12),
                     _buildGoogleRegisterButton(),
                     const SizedBox(height: 24),
-                    LoginTextWidget(),
+                    const LoginTextWidget(),
                   ],
                 ),
               ),
@@ -92,16 +92,25 @@ class _LoginBodyState extends State<LoginBody> {
       decoration: InputDecoration(
         labelText: 'الإيميل',
         hintText: 'abc@gmail.com',
-        hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-        labelStyle: const TextStyle(color: Colors.white, fontSize: 14),
+        hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
+        labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
         filled: true,
         fillColor: const Color(0xFF454038),
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFFFFBB02), width: 1),
+          borderSide:
+              const BorderSide(color: Palette.mainAppColorBorder, width: 1),
           borderRadius: BorderRadius.circular(10),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        prefixIcon: const Padding(
+          padding: EdgeInsets.all(10.0), // Adjust padding if needed
+          child: Icon(
+            Icons.email_outlined,
+            color: Palette.gray,
+            size: 20,
+          ),
         ),
       ),
       style: const TextStyle(color: Colors.white, fontSize: 14),
@@ -126,13 +135,14 @@ class _LoginBodyState extends State<LoginBody> {
       decoration: InputDecoration(
         labelText: 'كلمة المرور',
         hintText: '**',
-        hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-        labelStyle: const TextStyle(color: Colors.white, fontSize: 14),
+        hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
+        labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
         filled: true,
         fillColor: const Color(0xFF454038),
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFFFFBB02), width: 1),
-          borderRadius: BorderRadius.circular(10),
+          borderSide:
+              const BorderSide(color: Palette.mainAppColorBorder, width: 1),
+          borderRadius: BorderRadius.circular(16),
         ),
         suffixIcon: InkWell(
           onTap: () => setState(() {
@@ -142,8 +152,16 @@ class _LoginBodyState extends State<LoginBody> {
             passwordVisibility
                 ? Icons.visibility_outlined
                 : Icons.visibility_off_outlined,
-            size: 20,
+            size: 18,
             color: Palette.white,
+          ),
+        ),
+        prefixIcon: const Padding(
+          padding: EdgeInsets.all(10.0), // Adjust padding if needed
+          child: Icon(
+            Icons.lock_outlined,
+            color: Palette.gray,
+            size: 20,
           ),
         ),
       ),
@@ -176,7 +194,7 @@ class _LoginBodyState extends State<LoginBody> {
             });
           },
           activeColor: const Color(0xFFFFBB02),
-          inactiveTrackColor: Colors.grey,
+          inactiveTrackColor: Palette.gray,
         ),
       ],
     );
@@ -188,11 +206,14 @@ class _LoginBodyState extends State<LoginBody> {
         alignment: const AlignmentDirectional(0, 1),
         child: Container(
           width: double.infinity,
-          constraints: const BoxConstraints(minHeight: 45),
+          constraints: const BoxConstraints(minHeight: 50),
           child: ElevatedButton(
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
                 try {
+                  Get.dialog(Center(child: CircularProgressIndicator()),
+                      barrierDismissible: false);
+
                   // Step 1: Sign in the user with FirebaseAuth
                   UserCredential userCredential = await FirebaseAuth.instance
                       .signInWithEmailAndPassword(
@@ -244,20 +265,23 @@ class _LoginBodyState extends State<LoginBody> {
                     }
                   }
                 } catch (e) {
-                  print(e.toString());
+
+                  // stop loading indicator
+                  Get.back();
+
                   // Handle sign-in error
                   Get.snackbar('خطأ', 'يتعذر تسجيل الدخول',
                       snackPosition: SnackPosition.BOTTOM,
                       colorText: Palette.white,
-                      margin: EdgeInsets.all(10),
+                      margin: const EdgeInsets.all(10),
                       titleText: const Text(
                         textDirection: TextDirection.rtl,
                         'يتعذر تسجيل الدخول',
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
-                      messageText: Text(
+                      messageText: const Text(
                         'الأيميل او كلمة المرور غير صحيحة',
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.white),
                         textDirection: TextDirection.rtl,
                       ));
                 }
@@ -273,7 +297,7 @@ class _LoginBodyState extends State<LoginBody> {
                 fontWeight: FontWeight.w400,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
             child: const Text('تسجيل الدخول',
@@ -309,7 +333,7 @@ class _LoginBodyState extends State<LoginBody> {
         child: Container(
           width: double.infinity,
           constraints: const BoxConstraints(
-            minHeight: 45,
+            minHeight: 50,
           ),
           child: ElevatedButton.icon(
             icon: Image.asset(
@@ -353,7 +377,7 @@ class _LoginBodyState extends State<LoginBody> {
                 fontWeight: FontWeight.w400,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
             label: const Text(

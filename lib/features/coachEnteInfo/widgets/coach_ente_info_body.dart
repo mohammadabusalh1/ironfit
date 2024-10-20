@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
@@ -22,15 +21,11 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _experienceController = TextEditingController();
+  final TextEditingController _usernameController =
+      TextEditingController(); // Added username controller
+
   String? _uploadedImageUrl;
   int stage = 1;
-
-  final List<String> _labels = [
-    'الاسم الأول',
-    'إسم العائلة',
-    'العمر',
-    'الخبرة',
-  ];
 
   Future<void> updateCoachInfo(
       String coachId, Map<String, dynamic> data) async {
@@ -48,12 +43,32 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
             stage = 2;
           });
         } else {
+          Get.dialog(Center(child: CircularProgressIndicator()),
+              barrierDismissible: false);
+          String username = _usernameController.text;
+          String firstName = _firstNameController.text;
+          String lastName = _lastNameController.text;
+          String age = _ageController.text;
+          String experience = _experienceController.text;
+
+          // Check if username exists in the database
+          bool usernameExists = await _checkIfUsernameExists(username);
+
+          if (usernameExists) {
+            // If the username already exists, show an error message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('اسم المستخدم هذا مُستخدم بالفعل')),
+            );
+            return;
+          }
+
           Map<String, dynamic> coachData = {
-            'firstName': _firstNameController.text,
-            'lastName': _lastNameController.text,
-            'age': int.parse(_ageController.text),
-            'experience': _experienceController.text,
+            'firstName': firstName,
+            'lastName': lastName,
+            'age': int.parse(age),
+            'experience': int.parse(experience),
             'profileImageUrl': _uploadedImageUrl,
+            'username': username,
           };
 
           await updateCoachInfo(widget.coachId, coachData);
@@ -62,16 +77,35 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
             SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
           );
 
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('coachId', widget.coachId);
+          if (widget.coachId != null) {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.setString('coachId', widget.coachId);
+          }
 
-          Get.toNamed(Routes.coachDashboard);
+          Get.toNamed(Routes.coachDashboard)?.then(
+            (value) => Get.back(),
+          );
         }
         // Navigate to the next page or perform any other action
-      } catch (e) {
-        // Handle any errors that occur during the update
+      } on FirebaseException catch (e) {
+        Get.back();
+        // Firebase-specific error handling
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('حدث خطأ: $e')),
+          SnackBar(content: Text('خطأ في الاتصال بقاعدة البيانات')),
+        );
+      } on FormatException catch (e) {
+        Get.back();
+        // Handle invalid number format (e.g., age or experience)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text('تنسيق غير صالح: يرجى إضافة البيانات بالشكل الصحيح')),
+        );
+      } catch (e) {
+        Get.back();
+        // Handle any other generic errors
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('حدث خطأ غير متوقع: $e')),
         );
       }
     } else {
@@ -79,6 +113,26 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('المعلومات غير صالحة')),
       );
+    }
+  }
+
+  // Function to check if username exists in the database
+  Future<bool> _checkIfUsernameExists(String username) async {
+    try {
+      // Example query to check if the username exists in Firestore
+      var snapshot = await FirebaseFirestore.instance
+          .collection('coaches')
+          .where('username', isEqualTo: username)
+          .get();
+
+      // If snapshot contains documents, username exists
+      return snapshot.docs.isNotEmpty;
+    } catch (e) {
+      // Handle any Firestore errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ في الاتصال بقاعدة البيانات')),
+      );
+      return false;
     }
   }
 
@@ -100,37 +154,56 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                       });
                     })
                 : Container(),
-            SizedBox(height: 24),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Align(
-                alignment: AlignmentDirectional.center,
-                child: Text(
-                  'أكمل معلوماتك من فضلك',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 24),
+            SizedBox(height: 12),
             stage == 1
-                ? _buildLabelWithTextField('الاسم الأول', _firstNameController)
+                ? Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: Align(
+                      alignment: AlignmentDirectional.center,
+                      child: Text(
+                        'أكمل معلوماتك من فضلك',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  )
                 : Container(),
+            stage == 1 ? SizedBox(height: 12) : Container(),
             stage == 1
-                ? _buildLabelWithTextField('إسم العائلة', _lastNameController)
+                ? _buildTextField(
+                    label: 'اسم الحساب',
+                    controller: _usernameController,
+                    hint: 'مثال: user1')
                 : Container(),
+            stage == 1 ? SizedBox(height: 12) : Container(),
             stage == 1
-                ? _buildLabelWithTextField('العمر', _ageController,
+                ? _buildTextField(
+                    label: 'الاسم الأول', controller: _firstNameController)
+                : Container(),
+            stage == 1 ? SizedBox(height: 12) : Container(),
+            stage == 1
+                ? _buildTextField(
+                    label: 'إسم العائلة', controller: _lastNameController)
+                : Container(),
+            stage == 1 ? SizedBox(height: 12) : Container(),
+            stage == 1
+                ? _buildTextField(
+                    label: 'العمر',
+                    controller: _ageController,
                     keyboardType: TextInputType.number)
                 : Container(),
+            stage == 1 ? SizedBox(height: 12) : Container(),
             stage == 1
-                ? _buildLabelWithTextField('الخبرة', _experienceController,
+                ? _buildTextField(
+                    label: 'الخبرة',
+                    controller: _experienceController,
                     keyboardType: TextInputType.number)
                 : Container(),
+            stage == 1 ? SizedBox(height: 24) : Container(),
             SizedBox(
               width: double.infinity,
               child: Padding(
@@ -196,22 +269,11 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
     );
   }
 
-  Widget _buildLabelWithTextField(
-      String label, TextEditingController controller,
-      {TextInputType keyboardType = TextInputType.text}) {
-    return Column(
-      children: [
-        _buildTextField(
-            label: label, controller: controller, keyboardType: keyboardType),
-        const SizedBox(height: 24),
-      ],
-    );
-  }
-
   Widget _buildTextField({
     required String label,
     required TextEditingController controller,
     TextInputType keyboardType = TextInputType.text,
+    String hint = '',
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -219,6 +281,8 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
         controller: controller,
         keyboardType: keyboardType,
         decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: const TextStyle(color: Palette.subTitleGrey, fontSize: 14),
           labelText: label,
           labelStyle:
               const TextStyle(color: Palette.subTitleGrey, fontSize: 14),

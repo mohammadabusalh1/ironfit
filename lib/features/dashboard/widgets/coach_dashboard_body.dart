@@ -9,9 +9,27 @@ import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controlle
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class CoachDashboardBody extends StatelessWidget {
+class CoachDashboardBody extends StatefulWidget {
+  const CoachDashboardBody({Key? key}) : super(key: key);
+
+  @override
+  CoachDashboardState createState() => CoachDashboardState();
+}
+
+class CoachDashboardState extends State<CoachDashboardBody> {
   final CoachDashboardController controller =
       Get.put(CoachDashboardController());
+
+  String fullName = 'إسم المستخد';
+  String email = 'لا يوجد بيانات';
+  String imageUrl =
+      'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserName();
+  }
 
   // Future to fetch data from Firestore
   Future<Map<String, dynamic>> fetchStatisticsData() async {
@@ -74,7 +92,34 @@ class CoachDashboardBody extends StatelessWidget {
     }
   }
 
-  CoachDashboardBody({super.key});
+  Future<void> fetchUserName() async {
+    String? coachId = await fetchCoachId();
+    if (coachId != null) {
+      // Get user data from Firestore
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection(
+              'coaches') // or 'coaches', depending on where you store user data
+          .doc(coachId)
+          .get();
+
+      if (userDoc.exists) {
+        String? firstName = userDoc['firstName'];
+        String? lastName = userDoc['lastName'];
+
+        setState(() {
+          fullName = '$firstName $lastName';
+          email = userDoc['email'];
+          imageUrl = userDoc['profileImageUrl'];
+        });
+      } else {
+        print("User data not found");
+        return null;
+      }
+    } else {
+      print("No user is logged in");
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,9 +178,9 @@ class CoachDashboardBody extends StatelessWidget {
   Widget _buildDashboardHeader() {
     return DashboardHeader(
       backgroundImage: Assets.dashboardBackground, // Background image path
-      trainerImage: Assets.myTrainerImage, // Trainer image path
-      trainerName: "محمد ابو صالح", // Trainer's name
-      trainerEmail: "oG2gU@example.com", // Trainer's email
+      trainerImage: imageUrl, // Trainer image path
+      trainerName: fullName, // Trainer's name
+      trainerEmail: email, // Trainer's email
     );
   }
 

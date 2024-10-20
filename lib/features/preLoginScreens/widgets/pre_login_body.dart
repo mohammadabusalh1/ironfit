@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,19 +41,19 @@ class _PreLoginBodyState extends State<PreLoginBody> {
                         _buildPage(
                           imagePath: Assets.preLogin1,
                           text:
-                              'سهلنا عليك، قم بإدارة المتدربين والخطط الخاصة بك',
+                              'تسجيل سلس للمتدربين وتتبع التمارين، كل ذلك في منصة واحدة',
                           showNextButton: true,
                         ),
                         _buildPage(
                           imagePath: Assets.preLogin2,
                           text:
-                              'سهلنا عليك، قم بإدارة المتدربين والخطط الخاصة بك',
+                              'يقوم المدربون بإنشاء خطط تمرين مخصصة مصممة خصيصًا لتلبية الأهداف الخاصة لكل متدرب',
                           showNextButton: true,
                         ),
                         _buildPage(
                           imagePath: Assets.preLogin3,
                           text:
-                              'سهلنا عليك، قم بإدارة المتدربين والخطط الخاصة بك',
+                              'ابدأ التدريب المخصص وتتبع التقدم، مما يجعل إدارة اللياقة البدنية أسهل لكل من المدربين والمتدربين',
                           showNextButton: false,
                         ),
                       ],
@@ -61,7 +62,7 @@ class _PreLoginBodyState extends State<PreLoginBody> {
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.only(bottom: 20),
                       child: _buildPageIndicator(),
                     ),
                   ),
@@ -102,11 +103,11 @@ class _PreLoginBodyState extends State<PreLoginBody> {
                     children: [
                       Text(
                         text,
-                        textAlign: TextAlign.end,
+                        textAlign: TextAlign.start,
                         style: const TextStyle(
                           fontFamily: 'Inter',
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w800,
                           shadows: [
                             Shadow(
@@ -139,7 +140,7 @@ class _PreLoginBodyState extends State<PreLoginBody> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               _buildButton(
-                                text: 'إنهاء',
+                                text: 'ابدأ الآن',
                                 icon: Icons.west,
                                 onPressed: () async {
                                   SharedPreferences prefs =
@@ -147,29 +148,9 @@ class _PreLoginBodyState extends State<PreLoginBody> {
                                   prefs.setBool('hasSeenPreLoginScreen', true);
                                   Get.toNamed(Routes.singIn);
                                 },
-                                width: MediaQuery.of(context).size.width * 0.40,
-                                backgroundColor: Colors.white,
-                                textColor: const Color(0xFF1C1503),
-                              ),
-                              const SizedBox(width: 16),
-                              _buildButton(
-                                text: '',
-                                icon: Icons.east,
-                                onPressed: () {
-                                  _pageController
-                                      .previousPage(
-                                    duration: const Duration(milliseconds: 200),
-                                    curve: Curves.ease,
-                                  )
-                                      .then((value) {
-                                    _pageController.previousPage(
-                                      duration:
-                                          const Duration(milliseconds: 200),
-                                      curve: Curves.ease,
-                                    );
-                                  });
-                                },
-                                width: MediaQuery.of(context).size.width * 0.40,
+                                width: MediaQuery.of(context).size.width * 0.85,
+                                backgroundColor: Palette.mainAppColorWhite,
+                                textColor: Palette.black,
                               ),
                             ],
                           ),
@@ -187,19 +168,22 @@ class _PreLoginBodyState extends State<PreLoginBody> {
     required String text,
     required IconData icon,
     required VoidCallback onPressed,
-    Color backgroundColor = const Color(0xFFFFBB02),
-    Color textColor = const Color(0xFF1C1503),
+    Color backgroundColor = Palette.mainAppColorOrange,
+    Color textColor = Palette.white,
     double width = double.infinity,
+    IconAlignment iconAlignment = IconAlignment.end,
   }) {
     return ElevatedButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon, size: 24, color: textColor),
-      label: Text(text),
+      icon:
+          Opacity(opacity: 0.8, child: Icon(icon, size: 26, color: textColor)),
+      label: Opacity(opacity: 0.8, child: Text(text)),
+      iconAlignment: iconAlignment,
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         foregroundColor: textColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(50),
         ),
         minimumSize: Size(width, 50),
         textStyle: const TextStyle(

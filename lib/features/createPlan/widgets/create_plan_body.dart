@@ -5,10 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/ExerciseListWidget.dart';
 import 'package:ironfit/core/presentation/widgets/exrciseCard.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
-import 'package:ironfit/features/createPlan/widgets/deopdown.dart';
 import 'package:ironfit/features/createPlan/widgets/ex.dart';
 
 class CreatePlanBody extends StatefulWidget {
@@ -27,6 +28,9 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   List<TrainingDay> trainingDays = [];
+
+  List<Map<String, dynamic>> exercisesJson =
+      List<Map<String, dynamic>>.from(jsonDecode(jsonString));
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +101,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                     'البرامج الخاصة بي',
                     style: TextStyle(
                       fontFamily: 'Inter',
-                      color: Colors.white,
+                      color: Palette.white,
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                       shadows: [
@@ -124,7 +128,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       TextInputType? keyboardType}) {
     return TextField(
       keyboardType: keyboardType ?? TextInputType.text,
-      style: const TextStyle(color: Palette.white, fontSize: 14),
+      style: const TextStyle(color: Palette.gray, fontSize: 14),
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
@@ -200,7 +204,9 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                         title: exercise.name,
                         subtitle1: "${exercise.rounds} جولات",
                         subtitle2: "${exercise.repetitions} تكرار",
-                        image: exercise.image!,
+                        image: exercise.image.isEmpty
+                            ? Assets.notFound
+                            : exercise.image,
                       ),
                     ),
                     IconButton(
@@ -251,10 +257,12 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       data: Theme.of(context).copyWith(
           dialogBackgroundColor: Colors.grey[900],
           textTheme: const TextTheme(
-            bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
-            bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
+            bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
+            bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
             headlineLarge: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
+                color: Palette.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 24),
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
@@ -268,13 +276,13 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
         textDirection: TextDirection.rtl,
         child: AlertDialog(
           title: const Text("إختر يوم التدريب",
-              style: TextStyle(color: Colors.white)),
+              style: TextStyle(color: Palette.white)),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return DropdownButton<String>(
                 dropdownColor: Colors.grey[800],
                 hint: const Text("يوم التدريب",
-                    style: TextStyle(color: Colors.white)),
+                    style: TextStyle(color: Palette.white)),
                 value: selectedDay,
                 onChanged: (newValue) {
                   setState(() {
@@ -295,7 +303,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                           child: Align(
                             alignment: AlignmentDirectional.centerEnd,
                             child: Text(day['label']!,
-                                style: const TextStyle(color: Colors.white)),
+                                style: const TextStyle(color: Palette.white)),
                           ),
                         ))
                     .toList(),
@@ -380,46 +388,46 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
           Get.snackbar('نجاح', 'تم حفظ الخطة بنجاح',
               messageText: Text(
                 'تم حفظ الخطة بنجاح',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Palette.white),
                 textAlign: TextAlign.right,
               ),
               titleText: Text(
                 'نجاح',
-                style: TextStyle(color: Colors.white, fontSize: 20),
+                style: TextStyle(color: Palette.white, fontSize: 20),
                 textAlign: TextAlign.right,
               ),
               backgroundColor: Colors.green,
-              colorText: Colors.white);
+              colorText: Palette.white);
         } else {
           Get.snackbar('خطأ', 'يجب تسجيل الدخول لحفظ الخطة',
               messageText: Text(
                 'يجب تسجيل الدخول لحفظ الخطة',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Palette.white),
                 textAlign: TextAlign.right,
               ),
               titleText: Text(
                 'خطأ',
-                style: TextStyle(color: Colors.white, fontSize: 20),
+                style: TextStyle(color: Palette.white, fontSize: 20),
                 textAlign: TextAlign.right,
               ),
               backgroundColor: Colors.red,
-              colorText: Colors.white);
+              colorText: Palette.white);
         }
       } catch (e) {
         print(e);
         Get.snackbar('خطأ', 'حدث خطأ أثناء حفظ الخطة',
             messageText: Text(
               'حدث خطأ أثناء حفظ الخطة',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Palette.white),
               textAlign: TextAlign.right,
             ),
             titleText: Text(
               'خطاء',
-              style: TextStyle(color: Colors.white, fontSize: 20),
+              style: TextStyle(color: Palette.white, fontSize: 20),
               textAlign: TextAlign.right,
             ),
             backgroundColor: Colors.red,
-            colorText: Colors.white);
+            colorText: Palette.white);
       }
     }
   }
@@ -429,48 +437,48 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       Get.snackbar('خطأ', 'يرجى إدخال اسم الخطة',
           messageText: Text(
             'يرجى إدخال اسم الخطة',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Palette.white),
             textAlign: TextAlign.right,
           ),
           titleText: Text(
             'خطأ',
-            style: TextStyle(color: Colors.white, fontSize: 20),
+            style: TextStyle(color: Palette.white, fontSize: 20),
             textAlign: TextAlign.right,
           ),
           backgroundColor: Colors.red,
-          colorText: Colors.white);
+          colorText: Palette.white);
       return false;
     }
     if (_planDescriptionController.text.isEmpty) {
       Get.snackbar('خطأ', 'يرجى إدخال وصف الخطة',
           messageText: Text(
             'يرجى إدخال وصف الخطة',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Palette.white),
             textAlign: TextAlign.right,
           ),
           titleText: Text(
             'خطأ',
-            style: TextStyle(color: Colors.white, fontSize: 20),
+            style: TextStyle(color: Palette.white, fontSize: 20),
             textAlign: TextAlign.right,
           ),
           backgroundColor: Colors.red,
-          colorText: Colors.white);
+          colorText: Palette.white);
       return false;
     }
     if (trainingDays.isEmpty) {
       Get.snackbar('خطأ', 'يرجى إضافة يوم تدريب واحد على الأقل',
           messageText: Text(
             'يرجى إضافة يوم تدريب واحد على الأقل',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Palette.white),
             textAlign: TextAlign.right,
           ),
           titleText: Text(
             'خطأ',
-            style: TextStyle(color: Colors.white, fontSize: 20),
+            style: TextStyle(color: Palette.white, fontSize: 20),
             textAlign: TextAlign.right,
           ),
           backgroundColor: Colors.red,
-          colorText: Colors.white);
+          colorText: Palette.white);
       return false;
     }
     for (var day in trainingDays) {
@@ -478,43 +486,31 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
         Get.snackbar('خطأ', 'يرجى إضافة تمرين واحد على الأقل لكل يوم تدريب',
             messageText: Text(
               'يرجى إضافة تمرين واحد على الأقل لكل يوم تدريب',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Palette.white),
               textAlign: TextAlign.right,
             ),
             backgroundColor: Colors.red,
-            colorText: Colors.white);
+            colorText: Palette.white);
         return false;
       }
     }
     return true;
   }
-
-  void _addExerciseToDay(TrainingDay day) {
-    List<Map<String, dynamic>> exercisesJson =
-        List<Map<String, dynamic>>.from(jsonDecode(jsonString));
-    showDialog(
-      context: context,
-      builder: (context) => _buildExerciseDialog(day, exercisesJson),
-    );
-  }
-
-  Widget _buildExerciseDialog(
-      TrainingDay day, List<Map<String, dynamic>> exercisesJson) {
-    final TextEditingController roundsController = TextEditingController();
-    final TextEditingController repetitionsController = TextEditingController();
-
-    String? selectedExerciseName;
-    String selectedExerciseImage =
-        'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+ 
+  Widget _buildTrainDialog(List<Map<String, dynamic>> exercisesJson) {
+    String? selectedImage;
 
     return Theme(
       data: Theme.of(context).copyWith(
         dialogBackgroundColor: Colors.grey[900],
         textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
-          bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
+          bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
+          bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
           headlineLarge: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
+            color: Palette.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
@@ -528,75 +524,95 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          title: const Text("أضف تمرين", style: TextStyle(color: Colors.white)),
+          title: const Text("إختر التدريب",
+              style: TextStyle(color: Palette.white)),
+          content: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return SingleChildScrollView(
+              child: ExercisesScreen(
+                exercisesJson: exercisesJson,
+              ),
+            );
+          }),
+          actions: [
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text('حفظ', style: TextStyle(color: Palette.black)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child:
+                  const Text('إلغاء', style: TextStyle(color: Palette.white)),
+            ),
+          ],
+          actionsAlignment: MainAxisAlignment.start,
+        ),
+      ),
+    );
+  }
+
+  void _addExerciseToDay(TrainingDay day) {
+    showDialog(
+      context: context,
+      builder: (context) => _buildExerciseDialog(day, exercisesJson),
+    );
+  }
+
+  Widget _buildExerciseDialog(
+      TrainingDay day, List<Map<String, dynamic>> exercisesJson) {
+    final TextEditingController roundsController = TextEditingController();
+    final TextEditingController repetitionsController = TextEditingController();
+
+    String? selectedExerciseName;
+    String? selectedExerciseImage;
+
+    return Theme(
+      data: Theme.of(context).copyWith(
+        dialogBackgroundColor: Colors.grey[900],
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
+          bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
+          headlineLarge: TextStyle(
+              color: Palette.white, fontWeight: FontWeight.bold, fontSize: 24),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Palette.mainAppColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      ),
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          title:
+              const Text("أضف تمرين", style: TextStyle(color: Palette.white)),
           content: SingleChildScrollView(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Dropdown for exercise selection
-                SearchableDropdown(
-                    items: exercisesJson,
-                    value: selectedExerciseName,
-                    onChanged: (selectedExercise) {
-                      if (selectedExercise == null ||
-                          selectedExercise.isEmpty) {
-                        Get.snackbar('', '',
-                            snackPosition: SnackPosition.TOP,
-                            messageText: Text(
-                              'الرجاء اختيار تمرين صالح',
-                              style: TextStyle(color: Colors.white),
-                              textAlign: TextAlign.right,
-                            ),
-                            titleText: Text(
-                              'خطأ',
-                              style: TextStyle(color: Colors.white),
-                              textAlign: TextAlign.right,
-                            ));
-                        return;
-                      }
-
-                      try {
-                        setState(() {
-                          // Search for the selected exercise in exercisesJson
-                          selectedExerciseName = selectedExercise;
-
-                          // Use firstWhere safely, and fallback if exercise not found
-                          final exerciseData = exercisesJson.firstWhere(
-                            (exercise) =>
-                                exercise['Exercise_Name'] ==
-                                selectedExerciseName,
-                            orElse: () => {
-                              'Exercise_Name': selectedExerciseName,
-                              'Exercise_Image':
-                                  'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg'
-                            },
-                          );
-
-                          // Assign exercise image, either found or fallback
-                          selectedExerciseImage = exerciseData[
-                                  'Exercise_Image'] ??
-                              'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
-                        });
-                      } catch (e) {
-                        // Log the error and show a message to the user
-                        print("Error finding exercise image: $e");
-                        Get.snackbar('', '',
-                            snackPosition: SnackPosition.TOP,
-                            messageText: Text(
-                              'حدث خطأ أثناء جلب صورة التمرين',
-                              style: TextStyle(color: Colors.white),
-                              textAlign: TextAlign.right,
-                            ),
-                            titleText: Text(
-                              'خطأ',
-                              style: TextStyle(color: Colors.white),
-                              textAlign: TextAlign.right,
-                            ));
-                      }
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Palette.mainAppColorWhite,
+                    ),
+                    onPressed: () async {
+                      final val = await showDialog(
+                        //<--------|
+                        context: context,
+                        builder: (context) => _buildTrainDialog(exercisesJson),
+                      );
+                      setState(() {
+                        selectedExerciseName = val['Exercise_Name'];
+                        selectedExerciseImage = val['Exercise_Image'];
+                      });
                     },
-                    labelText: "التمرين"),
+                    child: Text('صورة التمرين',
+                        style: TextStyle(color: Palette.black))),
                 const SizedBox(height: 16),
-                // TextFields for rounds and repetitions
                 _buildTextField(
                     controller: roundsController,
                     label: "عدد الجولات",
@@ -612,7 +628,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
           ),
           actions: [
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (selectedExerciseName != null &&
                     _validateExercise(selectedExerciseName!,
                         roundsController.text, repetitionsController.text)) {
@@ -622,18 +638,13 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                     final int repetitions =
                         int.parse(repetitionsController.text);
 
-                    // Fallback to default image if selectedExerciseImage is invalid
-                    final String imageUrl = selectedExerciseImage.isEmpty
-                        ? 'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg'
-                        : selectedExerciseImage;
-
                     // Update the state with validated data
                     setState(() {
                       day.exercises.add(Exercise(
                         name: selectedExerciseName!,
                         rounds: rounds,
                         repetitions: repetitions,
-                        image: imageUrl,
+                        image: selectedExerciseImage!,
                       ));
                     });
 
@@ -646,12 +657,12 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                         snackPosition: SnackPosition.TOP,
                         messageText: Text(
                           'الرجاء إدخال قيم صحيحة للجولات والتكرارات',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Palette.white),
                           textAlign: TextAlign.right,
                         ),
                         titleText: Text(
                           'خطأ',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Palette.white),
                           textAlign: TextAlign.right,
                         ));
                   } on Exception catch (e) {
@@ -661,12 +672,12 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                         snackPosition: SnackPosition.TOP,
                         messageText: Text(
                           'الرجاء اختيار تمرين صحيح وإدخال جميع البيانات',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Palette.white),
                           textAlign: TextAlign.right,
                         ),
                         titleText: Text(
                           'خطأ',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Palette.white),
                           textAlign: TextAlign.right,
                         ));
                   }
@@ -675,12 +686,12 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                       snackPosition: SnackPosition.TOP,
                       messageText: Text(
                         'الرجاء اختيار تمرين صحيح وإدخال جميع البيانات',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Palette.white),
                         textAlign: TextAlign.right,
                       ),
                       titleText: Text(
                         'خطأ',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Palette.white),
                         textAlign: TextAlign.right,
                       ));
                 }
@@ -704,48 +715,48 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       Get.snackbar('', '',
           messageText: Text(
             'يرجى إدخال اسم التمرين',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Palette.white),
             textAlign: TextAlign.right,
           ),
           titleText: Text(
             'خطأ',
-            style: TextStyle(color: Colors.white, fontSize: 20),
+            style: TextStyle(color: Palette.white, fontSize: 20),
             textAlign: TextAlign.right,
           ),
           backgroundColor: Colors.red,
-          colorText: Colors.white);
+          colorText: Palette.white);
       return false;
     }
     if (rounds.isEmpty || int.tryParse(rounds) == null) {
       Get.snackbar('', '',
           messageText: Text(
             'يرجى إدخال عدد صحيح للجولات',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Palette.white),
             textAlign: TextAlign.right,
           ),
           titleText: Text(
             'خطأ',
-            style: TextStyle(color: Colors.white, fontSize: 20),
+            style: TextStyle(color: Palette.white, fontSize: 20),
             textAlign: TextAlign.right,
           ),
           backgroundColor: Colors.red,
-          colorText: Colors.white);
+          colorText: Palette.white);
       return false;
     }
     if (repetitions.isEmpty || int.tryParse(repetitions) == null) {
       Get.snackbar('', '',
           messageText: Text(
             'يرجى إدخال عدد صحيح للتكرارات',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Palette.white),
             textAlign: TextAlign.right,
           ),
           titleText: Text(
             'خطأ',
-            style: TextStyle(color: Colors.white, fontSize: 20),
+            style: TextStyle(color: Palette.white, fontSize: 20),
             textAlign: TextAlign.right,
           ),
           backgroundColor: Colors.red,
-          colorText: Colors.white);
+          colorText: Palette.white);
       return false;
     }
     return true;
@@ -775,10 +786,10 @@ class Exercise {
 
   factory Exercise.fromMap(Map<String, dynamic> map) {
     return Exercise(
-      name: map['name'] as String,
-      image: map['image'] as String,
-      rounds: map['rounds'] as int,
-      repetitions: map['repetitions'] as int,
+      name: map['name'] ?? map['Exercise_Name'] as String,
+      image: map['image'] ?? map['Exercise_Image'] as String,
+      rounds: map['rounds'] ?? 0 as int,
+      repetitions: map['repetitions'] ?? 0 as int,
     );
   }
 }

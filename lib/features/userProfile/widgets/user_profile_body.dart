@@ -48,7 +48,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
         setState(() {
           fullName = '$firstName $lastName';
           trainerImage = userDoc['profileImageUrl'] ??
-              'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+              Assets.notFound;
         });
       } else {
         print("User data not found");

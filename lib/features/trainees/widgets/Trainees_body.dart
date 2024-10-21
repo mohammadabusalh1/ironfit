@@ -36,18 +36,53 @@ class _TraineesBodyState extends State<TraineesBody> {
   }
 
   Future<void> fetchTrainees() async {
-    String? coachId = await fetchCoachId(); // Fetch the coach ID
-    var coachDoc = await FirebaseFirestore.instance
-        .collection('coaches')
-        .doc(coachId)
-        .collection('subscriptions')
-        .get();
+    try {
+      // Fetch the coach ID with error handling
+      String? coachId = await fetchCoachId();
+      if (coachId == null) {
+        throw Exception("Coach ID is null.");
+      }
 
-    setState(() {
-      trainees = coachDoc.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
-          .toList();
-    });
+      // Fetch the coach's subscription data
+      var coachDoc = await FirebaseFirestore.instance
+          .collection('coaches')
+          .doc(coachId)
+          .collection('subscriptions')
+          .get();
+
+      // Ensure there is data to process
+      if (coachDoc.docs.isEmpty) {
+        throw Exception("No trainees found for coach.");
+      }
+
+      // Safely update the state
+      setState(() {
+        trainees = coachDoc.docs
+            .map((doc) => doc.data() as Map<String, dynamic>)
+            .toList();
+      });
+    } catch (e) {
+      // Handle errors here (e.g., log to console or display a message)
+      print("Error fetching trainees: $e");
+      // Optionally show an error message to the user
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Error"),
+            content: Text("Failed to fetch trainees. Please try again."),
+            actions: <Widget>[
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   final _formKey = GlobalKey<FormState>(); // Form key for validation
@@ -526,15 +561,24 @@ class _TraineesBodyState extends State<TraineesBody> {
             var trainee = trainees[index];
             return _buildTraineeCard(
               context,
-              trainee['fullName'] ?? 'غير معروف',
-              DateTime.parse(trainee['endDate']).millisecondsSinceEpoch >
-                      DateTime.now().millisecondsSinceEpoch
-                  ? 'مشترك'
-                  : 'غير مشترك ',
-              trainee['profileImageUrl'],
+              trainee['fullName'] ??
+                  'غير معروف', // Default name if fullName is null
+              trainee['endDate'] != null &&
+                      DateTime.tryParse(trainee['endDate']) != null
+                  ? (DateTime.parse(trainee['endDate']).millisecondsSinceEpoch >
+                          DateTime.now().millisecondsSinceEpoch
+                      ? 'مشترك'
+                      : 'غير مشترك ')
+                  : 'غير معروف', // Default status if endDate is null or cannot be parsed
+              trainee['profileImageUrl'] ??
+                  'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg', // Default image if profileImageUrl is null
               () => Get.to(Directionality(
                   textDirection: TextDirection.rtl,
-                  child: TraineeScreen(username: trainee['username'], fetchTrainees: fetchTrainees))),
+                  child: TraineeScreen(
+                    username: trainee['username'] ??
+                        'unknown_user', // Default username if null
+                    fetchTrainees: fetchTrainees,
+                  ))),
             );
           },
         ),

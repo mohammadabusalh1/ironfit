@@ -10,10 +10,12 @@ class Assets {
   static const String header = 'assets/images/header.png';
   static const String IronFitLogo2 = 'assets/images/IronFitLogo2.png';
   static const String signOne = 'assets/images/signOne.jpeg';
-  static const String dashboardBackground = 'assets/images/dashboardBackground.jpg';
+  static const String dashboardBackground =
+      'assets/images/dashboardBackground.jpg';
   static const String dashboardYellow = 'assets/images/dashboardYellow.png';
   static const String myGymPageImage = 'assets/images/myGymImage.png';
   static const String placeholder = 'assets/images/placeholder.svg';
   static const String googleLogo = 'assets/images/google-logo.png';
+  static const String notFound =
+      'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
 }
-

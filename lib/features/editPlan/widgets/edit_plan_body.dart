@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/ExerciseListWidget.dart';
 import 'package:ironfit/core/presentation/widgets/exrciseCard.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
@@ -28,9 +29,13 @@ class _EditPlanBodyState extends State<EditPlanBody> {
   final TextEditingController _planNameController = TextEditingController();
   final TextEditingController _planDescriptionController =
       TextEditingController();
+  List<Map<String, dynamic>> exercisesJson =
+      List<Map<String, dynamic>>.from(jsonDecode(jsonString));
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String? selectedExerciseName;
+  String? selectedExerciseImage;
 
   List<TrainingDay> trainingDays = [];
 
@@ -220,7 +225,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
       width: double.infinity,
       height: 45,
       child: ElevatedButton(
-        onPressed: () => _addTrainingDay(context),
+        onPressed: () => _addTrainingDay(),
         style: ElevatedButton.styleFrom(
           backgroundColor: Palette.white,
           shape: RoundedRectangleBorder(
@@ -385,14 +390,14 @@ class _EditPlanBodyState extends State<EditPlanBody> {
     });
   }
 
-  void _addTrainingDay(BuildContext context) {
+  void _addTrainingDay() {
     showDialog(
       context: context,
-      builder: (context) => _buildDayDialog(context),
+      builder: (context) => _buildDayDialog(),
     );
   }
 
-  Widget _buildDayDialog(BuildContext context) {
+  Widget _buildDayDialog() {
     String? selectedDay;
     return Theme(
       data: Theme.of(context).copyWith(
@@ -474,31 +479,18 @@ class _EditPlanBodyState extends State<EditPlanBody> {
     );
   }
 
-  void _addExerciseToDay(TrainingDay day) {
-    List<Map<String, dynamic>> exercisesJson =
-        List<Map<String, dynamic>>.from(jsonDecode(jsonString));
-    showDialog(
-      context: context,
-      builder: (context) => _buildExerciseDialog(day, exercisesJson),
-    );
-  }
-
-  Widget _buildExerciseDialog(
-      TrainingDay day, List<Map<String, dynamic>> exercisesJson) {
-    TextEditingController roundsController = TextEditingController();
-    TextEditingController repetitionsController = TextEditingController();
-
-    String? selectedExerciseName;
-    String? selectedExerciseImage;
-
+  Widget _buildTrainDialog(List<Map<String, dynamic>> exercisesJson) {
     return Theme(
       data: Theme.of(context).copyWith(
         dialogBackgroundColor: Colors.grey[900],
         textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
-          bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
+          bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
+          bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
           headlineLarge: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
+            color: Palette.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
@@ -512,62 +504,92 @@ class _EditPlanBodyState extends State<EditPlanBody> {
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          title: const Text("أضف تمرين", style: TextStyle(color: Colors.white)),
+          title: const Text("إختر التدريب",
+              style: TextStyle(color: Palette.white)),
+          content: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return SingleChildScrollView(
+              child: ExercisesScreen(
+                exercisesJson: exercisesJson,
+              ),
+            );
+          }),
+          actions: [
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text('حفظ', style: TextStyle(color: Palette.black)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child:
+                  const Text('إلغاء', style: TextStyle(color: Palette.white)),
+            ),
+          ],
+          actionsAlignment: MainAxisAlignment.start,
+        ),
+      ),
+    );
+  }
+
+  void _addExerciseToDay(TrainingDay day) {
+    showDialog(
+      context: context,
+      builder: (context) => _buildExerciseDialog(day, exercisesJson),
+    );
+  }
+
+  Widget _buildExerciseDialog(
+      TrainingDay day, List<Map<String, dynamic>> exercisesJson) {
+    final TextEditingController roundsController = TextEditingController();
+    final TextEditingController repetitionsController = TextEditingController();
+
+    return Theme(
+      data: Theme.of(context).copyWith(
+        dialogBackgroundColor: Colors.grey[900],
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
+          bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
+          headlineLarge: TextStyle(
+              color: Palette.white, fontWeight: FontWeight.bold, fontSize: 24),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Palette.mainAppColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      ),
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          title:
+              const Text("أضف تمرين", style: TextStyle(color: Palette.white)),
           content: SingleChildScrollView(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Dropdown for exercise selection
-                SearchableDropdown(
-                    items: exercisesJson,
-                    value: selectedExerciseName,
-                    onChanged: (selectedExercise) async {
-                      try {
-                        // Ensure selectedExercise is not null
-                        if (selectedExercise == null) {
-                          throw Exception('Selected exercise is null');
-                        }
-
-                        PreferencesService prefsService = PreferencesService();
-                        SharedPreferences prefs =
-                            await prefsService.getPreferences();
-
-                        // Store selectedExerciseName in preferences
-                        bool success = await prefs.setString(
-                            'selectedExerciseName', selectedExercise);
-
-                        if (success) {
-                          // Safely access exercise data from the JSON list
-                          String selectedExerciseImage =
-                              exercisesJson.firstWhere(
-                            (exercise) =>
-                                exercise['Exercise_Name'] == selectedExercise,
-                            orElse: () => {
-                              'Exercise_Name': selectedExercise,
-                              'Exercise_Image':
-                                  'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg'
-                            },
-                          )['Exercise_Image'];
-
-                          // Save selected exercise image to preferences
-                          await prefs.setString(
-                              'selectedExerciseImage',
-                              selectedExerciseImage ??
-                                  'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg');
-                        } else {
-                          // If saving selectedExerciseName failed, use default image URL
-                          await prefs.setString('selectedExerciseImage',
-                              'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg');
-                        }
-                      } catch (e) {
-                        // Log the error for debugging purposes
-                        print(
-                            "An error occurred while saving selected exercise: $e");
-                      }
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Palette.mainAppColorWhite,
+                    ),
+                    onPressed: () async {
+                      final val = await showDialog(
+                        //<--------|
+                        context: context,
+                        builder: (context) => _buildTrainDialog(exercisesJson),
+                      );
+                      setState(() {
+                        selectedExerciseName = val['Exercise_Name'];
+                        selectedExerciseImage = val['Exercise_Image'];
+                      });
                     },
-                    labelText: "التمرين"),
+                    child: Text('صورة التمرين',
+                        style: TextStyle(color: Palette.black))),
                 const SizedBox(height: 16),
-                // TextFields for rounds and repetitions
                 _buildTextField(
                     controller: roundsController,
                     label: "عدد الجولات",
@@ -584,29 +606,71 @@ class _EditPlanBodyState extends State<EditPlanBody> {
           actions: [
             ElevatedButton(
               onPressed: () async {
-                PreferencesService prefsService = PreferencesService();
-                SharedPreferences prefs = await prefsService.getPreferences();
-                selectedExerciseName = prefs.getString('selectedExerciseName');
-                selectedExerciseImage =
-                    prefs.getString('selectedExerciseImage');
-
-                if (selectedExerciseImage == null ||
-                    selectedExerciseImage!.isEmpty) {
-                  selectedExerciseImage =
-                      'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
-                }
                 if (selectedExerciseName != null &&
                     _validateExercise(selectedExerciseName!,
                         roundsController.text, repetitionsController.text)) {
-                  setState(() {
-                    day.exercises.add(Exercise(
-                      name: selectedExerciseName!,
-                      rounds: int.parse(roundsController.text),
-                      repetitions: int.parse(repetitionsController.text),
-                      image: selectedExerciseImage!,
-                    ));
-                  });
-                  Navigator.pop(context);
+                  try {
+                    // Validate rounds and repetitions input
+                    final int rounds = int.parse(roundsController.text);
+                    final int repetitions =
+                        int.parse(repetitionsController.text);
+
+                    // Update the state with validated data
+                    setState(() {
+                      day.exercises.add(Exercise(
+                        name: selectedExerciseName!,
+                        rounds: rounds,
+                        repetitions: repetitions,
+                        image: selectedExerciseImage!,
+                      ));
+                    });
+
+                    // Close the dialog after successfully adding the exercise
+                    Navigator.pop(context);
+                  } on FormatException catch (e) {
+                    // Handle specific parsing error
+                    print("Invalid number format: $e");
+                    Get.snackbar('', '',
+                        snackPosition: SnackPosition.TOP,
+                        messageText: Text(
+                          'الرجاء إدخال قيم صحيحة للجولات والتكرارات',
+                          style: TextStyle(color: Palette.white),
+                          textAlign: TextAlign.right,
+                        ),
+                        titleText: Text(
+                          'خطأ',
+                          style: TextStyle(color: Palette.white),
+                          textAlign: TextAlign.right,
+                        ));
+                  } on Exception catch (e) {
+                    // Handle other generic errors
+                    print("Error: $e");
+                    Get.snackbar('', '',
+                        snackPosition: SnackPosition.TOP,
+                        messageText: Text(
+                          'الرجاء اختيار تمرين صحيح وإدخال جميع البيانات',
+                          style: TextStyle(color: Palette.white),
+                          textAlign: TextAlign.right,
+                        ),
+                        titleText: Text(
+                          'خطأ',
+                          style: TextStyle(color: Palette.white),
+                          textAlign: TextAlign.right,
+                        ));
+                  }
+                } else {
+                  Get.snackbar('', '',
+                      snackPosition: SnackPosition.TOP,
+                      messageText: Text(
+                        'الرجاء اختيار تمرين صحيح وإدخال جميع البيانات',
+                        style: TextStyle(color: Palette.white),
+                        textAlign: TextAlign.right,
+                      ),
+                      titleText: Text(
+                        'خطأ',
+                        style: TextStyle(color: Palette.white),
+                        textAlign: TextAlign.right,
+                      ));
                 }
               },
               child: const Text('حفظ', style: TextStyle(color: Palette.black)),

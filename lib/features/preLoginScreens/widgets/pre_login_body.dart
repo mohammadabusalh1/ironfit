@@ -146,7 +146,7 @@ class _PreLoginBodyState extends State<PreLoginBody> {
                                   SharedPreferences prefs =
                                       await SharedPreferences.getInstance();
                                   prefs.setBool('hasSeenPreLoginScreen', true);
-                                  Get.toNamed(Routes.singIn);
+                                  Get.toNamed(Routes.singUp);
                                 },
                                 width: MediaQuery.of(context).size.width * 0.85,
                                 backgroundColor: Palette.mainAppColorWhite,

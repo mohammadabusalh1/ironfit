@@ -58,6 +58,8 @@ flutter:
     - assets/images/myGymImage.png
     - assets/images/placeholder.svg
     - assets/images/google-logo.png
+    - assets/images/Welcome-to.png
+    - assets/images/logo.png
 
   # Fonts can also be added if required for custom typography
   # fonts:
@@ -67,11 +69,6 @@ flutter:
 
 flutter_native_splash:
   color: "#ffbb02"  # Background color
-  image: assets\images\Welcome-to.png  # Logo or image you want to display
+  image: assets/images/Welcome-to.png  # Logo or image you want to display
   android: true  # Enable splash screen for Android
   ios: true  # Enable splash screen for iOS
-  
-flutter_icons:
-  android: true
-  ios: true
-  image_path: "assets/images/logo.png"

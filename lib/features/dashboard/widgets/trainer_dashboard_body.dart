@@ -123,8 +123,8 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
     return DashboardHeader(
       backgroundImage: Assets.dashboardBackground,
       trainerImage: trainerImage,
-      trainerName: 'a',
-      trainerEmail: 'b',
+      trainerName: trainerName,
+      trainerEmail: trainerEmail,
     );
   }
 

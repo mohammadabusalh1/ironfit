@@ -7,9 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
-import 'package:path/path.dart' as path;
 import 'package:ironfit/core/presentation/style/palette.dart';
-import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
@@ -29,6 +27,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   late String email;
   bool isLoading = true;
   PreferencesService preferencesService = PreferencesService();
+  String coachId = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   void initState() {
@@ -70,9 +69,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
             setState(() {
               imageUrl = downloadUrl;
             });
-
-            // Update the image URL in the Firestore database
-            String? coachId = await fetchCoachId();
+            
             if (coachId != null) {
               await FirebaseFirestore.instance
                   .collection('coaches')
@@ -116,7 +113,6 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   }
 
   Future<void> fetchUserName() async {
-    String? coachId = await fetchCoachId();
     if (coachId != null) {
       // Get user data from Firestore
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
@@ -275,7 +271,6 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
-                          String? coachId = await fetchCoachId();
                           try {
                             if (coachId != null) {
                               await FirebaseFirestore.instance

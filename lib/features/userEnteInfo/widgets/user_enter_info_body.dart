@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
@@ -14,9 +14,7 @@ import 'package:ironfit/core/routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserEnterInfoBody extends StatefulWidget {
-  final String userId; // Accept coach ID here
-
-  UserEnterInfoBody({Key? key, required this.userId}) : super(key: key);
+  UserEnterInfoBody({Key? key}) : super(key: key);
 
   @override
   _UserEnterInfoBodyState createState() => _UserEnterInfoBodyState();
@@ -26,6 +24,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
   final _formKey = GlobalKey<FormState>();
   String? _uploadedImageUrl;
   int stage = 1;
+  String userId = FirebaseAuth.instance.currentUser!.uid;
 
   // Controllers for the form fields
   final TextEditingController _usernameController = TextEditingController();
@@ -41,18 +40,10 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
           .collection('trainees')
           .doc(userId)
           .update(data);
-      // Show success message
-      Get.snackbar('Success', 'Coach information updated successfully.',
-          backgroundColor: Colors.green, colorText: Colors.white);
     } on FirebaseException catch (e) {
-      // Handle Firebase specific errors
-      Get.snackbar('Error', 'Firebase error: ${e.message}',
-          backgroundColor: Colors.red, colorText: Colors.white);
+      throw e;
     } catch (e) {
-      // Handle any other errors
-      Get.snackbar(
-          'Error', 'An unexpected error occurred. Please try again later.',
-          backgroundColor: Colors.red, colorText: Colors.white);
+      throw e;
     }
   }
 
@@ -64,7 +55,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
             stage = 2;
           });
         } else {
-          Get.dialog(Center(child: CircularProgressIndicator()),
+          Get.dialog(const Center(child: CircularProgressIndicator()),
               barrierDismissible: false);
           Map<String, dynamic> userData = {
             'username': _usernameController.text,
@@ -75,16 +66,22 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
             'length': double.parse(_lengthController.text),
             'profileImageUrl': _uploadedImageUrl, // Add the image URL
           };
-          await updateCoachInfo(widget.userId, userData);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
-          );
+          await updateCoachInfo(userId, userData).then(
+            (value) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
+              );
 
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('userId', widget.userId);
-
-          Navigator.of(context).pop();
-          Get.toNamed(Routes.trainerDashboard);
+              Navigator.of(context).pop();
+              Get.toNamed(Routes.trainerDashboard);
+            },
+          ).catchError((error) {
+            print(error);
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('حدث خطأ: $error')),
+            );
+          });
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -103,76 +100,101 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
     return Scaffold(
       body: Form(
         key: _formKey,
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildImageStack(),
-                  const SizedBox(height: 24),
-                  stage == 2
-                      ? ImagePickerComponent(
-                          userId: widget.userId,
-                          onImageUploaded: (imageUrl) {
-                            setState(() {
-                              _uploadedImageUrl = imageUrl;
-                            });
-                          })
-                      : Container(), // Add the image picker button here
-                  const SizedBox(height: 12),
-                  stage == 1
-                      ? const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24),
-                          child: Align(
-                            alignment: AlignmentDirectional.center,
-                            child: Text(
-                              'أكمل معلوماتك من فضلك',
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildImageStack(),
+              const SizedBox(height: 24),
+              stage == 2
+                  ? ImagePickerComponent(
+                      userId: userId,
+                      onImageUploaded: (imageUrl) {
+                        setState(() {
+                          _uploadedImageUrl = imageUrl;
+                        });
+                      })
+                  : Container(), // Add the image picker button here
+              stage == 1 ? const SizedBox(height: 12) : Container(),
+              stage == 1
+                  ? const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Align(
+                        alignment: AlignmentDirectional.center,
+                        child: Text(
+                          'أكمل معلوماتك من فضلك',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                           ),
-                        )
-                      : Container(),
-                  const SizedBox(height: 12),
-                  stage == 1
-                      ? _buildLabelWithTextField(
-                          'إسم الحساب', _usernameController)
-                      : Container(),
-                  stage == 1
-                      ? _buildLabelWithTextField(
-                          'الاسم الأول', _firstNameController)
-                      : Container(),
-                  stage == 1
-                      ? _buildLabelWithTextField(
-                          'إسم العائلة', _lastNameController)
-                      : Container(),
-                  stage == 1
-                      ? _buildLabelWithTextField('العمر', _ageController,
-                          keyboardType: TextInputType.number)
-                      : Container(),
-                  stage == 1
-                      ? _buildLabelWithTextField('الوزن', _weightController,
-                          keyboardType: TextInputType.number)
-                      : Container(),
-                  stage == 1
-                      ? _buildLabelWithTextField('الطول', _lengthController,
-                          keyboardType: TextInputType.number)
-                      : Container(),
-                  const SizedBox(
-                      height: 100), // Adds extra space to ensure scrolling
-                ],
-              ),
-            ),
-            // The fixed login button at the bottom
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Padding(
+                        ),
+                      ),
+                    )
+                  : Container(),
+              stage == 1 ? const SizedBox(height: 12) : Container(),
+              stage == 1
+                  ? const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Text('الحساب',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold)),
+                    )
+                  : Container(),
+              stage == 1 ? const SizedBox(height: 12) : Container(),
+              stage == 1
+                  ? _buildTextField('إسم الحساب', '', _usernameController,
+                      TextInputType.text, Icons.person)
+                  : Container(),
+              stage == 1 ? const SizedBox(height: 12) : Container(),
+              stage == 1
+                  ? _buildTextField('الاسم الأول', '', _firstNameController,
+                      TextInputType.text, Icons.face)
+                  : Container(),
+              stage == 1 ? const SizedBox(height: 12) : Container(),
+              stage == 1
+                  ? _buildTextField('إسم العائلة', '', _lastNameController,
+                      TextInputType.text, Icons.face)
+                  : Container(),
+              stage == 1 ? const SizedBox(height: 12) : Container(),
+              stage == 1
+                  ? const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Divider(
+                        color: Palette.gray,
+                      ))
+                  : Container(),
+              stage == 1 ? const SizedBox(height: 12) : Container(),
+              stage == 1
+                  ? const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Text('البيانات الشخصية',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold)),
+                    )
+                  : Container(),
+              stage == 1 ? const SizedBox(height: 12) : Container(),
+              stage == 1
+                  ? _buildTextField('العمر', '', _ageController,
+                      TextInputType.number, Icons.group)
+                  : Container(),
+              stage == 1 ? const SizedBox(height: 12) : Container(),
+              stage == 1
+                  ? _buildTextField('الوزن', '', _weightController,
+                      TextInputType.number, Icons.scale)
+                  : Container(),
+              stage == 1 ? const SizedBox(height: 12) : Container(),
+              stage == 1
+                  ? _buildTextField('الطول', '', _lengthController,
+                      TextInputType.number, Icons.accessibility)
+                  : Container(),
+              const SizedBox(height: 24),
+              Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
                 child: ElevatedButton.icon(
                   onPressed: _submitForm,
@@ -206,10 +228,11 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                     ),
                   ),
                 ),
-              ),
-            ),
-          ],
+              ), // Adds extra space to ensure scrolling
+            ],
+          ),
         ),
+        // The fixed login button at the bottom
       ),
     );
   }
@@ -235,32 +258,18 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
     );
   }
 
-  Widget _buildLabelWithTextField(
-      String label, TextEditingController controller,
-      {TextInputType keyboardType = TextInputType.text}) {
-    return Column(
-      children: [
-        _buildTextField(
-            label: label,
-            hint: label,
-            controller: controller,
-            keyboardType: keyboardType),
-        const SizedBox(height: 12),
-      ],
-    );
-  }
-
-  Widget _buildTextField({
-    required String label,
-    required String hint,
-    required TextEditingController controller,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
+  Widget _buildTextField(
+    String label,
+    String hint,
+    TextEditingController controller,
+    TextInputType keyboardType,
+    IconData? icon,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: TextFormField(
         controller: controller,
-        keyboardType: keyboardType,
+        keyboardType: keyboardType ?? TextInputType.text,
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
@@ -270,6 +279,14 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
           fillColor: const Color(0xFF454038),
           enabledBorder: _buildInputBorder(Palette.mainAppColor),
           focusedBorder: _buildInputBorder(Palette.white),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.all(10.0), // Adjust padding if needed
+            child: Icon(
+              icon,
+              color: Palette.gray,
+              size: 20,
+            ),
+          ),
         ),
         style: const TextStyle(color: Palette.white, fontSize: 14),
         validator: (value) {

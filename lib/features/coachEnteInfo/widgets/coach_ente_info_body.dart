@@ -1,15 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CoachEnterInfoBody extends StatefulWidget {
-  final String coachId; // Accept coach ID here
-
-  CoachEnterInfoBody({Key? key, required this.coachId}) : super(key: key);
+  CoachEnterInfoBody({Key? key}) : super(key: key);
 
   @override
   _CoachEnterInfoBodyState createState() => _CoachEnterInfoBodyState();
@@ -26,6 +24,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
 
   String? _uploadedImageUrl;
   int stage = 1;
+  String coachId = FirebaseAuth.instance.currentUser!.uid;
 
   Future<void> updateCoachInfo(
       String coachId, Map<String, dynamic> data) async {
@@ -71,16 +70,11 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
             'username': username,
           };
 
-          await updateCoachInfo(widget.coachId, coachData);
+          await updateCoachInfo(coachId, coachData);
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
           );
-
-          if (widget.coachId != null) {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            prefs.setString('coachId', widget.coachId);
-          }
 
           Get.toNamed(Routes.coachDashboard)?.then(
             (value) => Get.back(),
@@ -142,21 +136,22 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
       key: _formKey,
       child: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildImageStack(),
             stage == 2 ? SizedBox(height: 24) : Container(),
             stage == 2
                 ? ImagePickerComponent(
-                    userId: widget.coachId,
+                    userId: coachId,
                     onImageUploaded: (imageUrl) {
                       setState(() {
                         _uploadedImageUrl = imageUrl;
                       });
                     })
                 : Container(),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             stage == 1
-                ? Padding(
+                ? const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 24),
                     child: Align(
                       alignment: AlignmentDirectional.center,
@@ -172,36 +167,60 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                     ),
                   )
                 : Container(),
-            stage == 1 ? SizedBox(height: 12) : Container(),
+            stage == 1 ? const SizedBox(height: 12) : Container(),
             stage == 1
-                ? _buildTextField(
-                    label: 'اسم الحساب',
-                    controller: _usernameController,
-                    hint: 'مثال: user1')
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: Text('الحساب',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
+                  )
+                : Container(),
+            stage == 1 ? const SizedBox(height: 12) : Container(),
+            stage == 1
+                ? _buildTextField('إسم الحساب', '', _usernameController,
+                    TextInputType.text, Icons.person)
                 : Container(),
             stage == 1 ? SizedBox(height: 12) : Container(),
             stage == 1
-                ? _buildTextField(
-                    label: 'الاسم الأول', controller: _firstNameController)
+                ? _buildTextField('الاسم الأول', '', _firstNameController,
+                    TextInputType.text, Icons.face)
+                : Container(),
+            stage == 1 ? const SizedBox(height: 12) : Container(),
+            stage == 1
+                ? _buildTextField('إسم العائلة', '', _lastNameController,
+                    TextInputType.text, Icons.face)
+                : Container(),
+            stage == 1 ? const SizedBox(height: 12) : Container(),
+            stage == 1
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: Divider(
+                      color: Palette.gray,
+                    ))
+                : Container(),
+            stage == 1 ? const SizedBox(height: 12) : Container(),
+            stage == 1
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: Text('البيانات الشخصية',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
+                  )
+                : Container(),
+            stage == 1 ? const SizedBox(height: 12) : Container(),
+            stage == 1
+                ? _buildTextField('العمر', '', _ageController,
+                    TextInputType.number, Icons.group)
                 : Container(),
             stage == 1 ? SizedBox(height: 12) : Container(),
             stage == 1
-                ? _buildTextField(
-                    label: 'إسم العائلة', controller: _lastNameController)
-                : Container(),
-            stage == 1 ? SizedBox(height: 12) : Container(),
-            stage == 1
-                ? _buildTextField(
-                    label: 'العمر',
-                    controller: _ageController,
-                    keyboardType: TextInputType.number)
-                : Container(),
-            stage == 1 ? SizedBox(height: 12) : Container(),
-            stage == 1
-                ? _buildTextField(
-                    label: 'الخبرة',
-                    controller: _experienceController,
-                    keyboardType: TextInputType.number)
+                ? _buildTextField('الخبرة', '', _experienceController,
+                    TextInputType.number, Icons.star)
                 : Container(),
             stage == 1 ? SizedBox(height: 24) : Container(),
             SizedBox(
@@ -269,29 +288,37 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
     );
   }
 
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    TextInputType keyboardType = TextInputType.text,
-    String hint = '',
-  }) {
+  Widget _buildTextField(
+    String label,
+    String hint,
+    TextEditingController controller,
+    TextInputType keyboardType,
+    IconData? icon,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: TextFormField(
         controller: controller,
-        keyboardType: keyboardType,
+        keyboardType: keyboardType ?? TextInputType.text,
         decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: const TextStyle(color: Palette.subTitleGrey, fontSize: 14),
           labelText: label,
-          labelStyle:
-              const TextStyle(color: Palette.subTitleGrey, fontSize: 14),
+          hintText: hint,
+          hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
+          labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
           filled: true,
           fillColor: const Color(0xFF454038),
-          enabledBorder: _buildInputBorder(const Color(0xFFFFBB02)),
-          focusedBorder: _buildInputBorder(Colors.white),
+          enabledBorder: _buildInputBorder(Palette.mainAppColor),
+          focusedBorder: _buildInputBorder(Palette.white),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.all(10.0), // Adjust padding if needed
+            child: Icon(
+              icon,
+              color: Palette.gray,
+              size: 20,
+            ),
+          ),
         ),
-        style: const TextStyle(color: Colors.white, fontSize: 14),
+        style: const TextStyle(color: Palette.white, fontSize: 14),
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'من فضلك أدخل $label';

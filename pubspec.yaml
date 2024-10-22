@@ -28,6 +28,7 @@ dependencies:
   carousel_slider: ^5.0.0
   dropdown_search: ^6.0.1
   flutter_launcher_icons: ^0.14.1
+  firebase_app_check: ^0.3.1+4
 
   # Add any other packages your project might need like HTTP for API calls
   # Example:
@@ -72,3 +73,34 @@ flutter_native_splash:
   image: assets/images/Welcome-to.png  # Logo or image you want to display
   android: true  # Enable splash screen for Android
   ios: true  # Enable splash screen for iOS
+
+# flutter pub run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/images/logo.png"
+  android: "launcher_icon"
+  image_path_android: "assets/images/logo.png"
+  min_sdk_android: 23 # android min sdk min:16, default 21
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/images/logo.png"
+  # adaptive_icon_monochrome: "assets/icon/monochrome.png"
+
+  ios: true
+  image_path_ios: "assets/images/logo.png"
+  remove_alpha_channel_ios: true
+  # image_path_ios_dark_transparent: "assets/icon/icon_dark.png"
+  # image_path_ios_tinted_grayscale: "assets/icon/icon_tinted.png"
+  # desaturate_tinted_to_grayscale_ios: true
+
+  web:
+    generate: true
+    image_path: "assets/images/logo.png"
+
+  windows:
+    generate: true
+    image_path: "assets/images/logo.png"
+    icon_size: 48
+
+  macos:
+    generate: true
+    image_path: "assets/images/logo.png"
+

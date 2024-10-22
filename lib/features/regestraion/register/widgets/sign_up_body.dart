@@ -1,17 +1,16 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
-import 'package:ironfit/features/coachEnteInfo/screens/coach_ente_info_screen.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildHeaderImages.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildWelcomeText.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:ironfit/features/userEnteInfo/screens/user_ente_info_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpBody extends StatefulWidget {
   const SignUpBody({super.key});
@@ -28,39 +27,103 @@ class _SignUpBodyState extends State<SignUpBody> {
 
   bool passwordVisibility = false;
   bool isCoach = false;
+  PreferencesService preferencesService = PreferencesService();
 
   // Firebase Auth instance
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  @override
+  void initState() {
+    super.initState();
+    _checkToken();
+  }
+
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token != null) {
+      bool isCoach = prefs.getBool('isCoach') ?? false;
+      // If the token exists, navigate to the respective dashboard
+      if (isCoach) {
+        Get.toNamed(Routes.coachDashboard); // Navigate to coach dashboard
+      } else {
+        Get.toNamed(Routes.trainerDashboard); // Navigate to trainer dashboard
+      }
+    }
+  }
+
   // Method to save coach data
   Future<String> saveCoachData() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      CollectionReference users =
-          FirebaseFirestore.instance.collection('coaches');
-      await users.doc(user.uid).set({
-        'email': user.email,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-      return user.uid;
-    } else {
-      return '';
+    try {
+      // Check if user is authenticated
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        // Reference to the 'coaches' collection
+        CollectionReference users =
+            FirebaseFirestore.instance.collection('coaches');
+
+        // Save coach data to Firestore
+        await users.doc(user.uid).set({
+          'email': user.email,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
+        return user.uid; // Return user ID if successful
+      } else {
+        throw FirebaseAuthException(
+            code: 'user-not-found', message: 'No authenticated user found.');
+      }
+    } on FirebaseAuthException catch (e) {
+      // Handle specific Firebase authentication errors
+      print('FirebaseAuthException: ${e.message}');
+      return 'Auth error: ${e.message}';
+    } on FirebaseException catch (e) {
+      // Handle Firebase-specific Firestore errors
+      print('FirebaseException: ${e.message}');
+      return 'Database error: ${e.message}';
+    } catch (e) {
+      // Handle any other errors
+      print('General error: $e');
+      return 'An unexpected error occurred: $e';
     }
   }
 
   // Method to save trainee data
   Future<String> saveTraineeData() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      CollectionReference users =
-          FirebaseFirestore.instance.collection('trainees');
-      await users.doc(user.uid).set({
-        'email': user.email,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-      return user.uid;
-    } else {
-      return '';
+    try {
+      // Check if the user is authenticated
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        // Reference to the 'trainees' collection
+        CollectionReference users =
+            FirebaseFirestore.instance.collection('trainees');
+
+        // Save trainee data to Firestore
+        await users.doc(user.uid).set({
+          'email': user.email,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
+        return user.uid; // Return user ID if successful
+      } else {
+        throw FirebaseAuthException(
+            code: 'user-not-found', message: 'No authenticated user found.');
+      }
+    } on FirebaseAuthException catch (e) {
+      // Handle specific Firebase authentication errors
+      print('FirebaseAuthException: ${e.message}');
+      return 'Auth error: ${e.message}';
+    } on FirebaseException catch (e) {
+      // Handle Firebase Firestore-related errors
+      print('FirebaseException: ${e.message}');
+      return 'Database error: ${e.message}';
+    } catch (e) {
+      // Handle any other unexpected errors
+      print('General error: $e');
+      return 'An unexpected error occurred: $e';
     }
   }
 
@@ -77,31 +140,24 @@ class _SignUpBodyState extends State<SignUpBody> {
           password: passwordController.text.trim(),
         );
 
-        // Save data based on the user type (coach/trainee)
-        if (isCoach) {
-          String userId = await saveCoachData();
-          if (userId.isEmpty) {
-            return;
+        if (userCredential.user != null) {
+          SharedPreferences prefs = await preferencesService.getPreferences();
+          prefs.setString('token', userCredential.user!.uid);
+          // Save data based on the user type (coach/trainee)
+          if (isCoach) {
+            prefs.setBool('isCoach', true);
+            String userId = await saveCoachData();
+            if (userId.isEmpty) {
+              return;
+            }
+            Get.toNamed(Routes.coachEnterInfo);
+          } else {
+            prefs.setBool('isCoach', false);
+            await saveTraineeData();
+            Get.toNamed(Routes.userEnterInfo);
           }
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Directionality(
-                textDirection: TextDirection.rtl,
-                child: CoachEnterInfoScreen(coachId: userId),
-              ),
-            ),
-          );
-        } else {
-          await saveTraineeData();
-          Get.to(Directionality(
-              textDirection: TextDirection.rtl,
-              child: UserEnterInfoScreen(
-                userId: userCredential.user!.uid,
-              )));
         }
       } catch (e) {
-
         Navigator.pop(context);
 
         // Handle errors
@@ -120,6 +176,97 @@ class _SignUpBodyState extends State<SignUpBody> {
               textDirection: TextDirection.rtl,
             ));
       }
+    }
+  }
+
+  Future<void> signUpWithGoogle() async {
+    try {
+      Get.dialog(Center(child: CircularProgressIndicator()),
+          barrierDismissible: false);
+      // Attempt to sign in with Google
+      GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser == null) {
+        // User canceled the sign-in
+        print('Sign-in aborted by user.');
+        return;
+      }
+
+      // Get Google authentication credentials
+      GoogleSignInAuthentication? googleAuth = await (await GoogleSignIn(
+        scopes: ["profile", "email"],
+      ).signIn())
+          ?.authentication;
+
+      // Create a new credential for Firebase Authentication
+      AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+
+      // Sign in to Firebase with the Google credentials
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      CollectionReference coachesCollection =
+          FirebaseFirestore.instance.collection('coaches');
+      QuerySnapshot<Object?> coacheDoc = await coachesCollection
+          .where('email', isEqualTo: userCredential.user!.email)
+          .get();
+
+      CollectionReference usersCollection =
+          FirebaseFirestore.instance.collection('trainees');
+      QuerySnapshot<Object?> userDoc = await usersCollection
+          .where('email', isEqualTo: userCredential.user!.email)
+          .get();
+
+      SharedPreferences prefs = await preferencesService.getPreferences();
+      prefs.setString('token', userCredential.user!.uid);
+      if (coacheDoc.docs.isNotEmpty) {
+        prefs.setBool('isCoach', true);
+        Get.toNamed(Routes.coachDashboard)?.then(
+          (value) {
+            Navigator.pop(context);
+          },
+        );
+      } else if (userDoc.docs.isNotEmpty) {
+        prefs.setBool('isCoach', false);
+        Get.toNamed(Routes.trainerDashboard)?.then(
+          (value) {
+            Navigator.pop(context);
+          },
+        );
+      } else if (userCredential.user != null) {
+        if (isCoach) {
+          prefs.setBool('isCoach', true);
+          await saveCoachData();
+          Get.toNamed(Routes.coachEnterInfo)?.then(
+            (value) {
+              Navigator.pop(context);
+            },
+          );
+        } else {
+          prefs.setBool('isCoach', false);
+          await saveTraineeData();
+          Get.toNamed(Routes.userEnterInfo)?.then(
+            (value) {
+              Navigator.pop(context);
+            },
+          );
+        }
+      } else {
+        print('Sign-in failed: no user data returned.');
+      }
+    } on FirebaseAuthException catch (e) {
+      // Handle Firebase-specific errors
+      print('FirebaseAuthException: ${e.message}');
+    } on PlatformException catch (e) {
+      print(e);
+      // Handle platform-specific errors, like network issues
+      print('PlatformException: ${e.message}');
+    } catch (e) {
+      // Handle general errors
+      print('An unexpected error occurred: $e');
     }
   }
 
@@ -142,44 +289,6 @@ class _SignUpBodyState extends State<SignUpBody> {
       return 'Password should be at least 6 characters';
     }
     return null;
-  }
-
-  // Google sign-in method
-  Future<User?> _signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-
-      UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-      return userCredential.user;
-    } catch (e) {
-      log(e.toString());
-      print('Error signing in with Google: $e');
-      Get.snackbar('فشل', 'يتعذر تسجيل الدخول باستخدام Google',
-          titleText: const Text(
-            'فشل',
-            textAlign: TextAlign.right,
-            textDirection: TextDirection.rtl,
-            style: TextStyle(color: Colors.white),
-          ),
-          messageText: const Text(
-            'يتعذر تسجيل الدخول باستخدام Google',
-            textAlign: TextAlign.right,
-            textDirection: TextDirection.rtl,
-            style: TextStyle(color: Colors.white),
-          ),
-          snackPosition: SnackPosition.BOTTOM,
-          colorText: Colors.white,
-          backgroundColor: Colors.red);
-      return null;
-    }
   }
 
   @override
@@ -353,7 +462,9 @@ class _SignUpBodyState extends State<SignUpBody> {
         borderRadius: BorderRadius.circular(16),
       ),
       child: InkWell(
-        onTap: _signInWithGoogle,
+        onTap: () {
+          signUpWithGoogle();
+        },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

@@ -1,9 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/widgets/PagesHeader.dart';
 import 'package:ironfit/core/presentation/widgets/StatisticsCard.dart';
-import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
 import 'package:ironfit/features/dashboard/widgets/card_widget.dart';
 import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
 import 'package:ironfit/core/routes/routes.dart';
@@ -20,6 +20,7 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   final CoachDashboardController controller =
       Get.put(CoachDashboardController());
 
+  String coachId = FirebaseAuth.instance.currentUser!.uid;
   String fullName = 'إسم المستخد';
   String email = 'لا يوجد بيانات';
   String imageUrl =
@@ -38,7 +39,7 @@ class CoachDashboardState extends State<CoachDashboardBody> {
       CollectionReference<Map<String, dynamic>> subscriptions =
           FirebaseFirestore.instance
               .collection('coaches')
-              .doc(await fetchCoachId())
+              .doc(coachId)
               .collection('subscriptions');
 
       QuerySnapshot<Map<String, dynamic>> snapshot = await subscriptions.get();
@@ -93,7 +94,6 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   }
 
   Future<void> fetchUserName() async {
-    String? coachId = await fetchCoachId();
     if (coachId != null) {
       // Get user data from Firestore
       DocumentSnapshot userDoc = await FirebaseFirestore.instance

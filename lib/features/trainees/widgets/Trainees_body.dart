@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
-import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/features/Trainee/screens/trainee_screen.dart';
 
@@ -16,6 +16,7 @@ class _TraineesBodyState extends State<TraineesBody> {
 
   bool isNameSortUp = true;
   bool isSubscriptionSortUp = true;
+  String coachId = FirebaseAuth.instance.currentUser!.uid;
 
   void toggleNameSort() {
     setState(() {
@@ -37,8 +38,6 @@ class _TraineesBodyState extends State<TraineesBody> {
 
   Future<void> fetchTrainees() async {
     try {
-      // Fetch the coach ID with error handling
-      String? coachId = await fetchCoachId();
       if (coachId == null) {
         throw Exception("Coach ID is null.");
       }
@@ -64,24 +63,6 @@ class _TraineesBodyState extends State<TraineesBody> {
     } catch (e) {
       // Handle errors here (e.g., log to console or display a message)
       print("Error fetching trainees: $e");
-      // Optionally show an error message to the user
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Error"),
-            content: Text("Failed to fetch trainees. Please try again."),
-            actions: <Widget>[
-              TextButton(
-                child: Text("OK"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
     }
   }
 
@@ -285,7 +266,6 @@ class _TraineesBodyState extends State<TraineesBody> {
                           String endDate = endDateController.text.trim();
                           String amountPaid = amountPaidController.text.trim();
                           String debts = debtsController.text.trim();
-                          String? coachId = await fetchCoachId();
 
                           var existingUser = await FirebaseFirestore.instance
                               .collection('trainees')
@@ -555,33 +535,46 @@ class _TraineesBodyState extends State<TraineesBody> {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: ListView.builder(
-          itemCount: trainees.length,
-          itemBuilder: (context, index) {
-            var trainee = trainees[index];
-            return _buildTraineeCard(
-              context,
-              trainee['fullName'] ??
-                  'غير معروف', // Default name if fullName is null
-              trainee['endDate'] != null &&
-                      DateTime.tryParse(trainee['endDate']) != null
-                  ? (DateTime.parse(trainee['endDate']).millisecondsSinceEpoch >
-                          DateTime.now().millisecondsSinceEpoch
-                      ? 'مشترك'
-                      : 'غير مشترك ')
-                  : 'غير معروف', // Default status if endDate is null or cannot be parsed
-              trainee['profileImageUrl'] ??
-                  'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg', // Default image if profileImageUrl is null
-              () => Get.to(Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: TraineeScreen(
-                    username: trainee['username'] ??
-                        'unknown_user', // Default username if null
-                    fetchTrainees: fetchTrainees,
-                  ))),
-            );
-          },
-        ),
+        child: trainees.length == 0
+            ? Center(
+                child: Text(
+                  'لا يوجد نتائج',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Palette.white,
+                  ),
+                ),
+              )
+            : ListView.builder(
+                itemCount: trainees.length,
+                itemBuilder: (context, index) {
+                  var trainee = trainees[index];
+                  return _buildTraineeCard(
+                    context,
+                    trainee['fullName'] ??
+                        'غير معروف', // Default name if fullName is null
+                    trainee['endDate'] != null &&
+                            DateTime.tryParse(trainee['endDate']) != null
+                        ? (DateTime.parse(trainee['endDate'])
+                                    .millisecondsSinceEpoch >
+                                DateTime.now().millisecondsSinceEpoch
+                            ? 'مشترك'
+                            : 'غير مشترك ')
+                        : 'غير معروف', // Default status if endDate is null or cannot be parsed
+                    trainee['profileImageUrl'] ??
+                        'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg', // Default image if profileImageUrl is null
+                    () => Get.to(Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: TraineeScreen(
+                          username: trainee['username'] ??
+                              'unknown_user', // Default username if null
+                          fetchTrainees: fetchTrainees,
+                        ))),
+                  );
+                },
+              ),
       ),
     );
   }

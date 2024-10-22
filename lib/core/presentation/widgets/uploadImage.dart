@@ -33,16 +33,39 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
     }
   }
 
-  void _removeImage() {
-    setState(() {
-      _selectedImage = null; // Reset the selected image to null
-    });
+  void _removeImage() async {
+    if (_uploadedImageUrl != null) {
+      try {
+        // Create a reference to the file to delete
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('profile_images/${widget.userId}.jpg');
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('تمت إزالة الصورة بنجاح'),
-      ),
-    );
+        // Delete the file
+        await storageRef.delete();
+
+        setState(() {
+          _uploadedImageUrl = null; // Clear the uploaded image URL
+          _selectedImage = null; // Clear the selected image if necessary
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('تمت إزالة الصورة بنجاح'),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('حدث خطأ أثناء إزالة الصورة')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('لا توجد صورة لإزالتها'),
+        ),
+      );
+    }
   }
 
   Future<void> _uploadImage() async {

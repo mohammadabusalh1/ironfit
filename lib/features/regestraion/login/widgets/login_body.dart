@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
@@ -29,7 +30,7 @@ class _LoginBodyState extends State<LoginBody> {
   @override
   void initState() {
     super.initState();
-    // _checkToken();
+    _checkToken();
   }
 
   Future<void> _checkToken() async {
@@ -44,6 +45,97 @@ class _LoginBodyState extends State<LoginBody> {
       } else {
         Get.toNamed(Routes.trainerDashboard); // Navigate to trainer dashboard
       }
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    try {
+      Get.dialog(Center(child: CircularProgressIndicator()),
+          barrierDismissible: false);
+      // Attempt to sign in with Google
+      GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser == null) {
+        // User canceled the sign-in
+        print('Sign-in aborted by user.');
+        return;
+      }
+
+      // Get Google authentication credentials
+      GoogleSignInAuthentication? googleAuth = await (await GoogleSignIn(
+        scopes: ["profile", "email"],
+      ).signIn())
+          ?.authentication;
+
+      // Create a new credential for Firebase Authentication
+      AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+
+      // Sign in to Firebase with the Google credentials
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      CollectionReference coachesCollection =
+          FirebaseFirestore.instance.collection('coaches');
+      DocumentSnapshot coacheDoc =
+          await coachesCollection.doc(userCredential.user!.uid).get();
+
+      CollectionReference usersCollection =
+          FirebaseFirestore.instance.collection('trainees');
+      DocumentSnapshot userDoc =
+          await usersCollection.doc(userCredential.user!.uid).get();
+
+      if (coacheDoc.exists) {
+        SharedPreferences prefs = await preferencesService.getPreferences();
+        prefs.setString('token', userCredential.user!.uid);
+        prefs.setBool('isCoach', true);
+        Get.toNamed(Routes.coachDashboard)?.then(
+          (value) {
+            Navigator.pop(context);
+          },
+        );
+      } else if (userDoc.exists) {
+        SharedPreferences prefs = await preferencesService.getPreferences();
+        prefs.setString('token', userCredential.user!.uid);
+        prefs.setBool('isCoach', false);
+        Get.toNamed(Routes.trainerDashboard)?.then(
+          (value) {
+            Navigator.pop(context);
+          },
+        );
+      } else if (userCredential.user != null) {
+        SharedPreferences prefs = await preferencesService.getPreferences();
+        prefs.setString('token', userCredential.user!.uid);
+        if (isCoach) {
+          prefs.setBool('isCoach', true);
+          Get.toNamed(Routes.coachEnterInfo)?.then(
+            (value) {
+              Navigator.pop(context);
+            },
+          );
+        } else {
+          prefs.setBool('isCoach', false);
+          Get.toNamed(Routes.userEnterInfo)?.then(
+            (value) {
+              Navigator.pop(context);
+            },
+          );
+        }
+      } else {
+        print('Sign-in failed: no user data returned.');
+      }
+    } on FirebaseAuthException catch (e) {
+      // Handle Firebase-specific errors
+      print('FirebaseAuthException: ${e.message}');
+    } on PlatformException catch (e) {
+      print(e);
+      // Handle platform-specific errors, like network issues
+      print('PlatformException: ${e.message}');
+    } catch (e) {
+      // Handle general errors
+      print('An unexpected error occurred: $e');
     }
   }
 
@@ -265,7 +357,6 @@ class _LoginBodyState extends State<LoginBody> {
                     }
                   }
                 } catch (e) {
-
                   // stop loading indicator
                   Get.back();
 
@@ -308,24 +399,6 @@ class _LoginBodyState extends State<LoginBody> {
     );
   }
 
-  Future<UserCredential> signInWithGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    if (googleUser != null) {
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      return await FirebaseAuth.instance.signInWithCredential(credential);
-    } else {
-      throw Exception("فشل تسجيل الدخول باستخدام جوجل");
-    }
-  }
-
   Widget _buildGoogleRegisterButton() {
     return SizedBox(
       child: Align(
@@ -344,27 +417,25 @@ class _LoginBodyState extends State<LoginBody> {
             onPressed: () async {
               try {
                 await signInWithGoogle();
-                Get.snackbar('نجح', 'تم تسجيل الدخول باستخدام Google',
-                    snackPosition: SnackPosition.BOTTOM,
-                    colorText: Colors.white,
-                    backgroundColor: Colors.green);
               } catch (e) {
-                Get.snackbar('فشل', 'يتعذر تسجيل الدخول باستخدام Google',
-                    titleText: const Text(
-                      'فشل',
-                      textAlign: TextAlign.right,
-                      textDirection: TextDirection.rtl,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    messageText: const Text(
-                      'يتعذر تسجيل الدخول باستخدام Google',
-                      textAlign: TextAlign.right,
-                      textDirection: TextDirection.rtl,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    snackPosition: SnackPosition.BOTTOM,
-                    colorText: Colors.white,
-                    backgroundColor: Colors.red);
+                Get.snackbar(
+                  'فشل',
+                  'يتعذر تسجيل الدخول باستخدام Google',
+                  titleText: const Text(
+                    'فشل',
+                    textAlign: TextAlign.right,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  messageText: const Text(
+                    'يتعذر تسجيل الدخول باستخدام Google',
+                    textAlign: TextAlign.right,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  snackPosition: SnackPosition.BOTTOM,
+                  colorText: Colors.white,
+                );
               }
             },
             style: ElevatedButton.styleFrom(

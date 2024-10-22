@@ -11,6 +11,7 @@ import 'package:ironfit/features/MyPlans/screens/my_plans_screen.dart';
 import 'package:ironfit/features/Trainees/screens/Trainees_screen.dart';
 import 'package:ironfit/features/UserMyPlan/screens/user_my_plan_screen.dart';
 import 'package:ironfit/features/UserPalnExercises/screens/user_plan_exercises_screen.dart';
+import 'package:ironfit/features/coachEnteInfo/screens/coach_ente_info_screen.dart';
 import 'package:ironfit/features/createPlan/screens/create_plan_screen.dart';
 import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
 import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
@@ -23,6 +24,7 @@ import 'package:ironfit/features/coachProfile/screens/coach_profile_screen.dart'
 import 'package:ironfit/features/regestraion/login/screens/login_screen.dart';
 import 'package:ironfit/features/regestraion/register/screens/sing_up_screen.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
+import 'package:ironfit/features/userEnteInfo/screens/user_ente_info_screen.dart';
 import 'package:ironfit/features/userProfile/screens/user_profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ironfit/features/traineesGroupsbyAge/screens/trainees_groups_by_age_screen.dart';
@@ -44,16 +46,6 @@ void main() async {
     await Firebase.initializeApp();
   }
 
-  try {
-    await GoogleSignIn(
-      clientId:
-          '252100398371-401kha82l8iobhe9uvibi1iadv92ii87.apps.googleusercontent.com',
-    );
-  } catch (e) {
-    print("GoogleSignIn: ");
-    print(e);
-  }
-
   // This function is the entry point of the app.
   // It starts the app by running the MyApp widget.
   runApp(const MyApp());
@@ -72,7 +64,7 @@ class MyApp extends StatelessWidget {
         prefs.getBool('hasSeenPreLoginScreen') ?? false;
 
     if (hasSeenPreLoginScreen) {
-      return Routes.singIn; // Direct to the login screen
+      return Routes.singUp; // Direct to the login screen
     } else {
       return Routes.preLoginScreens; // Direct to the pre-login screen
     }
@@ -119,7 +111,7 @@ class MyApp extends StatelessWidget {
                 iconTheme: IconThemeData(color: Palette.black),
               ),
             ),
-            initialRoute: Routes.myPlans,
+            initialRoute: snapshot.data,
             getPages: [
               GetPage(
                   name: Routes.coachDashboard,
@@ -207,6 +199,16 @@ class MyApp extends StatelessWidget {
                   page: () => Directionality(
                       textDirection: TextDirection.rtl,
                       child: UserProfileScreen())),
+              GetPage(
+                  name: Routes.coachEnterInfo,
+                  page: () => Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: CoachEnterInfoScreen())),
+              GetPage(
+                  name: Routes.userEnterInfo,
+                  page: () => Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: UserEnterInfoScreen())),
             ],
           );
         } else {

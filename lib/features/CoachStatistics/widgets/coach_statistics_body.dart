@@ -4,7 +4,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/StatisticsCard.dart';
-import 'package:ironfit/core/presentation/widgets/getCoachId.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 
 class CoachStatisticsBody extends StatefulWidget {
@@ -17,6 +16,7 @@ class CoachStatisticsBody extends StatefulWidget {
 class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
   late Future<Map<String, dynamic>> statistics;
   late Future<Map<String, int>> ageDistributionData;
+  String coachId = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   void initState() {
@@ -28,7 +28,6 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
 
   // Method to fetch statistics data from Firestore
   Future<Map<String, dynamic>> fetchStatistics() async {
-    String? coachId = await fetchCoachId();
     if (coachId == null) {
       print("No coach ID found.");
       return {

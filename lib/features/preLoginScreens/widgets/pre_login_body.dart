@@ -41,7 +41,7 @@ class _PreLoginBodyState extends State<PreLoginBody> {
                         _buildPage(
                           imagePath: Assets.preLogin1,
                           text:
-                              'تسجيل سلس للمتدربين وتتبع التمارين، كل ذلك في منصة واحدة',
+                              'تسجيل سلس للمتدربين وتتبع التمارين كل ذلك في منصة واحدة',
                           showNextButton: true,
                         ),
                         _buildPage(
@@ -168,7 +168,7 @@ class _PreLoginBodyState extends State<PreLoginBody> {
     required String text,
     required IconData icon,
     required VoidCallback onPressed,
-    Color backgroundColor = Palette.mainAppColorOrange,
+    Color backgroundColor = Palette.mainAppColor,
     Color textColor = Palette.white,
     double width = double.infinity,
     IconAlignment iconAlignment = IconAlignment.end,
@@ -176,7 +176,7 @@ class _PreLoginBodyState extends State<PreLoginBody> {
     return ElevatedButton.icon(
       onPressed: onPressed,
       icon:
-          Opacity(opacity: 0.8, child: Icon(icon, size: 26, color: textColor)),
+          Opacity(opacity: 0.8, child: Icon(icon, size: 24, color: textColor)),
       label: Opacity(opacity: 0.8, child: Text(text)),
       iconAlignment: iconAlignment,
       style: ElevatedButton.styleFrom(
@@ -185,10 +185,10 @@ class _PreLoginBodyState extends State<PreLoginBody> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50),
         ),
-        minimumSize: Size(width, 50),
+        minimumSize: Size(width, 48),
         textStyle: const TextStyle(
           fontFamily: 'Inter',
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
       ),

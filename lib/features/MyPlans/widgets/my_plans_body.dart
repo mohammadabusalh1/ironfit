@@ -99,19 +99,6 @@ class _MyPlansBodyState extends State<MyPlansBody> {
     }
   }
 
-  Future<void> editPlan(String planId, Map<String, dynamic> data) async {
-    try {
-      await _firestore
-          .collection('coaches')
-          .doc(_auth.currentUser?.uid)
-          .collection('plans')
-          .doc(planId)
-          .update(data);
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
   void _sortBySubscription() {
     // Firestore query to fetch the data sorted by subscription date
     final order = isDateSortUp ? 'asc' : 'desc';

@@ -35,7 +35,7 @@ class _SignUpBodyState extends State<SignUpBody> {
   @override
   void initState() {
     super.initState();
-    _checkToken();
+    // _checkToken();
   }
 
   Future<void> _checkToken() async {
@@ -273,20 +273,20 @@ class _SignUpBodyState extends State<SignUpBody> {
   // Input Validation Method
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter an email address';
+      return 'لا يمكنك ترك هذا الحقل فارغاً';
     }
     if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-      return 'Please enter a valid email address';
+      return 'البريد الإلكتروني غير صالح';
     }
     return null;
   }
 
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter a password';
+      return 'لا يمكنك ترك هذا الحقل فارغاً';
     }
     if (value.length < 6) {
-      return 'Password should be at least 6 characters';
+      return 'كلمة المرور قصيرة جداً';
     }
     return null;
   }

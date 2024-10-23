@@ -92,7 +92,7 @@ class _CustomTabBarWidgetState extends State<CustomTabBarWidget>
                     .toList() ??
                 []),
         buildTabContent(
-            'تمارين يوم الثلاثاء',
+            'تمارين يوم الاربعاء',
             (widget.plan?['trainingDays']?['wed'] as List<dynamic>?)
                     ?.map((e) => Exercise.fromMap(e as Map<String, dynamic>))
                     .toList() ??

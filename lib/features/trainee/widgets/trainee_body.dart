@@ -21,10 +21,16 @@ class TraineeBody extends StatefulWidget {
 class _TraineeBodyState extends State<TraineeBody> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final _formKey = GlobalKey<FormState>();
 
   late List _plans;
   late int _numberOfDaysUserHave;
   late String planName;
+  late String debts;
+  late String amountPaid;
+  late String userName;
+  late String imageURL;
+  late String subscriptionId;
 
   @override
   void initState() {
@@ -32,6 +38,11 @@ class _TraineeBodyState extends State<TraineeBody> {
     _plans = [];
     planName = '';
     _numberOfDaysUserHave = 0;
+    debts = '';
+    amountPaid = '';
+    userName = '';
+    imageURL = Assets.notFound;
+    subscriptionId = '';
     fetchPlans();
     fetchNumberOfDays();
     fetchUserPlan();
@@ -40,7 +51,7 @@ class _TraineeBodyState extends State<TraineeBody> {
   Future<void> fetchNumberOfDays() async {
     try {
       // Fetch the user's subscription document
-      final user = await _firestore
+      final subscriptions = await _firestore
           .collection('coaches')
           .doc(_auth.currentUser?.uid)
           .collection('subscriptions')
@@ -48,13 +59,18 @@ class _TraineeBodyState extends State<TraineeBody> {
           .get();
 
       // Check if any document was returned
-      if (user.docs.isNotEmpty) {
+      if (subscriptions.docs.isNotEmpty) {
         // Safely extract the end date and calculate the difference
-        var endDateStr = user.docs[0]['endDate'];
+        var endDateStr = subscriptions.docs[0]['endDate'];
         if (endDateStr != null) {
           try {
             // Parse the end date and calculate the difference in days
             setState(() {
+              debts = subscriptions.docs[0]['debts'].toString();
+              amountPaid = subscriptions.docs[0]['amountPaid'];
+              userName = subscriptions.docs[0]['fullName'];
+              imageURL = subscriptions.docs[0]['profileImageUrl'];
+              subscriptionId = subscriptions.docs.first.id;
               _numberOfDaysUserHave =
                   DateTime.parse(endDateStr).difference(DateTime.now()).inDays;
             });
@@ -62,28 +78,28 @@ class _TraineeBodyState extends State<TraineeBody> {
             // Handle the case where 'endDate' could not be parsed
             print('Error parsing endDate: $e');
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('تاريخ الانتهاء غير صالح')),
+              const SnackBar(content: Text('تاريخ الانتهاء غير صالح')),
             );
           }
         } else {
           // Handle the case where 'endDate' is null
           print('Error: endDate is null');
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('تاريخ الانتهاء غير موجود')),
+            const SnackBar(content: Text('تاريخ الانتهاء غير موجود')),
           );
         }
       } else {
         // Handle the case where no documents were returned
         print('No subscriptions found for this user');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('لم يتم العثور على الاشتراك')),
+          const SnackBar(content: Text('لم يتم العثور على الاشتراك')),
         );
       }
     } catch (e) {
       // Catch any errors during the Firestore request or network issues
       print('Error fetching user subscription: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('حدث خطأ أثناء جلب البيانات')),
+        const SnackBar(content: Text('حدث خطأ أثناء جلب البيانات')),
       );
     }
   }
@@ -112,11 +128,11 @@ class _TraineeBodyState extends State<TraineeBody> {
       builder: (BuildContext context) {
         return AlertDialog(
           alignment: Alignment.center,
-          title: Text(
+          title: const Text(
             'تأكيد الإلغاء',
             textAlign: TextAlign.center,
           ),
-          content: Text(
+          content: const Text(
             'هل أنت متأكد أنك تريد إلغاء الاشتراك لهذا المستخدم؟',
             textAlign: TextAlign.end,
           ),
@@ -125,7 +141,8 @@ class _TraineeBodyState extends State<TraineeBody> {
               onPressed: () {
                 Navigator.of(context).pop(false); // User canceled
               },
-              child: Text('إلغاء', style: TextStyle(color: Palette.black)),
+              child:
+                  const Text('إلغاء', style: TextStyle(color: Palette.black)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -134,7 +151,8 @@ class _TraineeBodyState extends State<TraineeBody> {
               onPressed: () {
                 Navigator.of(context).pop(true); // User confirmed
               },
-              child: Text('تأكيد', style: TextStyle(color: Palette.white)),
+              child:
+                  const Text('تأكيد', style: TextStyle(color: Palette.white)),
             ),
           ],
         );
@@ -235,12 +253,9 @@ class _TraineeBodyState extends State<TraineeBody> {
       var userDoc = user.docs[0].data();
 
       // Check if 'plan' field exists in the document snapshot
-      if (userDoc != null && userDoc.containsKey('plan')) {
-        var plan = userDoc['plan'];
-        planName = plan != null && plan.containsKey('name')
-            ? plan['name'] ??
-                'Default Plan Name' // Fallback to default if 'name' is missing
-            : 'لا يوجد خطة!';
+      if (userDoc != null) {
+        print(userDoc['planName']);
+        planName = userDoc['planName'] != null ? userDoc['planName'] : 'لا يوجد خطة!';
       } else {
         planName = 'لا يوجد خطة!';
       }
@@ -257,11 +272,11 @@ class _TraineeBodyState extends State<TraineeBody> {
         builder: (BuildContext context) {
           return AlertDialog(
             alignment: Alignment.center,
-            title: Text(
+            title: const Text(
               'تأكيد الإلغاء',
               textAlign: TextAlign.center,
             ),
-            content: Text(
+            content: const Text(
               'هل أنت متأكد أنك تريد حذف الخطة لهذا المستخدم؟',
               textAlign: TextAlign.end,
             ),
@@ -270,7 +285,8 @@ class _TraineeBodyState extends State<TraineeBody> {
                 onPressed: () {
                   Navigator.of(context).pop(false); // User canceled
                 },
-                child: Text('إلغاء', style: TextStyle(color: Palette.black)),
+                child:
+                    const Text('إلغاء', style: TextStyle(color: Palette.black)),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -279,7 +295,8 @@ class _TraineeBodyState extends State<TraineeBody> {
                 onPressed: () {
                   Navigator.of(context).pop(true); // User confirmed
                 },
-                child: Text('تأكيد', style: TextStyle(color: Palette.white)),
+                child:
+                    const Text('تأكيد', style: TextStyle(color: Palette.white)),
               ),
             ],
           );
@@ -300,7 +317,7 @@ class _TraineeBodyState extends State<TraineeBody> {
       if (querySnapshot.docs.isEmpty) {
         // If no user is found, notify the user
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('لا يوجد مستخدم بهذا الاسم!')),
+          const SnackBar(content: Text('لا يوجد مستخدم بهذا الاسم!')),
         );
         return;
       }
@@ -311,7 +328,7 @@ class _TraineeBodyState extends State<TraineeBody> {
           await _firestore
               .collection('trainees')
               .doc(doc.id)
-              .update({'plan': null});
+              .update({'planId': null, 'planName': null, 'coachId': null});
         } catch (e) {
           // If there is an error while updating the Firestore document, log it
           print('Error removing plan for user ${doc.id}: $e');
@@ -327,19 +344,21 @@ class _TraineeBodyState extends State<TraineeBody> {
 
       // Notify the user of success
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تم حذف الخطة بنجاح!')),
+        const SnackBar(content: Text('تم حذف الخطة بنجاح!')),
       );
     } catch (e) {
       // Catch any unexpected errors that occur in the try block
       print('Error in removePlan: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('حدث خطأ أثناء إلغاء الخطة')),
+        const SnackBar(content: Text('حدث خطأ أثناء إلغاء الخطة')),
       );
     }
   }
 
   Future<void> _updatePlan(newValue) async {
     try {
+      Get.dialog(const Center(child: CircularProgressIndicator()),
+          barrierDismissible: false);
       // Get the query snapshot
       var querySnapshot = await _firestore
           .collection('trainees')
@@ -362,10 +381,9 @@ class _TraineeBodyState extends State<TraineeBody> {
         if (plans.exists && plans.data() != null) {
           // Update the document with the plan data
           await docRef.update({
-            'plan': {
-              ...plans.data()!,
-              'coachId': _auth.currentUser?.uid,
-            },
+            'planId': newValue,
+            'planName': plans.data()!['name'],
+            'coachId': _auth.currentUser?.uid,
           });
 
           // Show success message
@@ -377,8 +395,10 @@ class _TraineeBodyState extends State<TraineeBody> {
 
           // Refresh data
           fetchUserPlan();
-          fetchPlans();
-          Navigator.of(context).pop();
+          fetchPlans().then((v) {
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+          });
         } else {
           // Handle case where plan doesn't exist
           ScaffoldMessenger.of(context).showSnackBar(
@@ -386,6 +406,7 @@ class _TraineeBodyState extends State<TraineeBody> {
               content: Text('لم يتم العثور على الخطة'),
             ),
           );
+          Navigator.of(context).pop();
           Navigator.of(context).pop();
         }
       } else {
@@ -395,6 +416,57 @@ class _TraineeBodyState extends State<TraineeBody> {
             content: Text('لم يتم العثور على المتدرب'),
           ),
         );
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      // Catch any errors that occur during Firestore operations
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('حدث خطأ أثناء تحديث الخطة: $e'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _updateDebt(newValue, id) async {
+    try {
+      Get.dialog(const Center(child: CircularProgressIndicator()),
+          barrierDismissible: false);
+
+      // Fetch the plan document from the 'coaches' collection
+      DocumentReference<Map<String, dynamic>> subscription = await _firestore
+          .collection('coaches')
+          .doc(_auth.currentUser?.uid)
+          .collection('subscriptions')
+          .doc(id);
+
+      // Check if the plan exists
+      if (subscription != null) {
+        // Update the document with the plan data
+        await subscription.update({
+          'debts': '${int.parse(debts) + int.parse(newValue)}',
+        });
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('تم أضافة الدين بنجاح'),
+          ),
+        );
+
+        fetchNumberOfDays().then((v) {
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+        });
+      } else {
+        // Handle case where plan doesn't exist
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('لم يتم العثور على المشترك'),
+          ),
+        );
+        Navigator.of(context).pop();
         Navigator.of(context).pop();
       }
     } catch (e) {
@@ -419,10 +491,10 @@ class _TraineeBodyState extends State<TraineeBody> {
                 dialogBackgroundColor:
                     Colors.grey[900], // Dialog background color
                 textTheme: const TextTheme(
-                  bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
-                  bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
+                  bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
+                  bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
                   headlineLarge: TextStyle(
-                      color: Colors.white,
+                      color: Palette.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 24),
                 ),
@@ -442,7 +514,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                   fillColor: Palette
                       .secondaryColor, // Background color of the text field
                   labelStyle: TextStyle(
-                      color: Colors.white, fontSize: 14), // Label text style
+                      color: Palette.white, fontSize: 14), // Label text style
                   enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                           color:
@@ -467,7 +539,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                 ),
                 textButtonTheme: TextButtonThemeData(
                   style: TextButton.styleFrom(
-                    foregroundColor: Colors.white, // Customize text color
+                    foregroundColor: Palette.white, // Customize text color
                   ),
                 )),
             child: Expanded(
@@ -522,7 +594,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                                     .centerEnd, // Align to the right
                                 child: Text(
                                   value['name'],
-                                  style: const TextStyle(color: Colors.white),
+                                  style: const TextStyle(color: Palette.white),
                                 ),
                               ),
                             );
@@ -533,9 +605,119 @@ class _TraineeBodyState extends State<TraineeBody> {
                       ],
                     ),
                     actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text('إلغاء'),
+                      ),
+                    ],
+                    actionsAlignment: MainAxisAlignment.start,
+                  ),
+                ),
+              ),
+            ));
+      },
+    );
+  }
+
+  void showEditDebt(BuildContext context) {
+    String? selectedValue;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Theme(
+            data: Theme.of(context).copyWith(
+                // Customize the dialog theme here
+                dialogBackgroundColor:
+                    Colors.grey[900], // Dialog background color
+                textTheme: const TextTheme(
+                  bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
+                  bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
+                  headlineLarge: TextStyle(
+                      color: Palette.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24),
+                ),
+                elevatedButtonTheme: ElevatedButtonThemeData(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        const Color(0xFFFFBB02), // Customize button color
+                    foregroundColor:
+                        const Color(0xFF1C1503), // Customize text color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                inputDecorationTheme: const InputDecorationTheme(
+                  filled: true, // Fill the text field background
+                  fillColor: Palette
+                      .secondaryColor, // Background color of the text field
+                  labelStyle: TextStyle(
+                      color: Palette.white, fontSize: 14), // Label text style
+                  enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color:
+                              Colors.transparent), // Border color when enabled
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(12),
+                      )),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.yellow,
+                        width: 2), // Border color when focused
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Colors.red), // Border color on error
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.red,
+                        width: 2), // Border color on error when focused
+                  ),
+                ),
+                textButtonTheme: TextButtonThemeData(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Palette.white, // Customize text color
+                  ),
+                )),
+            child: Expanded(
+              child: SingleChildScrollView(
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: AlertDialog(
+                    title: const Text('تعديل الديون',
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold)),
+                    content: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('أضف مقدار الزيادة او الخضم بالسالب',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w500)),
+                        const SizedBox(height: 16),
+                        TextField(
+                          keyboardType: TextInputType.number,
+                          onChanged: (updateValue) {
+                            selectedValue = updateValue;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: "المقدار",
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ],
+                    ),
+                    actions: [
                       ElevatedButton(
                         onPressed: () {
-                          if (selectedValue != null) {}
+                          if (selectedValue != null) {
+                            _updateDebt(selectedValue, subscriptionId);
+                          }
                         },
                         child: const Text('حفظ'),
                       ),
@@ -555,207 +737,506 @@ class _TraineeBodyState extends State<TraineeBody> {
     );
   }
 
+  Future<void> _updateSubscription(stratDate, endDate, id) async {
+    try {
+      Get.dialog(const Center(child: CircularProgressIndicator()),
+          barrierDismissible: false);
+
+      // Fetch the plan document from the 'coaches' collection
+      DocumentReference<Map<String, dynamic>> subscription = await _firestore
+          .collection('coaches')
+          .doc(_auth.currentUser?.uid)
+          .collection('subscriptions')
+          .doc(id);
+
+      // Check if the plan exists
+      if (subscription != null) {
+        // Update the document with the plan data
+        await subscription.update({'startDate': stratDate, 'endDate': endDate});
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('تم أضافة تجديد الإشتراك بنجاح'),
+          ),
+        );
+
+        fetchNumberOfDays().then((v) {
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+        });
+      } else {
+        // Handle case where plan doesn't exist
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('لم يتم العثور على المشترك'),
+          ),
+        );
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      // Catch any errors that occur during Firestore operations
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('حدث خطأ أثناء تحديث الخطة: $e'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _selectDate(
+      BuildContext context, TextEditingController controller) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        controller.text =
+            "${picked.toLocal()}".split(' ')[0]; // Format as yyyy-mm-dd
+      });
+    }
+  }
+
+  void showEditSubscriptionDialog(BuildContext context) {
+    final TextEditingController startDateController = TextEditingController();
+    final TextEditingController endDateController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            dialogBackgroundColor: Colors.grey[900],
+            textTheme: const TextTheme(
+              bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
+              bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
+              headlineLarge: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24),
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFFBB02),
+                foregroundColor: const Color(0xFF1C1503),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            inputDecorationTheme: const InputDecorationTheme(
+              filled: true,
+              fillColor: Palette.secondaryColor,
+              labelStyle: TextStyle(color: Colors.white, fontSize: 14),
+              enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.transparent),
+                  borderRadius: BorderRadius.all(Radius.circular(12))),
+              focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.yellow, width: 2)),
+              errorBorder:
+                  OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
+              focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.red, width: 2)),
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(foregroundColor: Colors.white),
+            ),
+          ),
+          child: Expanded(
+            child: SingleChildScrollView(
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: AlertDialog(
+                  title: const Text('إضافة متدرب جديد',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold)),
+                  content: Form(
+                    key: _formKey, // Use the form key for validation
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('يرجى ملئ البيانات المطلوبة',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w500)),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: startDateController,
+                          decoration: const InputDecoration(
+                              labelText: "تاريخ البدء",
+                              border: OutlineInputBorder()),
+                          readOnly: true,
+                          onTap: () {
+                            _selectDate(context, startDateController);
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'يرجى إدخال تاريخ البدء';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: endDateController,
+                          decoration: const InputDecoration(
+                              labelText: "تاريخ الانتهاء",
+                              border: OutlineInputBorder()),
+                          readOnly: true,
+                          onTap: () {
+                            _selectDate(context, endDateController);
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'يرجى إدخال تاريخ الانتهاء';
+                            }
+                            if (startDateController.text.isNotEmpty &&
+                                endDateController.text.isNotEmpty) {
+                              // Compare the dates
+                              DateTime startDate =
+                                  DateTime.parse(startDateController.text);
+                              DateTime endDate =
+                                  DateTime.parse(endDateController.text);
+
+                              if (startDate.isAfter(endDate)) {
+                                return 'تاريخ البدء لا يمكن أن يكون أكبر من تاريخ الانتهاء';
+                              }
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          _updateSubscription(startDateController.text,
+                              endDateController.text, subscriptionId);
+                        }
+                      },
+                      child: const Text('حفظ'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: const Text('إلغاء'),
+                    ),
+                  ],
+                  actionsAlignment: MainAxisAlignment.start,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: true,
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(
-            child: SizedBox(
-              width: double.infinity,
-              child: Column(
-                children: [
-                  Align(
-                    alignment: const AlignmentDirectional(0, 1),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Stack(
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Expanded(
+          child: SizedBox(
+            width: double.infinity,
+            child: Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Align(
+                      alignment: const AlignmentDirectional(0, 1),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Stack(
+                          children: [
+                            const HeaderImage(),
+                            Align(
+                              alignment: const AlignmentDirectional(0, 0),
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                    top: MediaQuery.of(context).size.height *
+                                        0.1),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsetsDirectional.fromSTEB(
+                                              0, 0, 0, 4),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.network(
+                                          imageURL,
+                                          width: 100,
+                                          height: 100,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Opacity(
+                                      opacity: 0.8,
+                                      child: Text(
+                                        userName.isEmpty
+                                            ? 'لا يوجد مستخدم'
+                                            : userName,
+                                        style: const TextStyle(
+                                          fontFamily: 'Inter',
+                                          color: Palette.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w800,
+                                          shadows: [
+                                            Shadow(
+                                              color: Color(0xFF2F3336),
+                                              offset: Offset(4.0, 4.0),
+                                              blurRadius: 2.0,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment:
+                                          const AlignmentDirectional(0, 0),
+                                      child: Text(
+                                        'تبقى له ${_numberOfDaysUserHave} يوم من الإشتراك',
+                                        style: const TextStyle(
+                                          fontFamily: 'Inter',
+                                          color: Color(0xA0FFFFFF),
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          const HeaderImage(),
-                          Align(
-                            alignment: const AlignmentDirectional(0, 0),
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                  top:
-                                      MediaQuery.of(context).size.height * 0.1),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding:
-                                        const EdgeInsetsDirectional.fromSTEB(
-                                            0, 0, 0, 4),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.asset(
-                                        Assets.myTrainerImage,
-                                        width: 100,
-                                        height: 100,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  const Opacity(
-                                    opacity: 0.8,
-                                    child: Text(
-                                      'محمد أبو صالح',
-                                      style: TextStyle(
-                                        fontFamily: 'Inter',
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w800,
-                                        shadows: [
-                                          Shadow(
-                                            color: Color(0xFF2F3336),
-                                            offset: Offset(4.0, 4.0),
-                                            blurRadius: 2.0,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Align(
-                                    alignment: const AlignmentDirectional(0, 0),
-                                    child: Text(
-                                      'تبقى له ${_numberOfDaysUserHave} يوم من الإشتراك',
-                                      style: const TextStyle(
-                                        fontFamily: 'Inter',
-                                        color: Color(0xA0FFFFFF),
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                          Expanded(
+                            flex: 1,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                cancelSubscription(context, widget.username);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Palette.redDelete, // Button color
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    16, 0, 16, 0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                fixedSize: const Size(double.infinity, 45),
+                              ),
+                              child: const Text(
+                                'إلغاء إشتراكه',
+                                style: TextStyle(
+                                  fontFamily: 'Inter Tight',
+                                  color: Palette.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12), // Spacing between buttons
+                          Expanded(
+                            flex: 1,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                showAddPlanDialog(context);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    const Color(0xFFFFBB02), // Button color
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    16, 0, 16, 0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                fixedSize: const Size(double.infinity, 45),
+                              ),
+                              child: const Text(
+                                'أضف برنامج',
+                                style: TextStyle(
+                                  fontFamily: 'Inter Tight',
+                                  color: Color(0xFF1C1503),
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              cancelSubscription(context, widget.username);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color(0xFFFE303C), // Button color
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  16, 0, 16, 0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                showEditSubscriptionDialog(context);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Palette.mainAppColorNavy, // Button color
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    16, 0, 16, 0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                fixedSize: const Size(double.infinity, 45),
                               ),
-                              fixedSize: const Size(double.infinity, 40),
-                            ),
-                            child: const Text(
-                              'إلغاء إشتراكه',
-                              style: TextStyle(
-                                fontFamily: 'Inter Tight',
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12), // Spacing between buttons
-                        Expanded(
-                          flex: 1,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              showAddPlanDialog(context);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color(0xFFFFBB02), // Button color
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  16, 0, 16, 0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              fixedSize: const Size(double.infinity, 40),
-                            ),
-                            child: const Text(
-                              'أضف برنامج',
-                              style: TextStyle(
-                                fontFamily: 'Inter Tight',
-                                color: Color(0xFF1C1503),
+                              child: const Text(
+                                'تجديد الإشتراك',
+                                style: TextStyle(
+                                  fontFamily: 'Inter Tight',
+                                  color: Palette.white,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text('الخطة المضافة',
-                      textAlign: TextAlign.right,
-                      textDirection: TextDirection.rtl,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      )),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    child: _buildCard(context, planName, () {
-                      removePlan();
-                      fetchUserPlan();
-                    }),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Text('الخطة المضافة',
+                          textAlign: TextAlign.right,
+                          textDirection: TextDirection.rtl,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            color: Palette.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          )),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: _buildCard(context, planName, () {
+                        removePlan();
+                        fetchUserPlan();
+                      }, Icons.delete, Palette.error, '', () {}),
+                    ),
+                    const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24),
+                        child: Divider(
+                          color: Palette.gray,
+                        )),
+                    const SizedBox(height: 16),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Text('المعاملات المالية',
+                          textAlign: TextAlign.right,
+                          textDirection: TextDirection.rtl,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            color: Palette.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          )),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: _buildCard(context, amountPaid, () {}, Icons.money,
+                          Palette.greenActive, 'المبلغ المدفوع', () {}),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: _buildCard(context, debts, () {}, Icons.add_card,
+                          Palette.mainAppColor, 'الديون', () {
+                        showEditDebt(context);
+                      }),
+                    ),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
-Widget _buildCard(BuildContext context, String planName, Function onTap) {
-  return Card(
-    clipBehavior: Clip.antiAliasWithSaveLayer,
-    color: Palette.secondaryColor,
-    elevation: 0,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 12),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(
-          planName,
-          style: const TextStyle(
-            fontFamily: 'Inter',
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        planName == 'لا يوجد خطة!'
-            ? const SizedBox()
-            : InkWell(
-                onTap: () => onTap(),
-                child: const Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                  size: 24,
+Widget _buildCard(BuildContext context, String planName, Function onTap,
+    IconData icon, Color iconColor, String iconText, Function ocCardTap) {
+  return InkWell(
+    onTap: () => ocCardTap(),
+    child: Card(
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      color: Palette.secondaryColor,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 12),
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Row(
+            children: [
+              Text(
+                planName,
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  color: Palette.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-      ]),
+              const SizedBox(width: 8),
+              Text(
+                iconText ?? '',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  color: iconColor,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+          planName == 'لا يوجد خطة!'
+              ? const SizedBox()
+              : InkWell(
+                  onTap: () => onTap(),
+                  child: Icon(
+                    icon,
+                    color: iconColor,
+                    size: 24,
+                  ),
+                ),
+        ]),
+      ),
     ),
   );
 }

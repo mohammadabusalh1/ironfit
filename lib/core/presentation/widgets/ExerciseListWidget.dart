@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/CarouselItem.dart';
-import 'package:ironfit/features/createPlan/widgets/create_plan_body.dart';
 
 class ExercisesScreen extends StatefulWidget {
   final List<Map<String, dynamic>> exercisesJson;

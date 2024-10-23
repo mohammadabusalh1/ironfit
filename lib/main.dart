@@ -1,9 +1,15 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ironfit/core/presentation/controllers/coach_nav_bar_controller.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/CoachStatistics/screens/coach_statistics_screen.dart';
@@ -29,6 +35,116 @@ import 'package:ironfit/features/userProfile/screens/user_profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ironfit/features/traineesGroupsbyAge/screens/trainees_groups_by_age_screen.dart';
 import 'package:ironfit/features/userStatistics/screens/user_statistics_screen.dart';
+import 'package:workmanager/workmanager.dart';
+
+Future<DateTime?> getSubscriptionEndDate(
+    String userId, String subscriptionId) async {
+  try {
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('trainees')
+        .doc(userId)
+        .get();
+
+    if (userSnapshot.exists) {
+      Timestamp endDateTimestamp = userSnapshot.get('subscriptionEndDate');
+      DateTime endDate = endDateTimestamp.toDate();
+      return endDate;
+    } else {
+      print('User not found');
+      return null;
+    }
+  } catch (e) {
+    print('Error retrieving subscription end date: $e');
+    return null;
+  }
+}
+
+void checkSubscriptionExpiry(DateTime? endDate) {
+  if (endDate == null) return;
+
+  DateTime currentDate = DateTime.now();
+
+  // If the subscription has ended
+  if (currentDate.isAfter(endDate) || currentDate.compareTo(endDate) == 0) {
+    sendNotification("إنتهى الاشتراك", "يرجى تجديد الاشتراك");
+  }
+}
+
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+Future<void> initializeNotifications() async {
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+}
+
+Future<void> sendNotification(String title, String body) async {
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails(
+    'subscription_channel', // Channel ID
+    'Subscription Notifications', // Channel name
+    channelDescription: 'Notifications for subscription expiry',
+    importance: Importance.max,
+    priority: Priority.high,
+  );
+
+  const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+
+  await flutterLocalNotificationsPlugin.show(
+    0, // Notification ID
+    title,
+    body,
+    platformChannelSpecifics,
+    payload: 'Subscription Ended',
+  );
+}
+
+void listenToSubscriptionChanges(String userId) {
+  FirebaseFirestore.instance
+      .collection('trainees')
+      .doc(userId)
+      .snapshots()
+      .listen((DocumentSnapshot snapshot) {
+    if (snapshot.exists) {
+      String endDateTimestamp = snapshot.get('subscriptionEndDate');
+      DateTime endDate = DateTime.parse(endDateTimestamp);
+      checkSubscriptionExpiry(endDate);
+    }
+  });
+}
+
+void callbackDispatcher(String userId) {
+  Workmanager().executeTask((task, inputData) async {
+    FirebaseFirestore.instance
+        .collection('trainees')
+        .doc(userId)
+        .snapshots()
+        .listen((DocumentSnapshot snapshot) {
+      if (snapshot.exists) {
+        String endDateTimestamp = snapshot.get('subscriptionEndDate');
+        DateTime endDate = DateTime.parse(endDateTimestamp);
+        checkSubscriptionExpiry(endDate);
+      }
+    });
+    return Future.value(true);
+  });
+}
+
+void scheduleDailyCheck() {
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  Workmanager().registerPeriodicTask(
+    "subscription_check_task",
+    "subscription_check_task",
+    frequency: Duration(hours: 24), // Run once a day
+  );
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,13 +162,31 @@ void main() async {
     await Firebase.initializeApp();
   }
 
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  // Initialize notifications
+  await initializeNotifications();
+
+  scheduleDailyCheck();
+
+  PreferencesService preferencesService = PreferencesService();
+  SharedPreferences prefs = await preferencesService.getPreferences();
+  FirebaseAuth user = FirebaseAuth.instance;
+  if (user.currentUser != null) {
+    if (user.currentUser!.uid.isNotEmpty && prefs.getBool('isCoach') == false) {
+      // Start listening to subscription changes for a user
+      listenToSubscriptionChanges(user.currentUser!.uid);
+    }
+  }
+
   // This function is the entry point of the app.
   // It starts the app by running the MyApp widget.
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
 
   // This function checks if the user has already seen the pre-login screen.
   // It saves this info in something called "shared preferences" (a place to store small data).
@@ -111,7 +245,7 @@ class MyApp extends StatelessWidget {
                 iconTheme: IconThemeData(color: Palette.black),
               ),
             ),
-            initialRoute: snapshot.data,
+            initialRoute: Routes.trainees,
             getPages: [
               GetPage(
                   name: Routes.coachDashboard,

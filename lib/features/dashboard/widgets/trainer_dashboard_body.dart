@@ -60,9 +60,19 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
       DateTime now = DateTime.now();
       List<String> weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
+      String planId = userDoc['planId'] ?? '';
+      String coachId = userDoc['coachId'] ?? '';
+
+      DocumentSnapshot PalnDoc = await _firestore
+          .collection('coaches')
+          .doc(coachId)
+          .collection('plans')
+          .doc(planId)
+          .get();
+
       // Safely fetch today's exercises
       var dynamicExercises =
-          userDoc['plan']['trainingDays'][weekdays[now.weekday - 1]] ?? [];
+          PalnDoc['trainingDays'][weekdays[now.weekday - 1]] ?? [];
 
       // Check if dynamicExercises is a List before processing it
       if (dynamicExercises is List) {

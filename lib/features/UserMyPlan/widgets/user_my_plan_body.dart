@@ -32,9 +32,19 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
         DocumentSnapshot userDoc =
             await _firestore.collection('trainees').doc(user.uid).get();
 
+        String planId = userDoc['planId'] ?? '';
+        String coachId = userDoc['coachId'] ?? '';
+
+        DocumentSnapshot PalnDoc = await _firestore
+            .collection('coaches')
+            .doc(coachId)
+            .collection('plans')
+            .doc(planId)
+            .get();
+
         // Fetch user details and exercises
         setState(() {
-          plan = userDoc.data() as Map<String, dynamic>? ?? {};
+          plan = PalnDoc.data() as Map<String, dynamic>? ?? {};
         });
       }
     } catch (e) {
@@ -137,7 +147,7 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
                       ],
                     ),
                   ),
-                  CustomTabBarWidget(plan: plan['plan']),
+                  CustomTabBarWidget(plan: plan),
                 ],
               ),
             ),

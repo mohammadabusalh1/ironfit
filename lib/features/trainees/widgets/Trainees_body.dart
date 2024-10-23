@@ -13,10 +13,32 @@ class TraineesBody extends StatefulWidget {
 
 class _TraineesBodyState extends State<TraineesBody> {
   List<Map<String, dynamic>> trainees = [];
+  List<Map<String, dynamic>> filtteredTrainees = [];
+  int _itemCount = 10;
+  ScrollController _scrollController = ScrollController();
 
   bool isNameSortUp = true;
   bool isSubscriptionSortUp = true;
-  String coachId = FirebaseAuth.instance.currentUser!.uid;
+  User? coach = FirebaseAuth.instance.currentUser;
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      setState(() {
+        // Increase itemCount only if it's less than the filteredTrainees list
+        if (_itemCount < filtteredTrainees.length) {
+          _itemCount += 10;
+        }
+      });
+    }
+  }
 
   void toggleNameSort() {
     setState(() {
@@ -33,19 +55,20 @@ class _TraineesBodyState extends State<TraineesBody> {
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_scrollListener);
     fetchTrainees();
   }
 
   Future<void> fetchTrainees() async {
     try {
-      if (coachId == null) {
+      if (coach == null) {
         throw Exception("Coach ID is null.");
       }
 
       // Fetch the coach's subscription data
       var coachDoc = await FirebaseFirestore.instance
           .collection('coaches')
-          .doc(coachId)
+          .doc(coach?.uid)
           .collection('subscriptions')
           .get();
 
@@ -56,7 +79,7 @@ class _TraineesBodyState extends State<TraineesBody> {
 
       // Safely update the state
       setState(() {
-        trainees = coachDoc.docs
+        filtteredTrainees = trainees = coachDoc.docs
             .map((doc) => doc.data() as Map<String, dynamic>)
             .toList();
       });
@@ -247,7 +270,8 @@ class _TraineesBodyState extends State<TraineesBody> {
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
-                          Get.dialog(Center(child: CircularProgressIndicator()),
+                          Get.dialog(
+                              const Center(child: CircularProgressIndicator()),
                               barrierDismissible: false);
                           String username = usernameController.text.trim();
 
@@ -273,10 +297,15 @@ class _TraineesBodyState extends State<TraineesBody> {
                               .get();
 
                           if (existingUser.docs.isNotEmpty) {
+                            await FirebaseFirestore.instance
+                                .collection('trainees')
+                                .doc(existingUser.docs.first.id)
+                                .update({'subscriptionEndDate': endDate});
+
                             // Add the new trainee to Firestore
                             await FirebaseFirestore.instance
                                 .collection('coaches')
-                                .doc(coachId)
+                                .doc(coach?.uid)
                                 .collection('subscriptions')
                                 .add({
                               'fullName': existingUser.docs.first['firstName'] +
@@ -333,6 +362,20 @@ class _TraineesBodyState extends State<TraineesBody> {
     );
   }
 
+  void _filterTrainees(String searchTerm) {
+    setState(() {
+      if (searchTerm.isEmpty) {
+        fetchTrainees(); // Reset list if search is empty
+      } else {
+        filtteredTrainees = trainees.where((trainee) {
+          final name = trainee['fullName'].toLowerCase();
+          return name.contains(searchTerm.toLowerCase());
+        }).toList();
+      }
+      _itemCount = 10;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -354,10 +397,10 @@ class _TraineesBodyState extends State<TraineesBody> {
       width: double.infinity,
       child: Stack(
         children: [
-          HeaderImage(),
+          const HeaderImage(),
           Container(
             height: MediaQuery.of(context).size.height * 0.22,
-            padding: EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -423,10 +466,8 @@ class _TraineesBodyState extends State<TraineesBody> {
           const SizedBox(width: 12),
           Expanded(
               child: _buildSortButton(
-                  'الإشتراك',
-                  isSubscriptionSortUp
-                      ? Icons.north_outlined
-                      : Icons.south_outlined, () {
+                  'الاشتراك', isSubscriptionSortUp ? Icons.add : Icons.minimize,
+                  () {
             _sortBySubscription();
             toggleSubscriptionSort();
           })),
@@ -477,14 +518,25 @@ class _TraineesBodyState extends State<TraineesBody> {
 
   void _sortByName() {
     setState(() {
-      trainees.sort((a, b) => a['fullName'].compareTo(b['fullName']));
+      filtteredTrainees.sort((a, b) => a['fullName'].compareTo(b['fullName']));
     });
   }
 
   void _sortBySubscription() {
-    setState(() {
-      trainees.sort((a, b) => a['subscription'].compareTo(b['subscription']));
-    });
+    DateTime now = DateTime.now();
+    if (isSubscriptionSortUp) {
+      setState(() {
+        filtteredTrainees = trainees
+            .where((a) =>
+                DateTime.parse(a['endDate']).isBefore(now) ||
+                DateTime.parse(a['endDate']).isAtSameMomentAs(now))
+            .toList();
+      });
+    } else {
+      setState(() {
+        filtteredTrainees = trainees;
+      });
+    }
   }
 
   Widget _buildSearchField(BuildContext context) {
@@ -518,28 +570,15 @@ class _TraineesBodyState extends State<TraineesBody> {
     );
   }
 
-  void _filterTrainees(String searchTerm) {
-    setState(() {
-      if (searchTerm.isEmpty) {
-        fetchTrainees(); // Reset list if search is empty
-      } else {
-        trainees = trainees.where((trainee) {
-          final name = trainee['fullName'].toLowerCase();
-          return name.contains(searchTerm.toLowerCase());
-        }).toList();
-      }
-    });
-  }
-
   Widget _buildTraineesList() {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: trainees.length == 0
-            ? Center(
+        child: filtteredTrainees.length == 0
+            ? const Center(
                 child: Text(
                   'لا يوجد نتائج',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -548,9 +587,15 @@ class _TraineesBodyState extends State<TraineesBody> {
                 ),
               )
             : ListView.builder(
-                itemCount: trainees.length,
+                controller: _scrollController,
+                itemCount: _itemCount < filtteredTrainees.length
+                    ? _itemCount
+                    : filtteredTrainees.length,
                 itemBuilder: (context, index) {
-                  var trainee = trainees[index];
+                  var trainee = filtteredTrainees[index];
+                  if (index >= filtteredTrainees.length) {
+                    return const SizedBox.shrink();
+                  }
                   return _buildTraineeCard(
                     context,
                     trainee['fullName'] ??
@@ -561,7 +606,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                                     .millisecondsSinceEpoch >
                                 DateTime.now().millisecondsSinceEpoch
                             ? 'مشترك'
-                            : 'غير مشترك ')
+                            : 'إنتهى الإشتراك')
                         : 'غير معروف', // Default status if endDate is null or cannot be parsed
                     trainee['profileImageUrl'] ??
                         'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg', // Default image if profileImageUrl is null

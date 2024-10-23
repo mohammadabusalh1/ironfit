@@ -148,8 +148,8 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
       int age46Plus = 0;
 
       for (var subscription in subscriptionsList) {
-        String? ageString = subscription['age'];
-        if (ageString == null) {
+        String? ageString = subscription['age'].toString();
+        if (ageString.isEmpty) {
           print("Age field is missing in subscription: $subscription");
           continue; // Skip invalid subscriptions
         }
@@ -172,6 +172,8 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
           age46Plus++;
         }
       }
+
+      print("Age distribution: $age18to25, $age26to35, $age36to45, $age46Plus");
 
       return {
         '18-25': age18to25,
@@ -386,7 +388,7 @@ class AgeDonutChart extends StatelessWidget {
             PieChartSectionData(
               color: Colors.blue,
               // value: ageData['18-25'] ?? 1,
-              value: double.parse(ageData['18-25'].toString()) ?? 0,
+              value: double.parse(ageData['18-25'].toString()),
               title: '18-25',
               radius: 50,
               titleStyle: const TextStyle(
@@ -398,7 +400,7 @@ class AgeDonutChart extends StatelessWidget {
             PieChartSectionData(
               color: Colors.green,
               // value: ageData['26-35'] ?? 1,
-              value: double.parse(ageData['26-35'].toString()) ?? 0,
+              value: double.parse(ageData['26-35'].toString()),
               title: '26-35',
               radius: 50,
               titleStyle: const TextStyle(
@@ -410,7 +412,7 @@ class AgeDonutChart extends StatelessWidget {
             PieChartSectionData(
               color: Colors.orange,
               // value: ageData['36-45'] ?? 1,
-              value: double.parse(ageData['36-45'].toString()) ?? 0,
+              value: double.parse(ageData['36-45'].toString()),
               title: '36-45',
               radius: 50,
               titleStyle: const TextStyle(
@@ -421,7 +423,7 @@ class AgeDonutChart extends StatelessWidget {
             ),
             PieChartSectionData(
               color: Colors.red,
-              value: double.parse(ageData['46+'].toString()) ?? 0,
+              value: double.parse(ageData['46+'].toString()),
               title: '46+',
               radius: 50,
               titleStyle: const TextStyle(

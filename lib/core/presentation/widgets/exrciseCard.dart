@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ExrciseCard extends StatelessWidget {
+class ExrciseCard extends StatefulWidget {
   final String image;
   final String title;
   final String subtitle1;
@@ -23,18 +24,43 @@ class ExrciseCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _ExrciseCardState createState() => _ExrciseCardState();
+}
+
+class _ExrciseCardState extends State<ExrciseCard> {
+  bool _isClicked = false; // Track if the button is clicked
+
+  @override
+  void initState() {
+    super.initState();
+    _loadClickedState(); // Load saved state
+  }
+
+  void _loadClickedState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isClicked = prefs.getBool('isClicked_${widget.title}') ?? false;
+    });
+  }
+
+  void _saveClickedState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isClicked_${widget.title}', _isClicked);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: padding),
+      padding: EdgeInsets.symmetric(horizontal: widget.padding),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           buildImage(),
-          SizedBox(width: spaceBetweenItems), // Space between image and text content
+          SizedBox(width: widget.spaceBetweenItems),
           buildTextColumn(context),
-          SizedBox(width: spaceBetweenItems), // Space between text and icon button
-          withIconButton ? buildIconButton(context) : Container(),
+          SizedBox(width: widget.spaceBetweenItems),
+          widget.withIconButton ? buildIconButton(context) : Container(),
         ],
       ),
     );
@@ -45,7 +71,7 @@ class ExrciseCard extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Image.network(
-        image,
+        widget.image,
         width: MediaQuery.of(Get.context!).size.width * 0.24,
         height: 70,
         fit: BoxFit.cover,
@@ -60,7 +86,7 @@ class ExrciseCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title,
+            widget.title,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14,
@@ -78,9 +104,9 @@ class ExrciseCard extends StatelessWidget {
   Widget buildIconRow(BuildContext context) {
     return Row(
       children: [
-        buildIconText(context, Icons.access_time_filled, subtitle1),
+        buildIconText(context, Icons.access_time_filled, widget.subtitle1),
         SizedBox(width: 8), // Space between the two icon-text pairs
-        buildIconText(context, Icons.electric_bolt_sharp, subtitle2),
+        buildIconText(context, Icons.electric_bolt_sharp, widget.subtitle2),
       ],
     );
   }
@@ -118,11 +144,14 @@ class ExrciseCard extends StatelessWidget {
       ),
       icon: Icon(
         Icons.done_all,
-        color: Palette.greenActive,
+        color: _isClicked ? Colors.green : Palette.mainAppColor,
         size: 24,
       ),
       onPressed: () {
-        print('IconButton pressed...');
+        setState(() {
+          _isClicked = !_isClicked;
+          _saveClickedState(); // Save the state
+        });
       },
     );
   }

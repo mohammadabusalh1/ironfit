@@ -254,7 +254,6 @@ class _TraineeBodyState extends State<TraineeBody> {
 
       // Check if 'plan' field exists in the document snapshot
       if (userDoc != null) {
-        print(userDoc['planName']);
         planName = userDoc['planName'] != null ? userDoc['planName'] : 'لا يوجد خطة!';
       } else {
         planName = 'لا يوجد خطة!';

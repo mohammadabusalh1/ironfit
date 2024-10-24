@@ -11,8 +11,6 @@ class UserStatisticsBody extends StatefulWidget {
 }
 
 class _UserStatisticsBodyState extends State<UserStatisticsBody> {
-  final PageController _pageController = PageController(initialPage: 0);
-  final int _currentPage = 0;
 
   @override
   Widget build(BuildContext context) {

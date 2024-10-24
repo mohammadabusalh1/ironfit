@@ -68,8 +68,7 @@ class DashboardHeader extends StatelessWidget {
       duration: Duration(seconds: 1),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
-        child: Image.network(
-            trainerImage,
+        child: Image.network(trainerImage,
             width: MediaQuery.of(context).size.width * 0.16,
             height: MediaQuery.of(context).size.height * 0.08,
             fit: BoxFit.cover),
@@ -120,35 +119,44 @@ class TrainerInfo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildTrainerName(),
-        _buildTrainerEmail(),
+        _buildTrainerName(context),
+        _buildTrainerEmail(context),
       ],
     );
   }
 
   // Builds the trainer's name text widget with fade animation
-  Widget _buildTrainerName() {
+  Widget _buildTrainerName(BuildContext context) {
     return AnimatedOpacity(
-      opacity: 1.0,
-      duration: Duration(seconds: 2),
-      child: Text(
-        trainerName,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
+        opacity: 1.0,
+        duration: Duration(seconds: 2),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.5,
+          child: Text(
+            trainerName.length > 12
+                ? '...' + trainerName.substring(0, 12)
+                : trainerName,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ));
   }
 
   // Builds the trainer's email text widget
-  Widget _buildTrainerEmail() {
-    return Text(
-      trainerEmail,
-      style: const TextStyle(
-        color: Colors.grey,
-        fontSize: 12,
+  Widget _buildTrainerEmail(BuildContext context) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.5,
+      child: Text(
+        trainerEmail.length > 20
+            ? '...' + trainerEmail.substring(0, 20)
+            : trainerEmail,
+        style: const TextStyle(
+          color: Colors.grey,
+          fontSize: 12,
+        ),
       ),
     );
   }

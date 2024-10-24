@@ -10,8 +10,6 @@ class UserPalnExercisesBody extends StatefulWidget {
 }
 
 class _UserPalnExercisesBodyState extends State<UserPalnExercisesBody> {
-  final PageController _pageController = PageController(initialPage: 0);
-  final int _currentPage = 0;
 
   @override
   Widget build(BuildContext context) {

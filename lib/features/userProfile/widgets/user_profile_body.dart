@@ -18,45 +18,91 @@ class UserProfileBody extends StatefulWidget {
 
 class _UserProfileBodyState extends State<UserProfileBody> {
   String? fullName;
-  String email = FirebaseAuth.instance.currentUser!.email ?? 'لا يوجد';
   bool isLoading = true;
   String trainerImage =
       'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
   PreferencesService preferencesService = PreferencesService();
+  String numberOfDays = '0';
+
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _checkToken();
     fetchUserName();
   }
 
   Future<void> fetchUserName() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     String? userId = _auth.currentUser?.uid;
-    if (userId != null) {
+
+    if (userId == null) {
+      print("No user is logged in.");
+      // Optionally, show a message to the user via UI here.
+      return; // Early exit if the user is not logged in
+    }
+
+    try {
       // Get user data from Firestore
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection(
-              'trainees') // or 'coaches', depending on where you store user data
+          .collection('trainees')
           .doc(userId)
           .get();
 
-      if (userDoc.exists) {
-        String? firstName = userDoc['firstName'];
-        String? lastName = userDoc['lastName'];
+      if (!userDoc.exists) {
+        print("User data not found for userId: $userId");
+        // Optionally, notify the user about the missing data via UI
+        return;
+      }
+
+      // Cast userDoc data to Map<String, dynamic>
+      Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+
+      // Check if 'coachId' and 'subscriptionId' fields exist before accessing them
+      String? coachId = userData?['coachId'];
+      String? subscriptionId = userData?['subscriptionId'];
+
+      if (coachId != null || subscriptionId != null) {
+        DocumentSnapshot subscriptionDoc = await FirebaseFirestore.instance
+            .collection('coaches')
+            .doc(coachId)
+            .collection('subscriptions')
+            .doc(subscriptionId)
+            .get();
 
         setState(() {
-          fullName = '$firstName $lastName';
-          trainerImage = userDoc['profileImageUrl'] ??
-              Assets.notFound;
+          numberOfDays = DateTime.parse(subscriptionDoc['endDate'])
+              .difference(DateTime.now())
+              .inDays
+              .toString();
         });
       } else {
-        print("User data not found");
-        return null;
+        setState(() {
+          numberOfDays = '0';
+        });
       }
-    } else {
-      print("No user is logged in");
-      return null;
+
+      // Retrieve user information safely
+      String? firstName = userData?['firstName'];
+      String? lastName = userData?['lastName'];
+      String profileImageUrl = userData?['profileImageUrl'] ?? Assets.notFound;
+
+      setState(() {
+        fullName = '$firstName $lastName';
+        trainerImage = profileImageUrl;
+      });
+    } catch (e) {
+      // Handle specific exceptions if needed, e.g., FirebaseException
+      print("Error fetching user data: $e");
+      // You can also show a user-friendly message on the UI
     }
   }
 
@@ -519,11 +565,12 @@ class _UserProfileBodyState extends State<UserProfileBody> {
           ),
           const SizedBox(height: 4),
           Text(
-            email,
+            'تبقى لك ' + numberOfDays + ' يوم من الإشتراك',
             style: const TextStyle(
               color: Palette.subTitleGrey,
               fontSize: 14,
-              fontWeight: FontWeight.w100,
+              fontWeight: FontWeight.w300,
+              letterSpacing: 0.8,
             ),
           ),
         ],

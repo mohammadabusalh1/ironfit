@@ -14,23 +14,23 @@ class UserNavBar extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl, // Set text direction to right-to-left.
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: Palette.black, // Background color of the nav bar.
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 5,
-              blurRadius: 10,
-            )
-          ],
+          color: Palette.blackBack, // Background color of the nav bar.
+          border: Border(
+            top: BorderSide(
+              color: Palette.white.withOpacity(
+                  0.25), // Set the desired color for the left border
+              width: 1.2, // Set the desired width for the left border
+            ),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavItem(Icons.home_filled, 0),
+            _buildNavItem(Icons.home_outlined, 0),
             _buildNavItem(Icons.pending_actions, 1),
-            _buildNavItem(Icons.person, 2),
+            _buildNavItem(Icons.person_2_outlined, 2),
           ],
         ),
       ),
@@ -51,46 +51,83 @@ class UserNavBar extends StatelessWidget {
               const Duration(milliseconds: 300), // Smooth animation duration.
           curve: Curves.easeInOut, // Smooth easing curve.
           padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Icon with rotation, scale, and color animation.
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                child: Transform.rotate(
-                  angle:
-                      isSelected ? 0.1 : 0.0, // Small rotation when selected.
-                  child: AnimatedScale(
-                    duration: const Duration(milliseconds: 300),
-                    scale: isSelected ? 1.2 : 1.0, // Scale animation on tap.
-                    child: Icon(
+          child: isSelected
+              ? Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Palette.mainAppColorBack,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        icon,
+                        color: isSelected
+                            ? Palette.black.withOpacity(0.7)
+                            : Palette.black.withOpacity(0.4),
+                        size: 24,
+                      ),
+                      const SizedBox(width: 4),
+                      // Fade effect for text.
+                      AnimatedOpacity(
+                        opacity: isSelected ? 1.0 : 0.6,
+                        duration: const Duration(milliseconds: 300),
+                        child: AnimatedDefaultTextStyle(
+                          duration: const Duration(milliseconds: 300),
+                          style: TextStyle(
+                            color: isSelected
+                                ? Palette.black.withOpacity(0.7)
+                                : Palette.mainAppColor.withOpacity(0.6),
+                            fontSize: isSelected ? 10 : 10,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                          child: Text(_getNavItemLabel(index)),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
                       icon,
-                      color: isSelected ? Palette.mainAppColor : Palette.white,
-                      size: isSelected ? 35 : 25,
+                      color: isSelected
+                          ? Palette.black
+                          : Palette.white.withOpacity(0.6),
+                      size: 24,
                     ),
-                  ),
+                    const SizedBox(width: 4),
+                    // Fade effect for text.
+                    isSelected
+                        ? AnimatedOpacity(
+                            opacity: isSelected ? 1.0 : 0.6,
+                            duration: const Duration(milliseconds: 300),
+                            child: AnimatedDefaultTextStyle(
+                              duration: const Duration(milliseconds: 300),
+                              style: TextStyle(
+                                color: isSelected
+                                    ? Palette.mainAppColor
+                                    : Palette.black.withOpacity(0.6),
+                                fontSize: isSelected ? 12 : 10,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                              child: Text(_getNavItemLabel(index)),
+                            ),
+                          )
+                        : const SizedBox(),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 2),
-              // Fade effect for text.
-              AnimatedOpacity(
-                opacity: isSelected ? 1.0 : 0.6,
-                duration: const Duration(milliseconds: 300),
-                child: AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 300),
-                  style: TextStyle(
-                    color: isSelected
-                        ? Palette.mainAppColor
-                        : Palette.white.withOpacity(0.6),
-                    fontSize: isSelected ? 12 : 10,
-                    fontWeight:
-                        isSelected ? FontWeight.bold : FontWeight.normal,
-                  ),
-                  child: Text(_getNavItemLabel(index)),
-                ),
-              ),
-            ],
-          ),
         ),
       );
     });
@@ -100,7 +137,7 @@ class UserNavBar extends StatelessWidget {
   String _getNavItemLabel(int index) {
     switch (index) {
       case 0:
-        return 'الرئيسية';
+        return 'الرئيسية';
       case 1:
         return 'البرنامج';
       case 2:

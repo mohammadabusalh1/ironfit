@@ -6,6 +6,7 @@ class StatisticsCard extends StatefulWidget {
   final String cardTitle;
   final double width;
   final double height;
+  final IconData icon;
 
   const StatisticsCard({
     super.key,
@@ -13,6 +14,7 @@ class StatisticsCard extends StatefulWidget {
     required this.cardTitle,
     required this.width,
     required this.height,
+    required this.icon,
   });
 
   @override
@@ -39,7 +41,7 @@ class _StatisticsCardState extends State<StatisticsCard> {
         transform: _isHovered
             ? Matrix4.translationValues(0, -5, 0)
             : Matrix4.identity(),
-        child: _buildCardContent(),
+        child: _buildCardContent(widget.icon),
       ),
     );
   }
@@ -60,17 +62,25 @@ class _StatisticsCardState extends State<StatisticsCard> {
   }
 
   // Builds the content of the card.
-  Widget _buildCardContent() {
+  Widget _buildCardContent(IconData icon) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildCardText(
+          Row(
+            children: [
+              Icon(icon, size: 16, color: Palette.white.withOpacity(0.7)),
+              const SizedBox(width: 4),
+              _buildCardText(widget.cardTitle, 10, FontWeight.w800, Palette.white.withOpacity(0.7)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Center(
+            child: _buildCardText(
               widget.cardSubTitle, 14, FontWeight.w600, Palette.mainAppColor),
-          const SizedBox(height: 4),
-          _buildCardText(
-              widget.cardTitle, 12, FontWeight.w800, Palette.white),
+          )
         ],
       ),
     );

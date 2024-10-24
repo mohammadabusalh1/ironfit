@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/widgets/PagesHeader.dart';
 import 'package:ironfit/core/presentation/widgets/exersiceCarousel.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/routes/routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TrainerDashboardBody extends StatefulWidget {
   TrainerDashboardBody({super.key});
@@ -23,9 +27,20 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
       'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
   List<Map<String, String>> exercises = [];
 
+  PreferencesService preferencesService = PreferencesService();
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _checkToken();
     _fetchTrainerData();
   }
 

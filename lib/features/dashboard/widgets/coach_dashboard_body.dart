@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/widgets/PagesHeader.dart';
 import 'package:ironfit/core/presentation/widgets/StatisticsCard.dart';
@@ -8,6 +9,7 @@ import 'package:ironfit/features/dashboard/widgets/card_widget.dart';
 import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CoachDashboardBody extends StatefulWidget {
   const CoachDashboardBody({Key? key}) : super(key: key);
@@ -26,9 +28,20 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   String imageUrl =
       'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
 
+  PreferencesService preferencesService = PreferencesService();
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _checkToken();
     fetchUserName();
   }
 
@@ -94,32 +107,27 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   }
 
   Future<void> fetchUserName() async {
-    if (coachId != null) {
-      // Get user data from Firestore
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection(
-              'coaches') // or 'coaches', depending on where you store user data
-          .doc(coachId)
-          .get();
+    // Get user data from Firestore
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection(
+            'coaches') // or 'coaches', depending on where you store user data
+        .doc(coachId)
+        .get();
 
-      if (userDoc.exists) {
-        String? firstName = userDoc['firstName'];
-        String? lastName = userDoc['lastName'];
+    if (userDoc.exists) {
+      String? firstName = userDoc['firstName'];
+      String? lastName = userDoc['lastName'];
 
-        setState(() {
-          fullName = '$firstName $lastName';
-          email = userDoc['email'];
-          imageUrl = userDoc['profileImageUrl'];
-        });
-      } else {
-        print("User data not found");
-        return null;
-      }
+      setState(() {
+        fullName = '$firstName $lastName';
+        email = userDoc['email'];
+        imageUrl = userDoc['profileImageUrl'];
+      });
     } else {
-      print("No user is logged in");
+      print("User data not found");
       return null;
     }
-  }
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -187,21 +195,23 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   Widget _buildStatisticsRow(BuildContext context, Map<String, dynamic> data) {
     return Row(
       children: [
-        _buildStatisticsCard(data['trainees'].toString(), "متدرب", context),
+        _buildStatisticsCard(data['trainees'].toString() + " متدرب",
+            "عدد المتدربين", context, Icons.person_outline),
         const Spacer(), // Adjusted for consistent spacing
-        _buildStatisticsCard(
-            data['subscriptions'].toString() + "+%", "الإشتراك", context),
+        _buildStatisticsCard(data['subscriptions'].toString() + "+%",
+            "الإشتراك", context, Icons.percent_outlined),
       ],
     );
   }
 
   Widget _buildStatisticsCard(
-      String subTitle, String title, BuildContext context) {
+      String subTitle, String title, BuildContext context, IconData icon) {
     return StatisticsCard(
       cardSubTitle: subTitle,
       cardTitle: title,
       width: MediaQuery.of(context).size.width * 0.4,
       height: 90,
+      icon: icon,
     );
   }
 

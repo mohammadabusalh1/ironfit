@@ -35,7 +35,7 @@ class _SignUpBodyState extends State<SignUpBody> {
   @override
   void initState() {
     super.initState();
-    // _checkToken();
+    _checkToken();
   }
 
   Future<void> _checkToken() async {

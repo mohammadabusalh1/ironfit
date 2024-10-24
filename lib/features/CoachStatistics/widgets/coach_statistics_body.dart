@@ -2,9 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/StatisticsCard.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
+import 'package:ironfit/core/routes/routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CoachStatisticsBody extends StatefulWidget {
   const CoachStatisticsBody({super.key});
@@ -18,9 +22,20 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
   late Future<Map<String, int>> ageDistributionData;
   String coachId = FirebaseAuth.instance.currentUser!.uid;
 
+  PreferencesService preferencesService = PreferencesService();
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _checkToken();
     statistics = fetchStatistics();
     ageDistributionData =
         fetchAgeDistributionData(); // Initialize statistics fetch
@@ -28,15 +43,6 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
 
   // Method to fetch statistics data from Firestore
   Future<Map<String, dynamic>> fetchStatistics() async {
-    if (coachId == null) {
-      print("No coach ID found.");
-      return {
-        'trainees': 0,
-        'new_trainees': 0,
-        'income': 0.0,
-      };
-    }
-
     try {
       // Fetch data from Firestore
       QuerySnapshot<Map<String, dynamic>> subscriptionsSnapshot =
@@ -63,7 +69,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
           subscriptionsList.where((subscription) {
         try {
           return DateTime.parse(subscription['startDate'])
-              .isAfter(DateTime.now().subtract(Duration(days: 30)));
+              .isAfter(DateTime.now().subtract(const Duration(days: 30)));
         } catch (e) {
           print(
               "Error parsing date for subscription: ${subscription['startDate']} - $e");
@@ -109,12 +115,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
       String? userId = auth.currentUser?.uid;
       if (userId == null) {
         print("User is not logged in.");
-        return {
-          '18-25': 0,
-          '26-35': 0,
-          '36-45': 0,
-          '46+': 0,
-        };
+        return _defaultAgeDistribution();
       }
 
       // Get the subscriptions collection for the coach
@@ -130,70 +131,76 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
       // If no data, log and return default values
       if (snapshot.docs.isEmpty) {
         print("No subscriptions found for coach with ID: $userId");
-        return {
-          '18-25': 0,
-          '26-35': 0,
-          '36-45': 0,
-          '46+': 0,
-        };
+        return _defaultAgeDistribution();
       }
 
-      List<Map<String, dynamic>> subscriptionsList =
-          snapshot.docs.map((doc) => doc.data()).toList();
+      // Get userIds directly from the snapshot docs
+      final userIds = snapshot.docs.map((doc) => doc['userId']).toList();
+
+      // Batch fetch trainee documents
+      final traineeDocs = await FirebaseFirestore.instance
+          .collection('trainees')
+          .where(FieldPath.documentId, whereIn: userIds)
+          .get();
+
+      // Initialize age distribution counters
+      Map<String, int> ageDistribution = {
+        '18-25': 0,
+        '26-35': 0,
+        '36-45': 0,
+        '46+': 0,
+      };
 
       // Calculate age distribution
-      int age18to25 = 0;
-      int age26to35 = 0;
-      int age36to45 = 0;
-      int age46Plus = 0;
+      for (var trainee in traineeDocs.docs) {
+        final ageString = trainee['age']?.toString();
 
-      for (var subscription in subscriptionsList) {
-        String? ageString = subscription['age'].toString();
-        if (ageString.isEmpty) {
-          print("Age field is missing in subscription: $subscription");
+        if (ageString == null || ageString.isEmpty) {
+          print("Age field is missing in subscription: ${trainee.id}");
           continue; // Skip invalid subscriptions
         }
 
-        int? age = int.tryParse(ageString);
+        final age = int.tryParse(ageString);
         if (age == null) {
           print(
-              "Invalid age value: $ageString for subscription: $subscription");
+              "Invalid age value: $ageString for subscription: ${trainee.id}");
           continue; // Skip invalid age values
         }
 
         // Count based on age ranges
         if (age >= 18 && age <= 25) {
-          age18to25++;
+          ageDistribution['18-25'] = ageDistribution['18-25']! + 1;
         } else if (age >= 26 && age <= 35) {
-          age26to35++;
+          ageDistribution['26-35'] = ageDistribution['26-35']! + 1;
         } else if (age >= 36 && age <= 45) {
-          age36to45++;
+          ageDistribution['36-45'] = ageDistribution['36-45']! + 1;
         } else if (age >= 46) {
-          age46Plus++;
+          ageDistribution['46+'] = ageDistribution['46+']! + 1;
         }
       }
 
-      print("Age distribution: $age18to25, $age26to35, $age36to45, $age46Plus");
+      print(
+          "Age distribution: ${ageDistribution['18-25']}, ${ageDistribution['26-35']}, ${ageDistribution['36-45']}, ${ageDistribution['46+']}");
 
-      return {
-        '18-25': age18to25,
-        '26-35': age26to35,
-        '36-45': age36to45,
-        '46+': age46Plus,
-      };
+      return ageDistribution;
     } catch (e, stackTrace) {
       // Log detailed error and stack trace for debugging
       print("Error fetching age distribution: $e");
       print("Stack trace: $stackTrace");
 
       // Return default values when an error occurs
-      return {
-        '18-25': 0,
-        '26-35': 0,
-        '36-45': 0,
-        '46+': 0,
-      };
+      return _defaultAgeDistribution();
     }
+  }
+
+// Helper method to return default age distribution
+  Map<String, int> _defaultAgeDistribution() {
+    return {
+      '18-25': 0,
+      '26-35': 0,
+      '36-45': 0,
+      '46+': 0,
+    };
   }
 
   @override
@@ -227,7 +234,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                             width: double.infinity,
                             child: Stack(
                               children: [
-                                HeaderImage(),
+                                const HeaderImage(),
                                 Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(24, 50, 24, 50),
@@ -286,19 +293,21 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                             child: Row(
                               children: [
                                 StatisticsCard(
-                                  cardSubTitle: '${data['trainees']}',
+                                  cardSubTitle: '${data['trainees']} متدرب',
                                   cardTitle: 'المتدربين',
                                   width:
                                       MediaQuery.of(context).size.width * 0.4,
                                   height: 90,
+                                  icon: Icons.people,
                                 ),
                                 const Spacer(),
                                 StatisticsCard(
-                                  cardSubTitle: '${data['new_trainees']}',
+                                  cardSubTitle: '${data['new_trainees']} متدرب',
                                   cardTitle: 'المتدربين الجدد',
                                   width:
                                       MediaQuery.of(context).size.width * 0.4,
                                   height: 90,
+                                  icon: Icons.network_ping,
                                 ),
                               ],
                             ),
@@ -311,22 +320,33 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                               cardTitle: 'الدخل هذا الشهر',
                               width: MediaQuery.of(context).size.width * 0.86,
                               height: 90,
+                              icon: Icons.monetization_on,
                             ),
                           ),
                           const SizedBox(height: 24),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const Text(
-                                'توزيع الأعمار',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Palette.mainAppColor,
+                              Container(
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.all(8),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 24),
+                                decoration: BoxDecoration(
+                                  color: Palette.mainAppColorWhite,
+                                ),
+                                child: Text(
+                                  'توزيع الأعمار',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Palette.black.withOpacity(0.7),
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 32),
                               FutureBuilder<Map<String, int>>(
                                 future: ageDistributionData,
                                 builder: (context, snapshot) {

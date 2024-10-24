@@ -3,10 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TraineeBody extends StatefulWidget {
   final String username;
@@ -32,9 +34,20 @@ class _TraineeBodyState extends State<TraineeBody> {
   late String imageURL;
   late String subscriptionId;
 
+  PreferencesService preferencesService = PreferencesService();
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _checkToken();
     _plans = [];
     planName = '';
     _numberOfDaysUserHave = 0;
@@ -58,6 +71,11 @@ class _TraineeBodyState extends State<TraineeBody> {
           .where('username', isEqualTo: widget.username)
           .get();
 
+      final user = await _firestore
+          .collection('trainees')
+          .doc(subscriptions.docs[0]['userId'])
+          .get();
+
       // Check if any document was returned
       if (subscriptions.docs.isNotEmpty) {
         // Safely extract the end date and calculate the difference
@@ -66,10 +84,10 @@ class _TraineeBodyState extends State<TraineeBody> {
           try {
             // Parse the end date and calculate the difference in days
             setState(() {
+              userName = user.get('firstName') + ' ' + user.get('lastName');
+              imageURL = user.get('profileImageUrl');
               debts = subscriptions.docs[0]['debts'].toString();
               amountPaid = subscriptions.docs[0]['amountPaid'];
-              userName = subscriptions.docs[0]['fullName'];
-              imageURL = subscriptions.docs[0]['profileImageUrl'];
               subscriptionId = subscriptions.docs.first.id;
               _numberOfDaysUserHave =
                   DateTime.parse(endDateStr).difference(DateTime.now()).inDays;
@@ -170,7 +188,7 @@ class _TraineeBodyState extends State<TraineeBody> {
         );
 
         // Call removePlan function
-        await removePlan();
+        await cleanSubscription();
 
         // Fetch current user ID
         String? coachId = _auth.currentUser?.uid;
@@ -193,7 +211,10 @@ class _TraineeBodyState extends State<TraineeBody> {
               .doc(coachId)
               .collection('subscriptions')
               .doc(subscriptionDoc.docs[0].id)
-              .delete();
+              .delete()
+              .then((value) {
+            Get.back();
+          });
 
           // Show a success message
           ScaffoldMessenger.of(context).showSnackBar(
@@ -203,9 +224,6 @@ class _TraineeBodyState extends State<TraineeBody> {
           );
 
           widget.fetchTrainees();
-
-          // Navigate back after success
-          Get.back();
         } else {
           // No subscription found for the user
           ScaffoldMessenger.of(context).showSnackBar(
@@ -244,22 +262,50 @@ class _TraineeBodyState extends State<TraineeBody> {
   }
 
   Future<void> fetchUserPlan() async {
-    final user = await _firestore
-        .collection('trainees')
-        .where('username', isEqualTo: widget.username)
-        .get();
-    if (user.docs.isNotEmpty) {
-      // Get the document snapshot
-      var userDoc = user.docs[0].data();
+    try {
+      final user = await _firestore
+          .collection('trainees')
+          .where('username', isEqualTo: widget.username)
+          .get();
 
-      // Check if 'plan' field exists in the document snapshot
-      if (userDoc != null) {
-        planName = userDoc['planName'] != null ? userDoc['planName'] : 'لا يوجد خطة!';
+      if (user.docs.isNotEmpty) {
+        // Get the document snapshot
+        var userDoc = user.docs[0].data();
+
+        if (userDoc['coachId'] == null) {
+          setState(() {
+            planName = 'لا يوجد خطة!';
+          });
+          return;
+        }
+
+        if (userDoc['planId'] == null) {
+          setState(() {
+            planName = 'لا يوجد خطة!';
+          });
+          return;
+        }
+
+        final paln = await _firestore
+            .collection('coaches')
+            .doc(userDoc['coachId'])
+            .collection('plans')
+            .doc(userDoc['planId'])
+            .get();
+
+        if (paln.exists) {
+          setState(() {
+            planName = paln.data()!['name'];
+          });
+        }
       } else {
         planName = 'لا يوجد خطة!';
       }
-    } else {
-      planName = 'لا يوجد خطة!';
+    } catch (e) {
+      print("Error fetching user plan: $e");
+      setState(() {
+        planName = 'لا يوجد خطة!';
+      });
     }
   }
 
@@ -306,36 +352,7 @@ class _TraineeBodyState extends State<TraineeBody> {
         return; // If user cancels, exit the method
       }
 
-      // Fetch the user based on the username
-      var querySnapshot = await _firestore
-          .collection('trainees')
-          .where('username', isEqualTo: widget.username)
-          .get();
-
-      // Check if any documents are found
-      if (querySnapshot.docs.isEmpty) {
-        // If no user is found, notify the user
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('لا يوجد مستخدم بهذا الاسم!')),
-        );
-        return;
-      }
-
-      // Update 'plan' field to null for each found document
-      for (var doc in querySnapshot.docs) {
-        try {
-          await _firestore
-              .collection('trainees')
-              .doc(doc.id)
-              .update({'planId': null, 'planName': null, 'coachId': null});
-        } catch (e) {
-          // If there is an error while updating the Firestore document, log it
-          print('Error removing plan for user ${doc.id}: $e');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('فشل حذف الخطة للمستخدم ${doc.id}')),
-          );
-        }
-      }
+      await cleanSubscription();
 
       // Fetch updated data
       await fetchUserPlan();
@@ -350,6 +367,38 @@ class _TraineeBodyState extends State<TraineeBody> {
       print('Error in removePlan: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('حدث خطأ أثناء إلغاء الخطة')),
+      );
+    }
+  }
+
+  Future<void> cleanSubscription() async {
+    // Fetch the user based on the username
+    var querySnapshot = await _firestore
+        .collection('trainees')
+        .where('username', isEqualTo: widget.username)
+        .get();
+
+    // Check if any documents are found
+    if (querySnapshot.docs.isEmpty) {
+      // If no user is found, notify the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('لا يوجد مستخدم بهذا الاسم!')),
+      );
+      return;
+    }
+
+    try {
+      await _firestore
+          .collection('trainees')
+          .doc(querySnapshot.docs.first.id)
+          .update({'planId': null, 'coachId': null});
+    } catch (e) {
+      // If there is an error while updating the Firestore document, log it
+      print('Error removing plan for user ${querySnapshot.docs.first.id}: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content:
+                Text('فشل حذف الخطة للمستخدم ${querySnapshot.docs.first.id}')),
       );
     }
   }
@@ -381,7 +430,6 @@ class _TraineeBodyState extends State<TraineeBody> {
           // Update the document with the plan data
           await docRef.update({
             'planId': newValue,
-            'planName': plans.data()!['name'],
             'coachId': _auth.currentUser?.uid,
           });
 
@@ -441,34 +489,23 @@ class _TraineeBodyState extends State<TraineeBody> {
           .doc(id);
 
       // Check if the plan exists
-      if (subscription != null) {
-        // Update the document with the plan data
-        await subscription.update({
-          'debts': '${int.parse(debts) + int.parse(newValue)}',
-        });
+      // Update the document with the plan data
+      await subscription.update({
+        'debts': '${int.parse(debts) + int.parse(newValue)}',
+      });
 
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم أضافة الدين بنجاح'),
-          ),
-        );
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('تم أضافة الدين بنجاح'),
+        ),
+      );
 
-        fetchNumberOfDays().then((v) {
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
-        });
-      } else {
-        // Handle case where plan doesn't exist
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('لم يتم العثور على المشترك'),
-          ),
-        );
+      fetchNumberOfDays().then((v) {
         Navigator.of(context).pop();
         Navigator.of(context).pop();
-      }
-    } catch (e) {
+      });
+        } catch (e) {
       // Catch any errors that occur during Firestore operations
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -749,32 +786,21 @@ class _TraineeBodyState extends State<TraineeBody> {
           .doc(id);
 
       // Check if the plan exists
-      if (subscription != null) {
-        // Update the document with the plan data
-        await subscription.update({'startDate': stratDate, 'endDate': endDate});
+      // Update the document with the plan data
+      await subscription.update({'startDate': stratDate, 'endDate': endDate});
 
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم أضافة تجديد الإشتراك بنجاح'),
-          ),
-        );
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('تم أضافة تجديد الإشتراك بنجاح'),
+        ),
+      );
 
-        fetchNumberOfDays().then((v) {
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
-        });
-      } else {
-        // Handle case where plan doesn't exist
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('لم يتم العثور على المشترك'),
-          ),
-        );
+      fetchNumberOfDays().then((v) {
         Navigator.of(context).pop();
         Navigator.of(context).pop();
-      }
-    } catch (e) {
+      });
+        } catch (e) {
       // Catch any errors that occur during Firestore operations
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1215,7 +1241,7 @@ Widget _buildCard(BuildContext context, String planName, Function onTap,
               ),
               const SizedBox(width: 8),
               Text(
-                iconText ?? '',
+                iconText,
                 style: TextStyle(
                   fontFamily: 'Inter',
                   color: iconColor,

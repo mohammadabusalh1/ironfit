@@ -63,13 +63,13 @@ class _CustomTabBarWidgetState extends State<CustomTabBarWidget>
         // Handle tab selection logic here
       },
       tabs: [
-        Tab(text: 'Mon'),
-        Tab(text: 'Tue'),
-        Tab(text: 'Wed'),
-        Tab(text: 'Thu'),
-        Tab(text: 'Fri'),
-        Tab(text: 'Sat'),
-        Tab(text: 'Sun'),
+        Tab(text: 'الإثنين'),
+        Tab(text: 'الثلاثاء'),
+        Tab(text: 'الأربعاء'),
+        Tab(text: 'الخميس'),
+        Tab(text: 'الجمعة'),
+        Tab(text: 'السبت'),
+        Tab(text: 'الأحد'),
       ],
     );
   }
@@ -140,7 +140,7 @@ class _CustomTabBarWidgetState extends State<CustomTabBarWidget>
             return Column(
               children: [
                 ExrciseCard(
-                  image: exercise.image!,
+                  image: exercise.image,
                   title: exercise.name,
                   subtitle1: "${exercise.rounds} جولات",
                   subtitle2: "${exercise.repetitions} تكرار",

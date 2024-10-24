@@ -5,14 +5,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
-import 'package:ironfit/core/presentation/widgets/ExerciseListWidget.dart';
 import 'package:ironfit/core/presentation/widgets/exrciseCard.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
+import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/createPlan/widgets/ex.dart';
+import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:ironfit/features/editPlan/widgets/ExerciseDialog.dart';
-import 'package:ironfit/features/editPlan/widgets/buildTextField.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreatePlanBody extends StatefulWidget {
   const CreatePlanBody({super.key});
@@ -24,6 +25,8 @@ class CreatePlanBody extends StatefulWidget {
 class _CreatePlanBodyState extends State<CreatePlanBody> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final planController = TextEditingController();
+  final descriptionController = TextEditingController();
 
   List<TrainingDay> trainingDays = [];
 
@@ -37,35 +40,107 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   String rounds = '';
   String repetitions = '';
 
+  PreferencesService preferencesService = PreferencesService();
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkToken();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
+      child: Stack(
         children: [
-          _buildHeader(),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  BuildTextField(
-                    onChange: (value) => setState(() => planName = value),
-                    label: "إسم الخطة",
+          SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                _buildHeader(),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    children: [
+                      BuildTextField(
+                        controller: planController,
+                        onChange: (value) => setState(() {
+                          planName = value;
+                        }),
+                        label: "إسم الخطة",
+                      ),
+                      const SizedBox(height: 16),
+                      BuildTextField(
+                        controller: descriptionController,
+                        onChange: (value) =>
+                            setState(() => planDescription = value),
+                        label: "وصف الخطة",
+                      ),
+                      const SizedBox(height: 24),
+                      _buildTrainingDaysList(),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  BuildTextField(
-                    onChange: (value) =>
-                        setState(() => planDescription = value),
-                    label: "وصف الخطة",
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 24, // Distance from the bottom
+            right: 24, // Distance from the left side
+            child: SizedBox(
+              width: 60,
+              height: 60,
+              child: IconButton(
+                style: IconButton.styleFrom(
+                  fixedSize: const Size(50, 50),
+                  backgroundColor: Palette.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
                   ),
-                  const SizedBox(height: 24),
-                  _buildAddDayButton(context),
-                  const SizedBox(height: 24),
-                  _buildTrainingDaysList(),
-                  const SizedBox(height: 24),
-                  _buildSavePlanButton(),
-                ],
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+                icon: const Icon(
+                  Icons.add,
+                  color: Palette.mainAppColor,
+                  size: 24,
+                ),
+                onPressed: () => _addTrainingDay(context),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 92, // Distance from the bottom
+            right: 24, // Distance from the left side
+            child: SizedBox(
+              width: 60,
+              height: 60,
+              child: IconButton(
+                style: IconButton.styleFrom(
+                  fixedSize: const Size(50, 50),
+                  backgroundColor: Palette.greenActive,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+                icon: const Icon(
+                  Icons.done,
+                  color: Palette.white,
+                  size: 24,
+                ),
+                onPressed: () => _savePlan(),
               ),
             ),
           ),
@@ -128,25 +203,6 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
     );
   }
 
-  Widget _buildAddDayButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 45,
-      child: ElevatedButton(
-        onPressed: () => _addTrainingDay(context),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Palette.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-        ),
-        child: const Text("اضافة يوم",
-            style: TextStyle(fontSize: 16, color: Colors.black)),
-      ),
-    );
-  }
-
   Widget _buildTrainingDaysList() {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
@@ -156,7 +212,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
         final day = trainingDays[index];
         return Column(
           children: [
-            _buildTrainingDayCard(day),
+            _buildTrainingDayCard(day, index),
             const SizedBox(height: 16),
           ],
         );
@@ -164,8 +220,67 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
     );
   }
 
-  Widget _buildTrainingDayCard(TrainingDay day) {
-    final splitDay = day.day!.split('-');
+  void _removeExercise(TrainingDay day, Exercise exercise) {
+    setState(() {
+      day.exercises.remove(exercise);
+    });
+  }
+
+  void _removeTrainingDay(int index) async {
+    bool confirmCancel = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          alignment: Alignment.center,
+          title: const Text(
+            'تأكيد الإلغاء',
+            textAlign: TextAlign.center,
+          ),
+          content: const Text(
+            'هل أنت متأكد أنك تريد الحذف؟',
+            textAlign: TextAlign.end,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User canceled
+              },
+              child:
+                  const Text('إلغاء', style: TextStyle(color: Palette.black)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Palette.redDelete,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(true); // User confirmed
+              },
+              child:
+                  const Text('تأكيد', style: TextStyle(color: Palette.white)),
+            ),
+          ],
+        );
+      },
+    );
+
+    // If the user cancels, return early
+    if (!confirmCancel) {
+      return;
+    }
+    setState(() {
+      trainingDays.removeAt(index);
+    });
+  }
+
+  void _addTrainingDay(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => _buildDayDialog(context),
+    );
+  }
+
+  Widget _buildTrainingDayCard(TrainingDay day, int index) {
+    String dayName = day.day.contains('-') ? day.day.split('-')[1] : day.day;
     return Card(
       color: Palette.secondaryColor,
       child: Padding(
@@ -174,7 +289,19 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              splitDay[0],
+              dayName == 'sun'
+                  ? 'الاحد'
+                  : dayName == 'mon'
+                      ? 'الاثنين'
+                      : dayName == 'tue'
+                          ? 'الثلاثاء'
+                          : dayName == 'wed'
+                              ? 'الاربعاء'
+                              : dayName == 'thu'
+                                  ? 'الخميس'
+                                  : dayName == 'fri'
+                                      ? 'الجمعة'
+                                      : 'السبت',
               style: const TextStyle(
                   color: Palette.white,
                   fontSize: 18,
@@ -195,9 +322,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                             title: exercise.name,
                             subtitle1: "${exercise.rounds} جولات",
                             subtitle2: "${exercise.repetitions} تكرار",
-                            image: exercise.image.isEmpty
-                                ? Assets.notFound
-                                : exercise.image,
+                            image: exercise.image,
                           ),
                         ),
                         IconButton(
@@ -206,7 +331,9 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    // Add space between rows
+                    const SizedBox(
+                        height: 10), // Adjust the height as per your need
                   ],
                 );
               }).toList(),
@@ -226,22 +353,17 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                     style: TextStyle(color: Palette.black)),
               ),
             ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: ElevatedButton(
+                  onPressed: () => _removeTrainingDay(index),
+                  child: const Text("حذف",
+                      style: TextStyle(color: Palette.redDelete))),
+            ),
           ],
         ),
       ),
-    );
-  }
-
-  void _removeExercise(TrainingDay day, Exercise exercise) {
-    setState(() {
-      day.exercises.remove(exercise);
-    });
-  }
-
-  void _addTrainingDay(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => _buildDayDialog(context),
     );
   }
 
@@ -329,25 +451,6 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
     );
   }
 
-  Widget _buildSavePlanButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 45,
-      child: ElevatedButton(
-        onPressed: _savePlan,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Palette.mainAppColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-        ),
-        child: const Text("حفظ الخطة",
-            style: TextStyle(fontSize: 16, color: Colors.black)),
-      ),
-    );
-  }
-
   void _savePlan() async {
     if (_validatePlan()) {
       try {
@@ -377,8 +480,10 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
               .collection('coaches')
               .doc(user.uid)
               .collection('plans')
-              .add(planData);
-          Get.back();
+              .add(planData)
+              .then((value) {
+            Get.toNamed(Routes.trainees);
+          });
           Get.snackbar('نجاح', 'تم حفظ الخطة بنجاح',
               messageText: Text(
                 'تم حفظ الخطة بنجاح',

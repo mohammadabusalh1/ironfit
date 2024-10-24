@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/exrciseCard.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
@@ -13,6 +14,7 @@ import 'package:ironfit/features/createPlan/widgets/create_plan_body.dart';
 import 'package:ironfit/features/createPlan/widgets/ex.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:ironfit/features/editPlan/widgets/ExerciseDialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditPlanBody extends StatefulWidget {
   const EditPlanBody({super.key, required this.planId});
@@ -35,12 +37,25 @@ class _EditPlanBodyState extends State<EditPlanBody> {
   String selectedExerciseImage = '';
   String rounds = '';
   String repetitions = '';
+  final planController = TextEditingController();
+  final descriptionController = TextEditingController();
 
   List<TrainingDay> trainingDays = [];
+
+  PreferencesService preferencesService = PreferencesService();
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _checkToken();
     _fetchPlanData();
   }
 
@@ -107,88 +122,91 @@ class _EditPlanBodyState extends State<EditPlanBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.topRight,
-      children: [
-        SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              _buildHeader(),
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    BuildTextField(
-                      value: planName,
-                      onChange: (value) => setState(() => planName = value),
-                      label: "إسم الخطة",
-                    ),
-                    const SizedBox(height: 16),
-                    BuildTextField(
-                      value: planDescription,
-                      onChange: (value) =>
-                          setState(() => planDescription = value),
-                      label: "وصف الخطة",
-                    ),
-                    _buildTrainingDaysList(),
-                  ],
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
+      child: Stack(
+        alignment: Alignment.topRight,
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                _buildHeader(),
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    children: [
+                      BuildTextField(
+                        controller: planController,
+                        onChange: (value) => setState(() => planName = value),
+                        label: "إسم الخطة",
+                      ),
+                      const SizedBox(height: 16),
+                      BuildTextField(
+                        controller: descriptionController,
+                        onChange: (value) =>
+                            setState(() => planDescription = value),
+                        label: "وصف الخطة",
+                      ),
+                      _buildTrainingDaysList(),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
-        Positioned(
-          bottom: 24, // Distance from the bottom
-          right: 24, // Distance from the left side
-          child: SizedBox(
-            width: 60,
-            height: 60,
-            child: IconButton(
-              style: IconButton.styleFrom(
-                fixedSize: const Size(50, 50),
-                backgroundColor: Palette.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              ),
-              icon: const Icon(
-                Icons.add,
-                color: Palette.mainAppColor,
-                size: 24,
-              ),
-              onPressed: () => _addTrainingDay(),
+              ],
             ),
           ),
-        ),
-        Positioned(
-          bottom: 92, // Distance from the bottom
-          right: 24, // Distance from the left side
-          child: SizedBox(
-            width: 60,
-            height: 60,
-            child: IconButton(
-              style: IconButton.styleFrom(
-                fixedSize: const Size(50, 50),
-                backgroundColor: Palette.greenActive,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
+          Positioned(
+            bottom: 24, // Distance from the bottom
+            right: 24, // Distance from the left side
+            child: SizedBox(
+              width: 60,
+              height: 60,
+              child: IconButton(
+                style: IconButton.styleFrom(
+                  fixedSize: const Size(50, 50),
+                  backgroundColor: Palette.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                icon: const Icon(
+                  Icons.add,
+                  color: Palette.mainAppColor,
+                  size: 24,
+                ),
+                onPressed: () => _addTrainingDay(),
               ),
-              icon: const Icon(
-                Icons.done,
-                color: Palette.white,
-                size: 24,
-              ),
-              onPressed: () => _savePlan(),
             ),
           ),
-        ),
-      ],
+          Positioned(
+            bottom: 92, // Distance from the bottom
+            right: 24, // Distance from the left side
+            child: SizedBox(
+              width: 60,
+              height: 60,
+              child: IconButton(
+                style: IconButton.styleFrom(
+                  fixedSize: const Size(50, 50),
+                  backgroundColor: Palette.greenActive,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+                icon: const Icon(
+                  Icons.done,
+                  color: Palette.white,
+                  size: 24,
+                ),
+                onPressed: () => _savePlan(),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -301,7 +319,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                             title: exercise.name,
                             subtitle1: "${exercise.rounds} جولات",
                             subtitle2: "${exercise.repetitions} تكرار",
-                            image: exercise.image!,
+                            image: exercise.image,
                           ),
                         ),
                         IconButton(

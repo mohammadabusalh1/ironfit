@@ -15,7 +15,6 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   ScrollController _scrollController = ScrollController();
   int _itemCount = 10;
   List<Map<String, dynamic>> _filteredExercises = [];
-  String _searchQuery = '';
 
   @override
   void initState() {
@@ -42,7 +41,6 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
   void _searchExercises(String query) {
     setState(() {
-      _searchQuery = query;
       if (query.isEmpty) {
         _filteredExercises = widget.exercisesJson;
       } else {

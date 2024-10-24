@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
@@ -14,7 +13,6 @@ class MyGymsBody extends StatefulWidget {
 
 class _MyGymsBodyState extends State<MyGymsBody> {
   void showEditInfoDialog(BuildContext context) {
-    String? selectedValue;
     showDialog(
       context: context,
       builder: (BuildContext context) {

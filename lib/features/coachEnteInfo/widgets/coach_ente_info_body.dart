@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CoachEnterInfoBody extends StatefulWidget {
   CoachEnterInfoBody({Key? key}) : super(key: key);
@@ -26,6 +28,22 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
   int stage = 1;
   String coachId = FirebaseAuth.instance.currentUser!.uid;
 
+  PreferencesService preferencesService = PreferencesService();
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkToken();
+  }
+
   Future<void> updateCoachInfo(
       String coachId, Map<String, dynamic> data) async {
     await FirebaseFirestore.instance
@@ -42,7 +60,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
             stage = 2;
           });
         } else {
-          Get.dialog(Center(child: CircularProgressIndicator()),
+          Get.dialog(const Center(child: CircularProgressIndicator()),
               barrierDismissible: false);
           String username = _usernameController.text;
           String firstName = _firstNameController.text;
@@ -56,7 +74,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
           if (usernameExists) {
             // If the username already exists, show an error message
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('اسم المستخدم هذا مُستخدم بالفعل')),
+              const SnackBar(content: Text('اسم المستخدم هذا مُستخدم بالفعل')),
             );
             return;
           }
@@ -73,7 +91,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
           await updateCoachInfo(coachId, coachData);
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
+            const SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
           );
 
           Get.toNamed(Routes.coachDashboard)?.then(
@@ -81,17 +99,17 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
           );
         }
         // Navigate to the next page or perform any other action
-      } on FirebaseException catch (e) {
+      } on FirebaseException {
         Get.back();
         // Firebase-specific error handling
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطأ في الاتصال بقاعدة البيانات')),
+          const SnackBar(content: Text('خطأ في الاتصال بقاعدة البيانات')),
         );
-      } on FormatException catch (e) {
+      } on FormatException {
         Get.back();
         // Handle invalid number format (e.g., age or experience)
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
               content:
                   Text('تنسيق غير صالح: يرجى إضافة البيانات بالشكل الصحيح')),
         );
@@ -105,7 +123,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
     } else {
       // Form is not valid, show a message or error handling
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('المعلومات غير صالحة')),
+        const SnackBar(content: Text('المعلومات غير صالحة')),
       );
     }
   }
@@ -124,7 +142,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
     } catch (e) {
       // Handle any Firestore errors
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('حدث خطأ في الاتصال بقاعدة البيانات')),
+        const SnackBar(content: Text('حدث خطأ في الاتصال بقاعدة البيانات')),
       );
       return false;
     }
@@ -139,7 +157,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildImageStack(),
-            stage == 2 ? SizedBox(height: 24) : Container(),
+            stage == 2 ? const SizedBox(height: 24) : Container(),
             stage == 2
                 ? ImagePickerComponent(
                     userId: coachId,
@@ -183,7 +201,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 ? _buildTextField('إسم الحساب', '', _usernameController,
                     TextInputType.text, Icons.person)
                 : Container(),
-            stage == 1 ? SizedBox(height: 12) : Container(),
+            stage == 1 ? const SizedBox(height: 12) : Container(),
             stage == 1
                 ? _buildTextField('الاسم الأول', '', _firstNameController,
                     TextInputType.text, Icons.face)
@@ -217,12 +235,12 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 ? _buildTextField('العمر', '', _ageController,
                     TextInputType.number, Icons.group)
                 : Container(),
-            stage == 1 ? SizedBox(height: 12) : Container(),
+            stage == 1 ? const SizedBox(height: 12) : Container(),
             stage == 1
                 ? _buildTextField('الخبرة', '', _experienceController,
                     TextInputType.number, Icons.star)
                 : Container(),
-            stage == 1 ? SizedBox(height: 24) : Container(),
+            stage == 1 ? const SizedBox(height: 24) : Container(),
             SizedBox(
               width: double.infinity,
               child: Padding(
@@ -299,7 +317,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: TextFormField(
         controller: controller,
-        keyboardType: keyboardType ?? TextInputType.text,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,

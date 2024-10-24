@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/routes/routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PlanBody extends StatefulWidget {
   const PlanBody({super.key});
@@ -11,6 +14,22 @@ class PlanBody extends StatefulWidget {
 }
 
 class _PlanBodyState extends State<PlanBody> {
+  PreferencesService preferencesService = PreferencesService();
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkToken();
+  }
+
   void showCreatePlanDialog(BuildContext context) {
     String? selectedValue;
     showDialog(
@@ -281,8 +300,7 @@ class _PlanBodyState extends State<PlanBody> {
                                       print(
                                           'Button for برنامج المبتدئين pressed');
                                     },
-                                    editPressed: () {
-                                    }),
+                                    editPressed: () {}),
                                 CustomCard(
                                   title: 'ظهر وتراي',
                                   description: 'يوم الإثنين',
@@ -291,8 +309,7 @@ class _PlanBodyState extends State<PlanBody> {
                                     print(
                                         'Button for برنامج المبتدئين pressed');
                                   },
-                                  editPressed: () {
-                                  },
+                                  editPressed: () {},
                                 ),
                               ],
                             ),

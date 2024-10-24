@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/editPlan/screens/edit_plan_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyPlansBody extends StatefulWidget {
   const MyPlansBody({super.key});
@@ -18,6 +20,22 @@ class _MyPlansBodyState extends State<MyPlansBody> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool isDateSortUp = true;
+
+  PreferencesService preferencesService = PreferencesService();
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkToken();
+  }
 
   Future<void> deletePlan(BuildContext context, String planId) async {
     try {
@@ -101,7 +119,6 @@ class _MyPlansBodyState extends State<MyPlansBody> {
 
   void _sortBySubscription() {
     // Firestore query to fetch the data sorted by subscription date
-    final order = isDateSortUp ? 'asc' : 'desc';
 
     setState(() {
       // Update the StreamBuilder to use the sorted query

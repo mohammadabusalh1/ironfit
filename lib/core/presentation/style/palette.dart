@@ -5,6 +5,7 @@ abstract class Palette {
   static Color get scaffoldBackground => Get.theme.scaffoldBackgroundColor;
 
   static const Color mainAppColor = Color(0xffffbb02);
+  static const Color mainAppColorBack = Color.fromARGB(255, 255, 208, 78);
   static const Color mainAppColorOrange = Color(0xffEB8317);
   static const Color mainAppColorNavy = Color(0xff10375C);
   static const Color mainAppColorWhite = Color(0xffF4F6FF);
@@ -15,6 +16,7 @@ abstract class Palette {
   static const Color lightGrey = Color(0xffEFF4F6);
   static const Color white = Color(0xffffffff);
   static const Color black = Color(0xff000000);
+  static const Color blackBack = Color.fromARGB(255, 16, 16, 16);
   static const Color darkBackground = Color(0xff101828);
   static const Color baseLight = Color(0xffD0D5DD);
   static const Color borderGrey = Color(0xffe2e5ea);

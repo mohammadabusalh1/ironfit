@@ -26,8 +26,17 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   late String imageUrl;
   late String email;
   bool isLoading = true;
-  PreferencesService preferencesService = PreferencesService();
   String coachId = FirebaseAuth.instance.currentUser!.uid;
+
+  PreferencesService preferencesService = PreferencesService();
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
+    }
+  }
 
   @override
   void initState() {
@@ -36,6 +45,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
     imageUrl =
         'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
     fetchUserName();
+    _checkToken();
   }
 
   Future<void> changeUserImage() async {
@@ -51,52 +61,48 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
       });
 
       try {
-        if (imageUrl != null) {
-          try {
-            Get.dialog(Center(child: CircularProgressIndicator()),
-                barrierDismissible: false);
-            final storageRef = FirebaseStorage.instance.ref().child(
-                'profile_images/${FirebaseAuth.instance.currentUser!.uid}.jpg');
-            await storageRef.putFile(File(pickedFile.path)!).then(
-              (snapshot) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('تم تحميل الصورة بنجاح')),
-                );
-              },
-            );
-            final downloadUrl = await storageRef.getDownloadURL();
-
-            setState(() {
-              imageUrl = downloadUrl;
-            });
-            
-            if (coachId != null) {
-              await FirebaseFirestore.instance
-                  .collection('coaches')
-                  .doc(coachId)
-                  .update({
-                'profileImageUrl': downloadUrl,
-              });
-
-              setState(() {
-                imageUrl = downloadUrl;
-                isLoading = false;
-              });
-
+        try {
+          Get.dialog(Center(child: CircularProgressIndicator()),
+              barrierDismissible: false);
+          final storageRef = FirebaseStorage.instance.ref().child(
+              'profile_images/${FirebaseAuth.instance.currentUser!.uid}.jpg');
+          await storageRef.putFile(File(pickedFile.path)).then(
+            (snapshot) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('تم تحديث الصورة بنجاح!')),
+                SnackBar(content: Text('تم تحميل الصورة بنجاح')),
               );
-            }
+            },
+          );
+          final downloadUrl = await storageRef.getDownloadURL();
 
-            Get.back();
-          } catch (e) {
-            Get.back();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('حدث خطأ ما')),
-            );
-          }
+          setState(() {
+            imageUrl = downloadUrl;
+          });
+
+          await FirebaseFirestore.instance
+              .collection('coaches')
+              .doc(coachId)
+              .update({
+            'profileImageUrl': downloadUrl,
+          });
+
+          setState(() {
+            imageUrl = downloadUrl;
+            isLoading = false;
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('تم تحديث الصورة بنجاح!')),
+          );
+        
+          Get.back();
+        } catch (e) {
+          Get.back();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('حدث خطأ ما')),
+          );
         }
-      } catch (e) {
+            } catch (e) {
         setState(() {
           isLoading = false;
         });
@@ -113,32 +119,27 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   }
 
   Future<void> fetchUserName() async {
-    if (coachId != null) {
-      // Get user data from Firestore
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection(
-              'coaches') // or 'coaches', depending on where you store user data
-          .doc(coachId)
-          .get();
+    // Get user data from Firestore
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection(
+            'coaches') // or 'coaches', depending on where you store user data
+        .doc(coachId)
+        .get();
 
-      if (userDoc.exists) {
-        String? firstName = userDoc['firstName'];
-        String? lastName = userDoc['lastName'];
+    if (userDoc.exists) {
+      String? firstName = userDoc['firstName'];
+      String? lastName = userDoc['lastName'];
 
-        setState(() {
-          fullName = '$firstName $lastName';
-          email = userDoc['email'];
-          imageUrl = userDoc['profileImageUrl'];
-        });
-      } else {
-        print("User data not found");
-        return null;
-      }
+      setState(() {
+        fullName = '$firstName $lastName';
+        email = userDoc['email'];
+        imageUrl = userDoc['profileImageUrl'];
+      });
     } else {
-      print("No user is logged in");
+      print("User data not found");
       return null;
     }
-  }
+    }
 
   void showEditInfoDialog(BuildContext context) {
     final _formKey = GlobalKey<FormState>(); // Form validation key
@@ -146,8 +147,6 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
     final TextEditingController lastNameController = TextEditingController();
     final TextEditingController ageController = TextEditingController();
     final TextEditingController experienceController = TextEditingController();
-
-    String? selectedValue;
 
     showDialog(
       context: context,
@@ -272,21 +271,19 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                       onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
                           try {
-                            if (coachId != null) {
-                              await FirebaseFirestore.instance
-                                  .collection('coaches')
-                                  .doc(coachId)
-                                  .update({
-                                'firstName': firstNameController.text,
-                                'lastName': lastNameController.text,
-                                'age': ageController.text,
-                                'experience': experienceController.text,
-                              }).then((value) {
-                                fetchUserName();
-                              });
-                              Navigator.of(context).pop();
-                            }
-                          } catch (e) {
+                            await FirebaseFirestore.instance
+                                .collection('coaches')
+                                .doc(coachId)
+                                .update({
+                              'firstName': firstNameController.text,
+                              'lastName': lastNameController.text,
+                              'age': ageController.text,
+                              'experience': experienceController.text,
+                            }).then((value) {
+                              fetchUserName();
+                            });
+                            Navigator.of(context).pop();
+                                                    } catch (e) {
                             // Handle errors (e.g., network issues, Firebase errors)
                             ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('حدث خطأ: $e')));
@@ -491,7 +488,6 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
 
   @override
   Widget build(BuildContext context) {
-    final CoachProfileController controller = Get.find();
     return Scaffold(
         backgroundColor: Palette.black,
         body: Column(
@@ -595,7 +591,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
           ),
           const SizedBox(height: 4),
           Text(
-            email ?? 'لا يوجد بريد', // If no name, display a default message
+            email, // If no name, display a default message
             style: const TextStyle(
               color: Palette.subTitleGrey,
               fontSize: 14,

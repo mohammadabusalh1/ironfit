@@ -3,16 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 
 Widget BuildTextField({
-  String? value,
   required Function(String) onChange,
   required String label,
-  TextInputType? keyboardType, // Initial value parameter
+  TextInputType? keyboardType,
+  TextEditingController? controller, // Initial value parameter
 }) {
-  // Create a TextEditingController and set the initial value
-  TextEditingController _controller = TextEditingController(text: value);
-
   return TextField(
-    controller: _controller, // Assign the controller
+    controller: controller, // Assign the controller
     onChanged: (value) => onChange(value),
     keyboardType: keyboardType ?? TextInputType.text,
     style: const TextStyle(color: Palette.white, fontSize: 14),

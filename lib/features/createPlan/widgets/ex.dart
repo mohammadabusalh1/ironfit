@@ -598,7 +598,7 @@ String jsonString = '''
     },
     {
       "Exercise_Name": "Thigh adductor",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FThigh%20adductor.jpeg?alt=media&token=399072cb-dbee-4aeb-b0e2-307b6fb865c6",
       "Exercise_Image1": ""
     },
     {
@@ -956,15 +956,15 @@ String jsonString = '''
       "Exercise_Image1":
           "https://www.bodybuilding.com/exercises/exerciseImages/sequences/18/Male/m/18_2.jpg"
     },
-    {"Exercise_Name": "Muscle Up", "Exercise_Image": "", "Exercise_Image1": ""},
+    {"Exercise_Name": "Muscle Up", "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FMuscle%20Up.webp?alt=media&token=55fbbb69-f720-411e-beaa-cd2557bf20c3", "Exercise_Image1": ""},
     {
       "Exercise_Name": "Machine shoulder press",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FMachine%20shoulder%20press.jpg?alt=media&token=b4b4aa89-119d-4d10-9df5-a8e7ae98575c",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Incline EZ-bar skullcrusher",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FIncline%20EZ-bar%20skullcrusher.jpeg?alt=media&token=edc7073d-2132-4a01-823a-e6059637bff0",
       "Exercise_Image1": ""
     },
     {
@@ -976,18 +976,18 @@ String jsonString = '''
     },
     {
       "Exercise_Name": "Wide-Grip Decline Barbell Bench Press",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FWide-Grip%20Decline%20Barbell%20Bench%20Press.png?alt=media&token=d31c0818-2388-487e-83ab-d64b43a7f888",
       "Exercise_Image1": ""
     },
-    {"Exercise_Name": "Rower", "Exercise_Image": "", "Exercise_Image1": ""},
+    {"Exercise_Name": "Rower", "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FRower.jpg?alt=media&token=8b68a3a3-6822-42f8-8fe4-c1a45a14c1d0", "Exercise_Image1": ""},
     {
       "Exercise_Name": "Snatch Deadlift",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FSnatch%20Deadlift.jpg?alt=media&token=2035e916-6471-49fd-86c3-378434670609",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Front Plate Raise",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FFront%20Plate%20Raise.png?alt=media&token=dac18bae-01b6-48b7-a4d9-1ab7f75c2bfb",
       "Exercise_Image1": ""
     },
     {
@@ -1048,22 +1048,22 @@ String jsonString = '''
     },
     {
       "Exercise_Name": "Cable Crossover",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FCable%20Crossover.webp?alt=media&token=44abc72d-5df6-4738-bba8-8e3bd8e24bb6",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Barbell Incline Bench Press Medium-Grip",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FBarbell%20Incline%20Bench%20Press%20Medium-Grip.jpeg?alt=media&token=32096fb3-dbf6-4257-99ca-6afda9d95d6c",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Incline Dumbbell Flyes",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FIncline%20Dumbbell%20Flyes.webp?alt=media&token=3904c78a-fef2-4283-ba2f-cb98f5809b7f",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Seated Cable Rows",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FSeated%20Cable%20Rows.png?alt=media&token=fae44f16-47af-445b-927d-52542df99782",
       "Exercise_Image1": ""
     },
     {
@@ -1073,7 +1073,7 @@ String jsonString = '''
       "Exercise_Image1":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-76d-single-arm-triceps-kick-back-m3-square-600x600.jpg"
     },
-    {"Exercise_Name": "Otis-Up", "Exercise_Image": "", "Exercise_Image1": ""},
+    {"Exercise_Name": "Otis-Up", "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FOtis-Up.webp?alt=media&token=ad81867f-5d2e-403d-841e-abcb4921b3b1", "Exercise_Image1": ""},
     {
       "Exercise_Name": "Mountain climber",
       "Exercise_Image":
@@ -1132,17 +1132,17 @@ String jsonString = '''
     },
     {
       "Exercise_Name": "Incline dumbbell row",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FIncline%20dumbbell%20row.jpeg?alt=media&token=fd420998-f8cf-48ad-b5e6-19f916017ed2",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Dumbbell Lunges",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FDumbbell%20Lunges.jpeg?alt=media&token=77aa5260-3574-476d-8338-d3601b0f4efa",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Single-arm standing shoulder press",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FSingle-arm%20standing%20shoulder%20press.jpeg?alt=media&token=7a6b6aac-cb42-4941-8471-d2c2fad7d026",
       "Exercise_Image1": ""
     },
     {
@@ -1231,48 +1231,43 @@ String jsonString = '''
     },
     {
       "Exercise_Name": "Narrow Stance Hack Squats",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FNarrow%20Stance%20Hack%20Squats.png?alt=media&token=134385c1-8fb4-452a-a6fb-af559ba895d7",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Seated Close-Grip Concentration Barbell Curl",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Dumbbell Lying Pronation",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FSeated%20Close-Grip%20Concentration%20Barbell%20Curl.webp?alt=media&token=7c85d0bc-6d08-4fec-95a5-b4d6b0853948",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Smith machine box squat",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FSmith%20machine%20box%20squat.webp?alt=media&token=80aad97c-9327-4ddd-97d4-bd6080b24c45",
       "Exercise_Image1": ""
     },
-    {"Exercise_Name": "Drop Push", "Exercise_Image": "", "Exercise_Image1": ""},
+    {"Exercise_Name": "Drop Push", "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FDrop%20Push.jpeg?alt=media&token=df83913f-a352-4246-9c20-b9caab248d80", "Exercise_Image1": ""},
     {
       "Exercise_Name": "Upside-down pull-up",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FUpside-down%20pull-up.jpeg?alt=media&token=a2b5736d-42c8-44ce-9c76-126ef91e22e4",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Reverse Barbell Preacher Curls",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FReverse%20Barbell%20Preacher%20Curls.jpeg?alt=media&token=d7f1a37a-8801-4d24-9ee8-6116733ac343",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Close-grip EZ-bar bench press",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FClose-grip%20EZ-bar%20bench%20press.jpeg?alt=media&token=ab12b1ec-11a5-4570-bd5a-89276b629ece",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Incline Push-Up",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FIncline%20Push-Up.jpeg?alt=media&token=2dad6d98-185e-4b6f-a957-1e0da7fb69ad",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Hyperextensions With No Hyperextension Bench",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FHyperextensions%20With%20No%20Hyperextension%20Bench.jpg?alt=media&token=e8de5b57-563f-4179-af7c-0b42a0c136ba",
       "Exercise_Image1": ""
     },
     {
@@ -1302,20 +1297,10 @@ String jsonString = '''
       "Exercise_Image1":
           "https://www.bodybuilding.com/exercises/exerciseImages/sequences/778/Male/m/778_2.jpg"
     },
-    {"Exercise_Name": "Groiners", "Exercise_Image": "", "Exercise_Image1": ""},
+    {"Exercise_Name": "Groiners", "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FGroiners.png?alt=media&token=cd984d79-d2b3-453b-8e2f-bdcec69731d9", "Exercise_Image1": ""},
     {
       "Exercise_Name": "Neck Press",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Broad jump",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Machine Squat",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FNeck%20Press.webp?alt=media&token=42191601-c09f-4089-bb4f-7fc21e81d70f",
       "Exercise_Image1": ""
     },
     {
@@ -1324,10 +1309,10 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/2020-xdb-140c-v-bar-pull-up-m1-crop-600x600.jpg",
       "Exercise_Image1": ""
     },
-    {"Exercise_Name": "Ring dip", "Exercise_Image": "", "Exercise_Image1": ""},
+    {"Exercise_Name": "Ring dip", "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FRing%20dip.jpg?alt=media&token=3fa2091e-edb9-4c31-90ee-31dee41c24ef", "Exercise_Image1": ""},
     {
       "Exercise_Name": "Standing One-Arm Cable Curl",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FStanding%20One-Arm%20Cable%20Curl.jpeg?alt=media&token=9784b6c0-c8a1-48e9-a825-81315132a39f",
       "Exercise_Image1": ""
     },
     {
@@ -1365,37 +1350,32 @@ String jsonString = '''
     },
     {
       "Exercise_Name": "Barbell step-up",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FBarbell%20step-up.jpeg?alt=media&token=ecddf7c2-870a-43e2-ad06-9c7432e02493",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Feet-elevated bench dip",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FFeet-elevated%20bench%20dip.jpg?alt=media&token=24d70876-6778-4982-9d64-4c262ed45431",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Bent Over Barbell Row",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FBent%20Over%20Barbell%20Row.jpeg?alt=media&token=44f4bd7f-804f-4ee1-9fae-04ab7aac7d89",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Dumbbell Alternate Bicep Curl",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FDumbbell-Curl.gif?alt=media&token=3e7b5e7b-3466-4078-b62c-1a1019f5dab2",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Bent-over dumbbell rear delt row",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FBent-over%20dumbbell%20rear%20delt%20row.png?alt=media&token=77240ff5-2b8b-446b-ac00-f93184995765",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "External Rotation with Cable",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Handstand push-up",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FExternal%20Rotation%20with%20Cable.png?alt=media&token=17620890-0036-4aef-9d44-aa312e573d0d",
       "Exercise_Image1": ""
     },
     {
@@ -1475,18 +1455,13 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-155s-rope-climb-m3-square-600x600.jpg"
     },
     {
-      "Exercise_Name": "Trail Running/Walking",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
       "Exercise_Name": "Standing Bradford press",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FStanding%20Bradford%20press.png?alt=media&token=075f8e7f-e9d5-4342-930d-ef88c44a2474",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Neutral-grip dumbbell bench press",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FNeutral-grip%20dumbbell%20bench%20press.jpeg?alt=media&token=14c2ca59-a2ed-4eb1-b41c-85cf90e2d2d2",
       "Exercise_Image1": ""
     },
     {
@@ -1582,12 +1557,12 @@ String jsonString = '''
     },
     {
       "Exercise_Name": "Rocking Standing Calf Raise",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FRocking%20Standing%20Calf%20Raise.jpeg?alt=media&token=fdbf6be1-cfe4-4bfc-a004-f884d024dd33",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Goblet Squat",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FGoblet%20Squat.jpg?alt=media&token=09460f4b-4170-4a60-975d-141e66c905a3",
       "Exercise_Image1": ""
     },
     {
@@ -1674,32 +1649,27 @@ String jsonString = '''
     },
     {
       "Exercise_Name": "Low cable overhead triceps extension",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FLow%20cable%20overhead%20triceps%20extension.jpg?alt=media&token=4c666697-0943-4178-9727-ab1db0648f9d",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Single-arm cable cross-over",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FSingle-arm%20cable%20cross-over.jpg?alt=media&token=d84cbda1-535a-4509-a82f-d31108736247",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Seated dumbbell biceps curl",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FSeated%20dumbbell%20biceps%20curl.webp?alt=media&token=ac6555a8-6708-493f-ae69-ab890b547935",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Battle ropes",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FBattle%20ropes.jpg?alt=media&token=1856f489-d813-4f36-a186-daf1590b0efa",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Dead bug reach",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Deadlift with Chains",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FDead%20bug%20reach.png?alt=media&token=8b5233f0-d176-4525-aec3-04f7404da5df",
       "Exercise_Image1": ""
     },
     {
@@ -1710,18 +1680,13 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-35c-kneeling-cable-crunch-m2-square-600x600.jpg"
     },
     {
-      "Exercise_Name": "Palms-Up Dumbbell Wrist Curl Over A Bench",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
       "Exercise_Name": "Kettlebell thruster",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FKettlebell%20thruster.jpg?alt=media&token=c9f556ac-a68c-41d9-9edf-b2c1e0fda462",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Single-Arm Push-Up",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FSingle-Arm%20Push-Up.jpeg?alt=media&token=958d4301-24f4-4a6b-aa64-05f1d7f3e201",
       "Exercise_Image1": ""
     },
     {
@@ -1969,18 +1934,8 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-70c-seated-face-pull-m2-square-600x600.jpg"
     },
     {
-      "Exercise_Name": "Hang Clean - Below the Knees",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Decline oblique crunch",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
       "Exercise_Name": "Dumbbell external shoulder rotation",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FDumbbell%20external%20shoulder%20rotation.webp?alt=media&token=55829d40-5b61-49e6-90e0-690d401d6830",
       "Exercise_Image1": ""
     },
     {
@@ -2067,22 +2022,22 @@ String jsonString = '''
     },
     {
       "Exercise_Name": "Jumping jack-",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FJumping%20jack-.png?alt=media&token=24235f82-0fab-4bb8-ba5f-dc4ab21003c2",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Push-Ups With Feet On An Exercise Ball",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FPush-Ups%20With%20Feet%20On%20An%20Exercise%20Ball.jpg?alt=media&token=a48471f6-f365-48b3-9c61-7c02fb46de1e",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Seated cable shoulder press",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FSeated%20cable%20shoulder%20press.jpg?alt=media&token=60ce6201-5d91-4d67-bd4a-5600eccf13e0",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Barbell hack squat",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FBarbell%20hack%20squat.jpeg?alt=media&token=acb166fb-9f28-4965-9bb3-d4ae5f828c06",
       "Exercise_Image1": ""
     },
     {
@@ -2150,16 +2105,6 @@ String jsonString = '''
     },
     {
       "Exercise_Name": "Seated Flat Bench Leg Pull-In",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Barbell shrug",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Seated Flat Bench Leg Pull-In",
       "Exercise_Image":
           "https://www.bodybuilding.com/exercises/exerciseImages/sequences/93/Male/m/93_1.jpg",
       "Exercise_Image1":
@@ -2174,7 +2119,7 @@ String jsonString = '''
     },
     {
       "Exercise_Name": "Standing cable rear delt row",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FStanding%20cable%20rear%20delt%20row.jpg?alt=media&token=57234135-72fd-4b00-a4b7-1801f9e630df",
       "Exercise_Image1": ""
     },
     {
@@ -2185,24 +2130,19 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-63a-lying-leg-lift-m2-square-600x600.jpg"
     },
     {
-      "Exercise_Name": "Hack Squat",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
       "Exercise_Name": "Dumbbell skullcrusher",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FDumbbell%20skullcrusher.jpg?alt=media&token=8b6edc5e-aaa0-4848-9d9c-15c0fbdc908d",
       "Exercise_Image1": ""
     },
-    {"Exercise_Name": "Man-maker", "Exercise_Image": "", "Exercise_Image1": ""},
+    {"Exercise_Name": "Man-maker", "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FMan-maker.jpeg?alt=media&token=ffe216da-7ae6-405f-9c6b-371ff2b2fa17", "Exercise_Image1": ""},
     {
       "Exercise_Name": "Pallof press",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FPallof%20press.webp?alt=media&token=3041299c-b3ae-4490-907b-728917157351",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Knees tucked crunch",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FKnees%20tucked%20crunch.webp?alt=media&token=5c648158-c9f4-4935-aa6d-aa8a85638af1",
       "Exercise_Image1": ""
     },
     {
@@ -2219,8 +2159,8 @@ String jsonString = '''
       "Exercise_Image1": ""
     },
     {
-      "Exercise_Name": "Decline Smith Press",
-      "Exercise_Image": "",
+      "Exercise_Name": "Decline Smith Machine Chest Press",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FDecline%20Smith%20Machine%20Chest%20Press.jpeg?alt=media&token=ead1e107-4bfa-4720-b3bf-9fc4209f1dca",
       "Exercise_Image1": ""
     },
     {
@@ -2243,7 +2183,6 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-122a-typewriter-push-up-m2-square-600x600.jpg",
       "Exercise_Image1": ""
     },
-    {"Exercise_Name": "Skating", "Exercise_Image": "", "Exercise_Image1": ""},
     {
       "Exercise_Name": "Cable cross-over",
       "Exercise_Image":
@@ -2253,27 +2192,27 @@ String jsonString = '''
     },
     {
       "Exercise_Name": "Treadmill running",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FTreadmill%20running.jpeg?alt=media&token=c8607acf-6a72-4dc3-a38c-33b99397b7ed",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "One Arm Pronated Dumbbell Triceps Extension",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FOne%20Arm%20Pronated%20Dumbbell%20Triceps%20Extension.jpg?alt=media&token=75027b01-cca5-4cf6-8513-f0124bf8eb60",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Side To Side Chins",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FSide%20To%20Side%20Chins.png?alt=media&token=93e3ed30-daf8-4bf7-8490-205d14de8c4a",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Incline Dumbbell Bench With Palms Facing In",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FIncline%20Dumbbell%20Bench%20With%20Palms%20Facing%20In.png?alt=media&token=0ba093ad-bd0f-48a2-b24c-034f7bea831f",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Seated palms-down wrist curl",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FSeated%20palms-down%20wrist%20curl.jpg?alt=media&token=edb51d1e-8ff6-49bc-8816-52953a0a54f7",
       "Exercise_Image1": ""
     },
     {
@@ -2313,26 +2252,6 @@ String jsonString = '''
     },
     {
       "Exercise_Name": "Jog In Place",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Dumbbell Raise",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Palms-Down Dumbbell Wrist Curl Over A Bench",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "One Arm Supinated Dumbbell Triceps Extension",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Jog In Place",
       "Exercise_Image":
           "https://www.bodybuilding.com/images/2020/xdb/2963_1.jpg",
       "Exercise_Image1":
@@ -2360,36 +2279,21 @@ String jsonString = '''
           "https://www.bodybuilding.com/exercises/exerciseImages/sequences/362/Male/m/362_2.jpg"
     },
     {
-      "Exercise_Name": "Stationary bike",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
       "Exercise_Name": "Dumbbell bent-over row",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Barbell thruster",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FDumbbell%20bent-over%20row.webp?alt=media&token=5612038f-d581-4a7a-a6ea-99e680a15895",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Flutter Kicks",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Dumbbell sumo squat",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FFlutter%20Kicks.webp?alt=media&token=cbf4221c-72e3-4c4f-8972-e857b35839b7",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Barbell upright row",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FBarbell%20upright%20row.webp?alt=media&token=8d1d2b81-71c5-46e8-86a9-4d8ed431c3a2",
       "Exercise_Image1": ""
     },
-    {"Exercise_Name": "Superman", "Exercise_Image": "", "Exercise_Image1": ""},
+    {"Exercise_Name": "Superman", "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FSuperman.webp?alt=media&token=b3473337-85a4-4c74-b0e7-cfc5ddcfea08", "Exercise_Image1": ""},
     {
       "Exercise_Name": "Straight-Arm Pulldown",
       "Exercise_Image":
@@ -2398,23 +2302,13 @@ String jsonString = '''
           "https://www.bodybuilding.com/images/2020/xdb/cropped/2019-xdb-104c-straight-arm-bar-pull-down-m2-600x600.jpg"
     },
     {
-      "Exercise_Name": "Barbell stiff-legged deadlift",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
       "Exercise_Name": "Standing One-Arm Dumbbell Triceps Extension",
-      "Exercise_Image": "",
-      "Exercise_Image1": ""
-    },
-    {
-      "Exercise_Name": "Smith machine bench press",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FStanding%20One-Arm%20Dumbbell%20Triceps%20Extension.webp?alt=media&token=683d5e51-82c0-4b94-ae61-f50c63b3adce",
       "Exercise_Image1": ""
     },
     {
       "Exercise_Name": "Seated Side Lateral Raise",
-      "Exercise_Image": "",
+      "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FSeated%20Side%20Lateral%20Raise.webp?alt=media&token=6018540a-92d0-46b8-b227-3c9001426c96",
       "Exercise_Image1": ""
     },
     {

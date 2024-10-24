@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -7,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ironfit/core/presentation/controllers/coach_nav_bar_controller.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
@@ -33,31 +30,8 @@ import 'package:ironfit/features/coachProfile/controllers/coach_profile_controll
 import 'package:ironfit/features/userEnteInfo/screens/user_ente_info_screen.dart';
 import 'package:ironfit/features/userProfile/screens/user_profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ironfit/features/traineesGroupsbyAge/screens/trainees_groups_by_age_screen.dart';
 import 'package:ironfit/features/userStatistics/screens/user_statistics_screen.dart';
 import 'package:workmanager/workmanager.dart';
-
-Future<DateTime?> getSubscriptionEndDate(
-    String userId, String subscriptionId) async {
-  try {
-    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-        .collection('trainees')
-        .doc(userId)
-        .get();
-
-    if (userSnapshot.exists) {
-      Timestamp endDateTimestamp = userSnapshot.get('subscriptionEndDate');
-      DateTime endDate = endDateTimestamp.toDate();
-      return endDate;
-    } else {
-      print('User not found');
-      return null;
-    }
-  } catch (e) {
-    print('Error retrieving subscription end date: $e');
-    return null;
-  }
-}
 
 void checkSubscriptionExpiry(DateTime? endDate) {
   if (endDate == null) return;
@@ -106,10 +80,15 @@ Future<void> sendNotification(String title, String body) async {
   );
 }
 
-void listenToSubscriptionChanges(String userId) {
-  FirebaseFirestore.instance
-      .collection('trainees')
-      .doc(userId)
+void listenToSubscriptionChanges(String userId) async {
+  DocumentSnapshot userSnapshot =
+      await FirebaseFirestore.instance.collection('trainees').doc(userId).get();
+
+  await FirebaseFirestore.instance
+      .collection('coaches')
+      .doc(userSnapshot.get('coachId'))
+      .collection('subscriptions')
+      .doc(userSnapshot.get('subscriptionId'))
       .snapshots()
       .listen((DocumentSnapshot snapshot) {
     if (snapshot.exists) {
@@ -245,7 +224,7 @@ class MyApp extends StatelessWidget {
                 iconTheme: IconThemeData(color: Palette.black),
               ),
             ),
-            initialRoute: Routes.trainees,
+            initialRoute: snapshot.data!,
             getPages: [
               GetPage(
                   name: Routes.coachDashboard,
@@ -280,11 +259,8 @@ class MyApp extends StatelessWidget {
                   name: Routes.trainees,
                   page: () => const Directionality(
                       textDirection: TextDirection.rtl,
-                      child: TraineesScreen())), // Trainees screen
-              GetPage(
-                  name: Routes.traineesGroupsByAge,
-                  page: () =>
-                      const TraineesGroupsByAgeScreen()), // Trainees by age group
+                      child:
+                          TraineesScreen())), // Trainees screen// Trainees by age group
               GetPage(
                   name: Routes.myPlans,
                   page: () => const Directionality(

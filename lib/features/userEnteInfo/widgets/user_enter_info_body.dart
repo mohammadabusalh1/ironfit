@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -11,7 +9,6 @@ import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UserEnterInfoBody extends StatefulWidget {
   UserEnterInfoBody({Key? key}) : super(key: key);
@@ -33,6 +30,8 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _lengthController = TextEditingController();
+  String? _selectedGender; // To hold the selected gender
+  final List<String> _genders = ['ذكر', 'انثى', 'أخر'];
 
   Future<void> updateCoachInfo(String userId, Map<String, dynamic> data) async {
     try {
@@ -54,6 +53,10 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
           setState(() {
             stage = 2;
           });
+        } else if (stage == 2) {
+          setState(() {
+            stage = 3;
+          });
         } else {
           Get.dialog(const Center(child: CircularProgressIndicator()),
               barrierDismissible: false);
@@ -61,6 +64,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
             'username': _usernameController.text,
             'firstName': _firstNameController.text,
             'lastName': _lastNameController.text,
+            'gender': _selectedGender,
             'age': int.parse(_ageController.text),
             'weight': double.parse(_weightController.text),
             'length': double.parse(_lengthController.text),
@@ -106,7 +110,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
             children: [
               _buildImageStack(),
               const SizedBox(height: 24),
-              stage == 2
+              stage == 3
                   ? ImagePickerComponent(
                       userId: userId,
                       onImageUploaded: (imageUrl) {
@@ -159,16 +163,8 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                   ? _buildTextField('إسم العائلة', '', _lastNameController,
                       TextInputType.text, Icons.face)
                   : Container(),
-              stage == 1 ? const SizedBox(height: 12) : Container(),
-              stage == 1
-                  ? const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24),
-                      child: Divider(
-                        color: Palette.gray,
-                      ))
-                  : Container(),
-              stage == 1 ? const SizedBox(height: 12) : Container(),
-              stage == 1
+              stage == 2 ? const SizedBox(height: 12) : Container(),
+              stage == 2
                   ? const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 24),
                       child: Text('البيانات الشخصية',
@@ -178,18 +174,50 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                               fontWeight: FontWeight.bold)),
                     )
                   : Container(),
-              stage == 1 ? const SizedBox(height: 12) : Container(),
-              stage == 1
+              stage == 2 ? const SizedBox(height: 12) : Container(),
+              stage == 2
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: DropdownButton<String>(
+                        dropdownColor:
+                            Palette.secondaryColor, // Dropdown background color
+                        style:
+                            const TextStyle(color: Palette.gray, fontSize: 14),
+                        value: _selectedGender,
+                        isExpanded:
+                            true, // Make the dropdown take the full width
+                        hint: Text(
+                          'إختر الجنس',
+                          style: const TextStyle(
+                              color: Palette.gray), // Hint style
+                        ),
+                        items: _genders.map((String gender) {
+                          return DropdownMenuItem<String>(
+                            value: gender,
+                            child: Text(gender), // Display gender
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedGender =
+                                newValue; // Update selected gender
+                          });
+                        },
+                      ),
+                    )
+                  : Container(),
+              stage == 2 ? const SizedBox(height: 12) : Container(),
+              stage == 2
                   ? _buildTextField('العمر', '', _ageController,
                       TextInputType.number, Icons.group)
                   : Container(),
-              stage == 1 ? const SizedBox(height: 12) : Container(),
-              stage == 1
+              stage == 2 ? const SizedBox(height: 12) : Container(),
+              stage == 2
                   ? _buildTextField('الوزن', '', _weightController,
                       TextInputType.number, Icons.scale)
                   : Container(),
-              stage == 1 ? const SizedBox(height: 12) : Container(),
-              stage == 1
+              stage == 2 ? const SizedBox(height: 12) : Container(),
+              stage == 2
                   ? _buildTextField('الطول', '', _lengthController,
                       TextInputType.number, Icons.accessibility)
                   : Container(),
@@ -269,14 +297,14 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: TextFormField(
         controller: controller,
-        keyboardType: keyboardType ?? TextInputType.text,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
           hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
           labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
           filled: true,
-          fillColor: const Color(0xFF454038),
+          fillColor: Palette.secondaryColor,
           enabledBorder: _buildInputBorder(Palette.mainAppColor),
           focusedBorder: _buildInputBorder(Palette.white),
           prefixIcon: Padding(

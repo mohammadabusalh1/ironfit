@@ -2,9 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
+import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/Trainee/screens/trainee_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TraineesBody extends StatefulWidget {
   @override
@@ -16,10 +19,21 @@ class _TraineesBodyState extends State<TraineesBody> {
   List<Map<String, dynamic>> filtteredTrainees = [];
   int _itemCount = 10;
   ScrollController _scrollController = ScrollController();
+  bool _isLoading = false;
 
   bool isNameSortUp = true;
   bool isSubscriptionSortUp = true;
   User? coach = FirebaseAuth.instance.currentUser;
+
+  PreferencesService preferencesService = PreferencesService();
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
+    }
+  }
 
   @override
   void dispose() {
@@ -55,37 +69,65 @@ class _TraineesBodyState extends State<TraineesBody> {
   @override
   void initState() {
     super.initState();
+    _checkToken();
     _scrollController.addListener(_scrollListener);
     fetchTrainees();
   }
 
   Future<void> fetchTrainees() async {
+    setState(() {
+      _isLoading = true; // Set loading to true
+    });
     try {
       if (coach == null) {
         throw Exception("Coach ID is null.");
       }
 
       // Fetch the coach's subscription data
-      var coachDoc = await FirebaseFirestore.instance
+      var subscriptions = await FirebaseFirestore.instance
           .collection('coaches')
           .doc(coach?.uid)
           .collection('subscriptions')
           .get();
 
       // Ensure there is data to process
-      if (coachDoc.docs.isEmpty) {
+      if (subscriptions.docs.isEmpty) {
         throw Exception("No trainees found for coach.");
       }
 
+      // Fetch user IDs from the subscription documents
+      final userIds = subscriptions.docs.map((doc) => doc['userId']).toList();
+
+      final traineeDocs = await FirebaseFirestore.instance
+          .collection('trainees')
+          .where(FieldPath.documentId, whereIn: userIds)
+          .get();
       // Safely update the state
       setState(() {
-        filtteredTrainees = trainees = coachDoc.docs
-            .map((doc) => doc.data() as Map<String, dynamic>)
-            .toList();
+        trainees = filtteredTrainees = subscriptions.docs.map((doc) {
+          // Find the corresponding trainee data
+          final user = traineeDocs.docs.firstWhere(
+            (traineeDoc) => traineeDoc.id == doc['userId'],
+          );
+
+          return {
+            ...doc.data(),
+            'fullName':
+                '${doc.data()['firstName'] ?? ''} ${user.data()['lastName'] ?? ''}',
+            'age': user.data()[
+                'age'], // Assuming 'age' field exists in trainee documents
+            'profileImageUrl': user.data()[
+                'profileImageUrl'], // Assuming 'profileImageUrl' field exists
+          };
+        }).toList();
       });
     } catch (e) {
       // Handle errors here (e.g., log to console or display a message)
       print("Error fetching trainees: $e");
+    } finally {
+      setState(() {
+        _isLoading = false; // Set loading to false after operation
+      });
     }
   }
 
@@ -297,29 +339,26 @@ class _TraineesBodyState extends State<TraineesBody> {
                               .get();
 
                           if (existingUser.docs.isNotEmpty) {
-                            await FirebaseFirestore.instance
-                                .collection('trainees')
-                                .doc(existingUser.docs.first.id)
-                                .update({'subscriptionEndDate': endDate});
-
                             // Add the new trainee to Firestore
                             await FirebaseFirestore.instance
                                 .collection('coaches')
                                 .doc(coach?.uid)
                                 .collection('subscriptions')
                                 .add({
-                              'fullName': existingUser.docs.first['firstName'] +
-                                      ' ' +
-                                      existingUser.docs.first['lastName'] ??
-                                  ['lastName'],
-                              'age': existingUser.docs.first['age'],
                               'username': username,
                               'startDate': startDate,
                               'endDate': endDate,
                               'amountPaid': amountPaid,
                               'debts': debts,
-                              'profileImageUrl':
-                                  existingUser.docs.first['profileImageUrl'],
+                              'userId': existingUser.docs[0].id,
+                            }).then((docRef) async {
+                              await FirebaseFirestore.instance
+                                  .collection('trainees')
+                                  .doc(existingUser.docs[0].id)
+                                  .update({
+                                'coachId': coach?.uid,
+                                'subscriptionId': docRef.id
+                              });
                             });
 
                             // Refresh the trainee list
@@ -386,7 +425,11 @@ class _TraineesBodyState extends State<TraineesBody> {
           _buildActionButtons(),
           const SizedBox(height: 12),
           _buildSearchField(context),
-          _buildTraineesList(),
+          _isLoading ? const SizedBox(height: 24) : const SizedBox(height: 0),
+          _isLoading
+              ? Center(
+                  child: CircularProgressIndicator()) // Show loading indicator
+              : _buildTraineesList(),
         ],
       ),
     );

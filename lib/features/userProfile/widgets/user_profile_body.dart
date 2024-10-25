@@ -9,6 +9,11 @@ import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+String? fullName;
+String trainerImage =
+    'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+bool isDataLoaded = false;
+
 class UserProfileBody extends StatefulWidget {
   const UserProfileBody({Key? key}) : super(key: key);
 
@@ -17,10 +22,7 @@ class UserProfileBody extends StatefulWidget {
 }
 
 class _UserProfileBodyState extends State<UserProfileBody> {
-  String? fullName;
   bool isLoading = true;
-  String trainerImage =
-      'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
   PreferencesService preferencesService = PreferencesService();
   String numberOfDays = '0';
 
@@ -37,7 +39,12 @@ class _UserProfileBodyState extends State<UserProfileBody> {
   void initState() {
     super.initState();
     _checkToken();
-    fetchUserName();
+    if (!isDataLoaded) {
+      fetchUserName();
+      setState(() {
+        isDataLoaded = true;
+      });
+    }
   }
 
   Future<void> fetchUserName() async {

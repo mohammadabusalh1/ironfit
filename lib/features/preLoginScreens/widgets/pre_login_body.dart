@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
@@ -15,6 +16,28 @@ class PreLoginBody extends StatefulWidget {
 class _PreLoginBodyState extends State<PreLoginBody> {
   final PageController _pageController = PageController(initialPage: 0);
   int _currentPage = 0;
+
+  PreferencesService preferencesService = PreferencesService();
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token != null) {
+      bool isCoach = prefs.getBool('isCoach') ?? false;
+      // If the token exists, navigate to the respective dashboard
+      if (isCoach) {
+        Get.toNamed(Routes.coachDashboard); // Navigate to coach dashboard
+      } else {
+        Get.toNamed(Routes.trainerDashboard); // Navigate to trainer dashboard
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkToken();
+  }
 
   @override
   Widget build(BuildContext context) {

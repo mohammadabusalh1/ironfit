@@ -10,6 +10,12 @@ import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+String trainerName = '';
+String trainerEmail = '';
+String trainerImage =
+    'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+bool isDataLoaded = false;
+
 class TrainerDashboardBody extends StatefulWidget {
   TrainerDashboardBody({super.key});
 
@@ -21,10 +27,6 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  String trainerName = '';
-  String trainerEmail = '';
-  String trainerImage =
-      'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
   List<Map<String, String>> exercises = [];
 
   PreferencesService preferencesService = PreferencesService();
@@ -41,7 +43,12 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
   void initState() {
     super.initState();
     _checkToken();
-    _fetchTrainerData();
+    if (!isDataLoaded) {
+      _fetchTrainerData();
+      setState(() {
+        isDataLoaded = true;
+      });
+    }
   }
 
   // Fetch trainer data from Firebase

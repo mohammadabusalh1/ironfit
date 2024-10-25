@@ -48,6 +48,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             .where((exercise) => exercise['Exercise_Name']
                 .toString()
                 .toLowerCase()
+                .contains(query.toLowerCase()) || exercise['Exercise_desc']
+                .toString()
+                .toLowerCase()
                 .contains(query.toLowerCase()))
             .toList();
       }

@@ -97,31 +97,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
           Positioned(
             bottom: 24, // Distance from the bottom
             right: 24, // Distance from the left side
-            child: SizedBox(
-              width: 60,
-              height: 60,
-              child: IconButton(
-                style: IconButton.styleFrom(
-                  fixedSize: const Size(50, 50),
-                  backgroundColor: Palette.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                ),
-                icon: const Icon(
-                  Icons.add,
-                  color: Palette.mainAppColor,
-                  size: 24,
-                ),
-                onPressed: () => _addTrainingDay(context),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 92, // Distance from the bottom
-            right: 24, // Distance from the left side
+
             child: SizedBox(
               width: 60,
               height: 60,
@@ -141,6 +117,31 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                   size: 24,
                 ),
                 onPressed: () => _savePlan(),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 92, // Distance from the bottom
+            right: 24, // Distance from the left side
+            child: SizedBox(
+              width: 60,
+              height: 60,
+              child: IconButton(
+                style: IconButton.styleFrom(
+                  fixedSize: const Size(50, 50),
+                  backgroundColor: Palette.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+                icon: const Icon(
+                  Icons.add,
+                  color: Palette.mainAppColor,
+                  size: 24,
+                ),
+                onPressed: () => _addTrainingDay(context),
               ),
             ),
           ),
@@ -272,10 +273,106 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
     });
   }
 
-  void _addTrainingDay(BuildContext context) {
+  void _editTrainingDay(BuildContext context, TrainingDay day, int index) {
     showDialog(
       context: context,
-      builder: (context) => _buildDayDialog(context),
+      builder: (context) =>
+          _buildEditDayDialog(context, initialDay: day, index: index),
+    );
+  }
+
+  Widget _buildEditDayDialog(BuildContext context,
+      {TrainingDay? initialDay, int? index}) {
+    var daySplit = initialDay?.day.split('-');
+    String? selectedDay = daySplit!.length > 1 ? daySplit[1] : daySplit[0];
+
+    return Theme(
+      data: Theme.of(context).copyWith(
+          dialogBackgroundColor: Colors.grey[900],
+          textTheme: const TextTheme(
+            bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
+            bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
+            headlineLarge: TextStyle(
+                color: Palette.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 24),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Palette.mainAppColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          )),
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          title: const Text("إختر يوم التدريب",
+              style: TextStyle(color: Palette.white)),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return DropdownButton<String>(
+                dropdownColor: Colors.grey[800],
+                hint: const Text("يوم التدريب",
+                    style: TextStyle(color: Palette.white)),
+                value: selectedDay,
+                onChanged: (newValue) {
+                  setState(() {
+                    selectedDay = newValue;
+                  });
+                },
+                items: const [
+                  {'value': 'sun', 'label': 'الأحد'},
+                  {'value': 'mon', 'label': 'الأثنين'},
+                  {'value': 'tue', 'label': 'الثلاثاء'},
+                  {'value': 'wed', 'label': 'الأربعاء'},
+                  {'value': 'thu', 'label': 'الخميس'},
+                  {'value': 'fri', 'label': 'الجمعة'},
+                  {'value': 'sat', 'label': 'السبت'},
+                ]
+                    .map((day) => DropdownMenuItem(
+                          value: day['value'], // Correct value assignment
+                          child: Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: Text(day['label']!,
+                                style: const TextStyle(color: Palette.white)),
+                          ),
+                        ))
+                    .toList(),
+              );
+            },
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                if (selectedDay != null) {
+                  setState(() {
+                    if (index != null) {
+                      // Edit existing day
+                      trainingDays[index] = TrainingDay(
+                          day: selectedDay!,
+                          exercises: trainingDays[index].exercises);
+                    } else {
+                      // Add new day
+                      trainingDays
+                          .add(TrainingDay(day: selectedDay!, exercises: []));
+                    }
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('حفظ', style: TextStyle(color: Palette.black)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child:
+                  const Text('إلغاء', style: TextStyle(color: Palette.white)),
+            ),
+          ],
+          actionsAlignment: MainAxisAlignment.start,
+        ),
+      ),
     );
   }
 
@@ -288,24 +385,38 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              dayName == 'sun'
-                  ? 'الاحد'
-                  : dayName == 'mon'
-                      ? 'الاثنين'
-                      : dayName == 'tue'
-                          ? 'الثلاثاء'
-                          : dayName == 'wed'
-                              ? 'الاربعاء'
-                              : dayName == 'thu'
-                                  ? 'الخميس'
-                                  : dayName == 'fri'
-                                      ? 'الجمعة'
-                                      : 'السبت',
-              style: const TextStyle(
-                  color: Palette.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                Text(
+                  dayName == 'sun'
+                      ? 'الاحد'
+                      : dayName == 'mon'
+                          ? 'الاثنين'
+                          : dayName == 'tue'
+                              ? 'الثلاثاء'
+                              : dayName == 'wed'
+                                  ? 'الاربعاء'
+                                  : dayName == 'thu'
+                                      ? 'الخميس'
+                                      : dayName == 'fri'
+                                          ? 'الجمعة'
+                                          : 'السبت',
+                  style: const TextStyle(
+                      color: Palette.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold),
+                ),
+                Spacer(),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () =>
+                        _editTrainingDay(context, day, index), // Edit button
+                    child: const Text("تعديل",
+                        style: TextStyle(color: Palette.black)),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             Column(
@@ -364,6 +475,13 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
           ],
         ),
       ),
+    );
+  }
+
+  void _addTrainingDay(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => _buildDayDialog(context),
     );
   }
 
@@ -462,7 +580,8 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
             'createdAt': FieldValue.serverTimestamp(),
             // ignore: prefer_for_elements_to_map_fromiterable
             'trainingDays': Map.fromIterable(trainingDays,
-                key: (day) => day.day.toString().split('-')[1],
+                key: (day) =>
+                    day.day.contains('-') ? day.day.split('-')[1] : day.day,
                 value: (day) {
                   return day.exercises.map((exercise) {
                     return {
@@ -480,10 +599,8 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
               .collection('coaches')
               .doc(user.uid)
               .collection('plans')
-              .add(planData)
-              .then((value) {
-            Get.toNamed(Routes.trainees);
-          });
+              .add(planData);
+          Get.toNamed(Routes.trainees);
           Get.snackbar('نجاح', 'تم حفظ الخطة بنجاح',
               messageText: Text(
                 'تم حفظ الخطة بنجاح',

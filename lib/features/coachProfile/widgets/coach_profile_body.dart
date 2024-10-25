@@ -13,6 +13,12 @@ import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+String? fullName;
+String imageUrl =
+    'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+String email = '';
+bool isDataLoaded = false;
+
 class CoachProfileBody extends StatefulWidget {
   const CoachProfileBody({Key? key}) : super(key: key);
 
@@ -22,9 +28,6 @@ class CoachProfileBody extends StatefulWidget {
 
 class _CoachProfileBodyState extends State<CoachProfileBody> {
   final CoachProfileController controller = Get.find();
-  String? fullName;
-  late String imageUrl;
-  late String email;
   bool isLoading = true;
   String coachId = FirebaseAuth.instance.currentUser!.uid;
 
@@ -41,11 +44,13 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   @override
   void initState() {
     super.initState();
-    email = '';
-    imageUrl =
-        'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
-    fetchUserName();
     _checkToken();
+    if (!isDataLoaded) {
+      fetchUserName();
+      setState(() {
+        isDataLoaded = true;
+      });
+    }
   }
 
   Future<void> changeUserImage() async {
@@ -94,7 +99,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('تم تحديث الصورة بنجاح!')),
           );
-        
+
           Get.back();
         } catch (e) {
           Get.back();
@@ -102,7 +107,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
             SnackBar(content: Text('حدث خطأ ما')),
           );
         }
-            } catch (e) {
+      } catch (e) {
         setState(() {
           isLoading = false;
         });
@@ -139,7 +144,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
       print("User data not found");
       return null;
     }
-    }
+  }
 
   void showEditInfoDialog(BuildContext context) {
     final _formKey = GlobalKey<FormState>(); // Form validation key
@@ -283,7 +288,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                               fetchUserName();
                             });
                             Navigator.of(context).pop();
-                                                    } catch (e) {
+                          } catch (e) {
                             // Handle errors (e.g., network issues, Firebase errors)
                             ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('حدث خطأ: $e')));
@@ -589,7 +594,6 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 4),
           Text(
             email, // If no name, display a default message
             style: const TextStyle(

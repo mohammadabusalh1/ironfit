@@ -1,74 +1,85 @@
 String jsonString = '''
   [
     {
-      "Exercise_Name": "Rickshaw Carry",
+      "Exercise_Name": "Rickshaw Carry Forearms",
       "Exercise_Image":
           "https://www.bodybuilding.com/exercises/exerciseImages/sequences/742/Male/m/742_1.jpg",
       "Exercise_Image1":
-          "https://www.bodybuilding.com/exercises/exerciseImages/sequences/742/Male/m/742_2.jpg"
+          "https://www.bodybuilding.com/exercises/exerciseImages/sequences/742/Male/m/742_2.jpg",
+      "Exercise_desc": "الساعد"
+      
     },
     {
       "Exercise_Name": "Single-Leg Press",
       "Exercise_Image":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-50m-single-leg-leg-press-m1-square-600x600.jpg",
       "Exercise_Image1":
-          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-50m-single-leg-leg-press-m2-square-600x600.jpg"
+          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-50m-single-leg-leg-press-m2-square-600x600.jpg",
+      "Exercise_desc": "quad, glute, hamstring, and calf: العضلة الرباعية، والألوية، وأوتار الركبة، والساق، القدم الرجل، الرجلين"
     },
     {
       "Exercise_Name": "Landmine twist",
       "Exercise_Image":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-129s-landmine-twist-m1-square-600x600.jpg",
       "Exercise_Image1":
-          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-129s-landmine-twist-m3-square-600x600.jpg"
+          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-129s-landmine-twist-m3-square-600x600.jpg",
+      "Exercise_desc": "It targets the deep muscles of the core, including both the obliques and the transversus abdominis: البطن، الخواصر، "
     },
     {
       "Exercise_Name": "Weighted pull-up",
       "Exercise_Image":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-96c-weighted-pull-up-m1-square-600x600.jpg",
       "Exercise_Image1":
-          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-96c-weighted-pull-up-m2-square-600x600.jpg"
+          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-96c-weighted-pull-up-m2-square-600x600.jpg",
+      "Exercise_desc": "latissimus dorsi, back: الظهر، العضلة الظهرية العريضة"
     },
     {
       "Exercise_Name": "T-Bar Row with Handle",
       "Exercise_Image":
           "https://www.bodybuilding.com/exercises/exerciseImages/sequences/1931/Male/m/1931_1.jpg",
       "Exercise_Image1":
-          "https://www.bodybuilding.com/images/2020/october/1931_2sm.jpg"
+          "https://www.bodybuilding.com/images/2020/october/1931_2sm.jpg",
+      "Exercise_desc": "lats, rhomboids, traps and rear delts, back: الظهر، لاتس، "
     },
     {
       "Exercise_Name": "Palms-down wrist curl over bench",
       "Exercise_Image":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-62e-palms-down-wrist-curl-over-bench-m1-square-600x600.jpg",
       "Exercise_Image1":
-          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-62e-palms-down-wrist-curl-over-bench-m2-square-600x600.jpg"
+          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-62e-palms-down-wrist-curl-over-bench-m2-square-600x600.jpg",
+      "Exercise_desc": "The palms-down wrist curl over bench is a targeted forearm exercise that strengthens the wrist extensors. To perform this exercise, rest your forearms on a flat bench, palms facing down while holding a barbell. Slowly curl the barbell up using only your wrists and then lower it back down, keeping your forearms stationary. This move enhances grip strength and wrist stability, making it beneficial for athletes in sports requiring strong forearm control. Search terms: wrist curl over bench, forearm exercises, grip strength workout, wrist extensors, معصم, تمارين الذراع, تمارين قبضة, عضلات الساعد, تمارين المعصم."
     },
     {
       "Exercise_Name": "Atlas Stones",
       "Exercise_Image":
           "https://www.bodybuilding.com/exercises/exerciseImages/sequences/659/Male/m/659_1.jpg",
       "Exercise_Image1":
-          "https://www.bodybuilding.com/exercises/exerciseImages/sequences/659/Male/m/659_2.jpg"
+          "https://www.bodybuilding.com/exercises/exerciseImages/sequences/659/Male/m/659_2.jpg",
+        "Exercise_desc": "The Atlas Stones is a classic strongman exercise that involves lifting and placing heavy spherical stones onto platforms of varying heights. This exercise builds overall body strength, especially targeting the back, legs, arms, and core muscles. It also requires coordination, balance, and explosive power. Athletes typically use a technique called 'lap and load,' where they lift the stone onto their thighs before explosively driving it onto a platform. Search terms: Atlas Stones, strongman training, full-body strength, stone lifting, core workout, أطلس ستون, تمارين القوة, رفع الأحجار, تمارين الجسم الكامل, تدريبات الستون."
     },
     {
       "Exercise_Name": "Dumbbell front raise to lateral raise",
       "Exercise_Image":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-61d-dumbbell-front-raise-to-lateral-raise-m2-square-600x600.jpg",
       "Exercise_Image1":
-          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-61d-dumbbell-front-raise-to-lateral-raise-m3-square-600x600.jpg"
+          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-61d-dumbbell-front-raise-to-lateral-raise-m3-square-600x600.jpg",
+      "Exercise_desc": "The dumbbell front raise to lateral raise is a shoulder exercise that combines two movements to target the anterior and lateral deltoid muscles. Start by lifting the dumbbells in front of your body to shoulder height (front raise), then lower them and immediately raise the dumbbells to your sides (lateral raise). This combo improves shoulder definition, stability, and strength while enhancing range of motion. It's great for building upper body aesthetics and balanced shoulder development. Search terms: dumbbell front raise, lateral raise, shoulder workout, deltoid exercises, dumbbell shoulder combo, تمرين رفع أمامي بالدامبل, تمرين رفع جانبي, تمارين الكتف, تقوية العضلة الدالية."
     },
     {
       "Exercise_Name": "Incline Hammer Curls",
       "Exercise_Image":
           "https://www.bodybuilding.com/exercises/exerciseImages/sequences/882/Male/m/882_1.jpg",
       "Exercise_Image1":
-          "https://www.bodybuilding.com/exercises/exerciseImages/sequences/882/Male/m/882_2.jpg"
+          "https://www.bodybuilding.com/exercises/exerciseImages/sequences/882/Male/m/882_2.jpg",
+      "Exercise_desc": "Incline hammer curls are a bicep exercise performed on an incline bench, targeting both the biceps brachii and the brachialis muscles. By sitting on an incline bench and holding dumbbells with a neutral grip (palms facing each other), you isolate the arms more effectively and engage the forearms as well. This exercise helps develop arm size and strength while focusing on the long head of the biceps, giving a fuller appearance. Search terms: incline hammer curls, bicep workout, dumbbell curls, arm strength, brachialis exercise, تمارين بايسبس, تمرين المطرقة, تمرين عضلة الذراع, تمرين بالدامبل, تمارين عضلة العضد."
     },
     {
       "Exercise_Name": "Straight-bar wrist roll-up",
       "Exercise_Image":
           "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-116s-straight-bar-wrist-roll-up-m1-square-600x600.jpg",
       "Exercise_Image1":
-          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-116s-straight-bar-wrist-roll-up-m3-square-600x600.jpg"
+          "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-116s-straight-bar-wrist-roll-up-m3-square-600x600.jpg",
+      "Exercise_desc": "The straight-bar wrist roll-up is an excellent forearm and grip strength exercise. Using a straight bar attached to a weight via a rope, hold the bar with an overhand grip and roll the weight up by twisting the bar with your wrists. This exercise targets the forearm flexors and extensors, improving grip strength, wrist stability, and overall forearm endurance. It's beneficial for athletes and individuals who rely on strong forearms for sports or daily activities. Search terms: straight-bar wrist roll-up, forearm workout, grip strength exercise, wrist training, تمارين المعصم, تمارين الساعد, تقوية القبضة, تمرين لف المعصم."
     },
     {
       "Exercise_Name": "Barbell glute bridge",

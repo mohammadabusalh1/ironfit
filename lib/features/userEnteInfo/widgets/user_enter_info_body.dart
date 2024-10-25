@@ -60,6 +60,13 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
         } else {
           Get.dialog(const Center(child: CircularProgressIndicator()),
               barrierDismissible: false);
+
+          if (_selectedGender == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('يرجى اختيار الجنس')),
+            );
+          }
+
           Map<String, dynamic> userData = {
             'username': _usernameController.text,
             'firstName': _firstNameController.text,
@@ -193,8 +200,12 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                         ),
                         items: _genders.map((String gender) {
                           return DropdownMenuItem<String>(
+                            alignment: Alignment.centerRight,
                             value: gender,
-                            child: Text(gender), // Display gender
+                            child: Text(
+                              gender,
+                              textAlign: TextAlign.right,
+                            ), // Display gender
                           );
                         }).toList(),
                         onChanged: (String? newValue) {

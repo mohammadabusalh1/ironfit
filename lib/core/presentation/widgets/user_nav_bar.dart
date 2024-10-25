@@ -14,7 +14,7 @@ class UserNavBar extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl, // Set text direction to right-to-left.
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
           color: Palette.blackBack, // Background color of the nav bar.
           border: Border(
@@ -47,6 +47,8 @@ class UserNavBar extends StatelessWidget {
           navController.updateIndex(index);
         },
         child: AnimatedContainer(
+          height: Get.height * 0.09,
+          width: isSelected ? Get.width * 0.28 : Get.width * 0.16,
           duration:
               const Duration(milliseconds: 300), // Smooth animation duration.
           curve: Curves.easeInOut, // Smooth easing curve.

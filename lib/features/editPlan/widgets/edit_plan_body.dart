@@ -31,14 +31,12 @@ class _EditPlanBodyState extends State<EditPlanBody> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  String planName = '';
-  String planDescription = '';
+  String planName = 'لا يوجد';
+  String planDescription = 'لا يوجد';
   String selectedExerciseName = '';
   String selectedExerciseImage = '';
   String rounds = '';
   String repetitions = '';
-  final planController = TextEditingController();
-  final descriptionController = TextEditingController();
 
   List<TrainingDay> trainingDays = [];
 
@@ -94,6 +92,8 @@ class _EditPlanBodyState extends State<EditPlanBody> {
       final fetchedPlanName = planData['name'] ?? 'No plan name';
       final fetchedPlanDescription =
           planData['description'] ?? 'No description available';
+      print(fetchedPlanName);
+      print(fetchedPlanDescription);
       setState(() {
         planName = fetchedPlanName;
         planDescription = fetchedPlanDescription;
@@ -137,13 +137,13 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                   child: Column(
                     children: [
                       BuildTextField(
-                        controller: planController,
+                        controller: new TextEditingController(text: planName),
                         onChange: (value) => setState(() => planName = value),
                         label: "إسم الخطة",
                       ),
                       const SizedBox(height: 16),
                       BuildTextField(
-                        controller: descriptionController,
+                        controller: new TextEditingController(text: planDescription),
                         onChange: (value) =>
                             setState(() => planDescription = value),
                         label: "وصف الخطة",
@@ -156,7 +156,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
             ),
           ),
           Positioned(
-            bottom: 24, // Distance from the bottom
+            bottom: 92, // Distance from the bottom
             right: 24, // Distance from the left side
             child: SizedBox(
               width: 60,
@@ -181,8 +181,9 @@ class _EditPlanBodyState extends State<EditPlanBody> {
             ),
           ),
           Positioned(
-            bottom: 92, // Distance from the bottom
+            bottom: 24, // Distance from the bottom
             right: 24, // Distance from the left side
+
             child: SizedBox(
               width: 60,
               height: 60,
@@ -285,24 +286,38 @@ class _EditPlanBodyState extends State<EditPlanBody> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              dayName == 'sun'
-                  ? 'الاحد'
-                  : dayName == 'mon'
-                      ? 'الاثنين'
-                      : dayName == 'tue'
-                          ? 'الثلاثاء'
-                          : dayName == 'wed'
-                              ? 'الاربعاء'
-                              : dayName == 'thu'
-                                  ? 'الخميس'
-                                  : dayName == 'fri'
-                                      ? 'الجمعة'
-                                      : 'السبت',
-              style: const TextStyle(
-                  color: Palette.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                Text(
+                  dayName == 'sun'
+                      ? 'الاحد'
+                      : dayName == 'mon'
+                          ? 'الاثنين'
+                          : dayName == 'tue'
+                              ? 'الثلاثاء'
+                              : dayName == 'wed'
+                                  ? 'الاربعاء'
+                                  : dayName == 'thu'
+                                      ? 'الخميس'
+                                      : dayName == 'fri'
+                                          ? 'الجمعة'
+                                          : 'السبت',
+                  style: const TextStyle(
+                      color: Palette.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold),
+                ),
+                Spacer(),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () =>
+                        _editTrainingDay(context, day, index), // Edit button
+                    child: const Text("تعديل",
+                        style: TextStyle(color: Palette.black)),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             Column(
@@ -522,6 +537,111 @@ class _EditPlanBodyState extends State<EditPlanBody> {
     );
   }
 
+  void _editTrainingDay(BuildContext context, TrainingDay day, int index) {
+    showDialog(
+      context: context,
+      builder: (context) =>
+          _buildEditDayDialog(context, initialDay: day, index: index),
+    );
+  }
+
+  Widget _buildEditDayDialog(BuildContext context,
+      {TrainingDay? initialDay, int? index}) {
+    var daySplit = initialDay?.day.split('-');
+    String? selectedDay = daySplit!.length > 1
+        ? daySplit[1] // Extract the day value
+        : daySplit[0];
+
+    return Theme(
+      data: Theme.of(context).copyWith(
+          dialogBackgroundColor: Colors.grey[900],
+          textTheme: const TextTheme(
+            bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
+            bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
+            headlineLarge: TextStyle(
+                color: Palette.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 24),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Palette.mainAppColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          )),
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          title: const Text("إختر يوم التدريب",
+              style: TextStyle(color: Palette.white)),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return DropdownButton<String>(
+                dropdownColor: Colors.grey[800],
+                hint: const Text("يوم التدريب",
+                    style: TextStyle(color: Palette.white)),
+                value: selectedDay,
+                onChanged: (newValue) {
+                  setState(() {
+                    selectedDay = newValue;
+                  });
+                },
+                items: const [
+                  {'value': 'sun', 'label': 'الأحد'},
+                  {'value': 'mon', 'label': 'الأثنين'},
+                  {'value': 'tue', 'label': 'الثلاثاء'},
+                  {'value': 'wed', 'label': 'الأربعاء'},
+                  {'value': 'thu', 'label': 'الخميس'},
+                  {'value': 'fri', 'label': 'الجمعة'},
+                  {'value': 'sat', 'label': 'السبت'},
+                ]
+                    .map((day) => DropdownMenuItem(
+                          value: day['value'], // Correct value assignment
+                          child: Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: Text(day['label']!,
+                                style: const TextStyle(color: Palette.white)),
+                          ),
+                        ))
+                    .toList(),
+              );
+            },
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                if (selectedDay != null) {
+                  setState(() {
+                    if (index != null) {
+                      // Edit existing day
+                      trainingDays[index] = TrainingDay(
+                          day: selectedDay!,
+                          exercises: trainingDays[index].exercises);
+                    } else {
+                      // Add new day
+                      trainingDays
+                          .add(TrainingDay(day: selectedDay!, exercises: []));
+                    }
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('حفظ', style: TextStyle(color: Palette.black)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child:
+                  const Text('إلغاء', style: TextStyle(color: Palette.white)),
+            ),
+          ],
+          actionsAlignment: MainAxisAlignment.start,
+        ),
+      ),
+    );
+  }
+
   Future<void> _savePlan() async {
     try {
       Get.dialog(Center(child: CircularProgressIndicator()),
@@ -548,9 +668,8 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                           })
                       .toList()
           }
-        }).then((value) {
-          Navigator.pop(context);
         });
+        Get.toNamed(Routes.trainees);
         Get.snackbar(
           'نجاح',
           'تم حفظ التعديلات بنجاح',

@@ -4,7 +4,7 @@ String jsonString = '''
     "Exercise_Name": "Rickshaw Carry Forearms",
     "Exercise_Image": "https://www.bodybuilding.com/exercises/exerciseImages/sequences/742/Male/m/742_1.jpg",
     "Exercise_Image1": "https://www.bodybuilding.com/exercises/exerciseImages/sequences/742/Male/m/742_2.jpg",
-    "Exercise_desc": "الساعد"
+    "Exercise_desc": "الساعد ساعد سواعد"
   },
   {
     "Exercise_Name": "Single-Leg Press",

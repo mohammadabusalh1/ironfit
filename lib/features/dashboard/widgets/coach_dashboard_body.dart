@@ -47,10 +47,10 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   @override
   void initState() {
     super.initState();
+    fetchStatisticsData();
     if (!isDataLoaded) {
       _checkToken();
       fetchUserName();
-      fetchStatisticsData();
       setState(() {
         isDataLoaded = true;
       });
@@ -98,11 +98,13 @@ class CoachDashboardState extends State<CoachDashboardBody> {
           };
         });
       }
-      double percentageDifference = currentMonthTrainees > 0
+      double percentageDifference = previousMonthTrainees != 0
           ? ((currentMonthTrainees - previousMonthTrainees) /
                   previousMonthTrainees) *
               100
-          : 0;
+          : currentMonthTrainees != 0
+              ? 100
+              : 0;
 
       // Avoid division by zero
 

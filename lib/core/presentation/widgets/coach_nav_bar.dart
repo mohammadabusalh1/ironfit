@@ -44,65 +44,69 @@ class CoachNavBar extends StatelessWidget {
     return Obx(() {
       bool isSelected = navController.selectedIndex.value == index;
 
-      return InkWell(
-        onTap: () {
-          navController.updateIndex(index);
-        },
-        child: Container(
-          width: isSelected ? Get.width * 0.28 : Get.width * 0.16,
-          height: Get.height * 0.09,
-          child: AnimatedContainer(
-            duration:
-                const Duration(milliseconds: 300), // Smooth animation duration.
-            curve: Curves.easeInOut, // Smooth easing curve.
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: isSelected
-                ? Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Palette.mainAppColorBack,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          icon,
-                          color: isSelected
-                              ? Palette.black.withOpacity(0.7)
-                              : Palette.black.withOpacity(0.4),
-                          size: 24,
-                        ),
-                        const SizedBox(width: 4),
-                        // Fade effect for text.
-                        AnimatedOpacity(
-                          opacity: isSelected ? 1.0 : 0.6,
-                          duration: const Duration(milliseconds: 300),
-                          child: AnimatedDefaultTextStyle(
-                            duration: const Duration(milliseconds: 300),
-                            style: TextStyle(
-                              color: isSelected
-                                  ? Palette.black.withOpacity(0.7)
-                                  : Palette.mainAppColor.withOpacity(0.6),
-                              fontSize: isSelected ? 10 : 10,
-                              fontWeight: isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                            ),
-                            child: Text(_getNavItemLabel(index)),
+      return SizedBox(
+        width: isSelected ? Get.width * 0.28 : Get.width * 0.16,
+        height: Get.height * 0.09,
+        child: InkWell(
+          onTap: () {
+            navController.updateIndex(index);
+          },
+          child: Container(
+            width: isSelected ? Get.width * 0.28 : Get.width * 0.16,
+            height: Get.height * 0.09,
+            child: AnimatedContainer(
+              duration: const Duration(
+                  milliseconds: 300), // Smooth animation duration.
+              curve: Curves.easeInOut, // Smooth easing curve.
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: isSelected
+                  ? Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Palette.mainAppColorBack,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            icon,
+                            color: isSelected
+                                ? Palette.black.withOpacity(0.7)
+                                : Palette.black.withOpacity(0.4),
+                            size: 24,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 4),
+                          // Fade effect for text.
+                          AnimatedOpacity(
+                            opacity: isSelected ? 1.0 : 0.6,
+                            duration: const Duration(milliseconds: 300),
+                            child: AnimatedDefaultTextStyle(
+                              duration: const Duration(milliseconds: 300),
+                              style: TextStyle(
+                                color: isSelected
+                                    ? Palette.black.withOpacity(0.7)
+                                    : Palette.mainAppColor.withOpacity(0.6),
+                                fontSize: isSelected ? 10 : 10,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                              child: Text(_getNavItemLabel(index)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Icon(
+                      icon,
+                      color: Palette.white.withOpacity(0.6),
+                      size: 24,
                     ),
-                  )
-                : Icon(
-                    icon,
-                    color: Palette.white.withOpacity(0.6),
-                    size: 24,
-                  ),
+            ),
           ),
         ),
       );

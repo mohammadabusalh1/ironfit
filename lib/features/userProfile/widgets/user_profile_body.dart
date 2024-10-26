@@ -25,6 +25,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
   bool isLoading = true;
   PreferencesService preferencesService = PreferencesService();
   String numberOfDays = '0';
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> _checkToken() async {
     SharedPreferences prefs = await preferencesService.getPreferences();
@@ -39,6 +40,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
   void initState() {
     super.initState();
     _checkToken();
+    fetchUserDays();
     if (!isDataLoaded) {
       fetchUserName();
       setState(() {
@@ -47,8 +49,39 @@ class _UserProfileBodyState extends State<UserProfileBody> {
     }
   }
 
+  Future<void> fetchUserDays() async {
+    String? userId = _auth.currentUser?.uid;
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('trainees')
+        .doc(userId)
+        .get();
+    Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+
+    // Check if 'coachId' and 'subscriptionId' fields exist before accessing them
+    String? coachId = userData?['coachId'];
+    String? subscriptionId = userData?['subscriptionId'];
+    if (coachId != null || subscriptionId != null) {
+      DocumentSnapshot subscriptionDoc = await FirebaseFirestore.instance
+          .collection('coaches')
+          .doc(coachId)
+          .collection('subscriptions')
+          .doc(subscriptionId)
+          .get();
+
+      setState(() {
+        numberOfDays = DateTime.parse(subscriptionDoc['endDate'])
+            .difference(DateTime.now())
+            .inDays
+            .toString();
+      });
+    } else {
+      setState(() {
+        numberOfDays = '0';
+      });
+    }
+  }
+
   Future<void> fetchUserName() async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
     String? userId = _auth.currentUser?.uid;
 
     if (userId == null) {
@@ -72,30 +105,6 @@ class _UserProfileBodyState extends State<UserProfileBody> {
 
       // Cast userDoc data to Map<String, dynamic>
       Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
-
-      // Check if 'coachId' and 'subscriptionId' fields exist before accessing them
-      String? coachId = userData?['coachId'];
-      String? subscriptionId = userData?['subscriptionId'];
-
-      if (coachId != null || subscriptionId != null) {
-        DocumentSnapshot subscriptionDoc = await FirebaseFirestore.instance
-            .collection('coaches')
-            .doc(coachId)
-            .collection('subscriptions')
-            .doc(subscriptionId)
-            .get();
-
-        setState(() {
-          numberOfDays = DateTime.parse(subscriptionDoc['endDate'])
-              .difference(DateTime.now())
-              .inDays
-              .toString();
-        });
-      } else {
-        setState(() {
-          numberOfDays = '0';
-        });
-      }
 
       // Retrieve user information safely
       String? firstName = userData?['firstName'];

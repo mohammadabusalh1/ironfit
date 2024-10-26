@@ -1159,6 +1159,12 @@ String jsonString = '''
     "Exercise_desc": "The Incline Dumbbell Row is an effective exercise that primarily targets the upper back muscles, including the latissimus dorsi (عضلة الظهر العريضة), rhomboids (عضلات اللوح)، and Trapezius ترابيس (عضلة شبه المنحرفة), while also engaging the biceps (عضلة البايسبس). To perform it, set an adjustable bench to a 30-45 degree incline and lie face down with a dumbbell in each hand. Keep your feet planted on the ground for stability. With your arms fully extended, pull the dumbbells towards your hips, squeezing your shoulder blades together at the top of the movement. Lower the weights back to the starting position with control. This exercise is excellent for building upper back strength and improving posture. Common search terms include Incline dumbbell row, back workout, dumbbell exercises, strength training in English, and in Arabic, تمرين سحب الدمبل المائل، تمرين الظهر، تمارين الدمبل، تدريب القوة."
   },
   {
+    "Exercise_Name": "Incline row",
+    "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FIncline%20row.jpg?alt=media&token=e24fe91e-43dc-4bab-a5fb-6550302718b1",
+    "Exercise_Image1": "",
+    "Exercise_desc": "Incline row: ظهر تمساح تمارين الظهر"
+  },
+  {
     "Exercise_Name": "Dumbbell Lunges",
     "Exercise_Image": "https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/exersices_imgs%2FDumbbell%20Lunges.jpeg?alt=media&token=77aa5260-3574-476d-8338-d3601b0f4efa",
     "Exercise_Image1": "",

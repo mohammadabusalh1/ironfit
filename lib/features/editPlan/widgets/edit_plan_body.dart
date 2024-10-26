@@ -379,7 +379,46 @@ class _EditPlanBodyState extends State<EditPlanBody> {
     );
   }
 
-  void _removeExercise(TrainingDay day, Exercise exercise) {
+  void _removeExercise(TrainingDay day, Exercise exercise) async{
+      bool confirmCancel = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          alignment: Alignment.center,
+          title: const Text(
+            'تأكيد الإلغاء',
+            textAlign: TextAlign.center,
+          ),
+          content: const Text(
+            'هل أنت متأكد أنك تريد الحذف؟',
+            textAlign: TextAlign.end,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User canceled
+              },
+              child:
+                  const Text('إلغاء', style: TextStyle(color: Palette.black)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Palette.redDelete,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(true); // User confirmed
+              },
+              child:
+                  const Text('تأكيد', style: TextStyle(color: Palette.white)),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (!confirmCancel) {
+      return;
+    }
     setState(() {
       day.exercises.remove(exercise);
     });

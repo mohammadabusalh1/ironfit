@@ -9,7 +9,7 @@ target 'Runner' do
   pod 'Firebase/Analytics', '~> 10.0'
   pod 'Firebase/Messaging', '~> 10.0'
   pod 'GoogleSignIn', '~> 6.0'
-  pod 'FlutterNativeSplash', '~> 2.4'
+  pod 'FlutterNativeSplash', '~> 2.4.1'
   pod 'ImagePicker', '~> 0.8.6' # Adjust the version as per your dependency
   pod 'FlutterLocalNotifications', '~> 17.0'
   pod 'WorkManager', '~> 0.5.2'

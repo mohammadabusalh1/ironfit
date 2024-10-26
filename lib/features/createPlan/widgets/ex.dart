@@ -1900,7 +1900,7 @@ String jsonString = '''
     "Exercise_Name": "Butterfly",
     "Exercise_Image": "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-53m-machine-chest-fly-m1-square-600x600.jpg",
     "Exercise_Image1": "https://www.bodybuilding.com/images/2020/xdb/cropped/xdb-53m-machine-chest-fly-m2-square-600x600.jpg",
-    "Exercise_desc": "The Butterfly exercise, also known as the Butterfly Crunch, is a core-strengthening movement that targets the abdominal muscles, particularly the rectus abdominis. To perform this exercise, you lie on your back with the soles of your feet together and knees bent out to the sides. You then lift your shoulders off the ground while engaging your core. This movement enhances core stability and flexibility. Search terms: 'Butterfly Crunch, Butterfly Exercise, Abdominal Exercise' / عضلة الصدر الأوسط صدر اوسط. Target muscles: Rectus Abdominis, Hip Flexors."
+    "Exercise_desc": "Search terms: 'Butterfly Crunch, Butterfly Exercise, Abdominal Exercise' / عضلة الصدر الأوسط صدر اوسط. Target muscles: chest chests"
   },
   {
     "Exercise_Name": "Seated face pull",

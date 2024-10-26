@@ -1,6 +1,6 @@
 # Uncomment the next line to define a global platform for your project
 platform :ios, '13.0'
-# source 'https://github.com/CocoaPods/Specs.git'
+source 'https://github.com/CocoaPods/Specs.git'
 target 'Runner' do
   pod 'Firebase/Core', '~> 10.0' # Adjust the version as per your dependency
   pod 'Firebase/Auth', '~> 10.0'

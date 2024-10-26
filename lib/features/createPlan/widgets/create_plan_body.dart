@@ -221,7 +221,47 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
     );
   }
 
-  void _removeExercise(TrainingDay day, Exercise exercise) {
+  void _removeExercise(TrainingDay day, Exercise exercise) async {
+    bool confirmCancel = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          alignment: Alignment.center,
+          title: const Text(
+            'تأكيد الإلغاء',
+            textAlign: TextAlign.center,
+          ),
+          content: const Text(
+            'هل أنت متأكد أنك تريد الحذف؟',
+            textAlign: TextAlign.end,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User canceled
+              },
+              child:
+                  const Text('إلغاء', style: TextStyle(color: Palette.black)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Palette.redDelete,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(true); // User confirmed
+              },
+              child:
+                  const Text('تأكيد', style: TextStyle(color: Palette.white)),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (!confirmCancel) {
+      return;
+    }
+
     setState(() {
       day.exercises.remove(exercise);
     });
@@ -573,6 +613,32 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
     if (_validatePlan()) {
       try {
         final User? user = _auth.currentUser;
+
+        final planQuery = await _firestore
+            .collection('coaches')
+            .doc(user!.uid)
+            .collection('plans')
+            .where('name', isEqualTo: planName)
+            .get();
+
+        // If the plan already exists, show an error message
+        if (planQuery.docs.isNotEmpty) {
+          Get.snackbar('خطأ', 'اسم الخطة موجود مسبقاً، يرجى اختيار اسم آخر',
+              messageText: Text(
+                'اسم الخطة موجود مسبقاً، يرجى اختيار اسم آخر',
+                style: TextStyle(color: Palette.white),
+                textAlign: TextAlign.right,
+              ),
+              titleText: Text(
+                'خطأ',
+                style: TextStyle(color: Palette.white, fontSize: 20),
+                textAlign: TextAlign.right,
+              ),
+              backgroundColor: Colors.red,
+              colorText: Palette.white);
+          return; // Exit the method if the plan exists
+        }
+
         if (user != null) {
           final planData = {
             'name': planName,
@@ -600,7 +666,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
               .doc(user.uid)
               .collection('plans')
               .add(planData);
-          Get.toNamed(Routes.trainees);
+          Get.toNamed(Routes.myPlans);
           Get.snackbar('نجاح', 'تم حفظ الخطة بنجاح',
               messageText: Text(
                 'تم حفظ الخطة بنجاح',

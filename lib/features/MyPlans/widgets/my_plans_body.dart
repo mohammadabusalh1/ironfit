@@ -20,6 +20,9 @@ class _MyPlansBodyState extends State<MyPlansBody> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool isDateSortUp = true;
+  var plans = <DocumentSnapshot>[];
+
+  bool isLoading = true;
 
   PreferencesService preferencesService = PreferencesService();
   Future<void> _checkToken() async {
@@ -35,6 +38,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
   void initState() {
     super.initState();
     _checkToken();
+    getPlans();
   }
 
   Future<void> deletePlan(BuildContext context, String planId) async {
@@ -96,7 +100,10 @@ class _MyPlansBodyState extends State<MyPlansBody> {
           .doc(_auth.currentUser?.uid)
           .collection('plans')
           .doc(planId)
-          .delete();
+          .delete()
+          .then(
+            (value) => getPlans(),
+          );
 
       // Notify the user of success
       ScaffoldMessenger.of(context).showSnackBar(
@@ -117,42 +124,35 @@ class _MyPlansBodyState extends State<MyPlansBody> {
     }
   }
 
-  void _sortBySubscription() {
-    // Firestore query to fetch the data sorted by subscription date
-
-    setState(() {
-      // Update the StreamBuilder to use the sorted query
-      // This will trigger a rebuild of the widget with the new sorting order.
-      getPlans();
-    });
-  }
-
-  Stream<QuerySnapshot>? getPlans() {
-    // Ensure user is authenticated before attempting to fetch plans
-    final user = _auth.currentUser;
-    if (user == null) {
-      // You can return null or throw an error stream depending on how you want to handle it
-      return null; // or Stream.error('User not authenticated');
-    }
-
+  Future<void> getPlans() async {
     try {
-      // Firestore query for sorted plans based on subscriptionDate
-      return _firestore
+      // Ensure user is authenticated before attempting to fetch plans
+      final user = _auth.currentUser;
+      if (user == null) {
+        throw StateError('User not authenticated');
+      }
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
           .collection('coaches')
           .doc(user.uid)
           .collection('plans')
           .orderBy('createdAt', descending: !isDateSortUp)
-          .snapshots();
+          .get();
+      // Firestore query for sorted plans based on subscriptionDate
+      setState(() {
+        plans = querySnapshot.docs;
+        isLoading = false;
+      });
     } catch (e) {
       // Log the error and return an error stream
       print('Error fetching plans: $e');
-      return Stream.error('Failed to fetch plans: $e');
+      SnackBar(content: Text('Error fetching plans: $e'));
     }
   }
 
   void toggleDateSort() {
     setState(() {
       isDateSortUp = !isDateSortUp;
+      getPlans();
     });
   }
 
@@ -263,7 +263,6 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                               flex: 1,
                               child: ElevatedButton.icon(
                                 onPressed: () {
-                                  _sortBySubscription();
                                   toggleDateSort();
                                 },
                                 icon: Icon(
@@ -297,74 +296,51 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream:
-                              getPlans(), // Assuming getPlans() returns a valid stream.
-                          builder: (context, snapshot) {
-                            // 1. Error Handling: Check for errors first.
-                            if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            }
+                      isLoading
+                          ? Center(
+                              child: CircularProgressIndicator(), // Show loader
+                            )
+                          : Padding(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  24, 0, 24, 0),
+                              child: ListView(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                children:
+                                    plans.map((DocumentSnapshot document) {
+                                  // 5. Check that the document data is not null.
+                                  Map<String, dynamic>? data =
+                                      document.data() as Map<String, dynamic>?;
 
-                            // 2. Loading State: Show a loading indicator while waiting for data.
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const CircularProgressIndicator();
-                            }
+                                  if (data == null) {
+                                    return const Text(
+                                        'Error: Invalid plan data'); // Handle null data.
+                                  }
 
-                            // 3. Null Safety: Check if the snapshot contains data.
-                            if (!snapshot.hasData ||
-                                snapshot.data!.docs.isEmpty) {
-                              return const Text('لا يوجد برامج متاحة',
-                                  style: TextStyle(
-                                      color: Palette
-                                          .white)); // Handle empty data case.
-                            }
+                                  // 6. Fallbacks for null fields.
+                                  String title = data['name'] ??
+                                      'لا يوجد عنوان'; // Provide default values if null.
+                                  String description = data['description'] ??
+                                      'لا يوجد وصف'; // Provide default values if null.
 
-                            // 4. Build ListView with a non-nullable data check.
-                            return ListView(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              children: snapshot.data!.docs
-                                  .map((DocumentSnapshot document) {
-                                // 5. Check that the document data is not null.
-                                Map<String, dynamic>? data =
-                                    document.data() as Map<String, dynamic>?;
-
-                                if (data == null) {
-                                  return const Text(
-                                      'Error: Invalid plan data'); // Handle null data.
-                                }
-
-                                // 6. Fallbacks for null fields.
-                                String title = data['name'] ??
-                                    'لا يوجد عنوان'; // Provide default values if null.
-                                String description = data['description'] ??
-                                    'لا يوجد وصف'; // Provide default values if null.
-
-                                return CustomCard(
-                                  onPressedEdit: () {
-                                    Get.to(Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: EditPlanScreen(
-                                            planId: document.id)));
-                                  },
-                                  title: title, // Use non-nullable strings.
-                                  description:
-                                      description, // Use non-nullable strings.
-                                  icon: Icons.arrow_back,
-                                  onPressed: () {
-                                    deletePlan(context, document.id);
-                                  },
-                                );
-                              }).toList(),
-                            );
-                          },
-                        ),
-                      ),
+                                  return CustomCard(
+                                    onPressedEdit: () {
+                                      Get.to(Directionality(
+                                          textDirection: TextDirection.rtl,
+                                          child: EditPlanScreen(
+                                              planId: document.id)));
+                                    },
+                                    title: title, // Use non-nullable strings.
+                                    description:
+                                        description, // Use non-nullable strings.
+                                    icon: Icons.arrow_back,
+                                    onPressed: () {
+                                      deletePlan(context, document.id);
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                            ),
                       const SizedBox(height: 24),
                     ],
                   ),

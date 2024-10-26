@@ -45,10 +45,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         _filteredExercises = widget.exercisesJson;
       } else {
         _filteredExercises = widget.exercisesJson
-            .where((exercise) => exercise['Exercise_Name']
-                .toString()
-                .toLowerCase()
-                .contains(query.toLowerCase()) || exercise['Exercise_desc']
+            .where((exercise) => exercise['Exercise_desc']
                 .toString()
                 .toLowerCase()
                 .contains(query.toLowerCase()))

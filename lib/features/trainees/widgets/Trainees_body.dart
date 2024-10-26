@@ -26,45 +26,6 @@ class _TraineesBodyState extends State<TraineesBody> {
   User? coach = FirebaseAuth.instance.currentUser;
 
   PreferencesService preferencesService = PreferencesService();
-  Future<void> _checkToken() async {
-    SharedPreferences prefs = await preferencesService.getPreferences();
-    String? token = prefs.getString('token');
-
-    if (token == null) {
-      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
-    }
-  }
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(_scrollListener);
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      setState(() {
-        // Increase itemCount only if it's less than the filteredTrainees list
-        if (_itemCount < filtteredTrainees.length) {
-          _itemCount += 10;
-        }
-      });
-    }
-  }
-
-  void toggleNameSort() {
-    setState(() {
-      isNameSortUp = !isNameSortUp;
-    });
-  }
-
-  void toggleSubscriptionSort() {
-    setState(() {
-      isSubscriptionSortUp = !isSubscriptionSortUp;
-    });
-  }
 
   @override
   void initState() {
@@ -72,6 +33,313 @@ class _TraineesBodyState extends State<TraineesBody> {
     _checkToken();
     _scrollController.addListener(_scrollListener);
     fetchTrainees();
+  }
+
+  final _formKey = GlobalKey<FormState>(); // Form key for validation
+  TextEditingController startDateController = TextEditingController();
+  TextEditingController endDateController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _buildHeader(),
+        const SizedBox(height: 12),
+        _buildActionButtons(),
+        const SizedBox(height: 12),
+        _buildSearchField(context),
+        if (_isLoading)
+          const SizedBox(height: 24), // Changed to conditional statement
+        if (_isLoading) Center(child: CircularProgressIndicator())
+        else
+          _buildTraineesList(),
+      ],
+    );
+  }
+
+  Widget _buildHeader() {
+    return SizedBox(
+      width: double.infinity,
+      child: Stack(
+        children: [
+          const HeaderImage(),
+          Container(
+            height: MediaQuery.of(context).size.height * 0.22,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _buildBackButton(),
+                const SizedBox(width: 12),
+                _buildHeaderTitle(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBackButton() {
+    return ElevatedButton(
+      onPressed: () => Get.back(),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFF1C1503),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.all(8),
+        elevation: 0,
+      ),
+      child: const Icon(Icons.arrow_left, color: Color(0xFFFFBB02), size: 24),
+    );
+  }
+
+  Widget _buildHeaderTitle() {
+    return const Opacity(
+      opacity: 0.8,
+      child: Text(
+        'المتدربين',
+        style: TextStyle(
+          fontFamily: 'Inter',
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
+          shadows: [
+            Shadow(
+              color: Color(0xFF2F3336),
+              offset: Offset(4.0, 4.0),
+              blurRadius: 2.0,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Row(
+        children: [
+          Expanded(child: _buildAddButton()),
+          const SizedBox(width: 12),
+          Expanded(
+              child: _buildSortButton('الإسم',
+                  isNameSortUp ? Icons.north_rounded : Icons.south_rounded, () {
+            _sortByName();
+            toggleNameSort();
+          })),
+          const SizedBox(width: 12),
+          Expanded(
+              child: _buildSortButton(
+                  'الاشتراك', isSubscriptionSortUp ? Icons.add : Icons.minimize,
+                  () {
+            _sortBySubscription();
+            toggleSubscriptionSort();
+          })),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddButton() {
+    return ElevatedButton.icon(
+      onPressed: () => showAddTraineeDialog(context),
+      icon: const Icon(Icons.add, size: 22),
+      label: const Text(''),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: const Color(0xFF1C1503),
+        backgroundColor: const Color(0xFFFFBB02),
+        padding: const EdgeInsetsDirectional.only(start: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        textStyle: const TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+        ),
+        minimumSize: const Size(double.infinity, 50),
+      ),
+    );
+  }
+
+  Widget _buildSortButton(String label, IconData icon, Function onPressed) {
+    return ElevatedButton.icon(
+      onPressed: () => onPressed(), // Invoke the passed sorting function
+      icon: Icon(icon, size: 15),
+      label: Text(label),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: const Color(0xFF1C1503),
+        backgroundColor: Colors.white,
+        padding: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        textStyle: const TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+        minimumSize: const Size(double.infinity, 50),
+      ),
+    );
+  }
+
+  Widget _buildSearchField(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: TextFormField(
+        onChanged:
+            _filterTrainees, // Call the filter function on every input change
+        decoration: InputDecoration(
+          isDense: true,
+          hintText: 'البحث',
+          hintStyle: const TextStyle(fontFamily: 'Inter', fontSize: 14),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.red, width: 1),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.red, width: 1),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+        style: const TextStyle(fontFamily: 'Inter'),
+        textAlign: TextAlign.start,
+        cursorColor: Theme.of(context).primaryColor,
+      ),
+    );
+  }
+
+  Widget _buildTraineesList() {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: filtteredTrainees.isEmpty
+            ? const Center(
+                child: Text(
+                  'لا يوجد نتائج',
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Palette.white,
+                  ),
+                ),
+              )
+            : ListView.builder(
+                controller: _scrollController,
+                itemCount: _itemCount < filtteredTrainees.length
+                    ? _itemCount
+                    : filtteredTrainees.length,
+                itemBuilder: (context, index) {
+                  var trainee = filtteredTrainees[index];
+                  if (index >= filtteredTrainees.length) {
+                    return const SizedBox.shrink();
+                  }
+                  return _buildTraineeCard(
+                    context,
+                    trainee['fullName'] ??
+                        'غير معروف', // Default name if fullName is null
+                    trainee['endDate'] != null &&
+                            DateTime.tryParse(trainee['endDate']) != null
+                        ? (DateTime.parse(trainee['endDate'])
+                                    .millisecondsSinceEpoch >
+                                DateTime.now().millisecondsSinceEpoch
+                            ? 'مشترك'
+                            : 'إنتهى الإشتراك')
+                        : 'غير معروف', // Default status if endDate is null or cannot be parsed
+                    trainee['profileImageUrl'] ??
+                        'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg', // Default image if profileImageUrl is null
+                    () => Get.to(Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: TraineeScreen(
+                          username: trainee['username'] ??
+                              'unknown_user', // Default username if null
+                          fetchTrainees: fetchTrainees,
+                        ))),
+                  );
+                },
+              ),
+      ),
+    );
+  }
+
+  Widget _buildTraineeCard(BuildContext context, String name, String status,
+      String imagePath, VoidCallback onTap) {
+    return Card(
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      color: Palette.secondaryColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(imagePath,
+                        width: 40, height: 40, fit: BoxFit.cover),
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          color: Color(0xFFFFBB02),
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        status,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          color: Color(0x93FFFFFF),
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const Icon(Icons.arrow_forward, color: Colors.white, size: 24),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _sortByName() {
+    setState(() {
+      filtteredTrainees.sort((a, b) => a['fullName'].compareTo(b['fullName']));
+    });
+  }
+
+  void _sortBySubscription() {
+    DateTime now = DateTime.now();
+    if (isSubscriptionSortUp) {
+      setState(() {
+        filtteredTrainees = trainees
+            .where((a) =>
+                DateTime.parse(a['endDate']).isBefore(now) ||
+                DateTime.parse(a['endDate']).isAtSameMomentAs(now))
+            .toList();
+      });
+    } else {
+      setState(() {
+        filtteredTrainees = trainees;
+      });
+    }
   }
 
   Future<void> fetchTrainees() async {
@@ -131,9 +399,22 @@ class _TraineesBodyState extends State<TraineesBody> {
     }
   }
 
-  final _formKey = GlobalKey<FormState>(); // Form key for validation
-  TextEditingController startDateController = TextEditingController();
-  TextEditingController endDateController = TextEditingController();
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   Future<void> _selectDate(
       BuildContext context, TextEditingController controller) async {
     final DateTime? picked = await showDatePicker(
@@ -415,308 +696,27 @@ class _TraineesBodyState extends State<TraineesBody> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          _buildHeader(),
-          const SizedBox(height: 12),
-          _buildActionButtons(),
-          const SizedBox(height: 12),
-          _buildSearchField(context),
-          _isLoading ? const SizedBox(height: 24) : const SizedBox(height: 0),
-          _isLoading
-              ? Center(
-                  child: CircularProgressIndicator()) // Show loading indicator
-              : _buildTraineesList(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return SizedBox(
-      width: double.infinity,
-      child: Stack(
-        children: [
-          const HeaderImage(),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.22,
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _buildBackButton(),
-                const SizedBox(width: 12),
-                _buildHeaderTitle(),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBackButton() {
-    return ElevatedButton(
-      onPressed: () => Get.back(),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF1C1503),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        padding: const EdgeInsets.all(8),
-        elevation: 0,
-      ),
-      child: const Icon(Icons.arrow_left, color: Color(0xFFFFBB02), size: 24),
-    );
-  }
-
-  Widget _buildHeaderTitle() {
-    return const Opacity(
-      opacity: 0.8,
-      child: Text(
-        'المتدربين',
-        style: TextStyle(
-          fontFamily: 'Inter',
-          color: Colors.white,
-          fontSize: 20,
-          fontWeight: FontWeight.w800,
-          shadows: [
-            Shadow(
-              color: Color(0xFF2F3336),
-              offset: Offset(4.0, 4.0),
-              blurRadius: 2.0,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Row(
-        children: [
-          Expanded(child: _buildAddButton()),
-          const SizedBox(width: 12),
-          Expanded(
-              child: _buildSortButton('الإسم',
-                  isNameSortUp ? Icons.north_rounded : Icons.south_rounded, () {
-            _sortByName();
-            toggleNameSort();
-          })),
-          const SizedBox(width: 12),
-          Expanded(
-              child: _buildSortButton(
-                  'الاشتراك', isSubscriptionSortUp ? Icons.add : Icons.minimize,
-                  () {
-            _sortBySubscription();
-            toggleSubscriptionSort();
-          })),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAddButton() {
-    return ElevatedButton.icon(
-      onPressed: () => showAddTraineeDialog(context),
-      icon: const Icon(Icons.add, size: 22),
-      label: const Text(''),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: const Color(0xFF1C1503),
-        backgroundColor: const Color(0xFFFFBB02),
-        padding: const EdgeInsetsDirectional.only(start: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        textStyle: const TextStyle(
-          fontFamily: 'Inter',
-          fontSize: 18,
-          fontWeight: FontWeight.w500,
-        ),
-        minimumSize: const Size(double.infinity, 50),
-      ),
-    );
-  }
-
-  Widget _buildSortButton(String label, IconData icon, Function onPressed) {
-    return ElevatedButton.icon(
-      onPressed: () => onPressed(), // Invoke the passed sorting function
-      icon: Icon(icon, size: 15),
-      label: Text(label),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: const Color(0xFF1C1503),
-        backgroundColor: Colors.white,
-        padding: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        textStyle: const TextStyle(
-          fontFamily: 'Inter',
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-        minimumSize: const Size(double.infinity, 50),
-      ),
-    );
-  }
-
-  void _sortByName() {
-    setState(() {
-      filtteredTrainees.sort((a, b) => a['fullName'].compareTo(b['fullName']));
-    });
-  }
-
-  void _sortBySubscription() {
-    DateTime now = DateTime.now();
-    if (isSubscriptionSortUp) {
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
       setState(() {
-        filtteredTrainees = trainees
-            .where((a) =>
-                DateTime.parse(a['endDate']).isBefore(now) ||
-                DateTime.parse(a['endDate']).isAtSameMomentAs(now))
-            .toList();
-      });
-    } else {
-      setState(() {
-        filtteredTrainees = trainees;
+        // Increase itemCount only if it's less than the filteredTrainees list
+        if (_itemCount < filtteredTrainees.length) {
+          _itemCount += 10;
+        }
       });
     }
   }
 
-  Widget _buildSearchField(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: TextFormField(
-        onChanged:
-            _filterTrainees, // Call the filter function on every input change
-        decoration: InputDecoration(
-          isDense: true,
-          hintText: 'البحث',
-          hintStyle: const TextStyle(fontFamily: 'Inter', fontSize: 14),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.red, width: 1),
-            borderRadius: BorderRadius.circular(14),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.red, width: 1),
-            borderRadius: BorderRadius.circular(14),
-          ),
-          filled: true,
-          fillColor: Colors.white,
-        ),
-        style: const TextStyle(fontFamily: 'Inter'),
-        textAlign: TextAlign.start,
-        cursorColor: Theme.of(context).primaryColor,
-      ),
-    );
+  void toggleNameSort() {
+    setState(() {
+      isNameSortUp = !isNameSortUp;
+    });
   }
 
-  Widget _buildTraineesList() {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: filtteredTrainees.length == 0
-            ? const Center(
-                child: Text(
-                  'لا يوجد نتائج',
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Palette.white,
-                  ),
-                ),
-              )
-            : ListView.builder(
-                controller: _scrollController,
-                itemCount: _itemCount < filtteredTrainees.length
-                    ? _itemCount
-                    : filtteredTrainees.length,
-                itemBuilder: (context, index) {
-                  var trainee = filtteredTrainees[index];
-                  if (index >= filtteredTrainees.length) {
-                    return const SizedBox.shrink();
-                  }
-                  return _buildTraineeCard(
-                    context,
-                    trainee['fullName'] ??
-                        'غير معروف', // Default name if fullName is null
-                    trainee['endDate'] != null &&
-                            DateTime.tryParse(trainee['endDate']) != null
-                        ? (DateTime.parse(trainee['endDate'])
-                                    .millisecondsSinceEpoch >
-                                DateTime.now().millisecondsSinceEpoch
-                            ? 'مشترك'
-                            : 'إنتهى الإشتراك')
-                        : 'غير معروف', // Default status if endDate is null or cannot be parsed
-                    trainee['profileImageUrl'] ??
-                        'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg', // Default image if profileImageUrl is null
-                    () => Get.to(Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: TraineeScreen(
-                          username: trainee['username'] ??
-                              'unknown_user', // Default username if null
-                          fetchTrainees: fetchTrainees,
-                        ))),
-                  );
-                },
-              ),
-      ),
-    );
-  }
-
-  Widget _buildTraineeCard(BuildContext context, String name, String status,
-      String imagePath, VoidCallback onTap) {
-    return Card(
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      color: Palette.secondaryColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.network(imagePath,
-                        width: 40, height: 40, fit: BoxFit.cover),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name,
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          color: Color(0xFFFFBB02),
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        status,
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          color: Color(0x93FFFFFF),
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const Icon(Icons.arrow_forward, color: Colors.white, size: 24),
-            ],
-          ),
-        ),
-      ),
-    );
+  void toggleSubscriptionSort() {
+    setState(() {
+      isSubscriptionSortUp = !isSubscriptionSortUp;
+    });
   }
 }

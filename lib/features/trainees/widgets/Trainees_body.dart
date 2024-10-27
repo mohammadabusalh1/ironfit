@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
@@ -50,7 +51,8 @@ class _TraineesBodyState extends State<TraineesBody> {
         _buildSearchField(context),
         if (_isLoading)
           const SizedBox(height: 24), // Changed to conditional statement
-        if (_isLoading) Center(child: CircularProgressIndicator())
+        if (_isLoading)
+          Center(child: CircularProgressIndicator())
         else
           _buildTraineesList(),
       ],
@@ -100,7 +102,7 @@ class _TraineesBodyState extends State<TraineesBody> {
         'المتدربين',
         style: TextStyle(
           fontFamily: 'Inter',
-          color: Colors.white,
+          color: Palette.white,
           fontSize: 20,
           fontWeight: FontWeight.w800,
           shadows: [
@@ -126,7 +128,6 @@ class _TraineesBodyState extends State<TraineesBody> {
               child: _buildSortButton('الإسم',
                   isNameSortUp ? Icons.north_rounded : Icons.south_rounded, () {
             _sortByName();
-            toggleNameSort();
           })),
           const SizedBox(width: 12),
           Expanded(
@@ -168,7 +169,7 @@ class _TraineesBodyState extends State<TraineesBody> {
       label: Text(label),
       style: ElevatedButton.styleFrom(
         foregroundColor: const Color(0xFF1C1503),
-        backgroundColor: Colors.white,
+        backgroundColor: Palette.white,
         padding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         textStyle: const TextStyle(
@@ -203,7 +204,7 @@ class _TraineesBodyState extends State<TraineesBody> {
             borderRadius: BorderRadius.circular(14),
           ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: Palette.white,
         ),
         style: const TextStyle(fontFamily: 'Inter'),
         textAlign: TextAlign.start,
@@ -311,7 +312,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                   ),
                 ],
               ),
-              const Icon(Icons.arrow_forward, color: Colors.white, size: 24),
+              const Icon(Icons.arrow_forward, color: Palette.white, size: 24),
             ],
           ),
         ),
@@ -321,7 +322,10 @@ class _TraineesBodyState extends State<TraineesBody> {
 
   void _sortByName() {
     setState(() {
-      filtteredTrainees.sort((a, b) => a['fullName'].compareTo(b['fullName']));
+      filtteredTrainees.sort((a, b) => isNameSortUp
+          ? a['fullName'].compareTo(b['fullName'])
+          : b['fullName'].compareTo(a['fullName']));
+      isNameSortUp = !isNameSortUp;
     });
   }
 
@@ -380,8 +384,9 @@ class _TraineesBodyState extends State<TraineesBody> {
 
           return {
             ...doc.data(),
-            'fullName':
-                '${doc.data()['firstName'] ?? ''} ${user.data()['lastName'] ?? ''}',
+            'fullName': user.data().containsKey('firstName')
+                ? '${user.data()['firstName'] ?? ''} ${user.data()['lastName'] ?? ''}'
+                : user.data()['username'],
             'age': user.data()[
                 'age'], // Assuming 'age' field exists in trainee documents
             'profileImageUrl': user.data()[
@@ -445,10 +450,10 @@ class _TraineesBodyState extends State<TraineesBody> {
           data: Theme.of(context).copyWith(
             dialogBackgroundColor: Colors.grey[900],
             textTheme: const TextTheme(
-              bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
-              bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
+              bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
+              bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
               headlineLarge: TextStyle(
-                  color: Colors.white,
+                  color: Palette.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 24),
             ),
@@ -463,7 +468,7 @@ class _TraineesBodyState extends State<TraineesBody> {
             inputDecorationTheme: const InputDecorationTheme(
               filled: true,
               fillColor: Palette.secondaryColor,
-              labelStyle: TextStyle(color: Colors.white, fontSize: 14),
+              labelStyle: TextStyle(color: Palette.white, fontSize: 14),
               enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.transparent),
                   borderRadius: BorderRadius.all(Radius.circular(12))),
@@ -475,205 +480,293 @@ class _TraineesBodyState extends State<TraineesBody> {
                   borderSide: BorderSide(color: Colors.red, width: 2)),
             ),
             textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(foregroundColor: Colors.white),
+              style: TextButton.styleFrom(foregroundColor: Palette.white),
             ),
           ),
-          child: Expanded(
-            child: SingleChildScrollView(
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: AlertDialog(
-                  title: const Text('إضافة متدرب جديد',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold)),
-                  content: Form(
-                    key: _formKey, // Use the form key for validation
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text('يرجى ملئ البيانات المطلوبة',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500)),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: usernameController,
-                          decoration: const InputDecoration(
-                            labelText: 'إسم الحساب',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'يرجى إدخال الإيميل';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: startDateController,
-                          decoration: const InputDecoration(
-                              labelText: "تاريخ البدء",
-                              border: OutlineInputBorder()),
-                          readOnly: true,
-                          onTap: () {
-                            _selectDate(context, startDateController);
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'يرجى إدخال تاريخ البدء';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: endDateController,
-                          decoration: const InputDecoration(
-                              labelText: "تاريخ الانتهاء",
-                              border: OutlineInputBorder()),
-                          readOnly: true,
-                          onTap: () {
-                            _selectDate(context, endDateController);
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'يرجى إدخال تاريخ الانتهاء';
-                            }
-                            if (startDateController.text.isNotEmpty &&
-                                endDateController.text.isNotEmpty) {
-                              // Compare the dates
-                              DateTime startDate =
-                                  DateTime.parse(startDateController.text);
-                              DateTime endDate =
-                                  DateTime.parse(endDateController.text);
-
-                              if (startDate.isAfter(endDate)) {
-                                return 'تاريخ البدء لا يمكن أن يكون أكبر من تاريخ الانتهاء';
+          child: SingleChildScrollView(
+            child: Directionality(
+              textDirection: TextDirection.rtl,
+              child: AlertDialog(
+                title: const Text('إضافة متدرب جديد',
+                    style: TextStyle(
+                        color: Palette.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold)),
+                content: Form(
+                  key: _formKey, // Use the form key for validation
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('يرجى ملئ البيانات المطلوبة',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w500)),
+                      const SizedBox(height: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextFormField(
+                            controller: usernameController,
+                            decoration: const InputDecoration(
+                              labelText: 'إسم الحساب',
+                              border: OutlineInputBorder(),
+                              labelStyle:
+                                  TextStyle(color: Palette.gray, fontSize: 14),
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.all(
+                                    10.0), // Adjust padding if needed
+                                child: Icon(
+                                  Icons.person_2_outlined,
+                                  color: Palette.gray,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'يرجى إدخال اسم الحساب';
                               }
-                            }
-                            return null;
-                          },
+                              return null;
+                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.deny(
+                                  RegExp(r'\s')), // Deny spaces
+                            ],
+                          ),
+                          const SizedBox(
+                              height: 8), // Add spacing between field and note
+                          const Text(
+                            'ملاحظة: يجب على المتدرب إستخدام هذا الإسم عند إنشاء الحساب.',
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: startDateController,
+                        decoration: const InputDecoration(
+                          labelText: "تاريخ البدء",
+                          labelStyle:
+                              TextStyle(color: Palette.gray, fontSize: 14),
+                          border: OutlineInputBorder(),
+                          prefixIcon: const Padding(
+                            padding: EdgeInsets.all(
+                                10.0), // Adjust padding if needed
+                            child: Icon(
+                              Icons.date_range_outlined,
+                              color: Palette.gray,
+                              size: 20,
+                            ),
+                          ),
                         ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: amountPaidController,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                              labelText: 'المبلغ المدفوع',
-                              border: OutlineInputBorder()),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'يرجى إدخال المبلغ المدفوع';
+                        readOnly: true,
+                        onTap: () {
+                          _selectDate(context, startDateController);
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'يرجى إدخال تاريخ البدء';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: endDateController,
+                        decoration: const InputDecoration(
+                            prefixIcon: const Padding(
+                              padding: EdgeInsets.all(
+                                  10.0), // Adjust padding if needed
+                              child: Icon(
+                                Icons.date_range_outlined,
+                                color: Palette.gray,
+                                size: 20,
+                              ),
+                            ),
+                            labelStyle:
+                                TextStyle(color: Palette.gray, fontSize: 14),
+                            labelText: "تاريخ الانتهاء",
+                            border: OutlineInputBorder()),
+                        readOnly: true,
+                        onTap: () {
+                          _selectDate(context, endDateController);
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'يرجى إدخال تاريخ الانتهاء';
+                          }
+                          if (startDateController.text.isNotEmpty &&
+                              endDateController.text.isNotEmpty) {
+                            // Compare the dates
+                            DateTime startDate =
+                                DateTime.parse(startDateController.text);
+                            DateTime endDate =
+                                DateTime.parse(endDateController.text);
+
+                            if (startDate.isAfter(endDate)) {
+                              return 'تاريخ البدء لا يمكن أن يكون أكبر من تاريخ الانتهاء';
                             }
-                            return null;
-                          },
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: amountPaidController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          prefixIcon: const Padding(
+                            padding: EdgeInsets.all(
+                                10.0), // Adjust padding if needed
+                            child: Icon(
+                              Icons.money_off_csred_outlined,
+                              color: Palette.gray,
+                              size: 20,
+                            ),
+                          ),
+                          labelText: 'المبلغ المدفوع',
+                          labelStyle:
+                              TextStyle(color: Palette.gray, fontSize: 14),
+                          border: OutlineInputBorder(),
                         ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: debtsController,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                              labelText: 'الديون',
-                              border: OutlineInputBorder()),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'يرجى إدخال الديون';
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
-                    ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'يرجى إدخال المبلغ المدفوع';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: debtsController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                            prefixIcon: const Padding(
+                              padding: EdgeInsets.all(
+                                  10.0), // Adjust padding if needed
+                              child: Icon(
+                                Icons.money_off_csred_outlined,
+                                color: Palette.gray,
+                                size: 20,
+                              ),
+                            ),
+                            labelStyle:
+                                TextStyle(color: Palette.gray, fontSize: 14),
+                            labelText: 'الديون',
+                            border: OutlineInputBorder()),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'يرجى إدخال الديون';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
                   ),
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          Get.dialog(
-                              const Center(child: CircularProgressIndicator()),
-                              barrierDismissible: false);
-                          String username = usernameController.text.trim();
-
-                          if (trainees.any(
-                              (trainee) => trainee['username'] == username)) {
-                            Navigator.of(context).pop();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('المتدرب موجود بالفعل')),
-                            );
-                            Navigator.of(context).pop();
-                            return;
-                          }
-
-                          String startDate = startDateController.text.trim();
-                          String endDate = endDateController.text.trim();
-                          String amountPaid = amountPaidController.text.trim();
-                          String debts = debtsController.text.trim();
-
-                          var existingUser = await FirebaseFirestore.instance
-                              .collection('trainees')
-                              .where('username', isEqualTo: username)
-                              .get();
-
-                          if (existingUser.docs.isNotEmpty) {
-                            // Add the new trainee to Firestore
-                            await FirebaseFirestore.instance
-                                .collection('coaches')
-                                .doc(coach?.uid)
-                                .collection('subscriptions')
-                                .add({
-                              'username': username,
-                              'startDate': startDate,
-                              'endDate': endDate,
-                              'amountPaid': amountPaid,
-                              'debts': debts,
-                              'userId': existingUser.docs[0].id,
-                            }).then((docRef) async {
-                              await FirebaseFirestore.instance
-                                  .collection('trainees')
-                                  .doc(existingUser.docs[0].id)
-                                  .update({
-                                'coachId': coach?.uid,
-                                'subscriptionId': docRef.id
-                              });
-                            });
-
-                            // Refresh the trainee list
-                            await fetchTrainees(); // Fetch the updated list of trainees
-
-                            // Show success message or feedback
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('تمت إضافة المتدرب بنجاح')),
-                            );
-
-                            // Close the dialog
-                            Navigator.of(context).pop();
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('المتدرب غير موجود')),
-                            );
-                          }
-
-                          Navigator.of(context).pop(); // Close the dialog
-                        }
-                      },
-                      child: const Text('حفظ'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
-                      },
-                      child: const Text('إلغاء'),
-                    ),
-                  ],
-                  actionsAlignment: MainAxisAlignment.start,
                 ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        // Show loading dialog
+                        Get.dialog(
+                          const Center(child: CircularProgressIndicator()),
+                          barrierDismissible: false,
+                        );
+
+                        String username = usernameController.text.trim();
+                        String startDate = startDateController.text.trim();
+                        String endDate = endDateController.text.trim();
+                        String amountPaid = amountPaidController.text.trim();
+                        String debts = debtsController.text.trim();
+
+                        // Fetch the trainee from Firestore
+                        var traineeDoc = await FirebaseFirestore.instance
+                            .collection('trainees')
+                            .where('username', isEqualTo: username)
+                            .limit(1)
+                            .get();
+
+                        final traineeExists = traineeDoc.docs.isNotEmpty;
+
+                        final batch = FirebaseFirestore.instance.batch();
+
+                        // Define coach and trainee collections
+                        final coachDocRef = FirebaseFirestore.instance
+                            .collection('coaches')
+                            .doc(coach?.uid)
+                            .collection('subscriptions');
+
+                        // Trainee exists: Update existing trainee with new subscription details
+                        if (traineeExists) {
+                          Get.snackbar(
+                            'خطأ',
+                            'يتعذر  إنشاء حساب',
+                            snackPosition: SnackPosition.BOTTOM,
+                            colorText: Palette.white,
+                            margin: EdgeInsets.all(10),
+                            titleText: const Text(
+                              textDirection: TextDirection.rtl,
+                              'يتعذر  إنشاء حساب',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 16),
+                            ),
+                            messageText: Text(
+                              'اسم الحساب مستخدم',
+                              style: const TextStyle(color: Colors.white),
+                              textDirection: TextDirection.rtl,
+                            ),
+                          );
+                        } else {
+                          // Trainee does not exist: Create new trainee and subscription
+                          final newTraineeRef = FirebaseFirestore.instance
+                              .collection('trainees')
+                              .doc();
+                          batch.set(newTraineeRef, {
+                            'username': username,
+                            'age': '0',
+                          });
+
+                          final subscriptionDocRef = coachDocRef.doc();
+                          batch.set(subscriptionDocRef, {
+                            'username': username,
+                            'startDate': startDate,
+                            'endDate': endDate,
+                            'amountPaid': amountPaid,
+                            'debts': debts,
+                            'userId': newTraineeRef.id,
+                          });
+                          batch.update(newTraineeRef, {
+                            'coachId': coach?.uid,
+                            'subscriptionId': subscriptionDocRef.id,
+                          });
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('تمت إضافة المتدرب بنجاح')),
+                          );
+                          Navigator.of(context).pop();
+                        }
+
+                        // Commit batch write
+                        await batch.commit();
+                        await fetchTrainees();
+                        Navigator.of(context).pop();
+
+                        // Close loading dialog
+                      }
+                    },
+                    child: const Text('حفظ'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: const Text('إلغاء'),
+                  ),
+                ],
+                actionsAlignment: MainAxisAlignment.start,
               ),
             ),
           ),
@@ -706,12 +799,6 @@ class _TraineesBodyState extends State<TraineesBody> {
         }
       });
     }
-  }
-
-  void toggleNameSort() {
-    setState(() {
-      isNameSortUp = !isNameSortUp;
-    });
   }
 
   void toggleSubscriptionSort() {

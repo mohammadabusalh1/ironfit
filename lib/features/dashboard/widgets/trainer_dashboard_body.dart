@@ -43,12 +43,39 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
   void initState() {
     super.initState();
     _checkToken();
+    _fetchTrainerData();
     if (!isDataLoaded) {
-      _fetchTrainerData();
+      _fetchTrainerNameAndImage();
       setState(() {
         isDataLoaded = true;
       });
     }
+  }
+
+  Future<void> _fetchTrainerNameAndImage() async {
+    User? user = _auth.currentUser;
+    if (user == null) {
+      print('User is not logged in');
+      return;
+    }
+
+    // Fetch user document from Firestore
+    DocumentSnapshot userDoc =
+        await _firestore.collection('trainees').doc(user.uid).get();
+
+    if (!userDoc.exists) {
+      print('User document does not exist');
+      return;
+    }
+
+    // Fetch user details with null safety checks
+    setState(() {
+      trainerName =
+          '${userDoc['firstName'] ?? 'لا يوجد'} ${userDoc['lastName'] ?? 'لا يوجد'}';
+      trainerEmail = userDoc['email'] ?? 'البريد الإلكتروني';
+      trainerImage = userDoc['profileImageUrl'] ??
+          'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+    });
   }
 
   // Fetch trainer data from Firebase
@@ -63,21 +90,6 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
       // Fetch user document from Firestore
       DocumentSnapshot userDoc =
           await _firestore.collection('trainees').doc(user.uid).get();
-
-      if (!userDoc.exists) {
-        print('User document does not exist');
-        return;
-      }
-
-      // Fetch user details with null safety checks
-      setState(() {
-        trainerName =
-            '${userDoc['firstName'] ?? 'لا يوجد'} ${userDoc['lastName'] ?? 'لا يوجد'}';
-        trainerEmail = userDoc['email'] ?? 'البريد الإلكتروني';
-        trainerImage = userDoc['profileImageUrl'] ??
-            'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
-      });
-
       // Get the current day of the week
       DateTime now = DateTime.now();
       List<String> weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];

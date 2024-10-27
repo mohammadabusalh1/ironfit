@@ -26,12 +26,12 @@ class _TraineeBodyState extends State<TraineeBody> {
   final _formKey = GlobalKey<FormState>();
 
   late List _plans;
-  late int _numberOfDaysUserHave;
   late String planName;
-  late String debts;
-  late String amountPaid;
   late String userName;
   late String imageURL;
+  late int _numberOfDaysUserHave;
+  late String debts;
+  late String amountPaid;
   late String subscriptionId;
 
   PreferencesService preferencesService = PreferencesService();
@@ -80,12 +80,17 @@ class _TraineeBodyState extends State<TraineeBody> {
       if (subscriptions.docs.isNotEmpty) {
         // Safely extract the end date and calculate the difference
         var endDateStr = subscriptions.docs[0]['endDate'];
-        if (endDateStr != null) {
+        print('endDateStr: $endDateStr');
+        if (endDateStr.toString().isNotEmpty) {
           try {
             // Parse the end date and calculate the difference in days
             setState(() {
-              userName = user.get('firstName') + ' ' + user.get('lastName');
-              imageURL = user.get('profileImageUrl');
+              userName = user.data()?.containsKey('firstName') ?? false
+                  ? user.get('firstName') + ' ' + user.get('lastName')
+                  : user.get('username');
+              imageURL = user.data()?.containsKey('profileImageUrl') ?? false
+                  ? user.get('profileImageUrl')
+                  : Assets.notFound;
               debts = subscriptions.docs[0]['debts'].toString();
               amountPaid = subscriptions.docs[0]['amountPaid'];
               subscriptionId = subscriptions.docs.first.id;
@@ -505,7 +510,7 @@ class _TraineeBodyState extends State<TraineeBody> {
         Navigator.of(context).pop();
         Navigator.of(context).pop();
       });
-        } catch (e) {
+    } catch (e) {
       // Catch any errors that occur during Firestore operations
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -800,7 +805,7 @@ class _TraineeBodyState extends State<TraineeBody> {
         Navigator.of(context).pop();
         Navigator.of(context).pop();
       });
-        } catch (e) {
+    } catch (e) {
       // Catch any errors that occur during Firestore operations
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -969,246 +974,224 @@ class _TraineeBodyState extends State<TraineeBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Expanded(
-          child: SizedBox(
-            width: double.infinity,
-            child: Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Align(
-                      alignment: const AlignmentDirectional(0, 1),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: Stack(
-                          children: [
-                            const HeaderImage(),
-                            Align(
-                              alignment: const AlignmentDirectional(0, 0),
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                    top: MediaQuery.of(context).size.height *
-                                        0.1),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsetsDirectional.fromSTEB(
-                                              0, 0, 0, 4),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: Image.network(
-                                          imageURL,
-                                          width: 100,
-                                          height: 100,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Opacity(
-                                      opacity: 0.8,
-                                      child: Text(
-                                        userName.isEmpty
-                                            ? 'لا يوجد مستخدم'
-                                            : userName,
-                                        style: const TextStyle(
-                                          fontFamily: 'Inter',
-                                          color: Palette.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w800,
-                                          shadows: [
-                                            Shadow(
-                                              color: Color(0xFF2F3336),
-                                              offset: Offset(4.0, 4.0),
-                                              blurRadius: 2.0,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment:
-                                          const AlignmentDirectional(0, 0),
-                                      child: Text(
-                                        'تبقى له ${_numberOfDaysUserHave} يوم من الإشتراك',
-                                        style: const TextStyle(
-                                          fontFamily: 'Inter',
-                                          color: Color(0xA0FFFFFF),
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
-                      child: Row(
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Align(
+            alignment: const AlignmentDirectional(0, 1),
+            child: SizedBox(
+              width: double.infinity,
+              child: Stack(
+                children: [
+                  const HeaderImage(),
+                  Align(
+                    alignment: const AlignmentDirectional(0, 0),
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.height * 0.1),
+                      child: Column(
                         mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(
-                            flex: 1,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                cancelSubscription(context, widget.username);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Palette.redDelete, // Button color
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    16, 0, 16, 0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                fixedSize: const Size(double.infinity, 45),
-                              ),
-                              child: const Text(
-                                'إلغاء إشتراكه',
-                                style: TextStyle(
-                                  fontFamily: 'Inter Tight',
-                                  color: Palette.white,
-                                ),
+                          Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                0, 0, 0, 4),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(
+                                imageURL,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
-                          const SizedBox(width: 12), // Spacing between buttons
-                          Expanded(
-                            flex: 1,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                showAddPlanDialog(context);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    const Color(0xFFFFBB02), // Button color
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    16, 0, 16, 0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                fixedSize: const Size(double.infinity, 45),
+                          const SizedBox(height: 8),
+                          Opacity(
+                            opacity: 0.8,
+                            child: Text(
+                              userName.isEmpty ? 'لا يوجد مستخدم' : userName,
+                              style: const TextStyle(
+                                fontFamily: 'Inter',
+                                color: Palette.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                shadows: [
+                                  Shadow(
+                                    color: Color(0xFF2F3336),
+                                    offset: Offset(4.0, 4.0),
+                                    blurRadius: 2.0,
+                                  ),
+                                ],
                               ),
-                              child: const Text(
-                                'أضف برنامج',
-                                style: TextStyle(
-                                  fontFamily: 'Inter Tight',
-                                  color: Color(0xFF1C1503),
-                                ),
+                            ),
+                          ),
+                          Align(
+                            alignment: const AlignmentDirectional(0, 0),
+                            child: Text(
+                              'تبقى له ${_numberOfDaysUserHave} يوم من الإشتراك',
+                              style: const TextStyle(
+                                fontFamily: 'Inter',
+                                color: Color(0xA0FFFFFF),
+                                fontSize: 12,
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                showEditSubscriptionDialog(context);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Palette.mainAppColorNavy, // Button color
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    16, 0, 16, 0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                fixedSize: const Size(double.infinity, 45),
-                              ),
-                              child: const Text(
-                                'تجديد الإشتراك',
-                                style: TextStyle(
-                                  fontFamily: 'Inter Tight',
-                                  color: Palette.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24),
-                      child: Text('الخطة المضافة',
-                          textAlign: TextAlign.right,
-                          textDirection: TextDirection.rtl,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            color: Palette.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          )),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: _buildCard(context, planName, () {
-                        removePlan();
-                        fetchUserPlan();
-                      }, Icons.delete, Palette.error, '', () {}),
-                    ),
-                    const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24),
-                        child: Divider(
-                          color: Palette.gray,
-                        )),
-                    const SizedBox(height: 16),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24),
-                      child: Text('المعاملات المالية',
-                          textAlign: TextAlign.right,
-                          textDirection: TextDirection.rtl,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            color: Palette.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          )),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: _buildCard(context, amountPaid, () {}, Icons.money,
-                          Palette.greenActive, 'المبلغ المدفوع', () {}),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: _buildCard(context, debts, () {}, Icons.add_card,
-                          Palette.mainAppColor, 'الديون', () {
-                        showEditDebt(context);
-                      }),
-                    ),
-                    const SizedBox(height: 40),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      cancelSubscription(context, widget.username);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Palette.redDelete, // Button color
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      fixedSize: const Size(double.infinity, 45),
+                    ),
+                    child: const Text(
+                      'إلغاء إشتراكه',
+                      style: TextStyle(
+                        fontFamily: 'Inter Tight',
+                        color: Palette.white,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12), // Spacing between buttons
+                Expanded(
+                  flex: 1,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showAddPlanDialog(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFFBB02), // Button color
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      fixedSize: const Size(double.infinity, 45),
+                    ),
+                    child: const Text(
+                      'أضف برنامج',
+                      style: TextStyle(
+                        fontFamily: 'Inter Tight',
+                        color: Color(0xFF1C1503),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showEditSubscriptionDialog(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Palette.mainAppColorNavy, // Button color
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      fixedSize: const Size(double.infinity, 45),
+                    ),
+                    child: const Text(
+                      'تجديد الإشتراك',
+                      style: TextStyle(
+                        fontFamily: 'Inter Tight',
+                        color: Palette.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: Text('الخطة المضافة',
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  color: Palette.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                )),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: _buildCard(context, planName, () {
+              removePlan();
+              fetchUserPlan();
+            }, Icons.delete, Palette.error, '', () {}),
+          ),
+          const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: Divider(
+                color: Palette.gray,
+              )),
+          const SizedBox(height: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: Text('المعاملات المالية',
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  color: Palette.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                )),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: _buildCard(context, amountPaid, () {}, Icons.money,
+                Palette.greenActive, 'المبلغ المدفوع', () {}),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: _buildCard(context, debts, () {}, Icons.add_card,
+                Palette.mainAppColor, 'الديون', () {
+              showEditDebt(context);
+            }),
+          ),
+          const SizedBox(height: 40),
+        ],
+      ),
     );
   }
 }

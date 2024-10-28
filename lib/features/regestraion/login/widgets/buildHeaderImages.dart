@@ -66,7 +66,7 @@ class _AnimatedScreenState extends State<AnimatedScreen>
             child: Image.asset(
               Assets.singUpImage,
               width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.3,
+              height: MediaQuery.of(context).size.height * 0.27,
               fit: BoxFit.cover,
             ),
           ),
@@ -78,8 +78,8 @@ class _AnimatedScreenState extends State<AnimatedScreen>
             child: ClipRRect(
               child: Image.asset(
                 Assets.ironFitLogo,
-                width: MediaQuery.of(context).size.height * 0.3,
-                height: MediaQuery.of(context).size.height * 0.3,
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height * 0.27,
                 fit: BoxFit.cover,
               ),
             ),

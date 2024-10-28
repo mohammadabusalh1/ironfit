@@ -7,6 +7,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Button.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildHeaderImages.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildWelcomeText.dart';
@@ -139,6 +142,82 @@ class _LoginBodyState extends State<LoginBody> {
     }
   }
 
+  Future<void> _login() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        Get.dialog(Center(child: CircularProgressIndicator()),
+            barrierDismissible: false);
+
+        // Step 1: Sign in the user with FirebaseAuth
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(
+                email: emailController.text, password: passwordController.text);
+
+        // Step 2: Get the current user from FirebaseAuth
+        User? user = userCredential.user;
+
+        // Step 5: Navigate based on userType
+        if (isCoach) {
+          // Step 3: Fetch user data from Firestore
+          if (user != null) {
+            DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+                .collection('coaches')
+                .doc(user.uid)
+                .get();
+
+            if (userSnapshot.exists) {
+              SharedPreferences prefs =
+                  await preferencesService.getPreferences();
+              prefs.setString('coachId', user.uid);
+              prefs.setString('token', userSnapshot.id);
+              prefs.setBool('isCoach', true);
+              // Navigate to coach dashboard
+              Get.toNamed(Routes.coachDashboard);
+            } else {
+              throw Exception('المستخدم غير موجود');
+            }
+          }
+        } else if (!isCoach) {
+          if (user != null) {
+            DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+                .collection('trainees')
+                .doc(user.uid)
+                .get();
+
+            if (userSnapshot.exists) {
+              SharedPreferences prefs =
+                  await preferencesService.getPreferences();
+              prefs.setString('token', userSnapshot.id);
+              prefs.setBool('isCoach', false);
+              Get.toNamed(Routes.trainerDashboard);
+            } else {
+              throw Exception('المستخدم غير موجود');
+            }
+          }
+        }
+      } catch (e) {
+        // stop loading indicator
+        Get.back();
+
+        // Handle sign-in error
+        Get.snackbar('خطأ', 'يتعذر تسجيل الدخول',
+            snackPosition: SnackPosition.BOTTOM,
+            colorText: Palette.white,
+            margin: const EdgeInsets.all(10),
+            titleText: const Text(
+              textDirection: TextDirection.rtl,
+              'يتعذر تسجيل الدخول',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            messageText: const Text(
+              'الأيميل او كلمة المرور غير صحيحة',
+              style: TextStyle(color: Colors.white),
+              textDirection: TextDirection.rtl,
+            ));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,9 +242,51 @@ class _LoginBodyState extends State<LoginBody> {
                     const SizedBox(height: 24),
                     _buildCoachSwitch(context),
                     const SizedBox(height: 24),
-                    _buildLoginButton(),
-                    const SizedBox(height: 12),
-                    _buildGoogleRegisterButton(),
+                    BuildIconButton(
+                      text: LocalizationService.translateFromGeneral('login'),
+                      onPressed: () {
+                        _login();
+                      },
+                      backgroundColor: Palette.mainAppColor,
+                      textColor: Palette.white,
+                    ),
+                    const SizedBox(height: 8),
+                    BuildIconButton(
+                      text: LocalizationService.translateFromGeneral(
+                          'sign_in_with_google'),
+                      onPressed: () async {
+                        try {
+                          await signInWithGoogle();
+                        } catch (e) {
+                          Get.snackbar(
+                            'فشل',
+                            'يتعذر تسجيل الدخول باستخدام Google',
+                            titleText: const Text(
+                              'فشل',
+                              textAlign: TextAlign.right,
+                              textDirection: TextDirection.rtl,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            messageText: const Text(
+                              'يتعذر تسجيل الدخول باستخدام Google',
+                              textAlign: TextAlign.right,
+                              textDirection: TextDirection.rtl,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            snackPosition: SnackPosition.BOTTOM,
+                            colorText: Colors.white,
+                          );
+                        }
+                      },
+                      backgroundColor: Palette.mainAppColorWhite,
+                      textColor: Palette.mainAppColorNavy,
+                      icon: Icons.login,
+                      imageIcon: Image.asset(
+                        Assets.googleLogo,
+                        width: 24,
+                        height: 24,
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     const LoginTextWidget(),
                   ],
@@ -182,12 +303,12 @@ class _LoginBodyState extends State<LoginBody> {
     return TextFormField(
       controller: emailController,
       decoration: InputDecoration(
-        labelText: 'الإيميل',
+        labelText: LocalizationService.translateFromGeneral('email'),
         hintText: 'abc@gmail.com',
         hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
         labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
         filled: true,
-        fillColor: const Color(0xFF454038),
+        fillColor: Palette.secondaryColor,
         enabledBorder: OutlineInputBorder(
           borderSide:
               const BorderSide(color: Palette.mainAppColorBorder, width: 1),
@@ -225,12 +346,12 @@ class _LoginBodyState extends State<LoginBody> {
       controller: passwordController,
       obscureText: !passwordVisibility,
       decoration: InputDecoration(
-        labelText: 'كلمة المرور',
+        labelText: LocalizationService.translateFromGeneral('password'),
         hintText: '**',
         hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
         labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
         filled: true,
-        fillColor: const Color(0xFF454038),
+        fillColor: Palette.secondaryColor,
         enabledBorder: OutlineInputBorder(
           borderSide:
               const BorderSide(color: Palette.mainAppColorBorder, width: 1),
@@ -274,9 +395,10 @@ class _LoginBodyState extends State<LoginBody> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
-          'هل أنت مدرب؟',
-          style: TextStyle(color: Colors.white, fontSize: 14),
+        Text(
+          LocalizationService.translateFromGeneral('are_you_a_trainer'),
+          style: AppStyles.textCairoWhite(
+              16, Palette.mainAppColorWhite, FontWeight.normal),
         ),
         Switch.adaptive(
           value: isCoach,
@@ -289,175 +411,6 @@ class _LoginBodyState extends State<LoginBody> {
           inactiveTrackColor: Palette.gray,
         ),
       ],
-    );
-  }
-
-  Widget _buildLoginButton() {
-    return SizedBox(
-      child: Align(
-        alignment: const AlignmentDirectional(0, 1),
-        child: Container(
-          width: double.infinity,
-          constraints: const BoxConstraints(minHeight: 50),
-          child: ElevatedButton(
-            onPressed: () async {
-              if (_formKey.currentState!.validate()) {
-                try {
-                  Get.dialog(Center(child: CircularProgressIndicator()),
-                      barrierDismissible: false);
-
-                  // Step 1: Sign in the user with FirebaseAuth
-                  UserCredential userCredential = await FirebaseAuth.instance
-                      .signInWithEmailAndPassword(
-                          email: emailController.text,
-                          password: passwordController.text);
-
-                  // Step 2: Get the current user from FirebaseAuth
-                  User? user = userCredential.user;
-
-                  // Step 5: Navigate based on userType
-                  if (isCoach) {
-                    // Step 3: Fetch user data from Firestore
-                    if (user != null) {
-                      DocumentSnapshot userSnapshot = await FirebaseFirestore
-                          .instance
-                          .collection('coaches')
-                          .doc(user.uid)
-                          .get();
-
-                      if (userSnapshot.exists) {
-                        SharedPreferences prefs =
-                            await preferencesService.getPreferences();
-                        prefs.setString('coachId', user.uid);
-                        prefs.setString('token', userSnapshot.id);
-                        prefs.setBool('isCoach', true);
-                        // Navigate to coach dashboard
-                        Get.toNamed(Routes.coachDashboard);
-                      } else {
-                        throw Exception('المستخدم غير موجود');
-                      }
-                    }
-                  } else if (!isCoach) {
-                    if (user != null) {
-                      DocumentSnapshot userSnapshot = await FirebaseFirestore
-                          .instance
-                          .collection('trainees')
-                          .doc(user.uid)
-                          .get();
-
-                      if (userSnapshot.exists) {
-                        SharedPreferences prefs =
-                            await preferencesService.getPreferences();
-                        prefs.setString('token', userSnapshot.id);
-                        prefs.setBool('isCoach', false);
-                        Get.toNamed(Routes.trainerDashboard);
-                      } else {
-                        throw Exception('المستخدم غير موجود');
-                      }
-                    }
-                  }
-                } catch (e) {
-                  // stop loading indicator
-                  Get.back();
-
-                  // Handle sign-in error
-                  Get.snackbar('خطأ', 'يتعذر تسجيل الدخول',
-                      snackPosition: SnackPosition.BOTTOM,
-                      colorText: Palette.white,
-                      margin: const EdgeInsets.all(10),
-                      titleText: const Text(
-                        textDirection: TextDirection.rtl,
-                        'يتعذر تسجيل الدخول',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                      messageText: const Text(
-                        'الأيميل او كلمة المرور غير صحيحة',
-                        style: TextStyle(color: Colors.white),
-                        textDirection: TextDirection.rtl,
-                      ));
-                }
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              foregroundColor: const Color(0xFF1C1503),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              backgroundColor: const Color(0xFFFFBB02),
-              textStyle: const TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            child: const Text('تسجيل الدخول',
-                style: TextStyle(color: Colors.white)),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGoogleRegisterButton() {
-    return SizedBox(
-      child: Align(
-        alignment: const AlignmentDirectional(0, 1),
-        child: Container(
-          width: double.infinity,
-          constraints: const BoxConstraints(
-            minHeight: 50,
-          ),
-          child: ElevatedButton.icon(
-            icon: Image.asset(
-              Assets.googleLogo,
-              width: 24,
-              height: 24,
-            ),
-            onPressed: () async {
-              try {
-                await signInWithGoogle();
-              } catch (e) {
-                Get.snackbar(
-                  'فشل',
-                  'يتعذر تسجيل الدخول باستخدام Google',
-                  titleText: const Text(
-                    'فشل',
-                    textAlign: TextAlign.right,
-                    textDirection: TextDirection.rtl,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  messageText: const Text(
-                    'يتعذر تسجيل الدخول باستخدام Google',
-                    textAlign: TextAlign.right,
-                    textDirection: TextDirection.rtl,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  snackPosition: SnackPosition.BOTTOM,
-                  colorText: Colors.white,
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              foregroundColor: const Color(0xFF1C1503),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              backgroundColor: Colors.white,
-              textStyle: const TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            label: const Text(
-              'التسجيل باستخدام جوجل',
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
@@ -508,15 +461,15 @@ class _LoginTextWidgetState extends State<LoginTextWidget>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
-            'ليس لدي حساب! ',
+          Text(
+            LocalizationService.translateFromGeneral('no_account') + " ",
             style: TextStyle(color: Colors.white, fontSize: 14),
           ),
           const SizedBox(width: 4),
           InkWell(
             onTap: () => Get.toNamed(Routes.singUp), // Use your desired route
-            child: const Text(
-              'إنشاء حساب',
+            child: Text(
+              LocalizationService.translateFromGeneral('create_account'),
               style: TextStyle(color: Color(0xFFFFBB02), fontSize: 14),
             ),
           ),

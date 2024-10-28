@@ -6,6 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Button.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildHeaderImages.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildWelcomeText.dart';
@@ -314,10 +317,53 @@ class _SignUpBodyState extends State<SignUpBody> {
                       const SizedBox(height: 24),
                       _buildCoachSwitch(context),
                       const SizedBox(height: 24),
-                      _buildRegisterButton(),
-                      const SizedBox(height: 12),
-                      _buildGoogleRegisterButton(),
-                      const SizedBox(height: 12),
+                      BuildIconButton(
+                        text: LocalizationService.translateFromGeneral(
+                            'create_account'),
+                        onPressed: () {
+                          _registerUser();
+                        },
+                        backgroundColor: Palette.mainAppColor,
+                        textColor: Palette.white,
+                      ),
+                      const SizedBox(height: 8),
+                      BuildIconButton(
+                        text: LocalizationService.translateFromGeneral(
+                            'sign_in_with_google'),
+                        onPressed: () async {
+                          try {
+                            await signUpWithGoogle();
+                          } catch (e) {
+                            Get.snackbar(
+                              'فشل',
+                              'يتعذر تسجيل الدخول باستخدام Google',
+                              titleText: const Text(
+                                'فشل',
+                                textAlign: TextAlign.right,
+                                textDirection: TextDirection.rtl,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              messageText: const Text(
+                                'يتعذر تسجيل الدخول باستخدام Google',
+                                textAlign: TextAlign.right,
+                                textDirection: TextDirection.rtl,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              snackPosition: SnackPosition.BOTTOM,
+                              colorText: Colors.white,
+                            );
+                          }
+                        },
+                        backgroundColor: Palette.mainAppColorWhite,
+                        textColor: Palette.mainAppColorNavy,
+                        icon: Icons.login,
+                        imageIcon: Image.asset(
+                          Assets.googleLogo,
+                          width: 24,
+                          height: 24,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
                       _buildLoginText(context),
                     ],
                   ),
@@ -332,7 +378,7 @@ class _SignUpBodyState extends State<SignUpBody> {
     return TextFormField(
       controller: emailController,
       decoration: InputDecoration(
-        labelText: 'الإيميل',
+        labelText: LocalizationService.translateFromGeneral('email'),
         hintText: 'abc@gmail.com',
         hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
         labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
@@ -365,7 +411,7 @@ class _SignUpBodyState extends State<SignUpBody> {
       controller: passwordController,
       obscureText: !passwordVisibility,
       decoration: InputDecoration(
-        labelText: 'كلمة المرور',
+        labelText: LocalizationService.translateFromGeneral('password'),
         hintText: '**',
         hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
         labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
@@ -408,9 +454,10 @@ class _SignUpBodyState extends State<SignUpBody> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
-          'هل أنت مدرب؟',
-          style: TextStyle(color: Colors.white, fontSize: 14),
+        Text(
+          LocalizationService.translateFromGeneral('are_you_a_trainer'),
+          style: AppStyles.textCairoWhite(
+              16, Palette.mainAppColorWhite, FontWeight.normal),
         ),
         Switch.adaptive(
           value: isCoach,
@@ -425,79 +472,20 @@ class _SignUpBodyState extends State<SignUpBody> {
     );
   }
 
-  Widget _buildRegisterButton() {
-    return SizedBox(
-      child: Align(
-        alignment: const AlignmentDirectional(0, 1),
-        child: Container(
-          width: double.infinity,
-          constraints: const BoxConstraints(
-            minHeight: 50,
-          ),
-          child: ElevatedButton(
-            onPressed: _registerUser,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              backgroundColor: const Color(0xFFFFBB02),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            child: const Text(
-              'إنشاء حساب',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGoogleRegisterButton() {
-    return Container(
-      height: 50,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: InkWell(
-        onTap: () {
-          signUpWithGoogle();
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              Assets.googleLogo,
-              height: 25,
-              width: 25,
-            ),
-            const SizedBox(width: 8),
-            const Text(
-              'إنشاء حساب باستخدام جوجل',
-              style: TextStyle(color: Colors.black),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildLoginText(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(
-          'لديك حساب؟',
+        Text(
+          LocalizationService.translateFromGeneral('already_have_account'),
           style: TextStyle(color: Colors.white, fontSize: 14),
         ),
         TextButton(
           onPressed: () {
             Get.toNamed(Routes.singIn);
           },
-          child: const Text(
-            'تسجيل الدخول',
+          child: Text(
+            LocalizationService.translateFromGeneral('login'),
             style: TextStyle(color: Palette.mainAppColor, fontSize: 14),
           ),
         ),

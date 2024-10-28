@@ -1,4 +1,19 @@
 {
+  "preLogin": {
+    "page1": "Smooth registration for trainees and tracking exercises all in one platform.",
+    "page2": "The coach creates customized workout plans designed to meet each trainee's specific goals.",
+    "page3": "Start personalized training and track progress, making fitness management easier."
+  },
+  "selectLang": {
+    "title": "Select Your Language",
+    "description": "Please select your preferred language from the options below.",
+    "English": "English",
+    "Arabic": "Arabic"
+  },
+  "selectEnter": {
+    "title": "Welcome to IronFit",
+    "description": "We hope you have a great day! Please choose your preferred option below."
+  },
   "welcome_message": "Welcome, please enter your information",
   "email": "Email",
   "password": "Password",
@@ -8,6 +23,7 @@
   "create_account": "Create Account",
   "finish": "Finish",
   "next": "Next",
+  "startNow": "Start Now",
   "statistics": "Statistics",
   "daily_requirement": "How much do you need daily?",
   "protein": "Protein",

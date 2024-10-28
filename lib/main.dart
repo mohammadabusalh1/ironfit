@@ -7,9 +7,12 @@ import 'package:ironfit/core/presentation/controllers/coach_nav_bar_controller.d
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/NotificationService.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/CoachStatistics/screens/coach_statistics_screen.dart';
 import 'package:ironfit/features/MyPlans/screens/my_plans_screen.dart';
+import 'package:ironfit/features/SelectEnterType/screens/select_enter_screen.dart';
+import 'package:ironfit/features/SelectLanguage/screens/select_lang_screen.dart';
 import 'package:ironfit/features/Trainees/screens/Trainees_screen.dart';
 import 'package:ironfit/features/UserMyPlan/screens/user_my_plan_screen.dart';
 import 'package:ironfit/features/UserPalnExercises/screens/user_plan_exercises_screen.dart';
@@ -47,6 +50,8 @@ void main() async {
     await Firebase.initializeApp();
   }
 
+  LocalizationService.load('ar');
+
   final notificationService = NotificationService();
   await notificationService.init();
 
@@ -82,9 +87,9 @@ class MyApp extends StatelessWidget {
         prefs.getBool('hasSeenPreLoginScreen') ?? false;
 
     if (hasSeenPreLoginScreen) {
-      return Routes.singUp; // Direct to the login screen
+      return Routes.selectLanguage; // Direct to the login screen
     } else {
-      return Routes.preLoginScreens; // Direct to the pre-login screen
+      return Routes.selectLanguage; // Direct to the pre-login screen
     }
   }
 
@@ -129,8 +134,18 @@ class MyApp extends StatelessWidget {
                 iconTheme: IconThemeData(color: Palette.black),
               ),
             ),
-            initialRoute: snapshot.data!,
+            initialRoute: snapshot.data,
             getPages: [
+              GetPage(
+                  name: Routes.selectEnter,
+                  page: () => Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: SelectEnterScreen())),
+              GetPage(
+                  name: Routes.selectLanguage,
+                  page: () => Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: SelectLanguageScreen())),
               GetPage(
                   name: Routes.coachDashboard,
                   page: () => Directionality(

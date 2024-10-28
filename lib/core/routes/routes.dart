@@ -23,5 +23,7 @@ class Routes {
   static const String coachStatistics = '/coachStatistics';
   static const String editPlan = '/editPlan';
   static const String userEnterInfo = '/userEnterInfo';
-  static const String userProfile= '/userProfile';
+  static const String userProfile = '/userProfile';
+  static const String selectLanguage = '/selectLanguage';
+  static const String selectEnter = '/selectEnter';
 }

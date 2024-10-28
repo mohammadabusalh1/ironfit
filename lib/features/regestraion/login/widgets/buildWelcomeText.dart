@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
 class WelcomeText extends StatefulWidget {
   @override
@@ -29,7 +32,6 @@ class _AnimatedWelcomeText extends State<WelcomeText>
     );
 
     _textTypewriterController.forward();
-
   }
 
   @override
@@ -42,13 +44,10 @@ class _AnimatedWelcomeText extends State<WelcomeText>
     return FadeTransition(
       opacity: _textFadeAnimation,
       child: Text(
-        'مرحباً بك، يرجى إدخال بياناتك',
-        style: TextStyle(
-          fontFamily: 'Inter',
-          color: Colors.white,
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
+        textAlign: TextAlign.center,
+        LocalizationService.translateFromGeneral('welcome_message'),
+        style: AppStyles.textCairoWhite(
+            16, Palette.mainAppColorWhite, FontWeight.w700),
       ),
     );
   }

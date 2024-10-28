@@ -33,6 +33,7 @@ dependencies:
   firebase_messaging: ^15.1.3
   timezone: ^0.9.4
   workmanager: ^0.5.2
+  google_fonts: ^6.2.1
 
   # Add any other packages your project might need like HTTP for API calls
   # Example:
@@ -64,7 +65,10 @@ flutter:
     - assets/images/placeholder.svg
     - assets/images/google-logo.png
     - assets/images/Welcome-to.png
+    - assets/images/selectLangBackground.png
     - assets/images/logo.png
+    - assets/lang/en.json
+    - assets/lang/ar.json
 
   # Fonts can also be added if required for custom typography
   # fonts:

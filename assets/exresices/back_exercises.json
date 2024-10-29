@@ -1,0 +1,1626 @@
+[
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/7/3/8/4738.gif",
+    "id": 7,
+    "name": "alternate lateral pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/1/4/2/13142.gif",
+    "id": 3293,
+    "name": "archer pull up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/4/7/4/6/4746.gif",
+    "id": 15,
+    "name": "assisted parallel close grip pull-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/3/3/6/6336.gif",
+    "id": 17,
+    "name": "assisted pull-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/3/3/6/6336.gif",
+    "id": 1431,
+    "name": "assisted standing chin-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/3/3/6/6336.gif",
+    "id": 1432,
+    "name": "assisted standing pull-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/8/1/6581.gif",
+    "id": 1314,
+    "name": "back extension on exercise ball",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/1/4/6/13146.gif",
+    "id": 3297,
+    "name": "back lever",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/2/1/7/4/8/21748.gif",
+    "id": 1405,
+    "name": "back pec stretch",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/6/8/3/5683.gif",
+    "id": 970,
+    "name": "band assisted pull-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/6/8/7/5687.gif",
+    "id": 974,
+    "name": "band close-grip pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/4/5/3/12453.gif",
+    "id": 3117,
+    "name": "band fixed back close grip pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/4/5/2/12452.gif",
+    "id": 3116,
+    "name": "band fixed back underhand pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/1/8/4/0/2/18402.gif",
+    "id": 983,
+    "name": "band kneeling one arm pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/0/1/5701.gif",
+    "id": 988,
+    "name": "band one arm standing low row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/0/3/5703.gif",
+    "id": 990,
+    "name": "band one arm twisting seated row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/3/1/5731.gif",
+    "id": 1018,
+    "name": "band shrug",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/2/3/5723.gif",
+    "id": 1010,
+    "name": "band straight leg deadlift",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/2/6/5726.gif",
+    "id": 1013,
+    "name": "band underhand pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/8/2/6582.gif",
+    "id": 1316,
+    "name": "barbell bent arm pullover",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://media.tenor.com/AYJ_bNXDvoUAAAAM/workout-muscles.gif",
+    "id": 27,
+    "name": "barbell bent over row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/7/6/5/4765.gif",
+    "id": 34,
+    "name": "barbell decline bent arm pullover",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/7/6/8/4768.gif",
+    "id": 37,
+    "name": "barbell decline wide-grip pullover",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/3/4/9/7/23497.gif",
+    "id": 49,
+    "name": "barbell incline row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://media.tenor.com/AYJ_bNXDvoUAAAAM/workout-muscles.gif",
+    "id": 64,
+    "name": "barbell one arm bent over row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/4/4/8/12448.gif",
+    "id": 3017,
+    "name": "barbell pendlay row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/2/2/6522.gif",
+    "id": 73,
+    "name": "barbell pullover",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/3/5/4/4/23544.gif",
+    "id": 22,
+    "name": "barbell pullover to press",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/6/1/9/10619.gif",
+    "id": 118,
+    "name": "barbell reverse grip bent over row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/3/5/7/1/2/35712.gif",
+    "id": 1317,
+    "name": "barbell reverse grip incline bench row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/3/1/4831.gif",
+    "id": 95,
+    "name": "barbell shrug",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/4/4/9/12449.gif",
+    "id": 3019,
+    "name": "bench pull-ups",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/7/2/7/12727.gif",
+    "id": 3168,
+    "name": "bodyweight squatting row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/7/2/6/12726.gif",
+    "id": 3167,
+    "name": "bodyweight squatting row (with towel)",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/6/9/6/12696.gif",
+    "id": 3156,
+    "name": "bodyweight standing close-grip one arm row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/6/9/8/12698.gif",
+    "id": 3158,
+    "name": "bodyweight standing close-grip row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/7/0/0/12700.gif",
+    "id": 3162,
+    "name": "bodyweight standing one arm row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/7/0/2/12702.gif",
+    "id": 3161,
+    "name": "bodyweight standing one arm row (with towel)",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/7/0/4/12704.gif",
+    "id": 3166,
+    "name": "bodyweight standing row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/7/0/6/12706.gif",
+    "id": 3165,
+    "name": "bodyweight standing row (with towel)",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/8/0/1/10801.gif",
+    "id": 150,
+    "name": "cable bar lateral pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/8/6/4886.gif",
+    "id": 153,
+    "name": "cable cross-over lateral pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/9/2/4892.gif",
+    "id": 159,
+    "name": "cable decline seated wide-grip row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/9/3/4893.gif",
+    "id": 160,
+    "name": "cable floor seated wide-grip row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/2/6/4926.gif",
+    "id": 167,
+    "name": "cable high row (kneeling)",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/8/4/6584.gif",
+    "id": 1318,
+    "name": "cable incline bench row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/0/5/4905.gif",
+    "id": 172,
+    "name": "cable incline pushdown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/1/6/3/10163.gif",
+    "id": 2330,
+    "name": "cable lat pulldown full range of motion",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/1/0/4910.gif",
+    "id": 177,
+    "name": "cable lateral pulldown (with rope attachment)",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/8/0/1/10801.gif",
+    "id": 2616,
+    "name": "cable lateral pulldown with v-bar",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/1/3/4913.gif",
+    "id": 180,
+    "name": "cable low seated row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/1/7/4917.gif",
+    "id": 184,
+    "name": "cable lying extension pullover (with rope attachment)",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/1/6/3/14163.gif",
+    "id": 189,
+    "name": "cable one arm bent over row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/5/8/9/5/5895.gif",
+    "id": 3563,
+    "name": "cable one arm pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/2/6/4926.gif",
+    "id": 193,
+    "name": "cable one arm straight back high row (kneeling)",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/8/5/6585.gif",
+    "id": 1319,
+    "name": "cable palm rotational row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/3/1/4931.gif",
+    "id": 198,
+    "name": "cable pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/8/3/4883.gif",
+    "id": 197,
+    "name": "cable pulldown (pro lat bar)",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/3/2/4932.gif",
+    "id": 199,
+    "name": "cable pushdown (straight arm) v. 2",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/3/8/4938.gif",
+    "id": 205,
+    "name": "cable rear pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/2/0/8/2/2/20822.gif",
+    "id": 208,
+    "name": "cable reverse-grip straight back seated high row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/8/6/6586.gif",
+    "id": 1320,
+    "name": "cable rope crossover seated row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/8/7/6587.gif",
+    "id": 1321,
+    "name": "cable rope elevated seated row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/8/8/6588.gif",
+    "id": 1322,
+    "name": "cable rope extension incline bench row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/8/9/6589.gif",
+    "id": 1323,
+    "name": "cable rope seated row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/4/6/4946.gif",
+    "id": 213,
+    "name": "cable seated high row (v-bar)",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/5/8/9/6/5896.gif",
+    "id": 214,
+    "name": "cable seated one arm alternate row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/7/3/2/6/7326.gif",
+    "id": 861,
+    "name": "cable seated row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/5/1/4951.gif",
+    "id": 218,
+    "name": "cable seated wide-grip row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/5/3/4953.gif",
+    "id": 220,
+    "name": "cable shrug",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/7/2/3/10723.gif",
+    "id": 1717,
+    "name": "cable squat row (with rope attachment)",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/6/7/4967.gif",
+    "id": 234,
+    "name": "cable standing row (v-bar)",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/6/9/4969.gif",
+    "id": 236,
+    "name": "cable standing twist row (v-bar)",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/7/1/4971.gif",
+    "id": 238,
+    "name": "cable straight arm pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/7/0/4970.gif",
+    "id": 237,
+    "name": "cable straight arm pulldown (with rope)",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/7/3/2/7/7327.gif",
+    "id": 239,
+    "name": "cable straight back seated row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/6/3/8/10638.gif",
+    "id": 2464,
+    "name": "cable thibaudeau kayak row",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/7/7/4977.gif",
+    "id": 244,
+    "name": "cable twisting pull",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/7/8/4978.gif",
+    "id": 245,
+    "name": "cable underhand pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/9/0/6590.gif",
+    "id": 1324,
+    "name": "cable upper row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/5/2/1/24521.gif",
+    "id": 1325,
+    "name": "cable wide grip rear pulldown behind neck",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/8/1/4981.gif",
+    "id": 248,
+    "name": "cambered bar lying row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://media.tenor.com/H14FVCywB7cAAAAM/chin-up-cheer-up.gif",
+    "id": 1326,
+    "name": "chin-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/8/6/4986.gif",
+    "id": 253,
+    "name": "chin-ups (narrow parallel grip)",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/9/3/6593.gif",
+    "id": 1327,
+    "name": "close grip chin-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/7/3/3/8/27338.gif",
+    "id": 293,
+    "name": "dumbbell bent over row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/3/8/5038.gif",
+    "id": 305,
+    "name": "dumbbell decline shrug",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/0/2/6/0/20260.gif",
+    "id": 304,
+    "name": "dumbbell decline shrug v. 2",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/6/8/5068.gif",
+    "id": 327,
+    "name": "dumbbell incline row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/7/0/5070.gif",
+    "id": 329,
+    "name": "dumbbell incline shrug",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/1/1/0/14110.gif",
+    "id": 3541,
+    "name": "dumbbell incline y-raise",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/9/4/6594.gif",
+    "id": 1328,
+    "name": "dumbbell lying rear delt row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/1/8/3/4/21834.gif",
+    "id": 292,
+    "name": "dumbbell one arm bent-over row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/9/5/6595.gif",
+    "id": 1329,
+    "name": "dumbbell palm rotational bent over row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/9/6/6596.gif",
+    "id": 1330,
+    "name": "dumbbell reverse grip incline bench one arm row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/9/7/6597.gif",
+    "id": 1331,
+    "name": "dumbbell reverse grip incline bench two arm row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/5/9/0/14590.gif",
+    "id": 2327,
+    "name": "dumbbell reverse grip row (female)",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/0/7/3/10073.gif",
+    "id": 406,
+    "name": "dumbbell shrug",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/7/4/9/14749.gif",
+    "id": 3664,
+    "name": "dumbbell side plank with rear fly",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/7/6/2/7/7627.gif",
+    "id": 1772,
+    "name": "elbow lift - reverse push-up",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/2/3/4/13234.gif",
+    "id": 3292,
+    "name": "elevator",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/9/8/6598.gif",
+    "id": 1332,
+    "name": "exercise ball alternating arm ups",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/9/9/6599.gif",
+    "id": 1333,
+    "name": "exercise ball back extension with arms extended",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/0/0/6600.gif",
+    "id": 1334,
+    "name": "exercise ball back extension with hands behind head",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/0/1/6601.gif",
+    "id": 1335,
+    "name": "exercise ball back extension with knees off ground",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/0/2/6602.gif",
+    "id": 1336,
+    "name": "exercise ball back extension with rotation",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/0/3/6603.gif",
+    "id": 1338,
+    "name": "exercise ball hug",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/0/4/6604.gif",
+    "id": 1339,
+    "name": "exercise ball lat stretch",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/0/5/6605.gif",
+    "id": 1341,
+    "name": "exercise ball lower back stretch (pyramid)",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/0/6/6606.gif",
+    "id": 1342,
+    "name": "exercise ball lying side lat stretch",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/0/7/6607.gif",
+    "id": 1343,
+    "name": "exercise ball prone leg raise",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "ez barbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/4/4/1/12441.gif",
+    "id": 3010,
+    "name": "ez bar lying bent arms pullover",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "ez barbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/0/8/6608.gif",
+    "id": 1344,
+    "name": "ez bar reverse grip bent over row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/2/3/5/13235.gif",
+    "id": 3295,
+    "name": "front lever reps",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/0/5/5205.gif",
+    "id": 466,
+    "name": "gironda sternum chin",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/2/8/5228.gif",
+    "id": 489,
+    "name": "hyperextension",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/2/7/5227.gif",
+    "id": 488,
+    "name": "hyperextension (on bench)",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/9/7/9/0/9790.gif",
+    "id": 499,
+    "name": "inverted row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/9/7/9/6/9796.gif",
+    "id": 2300,
+    "name": "inverted row bent knees",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/9/7/9/4/9794.gif",
+    "id": 2298,
+    "name": "inverted row on bench",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/3/6/5236.gif",
+    "id": 497,
+    "name": "inverted row v. 2",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/3/7/5237.gif",
+    "id": 498,
+    "name": "inverted row with straps",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/5/9/5259.gif",
+    "id": 521,
+    "name": "kettlebell alternating renegade row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/6/0/5260.gif",
+    "id": 522,
+    "name": "kettlebell alternating row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/2/1/6/9/3/21693.gif",
+    "id": 541,
+    "name": "kettlebell one arm row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/8/6/5286.gif",
+    "id": 548,
+    "name": "kettlebell sumo high pull",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/0/9/6609.gif",
+    "id": 1345,
+    "name": "kettlebell two arm row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/9/6/5296.gif",
+    "id": 558,
+    "name": "kipping muscle up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/1/0/6610.gif",
+    "id": 1346,
+    "name": "kneeling lat stretch",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/7/7/1/13771.gif",
+    "id": 3418,
+    "name": "l-pull-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/9/3/9/14939.gif",
+    "id": 571,
+    "name": "lever alternating narrow grip seated row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/0/9/5309.gif",
+    "id": 572,
+    "name": "lever assisted chin-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/1/0/5310.gif",
+    "id": 573,
+    "name": "lever back extension",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/8/9/8/9/28989.gif",
+    "id": 574,
+    "name": "lever bent over row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/1/0/0/13100.gif",
+    "id": 3200,
+    "name": "lever bent-over row with v-bar",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/1/6/5316.gif",
+    "id": 579,
+    "name": "lever front pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/1/7/5317.gif",
+    "id": 580,
+    "name": "lever gripless shrug",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/3/4/3/6343.gif",
+    "id": 1439,
+    "name": "lever gripless shrug v. 2",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/2/0/6620.gif",
+    "id": 581,
+    "name": "lever high row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/9/4/5/14945.gif",
+    "id": 588,
+    "name": "lever narrow grip seated row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/2/6/5326.gif",
+    "id": 589,
+    "name": "lever one arm bent over row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/2/0/6620.gif",
+    "id": 1356,
+    "name": "lever one arm lateral high row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/1/1/6611.gif",
+    "id": 1347,
+    "name": "lever one arm lateral wide pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/9/4/2/2/9422.gif",
+    "id": 2285,
+    "name": "lever pullover",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/9/0/0/10900.gif",
+    "id": 2736,
+    "name": "lever reverse grip lateral pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/1/2/6612.gif",
+    "id": 1348,
+    "name": "lever reverse grip vertical row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/1/3/6613.gif",
+    "id": 1349,
+    "name": "lever reverse t-bar row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/5/7/8/12578.gif",
+    "id": 1350,
+    "name": "lever seated row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/4/1/5341.gif",
+    "id": 604,
+    "name": "lever shrug",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/8/8/6/5886.gif",
+    "id": 606,
+    "name": "lever t bar row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/1/5/6615.gif",
+    "id": 1351,
+    "name": "lever t-bar reverse grip row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/8/0/6580.gif",
+    "id": 1313,
+    "name": "lever unilateral row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "rope",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/4/6/5346.gif",
+    "id": 609,
+    "name": "london bridge",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/1/6/6616.gif",
+    "id": 1352,
+    "name": "lower back curl",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "medicine ball",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/1/7/6617.gif",
+    "id": 1353,
+    "name": "medicine ball catch and overhead throw",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "medicine ball",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/1/8/6618.gif",
+    "id": 1354,
+    "name": "medicine ball overhead slam",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/6/3/5363.gif",
+    "id": 627,
+    "name": "mixed grip chin-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://media.tenor.com/dgCyChkdEY4AAAAM/muscle-up.gif",
+    "id": 631,
+    "name": "muscle up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/6/4/6664.gif",
+    "id": 1401,
+    "name": "muscle-up (on vertical bar)",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/1/9/6619.gif",
+    "id": 1355,
+    "name": "one arm against wall",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/7/3/5373.gif",
+    "id": 638,
+    "name": "one arm chin-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/7/6/2/6/7626.gif",
+    "id": 1773,
+    "name": "one arm towel row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/8/5/5385.gif",
+    "id": 651,
+    "name": "pull up (neutral grip)",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://media.tenor.com/L62Ej72hDmkAAAAM/cat-exercise.gif",
+    "id": 652,
+    "name": "pull-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/0/4/5404.gif",
+    "id": 670,
+    "name": "rear pull-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "resistance band",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/5/6/0/12560.gif",
+    "id": 3144,
+    "name": "resistance band seated straight back row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/0/7/5407.gif",
+    "id": 673,
+    "name": "reverse grip machine lat pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/0/8/5408.gif",
+    "id": 674,
+    "name": "reverse grip pull-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/1/7/9/4/11794.gif",
+    "id": 678,
+    "name": "rocky pull-up pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "roller",
+    "gifUrl": "https://gymvisual.com/img/p/8/8/9/9/8899.gif",
+    "id": 2208,
+    "name": "roller back stretch",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "roller",
+    "gifUrl": "https://gymvisual.com/img/p/8/8/9/8/8898.gif",
+    "id": 2207,
+    "name": "roller side lat stretch",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "rope",
+    "gifUrl": "https://media.tenor.com/59uV5dU5vCEAAAAM/climbing-up-the-rope-michelle-khare.gif",
+    "id": 680,
+    "name": "rope climb",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/4/4/3/12443.gif",
+    "id": 3012,
+    "name": "scapula dips",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://media1.tenor.com/m/K-UZrgp-1vQAAAAd/scapular-pulls.gif",
+    "id": 688,
+    "name": "scapular pull-up",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/2/3/5423.gif",
+    "id": 690,
+    "name": "seated lower back stretch",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/7/6/0/2/7602.gif",
+    "id": 1763,
+    "name": "shoulder grip pull-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/2/1/6621.gif",
+    "id": 1358,
+    "name": "side lying floor stretch",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/4/7/5447.gif",
+    "id": 720,
+    "name": "side-to-side chin",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/1/5/3/13153.gif",
+    "id": 3304,
+    "name": "skin the cat",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/7/0/5470.gif",
+    "id": 746,
+    "name": "smith back shrug",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/2/1/1/0/8/21108.gif",
+    "id": 1359,
+    "name": "smith bent over row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/2/0/9/9/8/20998.gif",
+    "id": 761,
+    "name": "smith narrow row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/2/3/6623.gif",
+    "id": 1360,
+    "name": "smith one arm row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/2/4/6624.gif",
+    "id": 1361,
+    "name": "smith reverse grip bent over row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/9/1/5491.gif",
+    "id": 767,
+    "name": "smith shrug",
+    "target": "traps"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/2/5/6625.gif",
+    "id": 1362,
+    "name": "sphinx",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/2/6/6626.gif",
+    "id": 1363,
+    "name": "spine stretch",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/7/5/1/14751.gif",
+    "id": 3669,
+    "name": "standing archer",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/2/1/5/9/2/21592.gif",
+    "id": 794,
+    "name": "standing lateral stretch",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/2/7/6627.gif",
+    "id": 1364,
+    "name": "standing pelvic tilt",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/3/1/5531.gif",
+    "id": 808,
+    "name": "suspended row",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/4/1/5541.gif",
+    "id": 818,
+    "name": "twin handle parallel grip lat pulldown",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/9/6/9/12969.gif",
+    "id": 3231,
+    "name": "two toe touch (male)",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/2/8/6628.gif",
+    "id": 1365,
+    "name": "upper back stretch",
+    "target": "upper back"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/2/9/6629.gif",
+    "id": 1366,
+    "name": "upward facing dog",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/1/9/4/13194.gif",
+    "id": 2987,
+    "name": "weighted close grip chin-up on dip cage",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/5/7/5557.gif",
+    "id": 835,
+    "name": "weighted hyperextension (on stability ball)",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/1/3/5/13135.gif",
+    "id": 3286,
+    "name": "weighted muscle up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/2/0/0/13200.gif",
+    "id": 3312,
+    "name": "weighted muscle up (on bar)",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/1/3/9/13139.gif",
+    "id": 3290,
+    "name": "weighted one hand pull up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/6/3/5563.gif",
+    "id": 841,
+    "name": "weighted pull-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/9/0/6690.gif",
+    "id": 1429,
+    "name": "wide grip pull-up",
+    "target": "lats"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/3/0/6630.gif",
+    "id": 1367,
+    "name": "wide grip rear pull-up",
+    "target": "lats"
+  }
+]

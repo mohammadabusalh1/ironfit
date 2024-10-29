@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/exrciseCard.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/features/createPlan/widgets/create_plan_body.dart';
 
 class CustomTabBarWidget extends StatefulWidget {
@@ -63,13 +64,13 @@ class _CustomTabBarWidgetState extends State<CustomTabBarWidget>
         // Handle tab selection logic here
       },
       tabs: [
-        Tab(text: 'الإثنين'),
-        Tab(text: 'الثلاثاء'),
-        Tab(text: 'الأربعاء'),
-        Tab(text: 'الخميس'),
-        Tab(text: 'الجمعة'),
-        Tab(text: 'السبت'),
-        Tab(text: 'الأحد'),
+        Tab(text: LocalizationService.translateFromGeneral('monday')),
+        Tab(text: LocalizationService.translateFromGeneral('sunday')),
+        Tab(text: LocalizationService.translateFromGeneral('tuesday')),
+        Tab(text: LocalizationService.translateFromGeneral('wednesday')),
+        Tab(text: LocalizationService.translateFromGeneral('thursday')),
+        Tab(text: LocalizationService.translateFromGeneral('friday')),
+        Tab(text: LocalizationService.translateFromGeneral('saturday')),
       ],
     );
   }
@@ -80,43 +81,43 @@ class _CustomTabBarWidgetState extends State<CustomTabBarWidget>
       controller: _tabController,
       children: [
         buildTabContent(
-            'تمارين يوم الاثنين',
+            LocalizationService.translateFromGeneral('mondayExercises'),
             (widget.plan?['trainingDays']?['mon'] as List<dynamic>?)
                     ?.map((e) => Exercise.fromMap(e as Map<String, dynamic>))
                     .toList() ??
                 []),
         buildTabContent(
-            'تمارين يوم الثلاثاء',
+            LocalizationService.translateFromGeneral('tuesdayExercises'),
             (widget.plan?['trainingDays']?['tue'] as List<dynamic>?)
                     ?.map((e) => Exercise.fromMap(e as Map<String, dynamic>))
                     .toList() ??
                 []),
         buildTabContent(
-            'تمارين يوم الاربعاء',
+            LocalizationService.translateFromGeneral('wednesdayExercises'),
             (widget.plan?['trainingDays']?['wed'] as List<dynamic>?)
                     ?.map((e) => Exercise.fromMap(e as Map<String, dynamic>))
                     .toList() ??
                 []),
         buildTabContent(
-            'تمارين يوم الخميس',
+            LocalizationService.translateFromGeneral('thursdayExercises'),
             (widget.plan?['trainingDays']?['thu'] as List<dynamic>?)
                     ?.map((e) => Exercise.fromMap(e as Map<String, dynamic>))
                     .toList() ??
                 []),
         buildTabContent(
-            'تمارين يوم الجمعة',
+            LocalizationService.translateFromGeneral('fridayExercises'),
             (widget.plan?['trainingDays']?['fri'] as List<dynamic>?)
                     ?.map((e) => Exercise.fromMap(e as Map<String, dynamic>))
                     .toList() ??
                 []),
         buildTabContent(
-            'تمارين يوم السبت',
+            LocalizationService.translateFromGeneral('saturdayExercises'),
             (widget.plan?['trainingDays']?['sat'] as List<dynamic>?)
                     ?.map((e) => Exercise.fromMap(e as Map<String, dynamic>))
                     .toList() ??
                 []),
         buildTabContent(
-            'تمارين يوم الاحد',
+            LocalizationService.translateFromGeneral('sundayExercises'),
             (widget.plan?['trainingDays']?['sun'] as List<dynamic>?)
                     ?.map((e) => Exercise.fromMap(e as Map<String, dynamic>))
                     .toList() ??
@@ -142,8 +143,8 @@ class _CustomTabBarWidgetState extends State<CustomTabBarWidget>
                 ExrciseCard(
                   image: exercise.image,
                   title: exercise.name,
-                  subtitle1: "${exercise.rounds} جولات",
-                  subtitle2: "${exercise.repetitions} تكرار",
+                  subtitle1: "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
+                  subtitle2: "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
                 ),
                 SizedBox(height: 24),
               ],

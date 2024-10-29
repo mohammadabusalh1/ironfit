@@ -1,0 +1,458 @@
+[
+  {
+    "bodyPart": "lower legs",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/3/1/6631.gif",
+    "id": 1368,
+    "name": "ankle circles",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "assisted",
+    "gifUrl": "https://gymvisual.com/img/p/7/4/2/3/7423.gif",
+    "id": 1708,
+    "name": "assisted lying calves stretch",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/1/2/5712.gif",
+    "id": 999,
+    "name": "band single leg calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/1/3/5713.gif",
+    "id": 1000,
+    "name": "band single leg reverse calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/3/2/6632.gif",
+    "id": 1369,
+    "name": "band two legs calf raise - (band under both legs) v. 2",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/3/3/6633.gif",
+    "id": 1370,
+    "name": "barbell floor calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/2/5/4825.gif",
+    "id": 88,
+    "name": "barbell seated calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/3/5/6635.gif",
+    "id": 1372,
+    "name": "barbell standing calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/4/9/4849.gif",
+    "id": 108,
+    "name": "barbell standing leg calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/4/9/4849.gif",
+    "id": 111,
+    "name": "barbell standing rocking leg calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/3/6/6636.gif",
+    "id": 1373,
+    "name": "bodyweight standing calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/3/7/6637.gif",
+    "id": 1374,
+    "name": "box jump down with one leg stabilization",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/3/8/6638.gif",
+    "id": 1375,
+    "name": "cable standing calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/3/9/6639.gif",
+    "id": 1376,
+    "name": "cable standing one leg calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/6/8/6668.gif",
+    "id": 1407,
+    "name": "calf push stretch with hands against wall",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/4/0/6640.gif",
+    "id": 1377,
+    "name": "calf stretch with hands against wall",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "rope",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/4/1/6641.gif",
+    "id": 1378,
+    "name": "calf stretch with rope",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/9/0/4990.gif",
+    "id": 257,
+    "name": "circles knee stretch",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/1/7/5017.gif",
+    "id": 284,
+    "name": "donkey calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/4/2/6642.gif",
+    "id": 1379,
+    "name": "dumbbell seated calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/4/1/5141.gif",
+    "id": 400,
+    "name": "dumbbell seated one leg calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/4/3/6643.gif",
+    "id": 1380,
+    "name": "dumbbell seated one leg calf raise - hammer grip",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/4/4/6644.gif",
+    "id": 1381,
+    "name": "dumbbell seated one leg calf raise - palm up",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/0/4/3/24043.gif",
+    "id": 409,
+    "name": "dumbbell single leg calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/5/8/5158.gif",
+    "id": 417,
+    "name": "dumbbell standing calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/4/5/6645.gif",
+    "id": 1382,
+    "name": "exercise ball on the wall calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/0/0/3/13003.gif",
+    "id": 3241,
+    "name": "exercise ball on the wall calf raise (tennis ball between ankles)",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/0/0/2/13002.gif",
+    "id": 3240,
+    "name": "exercise ball on the wall calf raise (tennis ball between knees)",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "sled machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/4/6/6646.gif",
+    "id": 1383,
+    "name": "hack calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "sled machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/4/7/6647.gif",
+    "id": 1384,
+    "name": "hack one leg calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/9/0/8/5908.gif",
+    "id": 2289,
+    "name": "lever calf press",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/9/4/2/5942.gif",
+    "id": 1253,
+    "name": "lever donkey calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/1/4/6/10146.gif",
+    "id": 2315,
+    "name": "lever rotary calf",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/1/6/7/10167.gif",
+    "id": 2335,
+    "name": "lever seated calf press",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/9/0/7/5907.gif",
+    "id": 594,
+    "name": "lever seated calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/4/8/6648.gif",
+    "id": 1385,
+    "name": "lever seated squat calf raise on leg press machine",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/4/2/5342.gif",
+    "id": 605,
+    "name": "lever standing calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/4/9/6649.gif",
+    "id": 1386,
+    "name": "one leg donkey calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/5/0/6650.gif",
+    "id": 1387,
+    "name": "one leg floor calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "rope",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/5/1/6651.gif",
+    "id": 1388,
+    "name": "peroneals stretch",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "rope",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/5/2/6652.gif",
+    "id": 1389,
+    "name": "posterior tibialis stretch",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/5/3/6653.gif",
+    "id": 1390,
+    "name": "seated calf stretch (male)",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/0/4/3/24043.gif",
+    "id": 727,
+    "name": "single leg calf raise (on a dumbbell)",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "sled machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/6/2/5462.gif",
+    "id": 738,
+    "name": "sled 45в° calf press",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "sled machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/5/4/6654.gif",
+    "id": 1391,
+    "name": "sled calf press on leg press",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "sled machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/6/6/5466.gif",
+    "id": 742,
+    "name": "sled forward angled calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "sled machine",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/1/6/6/10166.gif",
+    "id": 2334,
+    "name": "sled lying calf press",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "sled machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/5/5/6655.gif",
+    "id": 1392,
+    "name": "sled one leg calf press on leg press",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/5/6/6656.gif",
+    "id": 1393,
+    "name": "smith one leg floor calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/8/7/5487.gif",
+    "id": 763,
+    "name": "smith reverse calf raises",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/5/8/6658.gif",
+    "id": 1395,
+    "name": "smith seated one leg calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/1/1/7/5/6/11756.gif",
+    "id": 773,
+    "name": "smith standing leg calf raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/5/9/6659.gif",
+    "id": 1396,
+    "name": "smith toe raise",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/7/1/7/6717.gif",
+    "id": 1490,
+    "name": "standing calf raise (on a staircase)",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/1/6/4/24164.gif",
+    "id": 1397,
+    "name": "standing calves",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "body weight",
+    "gifUrl": "https://media1.giphy.com//avatars/default2/80h.gif",
+    "id": 1398,
+    "name": "standing calves calf stretch",
+    "target": "calves"
+  },
+  {
+    "bodyPart": "lower legs",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/5/5/5555.gif",
+    "id": 833,
+    "name": "weighted donkey calf raise",
+    "target": "calves"
+  }
+]

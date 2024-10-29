@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/widgets/DaysTabBar.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -117,10 +118,11 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              const Opacity(
+                              Opacity(
                                 opacity: 0.9,
                                 child: Text(
-                                  'خطتي',
+                                  LocalizationService.translateFromGeneral(
+                                      'my_plan'),
                                   style: TextStyle(
                                     fontFamily: 'Inter',
                                     color: Colors.white,
@@ -139,7 +141,7 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
                               const SizedBox(width: 12),
                               ElevatedButton(
                                 onPressed: () {
-                                  print('Button pressed ...');
+                                  Get.back();
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF1C1503),

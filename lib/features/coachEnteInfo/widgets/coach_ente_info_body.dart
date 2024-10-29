@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -74,7 +75,9 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
           if (usernameExists) {
             // If the username already exists, show an error message
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('اسم المستخدم هذا مُستخدم بالفعل')),
+              SnackBar(
+                  content: Text(LocalizationService.translateFromGeneral(
+                      'usernameExistsError'))),
             );
             return;
           }
@@ -91,7 +94,9 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
           await updateCoachInfo(coachId, coachData);
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
+            SnackBar(
+                content: Text(LocalizationService.translateFromGeneral(
+                    'accountCreationSuccess'))),
           );
 
           Get.toNamed(Routes.coachDashboard)?.then(
@@ -103,27 +108,33 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
         Get.back();
         // Firebase-specific error handling
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('خطأ في الاتصال بقاعدة البيانات')),
+          SnackBar(
+              content: Text(LocalizationService.translateFromGeneral(
+                  'databaseConnectionError'))),
         );
       } on FormatException {
         Get.back();
         // Handle invalid number format (e.g., age or experience)
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content:
-                  Text('تنسيق غير صالح: يرجى إضافة البيانات بالشكل الصحيح')),
+          SnackBar(
+              content: Text(LocalizationService.translateFromGeneral(
+                  'invalidFormatError'))),
         );
       } catch (e) {
         Get.back();
         // Handle any other generic errors
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('حدث خطأ غير متوقع: $e')),
+          SnackBar(
+              content: Text(LocalizationService.translateFromGeneral(
+                  'unexpectedError' + e.toString()))),
         );
       }
     } else {
       // Form is not valid, show a message or error handling
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('المعلومات غير صالحة')),
+        SnackBar(
+            content: Text(LocalizationService.translateFromGeneral(
+                'invalidInformationMessage'))),
       );
     }
   }
@@ -142,7 +153,9 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
     } catch (e) {
       // Handle any Firestore errors
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('حدث خطأ في الاتصال بقاعدة البيانات')),
+        SnackBar(
+            content: Text(LocalizationService.translateFromGeneral(
+                'databaseConnectionError'))),
       );
       return false;
     }
@@ -169,13 +182,14 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 : Container(),
             const SizedBox(height: 12),
             stage == 1
-                ? const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Align(
                       alignment: AlignmentDirectional.center,
                       child: Text(
-                        'أكمل معلوماتك من فضلك',
-                        style: TextStyle(
+                        LocalizationService.translateFromGeneral(
+                            'completeInfoPrompt'),
+                        style: const TextStyle(
                           fontFamily: 'Inter',
                           color: Colors.white,
                           fontSize: 16,
@@ -187,10 +201,11 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 : Container(),
             stage == 1 ? const SizedBox(height: 12) : Container(),
             stage == 1
-                ? const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    child: Text('الحساب',
-                        style: TextStyle(
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                        LocalizationService.translateFromGeneral('account'),
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold)),
@@ -198,18 +213,30 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 : Container(),
             stage == 1 ? const SizedBox(height: 12) : Container(),
             stage == 1
-                ? _buildTextField('إسم الحساب', '', _usernameController,
-                    TextInputType.text, Icons.person)
+                ? _buildTextField(
+                    LocalizationService.translateFromGeneral('usernameLabel'),
+                    '',
+                    _usernameController,
+                    TextInputType.text,
+                    Icons.person)
                 : Container(),
             stage == 1 ? const SizedBox(height: 12) : Container(),
             stage == 1
-                ? _buildTextField('الاسم الأول', '', _firstNameController,
-                    TextInputType.text, Icons.face)
+                ? _buildTextField(
+                    LocalizationService.translateFromGeneral('firstNameLabel'),
+                    '',
+                    _firstNameController,
+                    TextInputType.text,
+                    Icons.face)
                 : Container(),
             stage == 1 ? const SizedBox(height: 12) : Container(),
             stage == 1
-                ? _buildTextField('إسم العائلة', '', _lastNameController,
-                    TextInputType.text, Icons.face)
+                ? _buildTextField(
+                    LocalizationService.translateFromGeneral('lastNameLabel'),
+                    '',
+                    _lastNameController,
+                    TextInputType.text,
+                    Icons.face)
                 : Container(),
             stage == 1 ? const SizedBox(height: 12) : Container(),
             stage == 1
@@ -221,10 +248,12 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 : Container(),
             stage == 1 ? const SizedBox(height: 12) : Container(),
             stage == 1
-                ? const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    child: Text('البيانات الشخصية',
-                        style: TextStyle(
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                        LocalizationService.translateFromGeneral(
+                            'personalInformation'),
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold)),
@@ -232,13 +261,21 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 : Container(),
             stage == 1 ? const SizedBox(height: 12) : Container(),
             stage == 1
-                ? _buildTextField('العمر', '', _ageController,
-                    TextInputType.number, Icons.group)
+                ? _buildTextField(
+                    LocalizationService.translateFromGeneral('age'),
+                    '',
+                    _ageController,
+                    TextInputType.number,
+                    Icons.group)
                 : Container(),
             stage == 1 ? const SizedBox(height: 12) : Container(),
             stage == 1
-                ? _buildTextField('الخبرة', '', _experienceController,
-                    TextInputType.number, Icons.star)
+                ? _buildTextField(
+                    LocalizationService.translateFromGeneral('experience'),
+                    '',
+                    _experienceController,
+                    TextInputType.number,
+                    Icons.star)
                 : Container(),
             stage == 1 ? const SizedBox(height: 24) : Container(),
             SizedBox(
@@ -247,8 +284,8 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
                 child: ElevatedButton.icon(
                   onPressed: _submitForm,
-                  label: const Text(
-                    'التالي',
+                  label: Text(
+                    LocalizationService.translateFromGeneral('next'),
                     style: TextStyle(
                       fontFamily: 'Inter',
                       color: Palette.white, // Text color
@@ -339,7 +376,8 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
         style: const TextStyle(color: Palette.white, fontSize: 14),
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'من فضلك أدخل $label';
+            return LocalizationService.translateFromGeneral('requiredField') +
+                label;
           }
           return null;
         },

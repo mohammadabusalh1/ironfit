@@ -7,6 +7,7 @@ import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -590,7 +591,8 @@ class _TraineeBodyState extends State<TraineeBody> {
                   child: AlertDialog(
                     title: Row(
                       children: [
-                        const Text('اضافة خطة',
+                        Text(
+                            LocalizationService.translateFromGeneral('addPlan'),
                             style: TextStyle(
                                 fontSize: 22, fontWeight: FontWeight.bold)),
                         const Spacer(),
@@ -613,16 +615,18 @@ class _TraineeBodyState extends State<TraineeBody> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text('يرجى ملئ البيانات المطلوبة',
-                            style: TextStyle(
+                        Text(
+                            LocalizationService.translateFromGeneral(
+                                'pleaseFillRequiredData'),
+                            style: const TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w500)),
                         const SizedBox(height: 16),
                         DropdownButtonFormField<String>(
                           dropdownColor: Palette.secondaryColor,
-                          decoration: const InputDecoration(
-                            labelText:
-                                "الخطط الخاصة بك", // Label for the dropdown
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: LocalizationService.translateFromGeneral(
+                                'yourPlans'), // Label for the dropdown
+                            border: const OutlineInputBorder(),
                           ),
                           value: selectedValue, // Selected value from dropdown
                           items: _plans
@@ -650,7 +654,9 @@ class _TraineeBodyState extends State<TraineeBody> {
                         onPressed: () {
                           Navigator.of(context).pop(); // Close the dialog
                         },
-                        child: const Text('إلغاء'),
+                        child: Text(
+                          LocalizationService.translateFromGeneral('cancel'),
+                        ),
                       ),
                     ],
                     actionsAlignment: MainAxisAlignment.start,
@@ -881,8 +887,9 @@ class _TraineeBodyState extends State<TraineeBody> {
               child: Directionality(
                 textDirection: TextDirection.rtl,
                 child: AlertDialog(
-                  title: const Text('إضافة متدرب جديد',
-                      style: TextStyle(
+                  title: Text(
+                      LocalizationService.translateFromGeneral('addNewTrainee'),
+                      style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold)),
@@ -893,22 +900,27 @@ class _TraineeBodyState extends State<TraineeBody> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text('يرجى ملئ البيانات المطلوبة',
-                            style: TextStyle(
+                        Text(
+                            LocalizationService.translateFromGeneral(
+                                'pleaseFillRequiredData'),
+                            style: const TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w500)),
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: startDateController,
-                          decoration: const InputDecoration(
-                              labelText: "تاريخ البدء",
-                              border: OutlineInputBorder()),
+                          decoration: InputDecoration(
+                              labelText:
+                                  LocalizationService.translateFromGeneral(
+                                      'startDate'),
+                              border: const OutlineInputBorder()),
                           readOnly: true,
                           onTap: () {
                             _selectDate(context, startDateController);
                           },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'يرجى إدخال تاريخ البدء';
+                              return LocalizationService.translateFromGeneral(
+                                  'enterStartDate');
                             }
                             return null;
                           },
@@ -916,16 +928,19 @@ class _TraineeBodyState extends State<TraineeBody> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: endDateController,
-                          decoration: const InputDecoration(
-                              labelText: "تاريخ الانتهاء",
-                              border: OutlineInputBorder()),
+                          decoration: InputDecoration(
+                              labelText:
+                                  LocalizationService.translateFromGeneral(
+                                      'endDate'),
+                              border: const OutlineInputBorder()),
                           readOnly: true,
                           onTap: () {
                             _selectDate(context, endDateController);
                           },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'يرجى إدخال تاريخ الانتهاء';
+                              return LocalizationService.translateFromGeneral(
+                                  'enterEndDate');
                             }
                             if (startDateController.text.isNotEmpty &&
                                 endDateController.text.isNotEmpty) {
@@ -936,7 +951,8 @@ class _TraineeBodyState extends State<TraineeBody> {
                                   DateTime.parse(endDateController.text);
 
                               if (startDate.isAfter(endDate)) {
-                                return 'تاريخ البدء لا يمكن أن يكون أكبر من تاريخ الانتهاء';
+                                return LocalizationService.translateFromGeneral(
+                                    'startDateCannotBeAfterEndDate');
                               }
                             }
                             return null;
@@ -953,13 +969,15 @@ class _TraineeBodyState extends State<TraineeBody> {
                               endDateController.text, subscriptionId);
                         }
                       },
-                      child: const Text('حفظ'),
+                      child: Text(
+                          LocalizationService.translateFromGeneral('save')),
                     ),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop(); // Close the dialog
                       },
-                      child: const Text('إلغاء'),
+                      child: Text(
+                          LocalizationService.translateFromGeneral('cancel')),
                     ),
                   ],
                   actionsAlignment: MainAxisAlignment.start,
@@ -1011,7 +1029,10 @@ class _TraineeBodyState extends State<TraineeBody> {
                           Opacity(
                             opacity: 0.8,
                             child: Text(
-                              userName.isEmpty ? 'لا يوجد مستخدم' : userName,
+                              userName.isEmpty
+                                  ? LocalizationService.translateFromGeneral(
+                                      'noUser')
+                                  : userName,
                               style: const TextStyle(
                                 fontFamily: 'Inter',
                                 color: Palette.white,
@@ -1030,7 +1051,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                           Align(
                             alignment: const AlignmentDirectional(0, 0),
                             child: Text(
-                              'تبقى له ${_numberOfDaysUserHave} يوم من الإشتراك',
+                              '${LocalizationService.translateFromGeneral('daysRemaining')} ${_numberOfDaysUserHave} ${LocalizationService.translateFromGeneral('days')}',
                               style: const TextStyle(
                                 fontFamily: 'Inter',
                                 color: Color(0xA0FFFFFF),
@@ -1068,9 +1089,10 @@ class _TraineeBodyState extends State<TraineeBody> {
                       ),
                       fixedSize: const Size(double.infinity, 45),
                     ),
-                    child: const Text(
-                      'إلغاء إشتراكه',
-                      style: TextStyle(
+                    child: Text(
+                      LocalizationService.translateFromGeneral(
+                          'cancelSubscription'),
+                      style: const TextStyle(
                         fontFamily: 'Inter Tight',
                         color: Palette.white,
                       ),
@@ -1093,9 +1115,10 @@ class _TraineeBodyState extends State<TraineeBody> {
                       ),
                       fixedSize: const Size(double.infinity, 45),
                     ),
-                    child: const Text(
-                      'أضف برنامج',
-                      style: TextStyle(
+                    child: Text(
+                      LocalizationService.translateFromGeneral(
+                          'renewSubscription'),
+                      style: const TextStyle(
                         fontFamily: 'Inter Tight',
                         color: Color(0xFF1C1503),
                       ),
@@ -1127,9 +1150,10 @@ class _TraineeBodyState extends State<TraineeBody> {
                       ),
                       fixedSize: const Size(double.infinity, 45),
                     ),
-                    child: const Text(
-                      'تجديد الإشتراك',
-                      style: TextStyle(
+                    child: Text(
+                      LocalizationService.translateFromGeneral(
+                          'renewSubscription'),
+                      style: const TextStyle(
                         fontFamily: 'Inter Tight',
                         color: Palette.white,
                       ),
@@ -1140,12 +1164,12 @@ class _TraineeBodyState extends State<TraineeBody> {
             ),
           ),
           const SizedBox(height: 16),
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 24),
-            child: Text('الخطة المضافة',
+            child: Text(LocalizationService.translateFromGeneral('addedPlan'),
                 textAlign: TextAlign.right,
                 textDirection: TextDirection.rtl,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Inter',
                   color: Palette.white,
                   fontSize: 14,
@@ -1165,12 +1189,14 @@ class _TraineeBodyState extends State<TraineeBody> {
                 color: Palette.gray,
               )),
           const SizedBox(height: 16),
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 24),
-            child: Text('المعاملات المالية',
+            child: Text(
+                LocalizationService.translateFromGeneral(
+                    'financialTransactions'),
                 textAlign: TextAlign.right,
                 textDirection: TextDirection.rtl,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Inter',
                   color: Palette.white,
                   fontSize: 14,
@@ -1179,13 +1205,24 @@ class _TraineeBodyState extends State<TraineeBody> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: _buildCard(context, amountPaid, () {}, Icons.money,
-                Palette.greenActive, 'المبلغ المدفوع', () {}),
+            child: _buildCard(
+                context,
+                amountPaid,
+                () {},
+                Icons.money,
+                Palette.greenActive,
+                LocalizationService.translateFromGeneral('amountPaid'),
+                () {}),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: _buildCard(context, debts, () {}, Icons.add_card,
-                Palette.mainAppColor, 'الديون', () {
+            child: _buildCard(
+                context,
+                debts,
+                () {},
+                Icons.add_card,
+                Palette.mainAppColor,
+                LocalizationService.translateFromGeneral('debts'), () {
               showEditDebt(context);
             }),
           ),
@@ -1233,7 +1270,7 @@ Widget _buildCard(BuildContext context, String planName, Function onTap,
               ),
             ],
           ),
-          planName == 'لا يوجد خطة!'
+          planName == LocalizationService.translateFromGeneral('noPlan')
               ? const SizedBox()
               : InkWell(
                   onTap: () => onTap(),

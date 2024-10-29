@@ -7,6 +7,7 @@ import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/widgets/PagesHeader.dart';
 import 'package:ironfit/core/presentation/widgets/exersiceCarousel.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -198,9 +199,9 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
           color: Palette.secondaryColor,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Text(
-          'تمارين اليوم',
-          style: TextStyle(
+        child: Text(
+          LocalizationService.translateFromGeneral('todayExercises'),
+          style: const TextStyle(
               fontSize: 16, color: Palette.white, fontWeight: FontWeight.w500),
         ),
       ),

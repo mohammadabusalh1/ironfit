@@ -11,7 +11,6 @@ import 'package:ironfit/core/presentation/widgets/exrciseCard.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/createPlan/widgets/create_plan_body.dart';
-import 'package:ironfit/features/createPlan/widgets/ex.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:ironfit/features/editPlan/widgets/ExerciseDialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,7 +26,7 @@ class EditPlanBody extends StatefulWidget {
 
 class _EditPlanBodyState extends State<EditPlanBody> {
   List<Map<String, dynamic>> exercisesJson =
-      List<Map<String, dynamic>>.from(jsonDecode(jsonString));
+      List<Map<String, dynamic>>.from(jsonDecode(''));
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

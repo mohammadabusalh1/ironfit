@@ -6,6 +6,7 @@ import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -51,46 +52,69 @@ class _UserProfileBodyState extends State<UserProfileBody> {
 
   Future<void> fetchUserDays() async {
     String? userId = _auth.currentUser?.uid;
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('trainees')
-        .doc(userId)
-        .get();
-    Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
 
-    // Check if 'coachId' and 'subscriptionId' fields exist before accessing them
-    String? coachId = userData?['coachId'];
-    String? subscriptionId = userData?['subscriptionId'];
-    if (coachId != null || subscriptionId != null) {
-      DocumentSnapshot subscriptionDoc = await FirebaseFirestore.instance
-          .collection('coaches')
-          .doc(coachId)
-          .collection('subscriptions')
-          .doc(subscriptionId)
+    try {
+      // Attempt to fetch user document
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('trainees')
+          .doc(userId)
           .get();
 
+      // Check if the user document exists
+      if (!userDoc.exists) {
+        throw Exception('User document does not exist');
+      }
+
+      Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+
+      // Check if 'coachId' and 'subscriptionId' fields exist before accessing them
+      String? coachId = userData?['coachId'];
+      String? subscriptionId = userData?['subscriptionId'];
+
+      if (coachId != null && subscriptionId != null) {
+        DocumentSnapshot subscriptionDoc = await FirebaseFirestore.instance
+            .collection('coaches')
+            .doc(coachId)
+            .collection('subscriptions')
+            .doc(subscriptionId)
+            .get();
+
+        // Check if the subscription document exists
+        if (!subscriptionDoc.exists) {
+          throw Exception('Subscription document does not exist');
+        }
+
+        setState(() {
+          numberOfDays = DateTime.parse(subscriptionDoc['endDate'])
+              .difference(DateTime.now())
+              .inDays
+              .toString();
+        });
+      } else {
+        setState(() {
+          numberOfDays = '0';
+        });
+      }
+    } catch (error) {
+      // Handle errors appropriately
+      print('Error fetching user days: $error');
       setState(() {
-        numberOfDays = DateTime.parse(subscriptionDoc['endDate'])
-            .difference(DateTime.now())
-            .inDays
-            .toString();
+        numberOfDays =
+            'Error: ${error.toString()}'; // Optionally show the error message
       });
-    } else {
-      setState(() {
-        numberOfDays = '0';
-      });
+      // Optionally show a user-friendly message using a SnackBar or AlertDialog
     }
   }
 
   Future<void> fetchUserName() async {
-    String? userId = _auth.currentUser?.uid;
-
-    if (userId == null) {
-      print("No user is logged in.");
-      // Optionally, show a message to the user via UI here.
-      return; // Early exit if the user is not logged in
-    }
-
     try {
+      String? userId = _auth.currentUser?.uid;
+
+      if (userId == null) {
+        print("No user is logged in.");
+        // Optionally, show a message to the user via UI here.
+        return; // Early exit if the user is not logged in
+      }
       // Get user data from Firestore
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('trainees')
@@ -183,9 +207,9 @@ class _UserProfileBodyState extends State<UserProfileBody> {
               child: Directionality(
                 textDirection: TextDirection.rtl,
                 child: AlertDialog(
-                  title: const Text(
-                    'تعديل المعلومات',
-                    style: TextStyle(
+                  title: Text(
+                    LocalizationService.translateFromGeneral('editInfo'),
+                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: 22,
                         fontWeight: FontWeight.bold),
@@ -197,12 +221,15 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                       children: [
                         TextFormField(
                           controller: firstNameController,
-                          decoration: const InputDecoration(
-                              label: Text('الاسم الأول',
-                                  style: TextStyle(color: Colors.grey))),
+                          decoration: InputDecoration(
+                              label: Text(
+                                  LocalizationService.translateFromGeneral(
+                                      'firstNameLabel'),
+                                  style: const TextStyle(color: Colors.grey))),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'الرجاء إدخال الاسم الأول';
+                              return LocalizationService.translateFromGeneral(
+                                  'firstNameError');
                             }
                             return null;
                           },
@@ -210,12 +237,15 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: lastNameController,
-                          decoration: const InputDecoration(
-                              label: Text('الاسم الأخير',
-                                  style: TextStyle(color: Colors.grey))),
+                          decoration: InputDecoration(
+                              label: Text(
+                                  LocalizationService.translateFromGeneral(
+                                      'lastNameLabel'),
+                                  style: const TextStyle(color: Colors.grey))),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'الرجاء إدخال الاسم الأخير';
+                              return LocalizationService.translateFromGeneral(
+                                  'lastNameError ');
                             }
                             return null;
                           },
@@ -223,16 +253,21 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: ageController,
-                          decoration: const InputDecoration(
-                              label: Text('العمر',
-                                  style: TextStyle(color: Colors.grey))),
+                          decoration: InputDecoration(
+                              label: Text(
+                                  LocalizationService.translateFromGeneral(
+                                      'age'),
+                                  style: const TextStyle(color: Colors.grey))),
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'الرجاء إدخال العمر';
+                              return LocalizationService.translateFromGeneral(
+                                  LocalizationService.translateFromGeneral(
+                                      'ageError'));
                             }
                             if (int.tryParse(value) == null) {
-                              return 'يرجى إدخال قيمة صحيحة للعمر';
+                              return LocalizationService.translateFromGeneral(
+                                  'ageError');
                             }
                             return null;
                           },
@@ -241,12 +276,15 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         TextFormField(
                           controller: wightController,
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                              label: Text('الوزن',
-                                  style: TextStyle(color: Colors.grey))),
+                          decoration: InputDecoration(
+                              label: Text(
+                                  LocalizationService.translateFromGeneral(
+                                      'wight'),
+                                  style: const TextStyle(color: Colors.grey))),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'الرجاء إدخال الوزن';
+                              return LocalizationService.translateFromGeneral(
+                                  'wightError');
                             }
                             return null;
                           },
@@ -255,12 +293,15 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         TextFormField(
                           controller: heightController,
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                              label: Text('الطول',
-                                  style: TextStyle(color: Colors.grey))),
+                          decoration: InputDecoration(
+                              label: Text(
+                                  LocalizationService.translateFromGeneral(
+                                      'height'),
+                                  style: const TextStyle(color: Colors.grey))),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'الرجاء إدخال الطول';
+                              return LocalizationService.translateFromGeneral(
+                                  'heightError');
                             }
                             return null;
                           },
@@ -292,18 +333,23 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                             }
                           } catch (e) {
                             // Handle errors (e.g., network issues, Firebase errors)
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('حدث خطأ: $e')));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(
+                                    '${LocalizationService.translateFromGeneral('unexpectedError')} $e')));
                           }
                         }
                       },
-                      child: const Text('حفظ'),
+                      child: Text(
+                        LocalizationService.translateFromGeneral('save'),
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop(); // Close the dialog
                       },
-                      child: const Text('إلغاء'),
+                      child: Text(
+                        LocalizationService.translateFromGeneral('cancel'),
+                      ),
                     ),
                   ],
                   actionsAlignment: MainAxisAlignment.start,
@@ -374,9 +420,9 @@ class _UserProfileBodyState extends State<UserProfileBody> {
               child: Directionality(
                 textDirection: TextDirection.rtl,
                 child: AlertDialog(
-                  title: const Text(
-                    'تغيير كلمة المرور',
-                    style: TextStyle(
+                  title: Text(
+                    LocalizationService.translateFromGeneral('changePassword'),
+                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: 22,
                         fontWeight: FontWeight.bold),
@@ -388,16 +434,20 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text('يرجى ملئ البيانات المطلوبة',
-                            style: TextStyle(
+                        Text(
+                            LocalizationService.translateFromGeneral(
+                                'pleaseFillRequiredData'),
+                            style: const TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w500)),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         TextFormField(
                           controller: oldPasswordController,
                           obscureText: true,
-                          decoration: const InputDecoration(
-                            label: Text('كلمة المرور القديمة',
-                                style: TextStyle(color: Colors.grey)),
+                          decoration: InputDecoration(
+                            label: Text(
+                                LocalizationService.translateFromGeneral(
+                                    'oldPassword'),
+                                style: const TextStyle(color: Colors.grey)),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -406,35 +456,42 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                             return null;
                           },
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         TextFormField(
                           controller: newPasswordController,
                           obscureText: true,
-                          decoration: const InputDecoration(
-                            label: Text('كلمة المرور الجديدة',
-                                style: TextStyle(color: Colors.grey)),
+                          decoration: InputDecoration(
+                            label: Text(
+                                LocalizationService.translateFromGeneral(
+                                    'newPassword'),
+                                style: const TextStyle(color: Colors.grey)),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'يرجى إدخال كلمة المرور الجديدة';
+                              return LocalizationService.translateFromGeneral(
+                                  'newPasswordError');
                             }
                             if (value.length < 6) {
-                              return 'يجب أن تحتوي كلمة المرور الجديدة على 6 أحرف على الأقل';
+                              return LocalizationService.translateFromGeneral(
+                                  'newPasswordError2');
                             }
                             return null;
                           },
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         TextFormField(
                           controller: confirmPasswordController,
                           obscureText: true,
-                          decoration: const InputDecoration(
-                            label: Text('تأكيد كلمة المرور',
+                          decoration: InputDecoration(
+                            label: Text(
+                                LocalizationService.translateFromGeneral(
+                                    'confirmPassword'),
                                 style: TextStyle(color: Colors.grey)),
                           ),
                           validator: (value) {
                             if (value != newPasswordController.text) {
-                              return 'كلمة المرور غير متطابقة';
+                              return LocalizationService.translateFromGeneral(
+                                  'passwordsDontMatch');
                             }
                             return null;
                           },
@@ -465,8 +522,9 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                               // Inform the user
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                    content:
-                                        Text('تم تغيير كلمة المرور بنجاح')),
+                                    content: Text(LocalizationService
+                                        .translateFromGeneral(
+                                            'passwordChangeSuccess'))),
                               );
 
                               Navigator.of(context).pop(); // Close the dialog
@@ -474,18 +532,21 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                  content: Text('حدث خطأ: ${e.toString()}')),
+                                  content: Text(
+                                      '${LocalizationService.translateFromGeneral('unexpectedError')} ${e.toString()}')),
                             );
                           }
                         }
                       },
-                      child: const Text('حفظ'),
+                      child: Text(
+                          LocalizationService.translateFromGeneral('save')),
                     ),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop(); // Close the dialog
                       },
-                      child: const Text('إلغاء'),
+                      child: Text(
+                          LocalizationService.translateFromGeneral('cancel')),
                     ),
                   ],
                   actionsAlignment: MainAxisAlignment.start,
@@ -506,7 +567,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
           children: [
             Stack(
               children: [
-                HeaderImage(),
+                const HeaderImage(),
                 _buildProfileContent(context),
               ],
             ),
@@ -520,17 +581,25 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildButtonCard(
-                            context, 'المعلومات الشخصية', Icons.person, () {
+                            context,
+                            LocalizationService.translateFromGeneral(
+                                'personalInformation'),
+                            Icons.person, () {
                           showEditInfoDialog(context);
                         }),
                         const SizedBox(height: 4),
                         _buildButtonCard(
-                            context, 'تغيير كلمة المرور', Icons.vpn_key, () {
+                            context,
+                            LocalizationService.translateFromGeneral(
+                                'changePassword'),
+                            Icons.vpn_key, () {
                           showEditPasswordDialog(context);
                         }),
                         const SizedBox(height: 4),
                         _buildButtonCard(
-                            context, 'تسجيل الخروج', Icons.login_outlined, () {
+                            context,
+                            LocalizationService.translateFromGeneral('logout'),
+                            Icons.login_outlined, () {
                           _logout();
                         }),
                         const SizedBox(height: 12),
@@ -572,7 +641,9 @@ class _UserProfileBodyState extends State<UserProfileBody> {
           const SizedBox(height: 10),
           // Use FutureBuilder to display the fetched user name
           Text(
-            fullName ?? 'لا يوجد اسم', // If no name, display a default message
+            fullName ??
+                LocalizationService.translateFromGeneral(
+                    'noName'), // If no name, display a default message
             style: const TextStyle(
               color: Palette.white,
               fontSize: 20,
@@ -581,7 +652,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
           ),
           const SizedBox(height: 4),
           Text(
-            'تبقى لك ' + numberOfDays + ' يوم من الإشتراك',
+            "${LocalizationService.translateFromGeneral('daysRemaining')} $numberOfDays ${LocalizationService.translateFromGeneral('days')}",
             style: const TextStyle(
               color: Palette.subTitleGrey,
               fontSize: 14,
@@ -618,8 +689,8 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                 letterSpacing: 0.0,
               ),
             ),
-            Spacer(), // Space between text and trailing icon
-            Icon(
+            const Spacer(), // Space between text and trailing icon
+            const Icon(
               Icons.arrow_forward_ios_outlined,
               color: Colors.grey, // Replace with the theme color if needed
               size: 16,
@@ -638,11 +709,11 @@ class _UserProfileBodyState extends State<UserProfileBody> {
       Get.toNamed(Routes.singIn);
     } catch (e) {
       Get.snackbar('خطأ', 'فشل تسجيل الخروج.',
-          titleText: Text(
+          titleText: const Text(
             'خطأ',
             textAlign: TextAlign.right,
           ),
-          messageText: Text(
+          messageText: const Text(
             'فشل تسجيل الخروج.',
             textAlign: TextAlign.right,
           ));

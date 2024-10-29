@@ -15,7 +15,6 @@ import 'package:ironfit/features/SelectEnterType/screens/select_enter_screen.dar
 import 'package:ironfit/features/SelectLanguage/screens/select_lang_screen.dart';
 import 'package:ironfit/features/Trainees/screens/Trainees_screen.dart';
 import 'package:ironfit/features/UserMyPlan/screens/user_my_plan_screen.dart';
-import 'package:ironfit/features/UserPalnExercises/screens/user_plan_exercises_screen.dart';
 import 'package:ironfit/features/coachEnteInfo/screens/coach_ente_info_screen.dart';
 import 'package:ironfit/features/createPlan/screens/create_plan_screen.dart';
 import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
@@ -23,7 +22,6 @@ import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
 import 'package:ironfit/features/dashboard/screens/trainer_dashboard.dart';
 import 'package:ironfit/features/myGyms/screens/my_gyms_screen.dart';
 import 'package:ironfit/features/my_gym/screens/my_gym_screen.dart';
-import 'package:ironfit/features/plan/screens/plan_screen.dart';
 import 'package:ironfit/features/preLoginScreens/screens/pre_login_screen.dart';
 import 'package:ironfit/features/coachProfile/screens/coach_profile_screen.dart';
 import 'package:ironfit/features/regestraion/login/screens/login_screen.dart';
@@ -32,7 +30,6 @@ import 'package:ironfit/features/coachProfile/controllers/coach_profile_controll
 import 'package:ironfit/features/userEnteInfo/screens/user_ente_info_screen.dart';
 import 'package:ironfit/features/userProfile/screens/user_profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ironfit/features/userStatistics/screens/user_statistics_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -134,7 +131,7 @@ class MyApp extends StatelessWidget {
                 iconTheme: IconThemeData(color: Palette.black),
               ),
             ),
-            initialRoute: snapshot.data,
+            initialRoute: Routes.createPlan,
             getPages: [
               GetPage(
                   name: Routes.selectEnter,
@@ -185,17 +182,8 @@ class MyApp extends StatelessWidget {
                   name: Routes.myPlans,
                   page: () => const Directionality(
                       textDirection: TextDirection.rtl,
-                      child: MyPlansScreen())), // My plans
-              GetPage(
-                  name: Routes.plan,
-                  page: () => const Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: PlanScreen())), // Plan screen// Coach info
-              GetPage(
-                  name: Routes.userStatistics,
-                  page: () => const Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: UserStatisticsScreen())), // User stats
+                      child:
+                          MyPlansScreen())), // My plans, // Plan screen// Coach info // User stats
               GetPage(
                   name: Routes.userMyPlan,
                   page: () => const UserMyPlanScreen()), // User's own plan
@@ -203,11 +191,8 @@ class MyApp extends StatelessWidget {
                   name: Routes.preLoginScreens,
                   page: () => Directionality(
                       textDirection: TextDirection.rtl,
-                      child: const PreLoginScreen())), // Pre-login screens
-              GetPage(
-                  name: Routes.userPlanExercises,
-                  page: () =>
-                      const UserPalnExercisesScreen()), // Plan exercises
+                      child:
+                          const PreLoginScreen())), // Pre-login screens// Plan exercises
               GetPage(
                   name: Routes.createPlan,
                   page: () => const Directionality(

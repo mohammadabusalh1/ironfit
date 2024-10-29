@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 
@@ -31,7 +32,11 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _lengthController = TextEditingController();
   String? _selectedGender; // To hold the selected gender
-  final List<String> _genders = ['ذكر', 'انثى', 'أخر'];
+  final List<String> _genders = [
+    LocalizationService.translateFromGeneral('male'),
+    LocalizationService.translateFromGeneral('female'),
+    LocalizationService.translateFromGeneral('other')
+  ];
 
   Future<void> updateCoachInfo(String userId, Map<String, dynamic> data) async {
     try {
@@ -90,18 +95,24 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
             print(error);
             Navigator.of(context).pop();
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('حدث خطأ: $error')),
+              SnackBar(
+                  content: Text(
+                      '${LocalizationService.translateFromGeneral('unexpectedError')} $error')),
             );
           });
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('حدث خطأ: $e')),
+          SnackBar(
+              content: Text(
+                  '${LocalizationService.translateFromGeneral('unexpectedError')} $e')),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('المعلومات غير صالحة')),
+        SnackBar(
+            content: Text(LocalizationService.translateFromGeneral(
+                'invalidInformationMessage'))),
       );
     }
   }
@@ -128,12 +139,13 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                   : Container(), // Add the image picker button here
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
-                  ? const Padding(
+                  ? Padding(
                       padding: EdgeInsets.symmetric(horizontal: 24),
                       child: Align(
                         alignment: AlignmentDirectional.center,
                         child: Text(
-                          'أكمل معلوماتك من فضلك',
+                          LocalizationService.translateFromGeneral(
+                              'completeInfoPrompt'),
                           style: TextStyle(
                             fontFamily: 'Inter',
                             color: Colors.white,
@@ -146,9 +158,10 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                   : Container(),
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
-                  ? const Padding(
+                  ? Padding(
                       padding: EdgeInsets.symmetric(horizontal: 24),
-                      child: Text('الحساب',
+                      child: Text(
+                          LocalizationService.translateFromGeneral('account'),
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -157,24 +170,39 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                   : Container(),
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
-                  ? _buildTextField('إسم الحساب', '', _usernameController,
-                      TextInputType.text, Icons.person)
+                  ? _buildTextField(
+                      LocalizationService.translateFromGeneral('usernameLabel'),
+                      '',
+                      _usernameController,
+                      TextInputType.text,
+                      Icons.person)
                   : Container(),
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
-                  ? _buildTextField('الاسم الأول', '', _firstNameController,
-                      TextInputType.text, Icons.face)
+                  ? _buildTextField(
+                      LocalizationService.translateFromGeneral(
+                          'firstNameLabel'),
+                      '',
+                      _firstNameController,
+                      TextInputType.text,
+                      Icons.face)
                   : Container(),
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
-                  ? _buildTextField('إسم العائلة', '', _lastNameController,
-                      TextInputType.text, Icons.face)
+                  ? _buildTextField(
+                      LocalizationService.translateFromGeneral('lastNameLabel'),
+                      '',
+                      _lastNameController,
+                      TextInputType.text,
+                      Icons.face)
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? const Padding(
+                  ? Padding(
                       padding: EdgeInsets.symmetric(horizontal: 24),
-                      child: Text('البيانات الشخصية',
+                      child: Text(
+                          LocalizationService.translateFromGeneral(
+                              'personalInfoSection'),
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -194,7 +222,9 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                         isExpanded:
                             true, // Make the dropdown take the full width
                         hint: Text(
-                          'إختر الجنس',
+                          LocalizationService.translateFromGeneral(
+                              'SelectGender'),
+
                           style: const TextStyle(
                               color: Palette.gray), // Hint style
                         ),
@@ -219,26 +249,38 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? _buildTextField('العمر', '', _ageController,
-                      TextInputType.number, Icons.group)
+                  ? _buildTextField(
+                      LocalizationService.translateFromGeneral('age'),
+                      '',
+                      _ageController,
+                      TextInputType.number,
+                      Icons.group)
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? _buildTextField('الوزن', '', _weightController,
-                      TextInputType.number, Icons.scale)
+                  ? _buildTextField(
+                      LocalizationService.translateFromGeneral('weight'),
+                      '',
+                      _weightController,
+                      TextInputType.number,
+                      Icons.scale)
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? _buildTextField('الطول', '', _lengthController,
-                      TextInputType.number, Icons.accessibility)
+                  ? _buildTextField(
+                      LocalizationService.translateFromGeneral('height'),
+                      '',
+                      _lengthController,
+                      TextInputType.number,
+                      Icons.accessibility)
                   : Container(),
               const SizedBox(height: 24),
               Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
                 child: ElevatedButton.icon(
                   onPressed: _submitForm,
-                  label: const Text(
-                    'التالي',
+                  label: Text(
+                    LocalizationService.translateFromGeneral('next'),
                     style: TextStyle(
                       fontFamily: 'Inter',
                       color: Palette.white, // Text color
@@ -330,7 +372,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
         style: const TextStyle(color: Palette.white, fontSize: 14),
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'من فضلك أدخل $label';
+            return '${LocalizationService.translateFromGeneral('requiredField')} $label';
           }
           return null;
         },

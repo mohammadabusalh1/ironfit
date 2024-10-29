@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -74,7 +75,9 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
           await storageRef.putFile(File(pickedFile.path)).then(
             (snapshot) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('تم تحميل الصورة بنجاح')),
+                SnackBar(
+                    content: Text(LocalizationService.translateFromGeneral(
+                        'imageUploadSuccess'))),
               );
             },
           );
@@ -97,14 +100,18 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('تم تحديث الصورة بنجاح!')),
+            SnackBar(
+                content: Text(LocalizationService.translateFromGeneral(
+                    'imageUploadSuccess'))),
           );
 
           Get.back();
         } catch (e) {
           Get.back();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('حدث خطأ ما')),
+            SnackBar(
+                content: Text(LocalizationService.translateFromGeneral(
+                    'unexpectedError'))),
           );
         }
       } catch (e) {
@@ -113,7 +120,9 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('حدث خطأ أثناء تحميل الصورة: $e')),
+          SnackBar(
+              content: Text(
+                  '${LocalizationService.translateFromGeneral('unexpectedError')} $e')),
         );
       }
     } else {
@@ -290,8 +299,9 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                             Navigator.of(context).pop();
                           } catch (e) {
                             // Handle errors (e.g., network issues, Firebase errors)
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('حدث خطأ: $e')));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(
+                                    '${LocalizationService.translateFromGeneral('unexpectedError')} $e')));
                           }
                         }
                       },
@@ -373,8 +383,8 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
               child: Directionality(
                 textDirection: TextDirection.rtl,
                 child: AlertDialog(
-                  title: const Text(
-                    'تغيير كلمة المرور',
+                  title: Text(
+                    LocalizationService.translateFromGeneral('changePassword'),
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 22,
@@ -387,18 +397,23 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text('يرجى ملئ البيانات المطلوبة',
+                        Text(
+                            LocalizationService.translateFromGeneral(
+                                'pleaseFillRequiredData'),
                             style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w500)),
                         SizedBox(height: 16),
                         TextFormField(
                           controller: oldPasswordController,
                           obscureText: true,
-                          decoration: const InputDecoration(
-                              hintText: 'كلمة المرور القديمة'),
+                          decoration: InputDecoration(
+                              hintText:
+                                  LocalizationService.translateFromGeneral(
+                                      'oldPassword')),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'يرجى إدخال كلمة المرور القديمة';
+                              return LocalizationService.translateFromGeneral(
+                                  'oldPasswordError');
                             }
                             return null;
                           },
@@ -407,14 +422,18 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                         TextFormField(
                           controller: newPasswordController,
                           obscureText: true,
-                          decoration: const InputDecoration(
-                              hintText: 'كلمة المرور الجديدة'),
+                          decoration: InputDecoration(
+                              hintText:
+                                  LocalizationService.translateFromGeneral(
+                                      'newPassword')),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'يرجى إدخال كلمة المرور الجديدة';
+                              return LocalizationService.translateFromGeneral(
+                                  'newPasswordError');
                             }
                             if (value.length < 6) {
-                              return 'يجب أن تحتوي كلمة المرور الجديدة على 6 أحرف على الأقل';
+                              return LocalizationService.translateFromGeneral(
+                                  'newPasswordError2');
                             }
                             return null;
                           },
@@ -423,11 +442,14 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                         TextFormField(
                           controller: confirmPasswordController,
                           obscureText: true,
-                          decoration: const InputDecoration(
-                              hintText: 'تأكيد كلمة المرور الجديدة'),
+                          decoration: InputDecoration(
+                              hintText:
+                                  LocalizationService.translateFromGeneral(
+                                      'confirmPassword')),
                           validator: (value) {
                             if (value != newPasswordController.text) {
-                              return 'كلمة المرور غير متطابقة';
+                              return LocalizationService.translateFromGeneral(
+                                  'passwordsDontMatch');
                             }
                             return null;
                           },
@@ -455,30 +477,26 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                               await user
                                   .updatePassword(newPasswordController.text);
 
-                              // Inform the user
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content:
-                                        Text('تم تغيير كلمة المرور بنجاح')),
-                              );
-
                               Navigator.of(context).pop(); // Close the dialog
                             }
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                  content: Text('حدث خطأ: ${e.toString()}')),
+                                  content: Text(
+                                      '${LocalizationService.translateFromGeneral('unexpectedError')} ${e.toString()}')),
                             );
                           }
                         }
                       },
-                      child: const Text('حفظ'),
+                      child: Text(
+                          LocalizationService.translateFromGeneral('save')),
                     ),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop(); // Close the dialog
                       },
-                      child: const Text('إلغاء'),
+                      child: Text(
+                          LocalizationService.translateFromGeneral('cancel')),
                     ),
                   ],
                   actionsAlignment: MainAxisAlignment.start,
@@ -513,19 +531,29 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildButtonCard(
-                            context, 'المعلومات الشخصية', Icons.person, () {
+                            context,
+                            LocalizationService.translateFromGeneral(
+                                'personalInformation'),
+                            Icons.person, () {
                           showEditInfoDialog(context);
                         }, Icons.arrow_forward_ios_outlined),
                         _buildButtonCard(
-                            context, 'تغيير كلمة المرور', Icons.vpn_key, () {
+                            context,
+                            LocalizationService.translateFromGeneral(
+                                'changePassword'),
+                            Icons.vpn_key, () {
                           showEditPasswordDialog(context);
                         }, Icons.arrow_forward_ios_outlined),
                         _buildButtonCard(
-                            context, 'الصالات الرياضية', Icons.location_on, () {
+                            context,
+                            LocalizationService.translateFromGeneral('gyms'),
+                            Icons.location_on, () {
                           Get.toNamed(Routes.myGyms);
                         }, Icons.arrow_forward_ios_outlined),
                         _buildButtonCard(
-                            context, 'تسجيل الخروج', Icons.logout_outlined, () {
+                            context,
+                            LocalizationService.translateFromGeneral('logout'),
+                            Icons.logout_outlined, () {
                           _logout();
                         }, Icons.arrow_forward_ios_outlined),
                       ],
@@ -587,7 +615,9 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
           const SizedBox(height: 10),
           // Use FutureBuilder to display the fetched user name
           Text(
-            fullName ?? 'لا يوجد اسم', // If no name, display a default message
+            fullName ??
+                LocalizationService.translateFromGeneral(
+                    'noName'), // If no name, display a default message
             style: const TextStyle(
               color: Palette.white,
               fontSize: 20,
@@ -650,13 +680,14 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
       prefs.clear();
       Get.toNamed(Routes.singIn);
     } catch (e) {
-      Get.snackbar('خطأ', 'فشل تسجيل الخروج.',
+      Get.snackbar(LocalizationService.translateFromGeneral('error'),
+          LocalizationService.translateFromGeneral('logoutError'),
           titleText: Text(
-            'خطأ',
+            LocalizationService.translateFromGeneral('error'),
             textAlign: TextAlign.right,
           ),
           messageText: Text(
-            'فشل تسجيل الخروج.',
+            LocalizationService.translateFromGeneral('logoutError'),
             textAlign: TextAlign.right,
           ));
     }

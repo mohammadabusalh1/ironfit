@@ -1,0 +1,1154 @@
+[
+  {
+    "bodyPart": "shoulders",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/6/9/0/5690.gif",
+    "id": 977,
+    "name": "band front lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/6/9/1/5691.gif",
+    "id": 978,
+    "name": "band front raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/0/6/5706.gif",
+    "id": 993,
+    "name": "band reverse fly",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/2/1/9/4/9/21949.gif",
+    "id": 997,
+    "name": "band shoulder press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/3/5/5735.gif",
+    "id": 1022,
+    "name": "band standing rear delt row",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/2/5/5725.gif",
+    "id": 1012,
+    "name": "band twisting overhead press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/3/0/5730.gif",
+    "id": 1017,
+    "name": "band y-raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/7/7/2/4772.gif",
+    "id": 41,
+    "name": "barbell front raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/0/4/6/1/20461.gif",
+    "id": 67,
+    "name": "barbell one arm snatch",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/0/6/4806.gif",
+    "id": 75,
+    "name": "barbell rear delt raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/0/7/4807.gif",
+    "id": 76,
+    "name": "barbell rear delt row",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/2/0/4820.gif",
+    "id": 86,
+    "name": "barbell seated behind head military press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/2/1/4821.gif",
+    "id": 87,
+    "name": "barbell seated bradford rocky press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/2/7/4827.gif",
+    "id": 91,
+    "name": "barbell seated overhead press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/3/8/4838.gif",
+    "id": 100,
+    "name": "barbell skier",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/4/3/4843.gif",
+    "id": 105,
+    "name": "barbell standing bradford press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/6/9/1/6691.gif",
+    "id": 1456,
+    "name": "barbell standing close grip military press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/4/5/4845.gif",
+    "id": 107,
+    "name": "barbell standing front raise over head",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/0/2/8/9/20289.gif",
+    "id": 1457,
+    "name": "barbell standing wide military press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/1/5/4/13154.gif",
+    "id": 3305,
+    "name": "barbell thruster",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/7/9/0/24790.gif",
+    "id": 120,
+    "name": "barbell upright row",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/5/7/4857.gif",
+    "id": 119,
+    "name": "barbell upright row v. 2",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/7/9/0/24790.gif",
+    "id": 121,
+    "name": "barbell upright row v. 3",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/6/1/4861.gif",
+    "id": 123,
+    "name": "barbell wide-grip upright row",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "rope",
+    "gifUrl": "https://gymvisual.com/img/p/9/4/1/8/9418.gif",
+    "id": 128,
+    "name": "battling ropes",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/8/1/4881.gif",
+    "id": 148,
+    "name": "cable alternate shoulder press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/5/8/4958.gif",
+    "id": 154,
+    "name": "cable cross-over revers fly",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/9/5/4895.gif",
+    "id": 161,
+    "name": "cable forward raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/9/5/4895.gif",
+    "id": 162,
+    "name": "cable front raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/9/5/4895.gif",
+    "id": 164,
+    "name": "cable front shoulder raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/6/9/7/14697.gif",
+    "id": 3697,
+    "name": "cable kneeling rear delt row (with rope) (male)",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/1/1/4911.gif",
+    "id": 178,
+    "name": "cable lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://media1.tenor.com/m/sxbft6ZWeK8AAAAd/cable-lateral-raise-single-arm.gif",
+    "id": 192,
+    "name": "cable one arm lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/3/5/4935.gif",
+    "id": 202,
+    "name": "cable rear delt row (stirrups)",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/6/9/7/14697.gif",
+    "id": 203,
+    "name": "cable rear delt row (with rope)",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/4/8/4948.gif",
+    "id": 215,
+    "name": "cable seated rear lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/4/9/4949.gif",
+    "id": 216,
+    "name": "cable seated shoulder internal rotation",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/5/2/4952.gif",
+    "id": 219,
+    "name": "cable shoulder press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/5/8/4958.gif",
+    "id": 225,
+    "name": "cable standing cross-over high reverse fly",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/6/6/4966.gif",
+    "id": 233,
+    "name": "cable standing rear delt row (with rope)",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/2/6/4/2/0/26420.gif",
+    "id": 235,
+    "name": "cable standing shoulder external rotation",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/7/3/4973.gif",
+    "id": 240,
+    "name": "cable supine reverse fly",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/9/3/6/24936.gif",
+    "id": 246,
+    "name": "cable upright row",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/1/9/5019.gif",
+    "id": 286,
+    "name": "dumbbell alternate side press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/8/7/3/9/8739.gif",
+    "id": 2137,
+    "name": "dumbbell arnold press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/2/0/5020.gif",
+    "id": 287,
+    "name": "dumbbell arnold press v. 2",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/9/3/8/24938.gif",
+    "id": 290,
+    "name": "dumbbell bench seated press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/3/2/5032.gif",
+    "id": 299,
+    "name": "dumbbell cuban press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/8/8/0/9/8809.gif",
+    "id": 2136,
+    "name": "dumbbell cuban press v. 2",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/9/4/0/24940.gif",
+    "id": 310,
+    "name": "dumbbell front raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/4/2/5042.gif",
+    "id": 309,
+    "name": "dumbbell front raise v. 2",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/4/4/5044.gif",
+    "id": 311,
+    "name": "dumbbell full can lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/6/4/5064.gif",
+    "id": 323,
+    "name": "dumbbell incline one arm lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/8/7/0/5870.gif",
+    "id": 325,
+    "name": "dumbbell incline raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/7/6/3/2/27632.gif",
+    "id": 326,
+    "name": "dumbbell incline rear lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/1/1/1/14111.gif",
+    "id": 3542,
+    "name": "dumbbell incline t-raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/7/3/5073.gif",
+    "id": 332,
+    "name": "dumbbell iron cross",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/9/1/5/1/19151.gif",
+    "id": 334,
+    "name": "dumbbell lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/7/6/5076.gif",
+    "id": 335,
+    "name": "dumbbell lateral to front raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/8/5/5585.gif",
+    "id": 863,
+    "name": "dumbbell lying external shoulder rotation",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/6/4/4/10644.gif",
+    "id": 2470,
+    "name": "dumbbell lying on floor rear delt raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/8/2/5082.gif",
+    "id": 341,
+    "name": "dumbbell lying one arm deltoid rear",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/8/6/5086.gif",
+    "id": 345,
+    "name": "dumbbell lying one arm rear lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/8/9/5089.gif",
+    "id": 348,
+    "name": "dumbbell lying rear lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/9/6/5096.gif",
+    "id": 355,
+    "name": "dumbbell one arm lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/6/5/4/7/6547.gif",
+    "id": 356,
+    "name": "dumbbell one arm lateral raise with support",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/8/6/9/8/18698.gif",
+    "id": 359,
+    "name": "dumbbell one arm reverse fly (with support)",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/9/1/9/5919.gif",
+    "id": 361,
+    "name": "dumbbell one arm shoulder press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/0/1/5101.gif",
+    "id": 360,
+    "name": "dumbbell one arm shoulder press v. 2",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/0/4/5104.gif",
+    "id": 363,
+    "name": "dumbbell one arm upright row",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/7/4/1/6/7416.gif",
+    "id": 1700,
+    "name": "dumbbell push press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/9/4/0/24940.gif",
+    "id": 376,
+    "name": "dumbbell raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/9/7/4/1/9741.gif",
+    "id": 2292,
+    "name": "dumbbell rear delt raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/1/8/5118.gif",
+    "id": 377,
+    "name": "dumbbell rear delt row_shoulder",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://media1.tenor.com/m/bmwYCJmFlZwAAAAC/rear-delt-fly-dumbells.gif",
+    "id": 378,
+    "name": "dumbbell rear fly",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/0/7/4/4/20744.gif",
+    "id": 380,
+    "name": "dumbbell rear lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/2/0/5120.gif",
+    "id": 379,
+    "name": "dumbbell rear lateral raise (support head)",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/2/4/5124.gif",
+    "id": 383,
+    "name": "dumbbell reverse fly",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/2/7/5127.gif",
+    "id": 386,
+    "name": "dumbbell rotation reverse fly",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/4/0/7/10407.gif",
+    "id": 2397,
+    "name": "dumbbell scott press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/2/8/5128.gif",
+    "id": 387,
+    "name": "dumbbell seated alternate front raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/2/9/5129.gif",
+    "id": 388,
+    "name": "dumbbell seated alternate press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/1/1/5/14115.gif",
+    "id": 3546,
+    "name": "dumbbell seated alternate shoulder",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/1/6/9/10169.gif",
+    "id": 2317,
+    "name": "dumbbell seated bent arm lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/3/3/5133.gif",
+    "id": 392,
+    "name": "dumbbell seated front raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://media1.tenor.com/m/Emm_nwKi5jAAAAAC/seated-lateral-raise.gif",
+    "id": 396,
+    "name": "dumbbell seated lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/8/2/7/9/28279.gif",
+    "id": 395,
+    "name": "dumbbell seated lateral raise v. 2",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/4/6/5146.gif",
+    "id": 405,
+    "name": "dumbbell seated shoulder press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/4/5/5145.gif",
+    "id": 404,
+    "name": "dumbbell seated shoulder press (parallel grip)",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/4/9/5149.gif",
+    "id": 408,
+    "name": "dumbbell side lying one hand raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/1/1/7/14117.gif",
+    "id": 3548,
+    "name": "dumbbell single arm overhead carry",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/1/5/5/14155.gif",
+    "id": 414,
+    "name": "dumbbell standing alternate overhead press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/5/6/5156.gif",
+    "id": 415,
+    "name": "dumbbell standing alternate raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/8/7/7/3/8773.gif",
+    "id": 2143,
+    "name": "dumbbell standing around world",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/9/4/0/24940.gif",
+    "id": 419,
+    "name": "dumbbell standing front raise above head",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/6/5/5165.gif",
+    "id": 424,
+    "name": "dumbbell standing one arm palm in press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://media.tenor.com/9LkujMB7lc8AAAAM/5dumbbell-shoulders-press.gif",
+    "id": 426,
+    "name": "dumbbell standing overhead press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/6/8/5168.gif",
+    "id": 427,
+    "name": "dumbbell standing palms in press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/9/4/2/24942.gif",
+    "id": 437,
+    "name": "dumbbell upright row",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/9/4/2/24942.gif",
+    "id": 1765,
+    "name": "dumbbell upright row (back pov)",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/8/6/5586.gif",
+    "id": 864,
+    "name": "dumbbell upright shoulder external rotation",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/7/9/5179.gif",
+    "id": 438,
+    "name": "dumbbell w-press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "ez barbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/9/3/2/6/29326.gif",
+    "id": 445,
+    "name": "ez barbell anti gravity press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/5/7/5257.gif",
+    "id": 520,
+    "name": "kettlebell alternating press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/6/1/5261.gif",
+    "id": 523,
+    "name": "kettlebell arnold press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/6/5/5265.gif",
+    "id": 527,
+    "name": "kettlebell double jerk",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/2/8/9/6/1/28961.gif",
+    "id": 528,
+    "name": "kettlebell double push press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/6/7/5267.gif",
+    "id": 529,
+    "name": "kettlebell double snatch",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/7/5/5275.gif",
+    "id": 537,
+    "name": "kettlebell one arm clean and jerk",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/7/6/5276.gif",
+    "id": 538,
+    "name": "kettlebell one arm jerk",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/7/7/5277.gif",
+    "id": 539,
+    "name": "kettlebell one arm military press to the side",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/7/8/5278.gif",
+    "id": 540,
+    "name": "kettlebell one arm push press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/2/8/4/3/4/28434.gif",
+    "id": 542,
+    "name": "kettlebell one arm snatch",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/8/1/5281.gif",
+    "id": 543,
+    "name": "kettlebell pirate supper legs",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/8/4/5284.gif",
+    "id": 546,
+    "name": "kettlebell seated press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/6/3/4/2/6342.gif",
+    "id": 1438,
+    "name": "kettlebell seated two arm military press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/1/1/8/6/5/11865.gif",
+    "id": 547,
+    "name": "kettlebell seesaw press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/8/8/5288.gif",
+    "id": 550,
+    "name": "kettlebell thruster",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/2/8/4/1/4/28414.gif",
+    "id": 552,
+    "name": "kettlebell two arm clean",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/9/1/5291.gif",
+    "id": 553,
+    "name": "kettlebell two arm military press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/9/9/4/12994.gif",
+    "id": 3237,
+    "name": "landmine lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/9/0/0/3/9003.gif",
+    "id": 2271,
+    "name": "left hook. boxing",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/2/1/5321.gif",
+    "id": 584,
+    "name": "lever lateral raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/2/4/5324.gif",
+    "id": 587,
+    "name": "lever military press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/2/7/5327.gif",
+    "id": 590,
+    "name": "lever one arm shoulder press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/3/9/5339.gif",
+    "id": 602,
+    "name": "lever seated reverse fly",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/3/8/5338.gif",
+    "id": 601,
+    "name": "lever seated reverse fly (parallel grip)",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/3/6/1/6361.gif",
+    "id": 1454,
+    "name": "lever seated shoulder press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/3/6/1/6361.gif",
+    "id": 603,
+    "name": "lever shoulder press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/9/0/5590.gif",
+    "id": 869,
+    "name": "lever shoulder press  v. 2",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/9/8/3/2/9832.gif",
+    "id": 2318,
+    "name": "lever shoulder press  v. 3",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/0/3/5403.gif",
+    "id": 669,
+    "name": "rear deltoid stretch",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "resistance band",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/5/1/7/12517.gif",
+    "id": 3122,
+    "name": "resistance band seated shoulder press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/7/1/5471.gif",
+    "id": 747,
+    "name": "smith behind neck press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/4/6/9/24469.gif",
+    "id": 762,
+    "name": "smith rear delt row",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/8/9/5489.gif",
+    "id": 765,
+    "name": "smith seated shoulder press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/9/0/5490.gif",
+    "id": 766,
+    "name": "smith shoulder press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/9/6/5496.gif",
+    "id": 772,
+    "name": "smith standing behind head military press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/9/8/5498.gif",
+    "id": 774,
+    "name": "smith standing military press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/9/9/5499.gif",
+    "id": 775,
+    "name": "smith upright row",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/1/2/5512.gif",
+    "id": 788,
+    "name": "standing behind neck press",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/9/4/0/24940.gif",
+    "id": 834,
+    "name": "weighted front raise",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/7/4/0/14740.gif",
+    "id": 3641,
+    "name": "weighted kneeling step with swing",
+    "target": "delts"
+  },
+  {
+    "bodyPart": "shoulders",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/6/6/5566.gif",
+    "id": 844,
+    "name": "weighted round arm",
+    "target": "delts"
+  }
+]

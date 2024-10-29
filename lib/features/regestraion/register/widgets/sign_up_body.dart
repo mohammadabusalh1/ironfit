@@ -164,17 +164,18 @@ class _SignUpBodyState extends State<SignUpBody> {
         Navigator.pop(context);
 
         // Handle errors
-        Get.snackbar('خطأ', 'يتعذر  إنشاء حساب',
+        Get.snackbar(LocalizationService.translateFromGeneral('error'),
+            LocalizationService.translateFromGeneral('accountCreationError'),
             snackPosition: SnackPosition.BOTTOM,
             colorText: Palette.white,
             margin: EdgeInsets.all(10),
-            titleText: const Text(
+            titleText: Text(
               textDirection: TextDirection.rtl,
-              'يتعذر  إنشاء حساب',
+              LocalizationService.translateFromGeneral('accountCreationError'),
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
             messageText: Text(
-              'المستخدم موجود مسبقاً',
+              LocalizationService.translateFromGeneral('accountExist'),
               style: const TextStyle(color: Colors.white),
               textDirection: TextDirection.rtl,
             ));
@@ -335,16 +336,19 @@ class _SignUpBodyState extends State<SignUpBody> {
                             await signUpWithGoogle();
                           } catch (e) {
                             Get.snackbar(
-                              'فشل',
-                              'يتعذر تسجيل الدخول باستخدام Google',
-                              titleText: const Text(
-                                'فشل',
+                              LocalizationService.translateFromGeneral('error'),
+                              LocalizationService.translateFromGeneral(
+                                  'googleLoginFailure'),
+                              titleText: Text(
+                                LocalizationService.translateFromGeneral(
+                                    'error'),
                                 textAlign: TextAlign.right,
                                 textDirection: TextDirection.rtl,
                                 style: TextStyle(color: Colors.white),
                               ),
-                              messageText: const Text(
-                                'يتعذر تسجيل الدخول باستخدام Google',
+                              messageText: Text(
+                                LocalizationService.translateFromGeneral(
+                                    'googleLoginFailure'),
                                 textAlign: TextAlign.right,
                                 textDirection: TextDirection.rtl,
                                 style: TextStyle(color: Colors.white),

@@ -7,6 +7,7 @@ import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/StatisticsCard.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -262,11 +263,13 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                                         ),
                                       ),
                                       const SizedBox(width: 12),
-                                      const Opacity(
+                                      Opacity(
                                         opacity: 0.8,
                                         child: Text(
-                                          'الإحصائيات',
-                                          style: TextStyle(
+                                          LocalizationService
+                                              .translateFromGeneral(
+                                                  'statistics'),
+                                          style: const TextStyle(
                                             fontFamily: 'Inter',
                                             color: Colors.white,
                                             fontSize: 20,
@@ -293,8 +296,11 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                             child: Row(
                               children: [
                                 StatisticsCard(
-                                  cardSubTitle: '${data['trainees']} متدرب',
-                                  cardTitle: 'المتدربين',
+                                  cardSubTitle:
+                                      '${data['trainees']} ${LocalizationService.translateFromGeneral('trainee')}',
+                                  cardTitle:
+                                      LocalizationService.translateFromGeneral(
+                                          'trainees'),
                                   width:
                                       MediaQuery.of(context).size.width * 0.4,
                                   height: 90,
@@ -302,8 +308,11 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                                 ),
                                 const Spacer(),
                                 StatisticsCard(
-                                  cardSubTitle: '${data['new_trainees']} متدرب',
-                                  cardTitle: 'المتدربين الجدد',
+                                  cardSubTitle:
+                                      '${data['trainees']} ${LocalizationService.translateFromGeneral('Trainee')}',
+                                  cardTitle:
+                                      LocalizationService.translateFromGeneral(
+                                          'newTrainees'),
                                   width:
                                       MediaQuery.of(context).size.width * 0.4,
                                   height: 90,
@@ -316,8 +325,10 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 24),
                             child: StatisticsCard(
-                              cardSubTitle: '${data['income']} شيكل',
-                              cardTitle: 'الدخل هذا الشهر',
+                              cardSubTitle: '${data['income']} \$',
+                              cardTitle:
+                                  LocalizationService.translateFromGeneral(
+                                      'incomeThisMonth'),
                               width: MediaQuery.of(context).size.width * 0.86,
                               height: 90,
                               icon: Icons.monetization_on,
@@ -333,11 +344,12 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                                 padding: const EdgeInsets.all(8),
                                 margin:
                                     const EdgeInsets.symmetric(horizontal: 24),
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: Palette.mainAppColorWhite,
                                 ),
                                 child: Text(
-                                  'توزيع الأعمار',
+                                  LocalizationService.translateFromGeneral(
+                                      'ageDistribution'),
                                   style: TextStyle(
                                     fontFamily: 'Inter',
                                     fontSize: 14,
@@ -367,9 +379,10 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                                     return AgeDonutChart(ageData: data);
                                   }
 
-                                  return const Center(
-                                      child: Text(
-                                          'لا توجد بيانات لتوزيع الأعمار'));
+                                  return Center(
+                                      child: Text(LocalizationService
+                                          .translateFromGeneral(
+                                              'noDataForAgeDistribution')));
                                 },
                               ),
                             ],
@@ -382,7 +395,9 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
               ],
             );
           } else {
-            return const Center(child: Text('لا توجد بيانات'));
+            return Center(
+                child:
+                    Text(LocalizationService.translateFromGeneral('noData')));
           }
         },
       ),

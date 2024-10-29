@@ -9,8 +9,8 @@ import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/exrciseCard.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
-import 'package:ironfit/features/createPlan/widgets/ex.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:ironfit/features/editPlan/widgets/ExerciseDialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,7 +31,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   List<TrainingDay> trainingDays = [];
 
   List<Map<String, dynamic>> exercisesJson =
-      List<Map<String, dynamic>>.from(jsonDecode(jsonString));
+      List<Map<String, dynamic>>.from(jsonDecode(''));
 
   String planName = '';
   String planDescription = '';
@@ -41,19 +41,10 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   String repetitions = '';
 
   PreferencesService preferencesService = PreferencesService();
-  Future<void> _checkToken() async {
-    SharedPreferences prefs = await preferencesService.getPreferences();
-    String? token = prefs.getString('token');
-
-    if (token == null) {
-      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    _checkToken();
+    // _checkToken();
   }
 
   @override
@@ -77,14 +68,16 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                         onChange: (value) => setState(() {
                           planName = value;
                         }),
-                        label: "إسم الخطة",
+                        label: LocalizationService.translateFromGeneral(
+                            'planName'),
                       ),
                       const SizedBox(height: 16),
                       BuildTextField(
                         controller: descriptionController,
                         onChange: (value) =>
                             setState(() => planDescription = value),
-                        label: "وصف الخطة",
+                        label: LocalizationService.translateFromGeneral(
+                            'planDescription'),
                       ),
                       const SizedBox(height: 24),
                       _buildTrainingDaysList(),
@@ -177,11 +170,11 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Opacity(
+                Opacity(
                   opacity: 0.8,
                   child: Text(
-                    'البرامج الخاصة بي',
-                    style: TextStyle(
+                    LocalizationService.translateFromGeneral('myPrograms'),
+                    style: const TextStyle(
                       fontFamily: 'Inter',
                       color: Palette.white,
                       fontSize: 20,
@@ -218,6 +211,316 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildEditDayDialog(BuildContext context,
+      {TrainingDay? initialDay, int? index}) {
+    var daySplit = initialDay?.day.split('-');
+    String? selectedDay = daySplit!.length > 1 ? daySplit[1] : daySplit[0];
+
+    return Theme(
+      data: Theme.of(context).copyWith(
+          dialogBackgroundColor: Colors.grey[900],
+          textTheme: const TextTheme(
+            bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
+            bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
+            headlineLarge: TextStyle(
+                color: Palette.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 24),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Palette.mainAppColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          )),
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          title: Text(
+              LocalizationService.translateFromGeneral('chooseTrainingDay'),
+              style: const TextStyle(color: Palette.white)),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return DropdownButton<String>(
+                dropdownColor: Colors.grey[800],
+                hint: Text(
+                    LocalizationService.translateFromGeneral('trainingDay'),
+                    style: const TextStyle(color: Palette.white)),
+                value: selectedDay,
+                onChanged: (newValue) {
+                  setState(() {
+                    selectedDay = newValue;
+                  });
+                },
+                items: [
+                  {
+                    'value': 'sun',
+                    'label': LocalizationService.translateFromGeneral('sunday')
+                  },
+                  {
+                    'value': 'mon',
+                    'label': LocalizationService.translateFromGeneral('monday')
+                  },
+                  {
+                    'value': 'tue',
+                    'label': LocalizationService.translateFromGeneral('tuesday')
+                  },
+                  {
+                    'value': 'wed',
+                    'label':
+                        LocalizationService.translateFromGeneral('wednesday')
+                  },
+                  {
+                    'value': 'thu',
+                    'label':
+                        LocalizationService.translateFromGeneral('thursday')
+                  },
+                  {
+                    'value': 'fri',
+                    'label': LocalizationService.translateFromGeneral('friday')
+                  },
+                  {
+                    'value': 'sat',
+                    'label':
+                        LocalizationService.translateFromGeneral('saturday')
+                  },
+                ]
+                    .map((day) => DropdownMenuItem(
+                          value: day['value'], // Correct value assignment
+                          child: Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: Text(day['label']!,
+                                style: const TextStyle(color: Palette.white)),
+                          ),
+                        ))
+                    .toList(),
+              );
+            },
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                if (selectedDay != null) {
+                  setState(() {
+                    if (index != null) {
+                      // Edit existing day
+                      trainingDays[index] = TrainingDay(
+                          day: selectedDay!,
+                          exercises: trainingDays[index].exercises);
+                    } else {
+                      // Add new day
+                      trainingDays
+                          .add(TrainingDay(day: selectedDay!, exercises: []));
+                    }
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              child: Text(LocalizationService.translateFromGeneral('save'),
+                  style: TextStyle(color: Palette.black)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(LocalizationService.translateFromGeneral('cancel'),
+                  style: TextStyle(color: Palette.white)),
+            ),
+          ],
+          actionsAlignment: MainAxisAlignment.start,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTrainingDayCard(TrainingDay day, int index) {
+    String dayName = day.day.contains('-') ? day.day.split('-')[1] : day.day;
+    return Card(
+      color: Palette.secondaryColor,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  dayName == 'sun'
+                      ? 'الاحد'
+                      : dayName == 'mon'
+                          ? 'الاثنين'
+                          : dayName == 'tue'
+                              ? 'الثلاثاء'
+                              : dayName == 'wed'
+                                  ? 'الاربعاء'
+                                  : dayName == 'thu'
+                                      ? 'الخميس'
+                                      : dayName == 'fri'
+                                          ? 'الجمعة'
+                                          : 'السبت',
+                  style: const TextStyle(
+                      color: Palette.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold),
+                ),
+                Spacer(),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () =>
+                        _editTrainingDay(context, day, index), // Edit button
+                    child: Text(
+                        LocalizationService.translateFromGeneral('edit'),
+                        style: TextStyle(color: Palette.black)),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Column(
+              children: day.exercises.map((exercise) {
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ExrciseCard(
+                            spaceBetweenItems: 5,
+                            padding: 0,
+                            withIconButton: false,
+                            title: exercise.name,
+                            subtitle1: "${exercise.rounds} جولات",
+                            subtitle2: "${exercise.repetitions} تكرار",
+                            image: exercise.image,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => _removeExercise(day, exercise),
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                        ),
+                      ],
+                    ),
+                    // Add space between rows
+                    const SizedBox(
+                        height: 10), // Adjust the height as per your need
+                  ],
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                onPressed: () => _addExerciseToDay(day),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Palette.mainAppColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text("أضف تمرين",
+                    style: TextStyle(color: Palette.black)),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: ElevatedButton(
+                  onPressed: () => _removeTrainingDay(index),
+                  child: Text(
+                      LocalizationService.translateFromGeneral('delete'),
+                      style: TextStyle(color: Palette.redDelete))),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDayDialog(BuildContext context) {
+    String? selectedDay;
+    return Theme(
+      data: Theme.of(context).copyWith(
+          dialogBackgroundColor: Colors.grey[900],
+          textTheme: const TextTheme(
+            bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
+            bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
+            headlineLarge: TextStyle(
+                color: Palette.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 24),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Palette.mainAppColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          )),
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          title: const Text("إختر يوم التدريب",
+              style: TextStyle(color: Palette.white)),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return DropdownButton<String>(
+                dropdownColor: Colors.grey[800],
+                hint: const Text("يوم التدريب",
+                    style: TextStyle(color: Palette.white)),
+                value: selectedDay,
+                onChanged: (newValue) {
+                  setState(() {
+                    selectedDay = newValue;
+                  });
+                },
+                items: const [
+                  {'value': 'sun', 'label': 'الأحد'},
+                  {'value': 'mon', 'label': 'الأثنين'},
+                  {'value': 'tue', 'label': 'الثلاثاء'},
+                  {'value': 'wed', 'label': 'الأربعاء'},
+                  {'value': 'thu', 'label': 'الخميس'},
+                  {'value': 'fri', 'label': 'الجمعة'},
+                  {'value': 'sat', 'label': 'السبت'},
+                ]
+                    .map((day) => DropdownMenuItem(
+                          value: '${day['label']}-${day['value']}',
+                          child: Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: Text(day['label']!,
+                                style: const TextStyle(color: Palette.white)),
+                          ),
+                        ))
+                    .toList(),
+              );
+            },
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                if (selectedDay != null) {
+                  setState(() {
+                    trainingDays
+                        .add(TrainingDay(day: selectedDay!, exercises: []));
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('حفظ', style: TextStyle(color: Palette.black)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child:
+                  const Text('إلغاء', style: TextStyle(color: Palette.white)),
+            ),
+          ],
+          actionsAlignment: MainAxisAlignment.start,
+        ),
+      ),
     );
   }
 
@@ -318,294 +621,6 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       context: context,
       builder: (context) =>
           _buildEditDayDialog(context, initialDay: day, index: index),
-    );
-  }
-
-  Widget _buildEditDayDialog(BuildContext context,
-      {TrainingDay? initialDay, int? index}) {
-    var daySplit = initialDay?.day.split('-');
-    String? selectedDay = daySplit!.length > 1 ? daySplit[1] : daySplit[0];
-
-    return Theme(
-      data: Theme.of(context).copyWith(
-          dialogBackgroundColor: Colors.grey[900],
-          textTheme: const TextTheme(
-            bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
-            bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
-            headlineLarge: TextStyle(
-                color: Palette.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 24),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Palette.mainAppColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          )),
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: AlertDialog(
-          title: const Text("إختر يوم التدريب",
-              style: TextStyle(color: Palette.white)),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return DropdownButton<String>(
-                dropdownColor: Colors.grey[800],
-                hint: const Text("يوم التدريب",
-                    style: TextStyle(color: Palette.white)),
-                value: selectedDay,
-                onChanged: (newValue) {
-                  setState(() {
-                    selectedDay = newValue;
-                  });
-                },
-                items: const [
-                  {'value': 'sun', 'label': 'الأحد'},
-                  {'value': 'mon', 'label': 'الأثنين'},
-                  {'value': 'tue', 'label': 'الثلاثاء'},
-                  {'value': 'wed', 'label': 'الأربعاء'},
-                  {'value': 'thu', 'label': 'الخميس'},
-                  {'value': 'fri', 'label': 'الجمعة'},
-                  {'value': 'sat', 'label': 'السبت'},
-                ]
-                    .map((day) => DropdownMenuItem(
-                          value: day['value'], // Correct value assignment
-                          child: Align(
-                            alignment: AlignmentDirectional.centerEnd,
-                            child: Text(day['label']!,
-                                style: const TextStyle(color: Palette.white)),
-                          ),
-                        ))
-                    .toList(),
-              );
-            },
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                if (selectedDay != null) {
-                  setState(() {
-                    if (index != null) {
-                      // Edit existing day
-                      trainingDays[index] = TrainingDay(
-                          day: selectedDay!,
-                          exercises: trainingDays[index].exercises);
-                    } else {
-                      // Add new day
-                      trainingDays
-                          .add(TrainingDay(day: selectedDay!, exercises: []));
-                    }
-                  });
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('حفظ', style: TextStyle(color: Palette.black)),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child:
-                  const Text('إلغاء', style: TextStyle(color: Palette.white)),
-            ),
-          ],
-          actionsAlignment: MainAxisAlignment.start,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTrainingDayCard(TrainingDay day, int index) {
-    String dayName = day.day.contains('-') ? day.day.split('-')[1] : day.day;
-    return Card(
-      color: Palette.secondaryColor,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  dayName == 'sun'
-                      ? 'الاحد'
-                      : dayName == 'mon'
-                          ? 'الاثنين'
-                          : dayName == 'tue'
-                              ? 'الثلاثاء'
-                              : dayName == 'wed'
-                                  ? 'الاربعاء'
-                                  : dayName == 'thu'
-                                      ? 'الخميس'
-                                      : dayName == 'fri'
-                                          ? 'الجمعة'
-                                          : 'السبت',
-                  style: const TextStyle(
-                      color: Palette.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-                Spacer(),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    onPressed: () =>
-                        _editTrainingDay(context, day, index), // Edit button
-                    child: const Text("تعديل",
-                        style: TextStyle(color: Palette.black)),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Column(
-              children: day.exercises.map((exercise) {
-                return Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ExrciseCard(
-                            spaceBetweenItems: 5,
-                            padding: 0,
-                            withIconButton: false,
-                            title: exercise.name,
-                            subtitle1: "${exercise.rounds} جولات",
-                            subtitle2: "${exercise.repetitions} تكرار",
-                            image: exercise.image,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () => _removeExercise(day, exercise),
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                        ),
-                      ],
-                    ),
-                    // Add space between rows
-                    const SizedBox(
-                        height: 10), // Adjust the height as per your need
-                  ],
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton(
-                onPressed: () => _addExerciseToDay(day),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Palette.mainAppColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text("أضف تمرين",
-                    style: TextStyle(color: Palette.black)),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: ElevatedButton(
-                  onPressed: () => _removeTrainingDay(index),
-                  child: const Text("حذف",
-                      style: TextStyle(color: Palette.redDelete))),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _addTrainingDay(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => _buildDayDialog(context),
-    );
-  }
-
-  Widget _buildDayDialog(BuildContext context) {
-    String? selectedDay;
-    return Theme(
-      data: Theme.of(context).copyWith(
-          dialogBackgroundColor: Colors.grey[900],
-          textTheme: const TextTheme(
-            bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
-            bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
-            headlineLarge: TextStyle(
-                color: Palette.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 24),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Palette.mainAppColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          )),
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: AlertDialog(
-          title: const Text("إختر يوم التدريب",
-              style: TextStyle(color: Palette.white)),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return DropdownButton<String>(
-                dropdownColor: Colors.grey[800],
-                hint: const Text("يوم التدريب",
-                    style: TextStyle(color: Palette.white)),
-                value: selectedDay,
-                onChanged: (newValue) {
-                  setState(() {
-                    selectedDay = newValue;
-                  });
-                },
-                items: const [
-                  {'value': 'sun', 'label': 'الأحد'},
-                  {'value': 'mon', 'label': 'الأثنين'},
-                  {'value': 'tue', 'label': 'الثلاثاء'},
-                  {'value': 'wed', 'label': 'الأربعاء'},
-                  {'value': 'thu', 'label': 'الخميس'},
-                  {'value': 'fri', 'label': 'الجمعة'},
-                  {'value': 'sat', 'label': 'السبت'},
-                ]
-                    .map((day) => DropdownMenuItem(
-                          value: '${day['label']}-${day['value']}',
-                          child: Align(
-                            alignment: AlignmentDirectional.centerEnd,
-                            child: Text(day['label']!,
-                                style: const TextStyle(color: Palette.white)),
-                          ),
-                        ))
-                    .toList(),
-              );
-            },
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                if (selectedDay != null) {
-                  setState(() {
-                    trainingDays
-                        .add(TrainingDay(day: selectedDay!, exercises: []));
-                  });
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('حفظ', style: TextStyle(color: Palette.black)),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child:
-                  const Text('إلغاء', style: TextStyle(color: Palette.white)),
-            ),
-          ],
-          actionsAlignment: MainAxisAlignment.start,
-        ),
-      ),
     );
   }
 
@@ -714,6 +729,13 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
     }
   }
 
+  void _addTrainingDay(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => _buildDayDialog(context),
+    );
+  }
+
   bool _validatePlan() {
     if (planName.isEmpty) {
       Get.snackbar('خطأ', 'يرجى إدخال اسم الخطة',
@@ -794,6 +816,15 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
         exercisesJson: exercisesJson,
       ),
     );
+  }
+
+  Future<void> _checkToken() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
+    }
   }
 }
 

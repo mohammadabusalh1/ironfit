@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/editPlan/screens/edit_plan_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,12 +50,13 @@ class _MyPlansBodyState extends State<MyPlansBody> {
         builder: (BuildContext context) {
           return AlertDialog(
             alignment: Alignment.center,
-            title: const Text(
-              'تأكيد الإلغاء',
+            title: Text(
+              LocalizationService.translateFromGeneral('cancelConfirmation'),
               textAlign: TextAlign.center,
             ),
-            content: const Text(
-              'هل أنت متأكد أنك تريد حذف الخطة؟',
+            content: Text(
+              LocalizationService.translateFromGeneral(
+                  'deletePlanConfirmation'),
               textAlign: TextAlign.end,
             ),
             actions: [
@@ -62,8 +64,8 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                 onPressed: () {
                   Navigator.of(context).pop(false); // User canceled
                 },
-                child:
-                    const Text('إلغاء', style: TextStyle(color: Palette.black)),
+                child: Text(LocalizationService.translateFromGeneral('cancel'),
+                    style: TextStyle(color: Palette.black)),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -72,8 +74,10 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                 onPressed: () {
                   Navigator.of(context).pop(true); // User confirmed
                 },
-                child:
-                    const Text('تأكيد', style: TextStyle(color: Palette.white)),
+                child: Text(
+                    LocalizationService.translateFromGeneral(
+                        'cancelConfirmation'),
+                    style: TextStyle(color: Palette.white)),
               ),
             ],
           );
@@ -88,8 +92,9 @@ class _MyPlansBodyState extends State<MyPlansBody> {
       // Check for null planId or current user
       if (planId.isEmpty || _auth.currentUser == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('المستخدم غير مسجل دخول أو رقم الخطة مفقود')),
+          SnackBar(
+              content: Text(LocalizationService.translateFromGeneral(
+                  'userNotLoggedInOrPlanIdMissing'))),
         );
         return;
       }
@@ -107,19 +112,25 @@ class _MyPlansBodyState extends State<MyPlansBody> {
 
       // Notify the user of success
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم حذف الخطة بنجاح')),
+        SnackBar(
+            content: Text(LocalizationService.translateFromGeneral(
+                'planDeletedSuccessfully'))),
       );
     } on FirebaseException catch (e) {
       // Handle Firebase-specific errors
       print('Firebase error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('حدث خطأ أثناء حذف الخطة: ${e.message}')),
+        SnackBar(
+            content: Text(
+                ' ${LocalizationService.translateFromGeneral('firebaseErrorDeletingPlan')} ${e.message}')),
       );
     } catch (e) {
       // Handle other types of errors
       print('Unexpected error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('حدث خطأ غير متوقع أثناء حذف الخطة')),
+        SnackBar(
+            content: Text(
+                ' ${LocalizationService.translateFromGeneral('unexpectedErrorDeletingPlan')}')),
       );
     }
   }
@@ -145,7 +156,6 @@ class _MyPlansBodyState extends State<MyPlansBody> {
     } catch (e) {
       // Log the error and return an error stream
       print('Error fetching plans: $e');
-      SnackBar(content: Text('Error fetching plans: $e'));
     }
   }
 
@@ -200,11 +210,12 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                                     ),
                                   ),
                                   const SizedBox(width: 12),
-                                  const Opacity(
+                                  Opacity(
                                     opacity: 0.8,
                                     child: Text(
-                                      'البرامج الخاصة بي',
-                                      style: TextStyle(
+                                      LocalizationService.translateFromGeneral(
+                                          'myPrograms'),
+                                      style: const TextStyle(
                                         fontFamily: 'Inter',
                                         color: Colors.white,
                                         fontSize: 20,
@@ -272,9 +283,10 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                                   size: 15,
                                   color: Color(0xFF1C1503),
                                 ),
-                                label: const Text(
-                                  'التاريخ',
-                                  style: TextStyle(
+                                label: Text(
+                                  LocalizationService.translateFromGeneral(
+                                      'date'),
+                                  style: const TextStyle(
                                     fontFamily: 'Inter',
                                     color: Color(0xFF1C1503),
                                     fontSize: 14,
@@ -319,9 +331,11 @@ class _MyPlansBodyState extends State<MyPlansBody> {
 
                                   // 6. Fallbacks for null fields.
                                   String title = data['name'] ??
-                                      'لا يوجد عنوان'; // Provide default values if null.
+                                      LocalizationService.translateFromGeneral(
+                                          'noTitle'); // Provide default values if null.
                                   String description = data['description'] ??
-                                      'لا يوجد وصف'; // Provide default values if null.
+                                      LocalizationService.translateFromGeneral(
+                                          'noDescription'); // Provide default values if null.
 
                                   return CustomCard(
                                     onPressedEdit: () {

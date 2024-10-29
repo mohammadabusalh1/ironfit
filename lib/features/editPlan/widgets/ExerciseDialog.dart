@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/ExerciseListWidget.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/features/createPlan/widgets/create_plan_body.dart';
 import 'package:ironfit/features/editPlan/widgets/buildTextField.dart';
 
@@ -156,7 +157,9 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          title: const Text("إختر التدريب",
+          title: Text(
+              LocalizationService.translateFromGeneral(
+                  'selectExerciseBodyPart'),
               style: TextStyle(color: Palette.white)),
           content: StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
@@ -169,8 +172,8 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child:
-                  const Text('إلغاء', style: TextStyle(color: Palette.white)),
+              child: Text(LocalizationService.translateFromGeneral('cancel'),
+                  style: TextStyle(color: Palette.white)),
             ),
           ],
           actionsAlignment: MainAxisAlignment.start,

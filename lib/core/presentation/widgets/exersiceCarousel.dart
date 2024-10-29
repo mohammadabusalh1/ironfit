@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:ironfit/core/presentation/widgets/CarouselItem.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
 class ExerciseCarousel extends StatelessWidget {
   final List<Map<String, String>> exercises;
@@ -17,7 +18,7 @@ class ExerciseCarousel extends StatelessWidget {
         height: 200,
         alignment: Alignment.center,
         child: Text(
-          'No exercises available',
+          LocalizationService.translateFromGeneral('noExercisesAvailable'),
           style: TextStyle(
             color: Colors.white,
             fontSize: 16,
@@ -31,8 +32,7 @@ class ExerciseCarousel extends StatelessWidget {
       width: double.infinity,
       height: 200,
       child: CarouselSlider(
-        items:
-            exercises.map((item) => buildCarouselItem(item)).toList(),
+        items: exercises.map((item) => buildCarouselItem(item)).toList(),
         options: CarouselOptions(
           initialPage: 1,
           viewportFraction: 0.5,
@@ -46,5 +46,4 @@ class ExerciseCarousel extends StatelessWidget {
       ),
     );
   }
-
 }

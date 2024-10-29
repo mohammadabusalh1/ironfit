@@ -1,0 +1,1362 @@
+[
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/4/7/3/1/4731.gif",
+    "id": 1,
+    "name": "3/4 sit-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/4/7/3/2/4732.gif",
+    "id": 2,
+    "name": "45° side bend",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/8/8/0/8/8808.gif",
+    "id": 3,
+    "name": "air bike",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/5/0/6/3/15063.gif",
+    "id": 6,
+    "name": "alternate heel touchers",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/2/8/4/10284.gif",
+    "id": 2355,
+    "name": "arm slingers hanging bent knee legs",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/1/6/5/10165.gif",
+    "id": 2333,
+    "name": "arm slingers hanging straight legs",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/9/2/8/12928.gif",
+    "id": 3204,
+    "name": "arms overhead full sit-up (male)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "assisted",
+    "gifUrl": "https://gymvisual.com/img/p/4/7/4/2/4742.gif",
+    "id": 11,
+    "name": "assisted hanging knee raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "assisted",
+    "gifUrl": "https://gymvisual.com/img/p/4/7/4/1/4741.gif",
+    "id": 10,
+    "name": "assisted hanging knee raise with throw down",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "assisted",
+    "gifUrl": "https://gymvisual.com/img/p/4/7/4/3/4743.gif",
+    "id": 12,
+    "name": "assisted lying leg raise with lateral throw down",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "assisted",
+    "gifUrl": "https://gymvisual.com/img/p/4/7/4/4/4744.gif",
+    "id": 13,
+    "name": "assisted lying leg raise with throw down",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "medicine ball",
+    "gifUrl": "https://gymvisual.com/img/p/4/7/4/5/4745.gif",
+    "id": 14,
+    "name": "assisted motion russian twist",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "assisted",
+    "gifUrl": "https://gymvisual.com/img/p/7/4/2/8/7428.gif",
+    "id": 1714,
+    "name": "assisted prone rectus femoris stretch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "assisted",
+    "gifUrl": "https://gymvisual.com/img/p/7/5/6/5/7565.gif",
+    "id": 1758,
+    "name": "assisted sit-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/6/8/2/5682.gif",
+    "id": 969,
+    "name": "band alternating v-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/6/8/4/5684.gif",
+    "id": 971,
+    "name": "band assisted wheel rollerout",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/6/8/5/5685.gif",
+    "id": 972,
+    "name": "band bicycle crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/6/9/2/5692.gif",
+    "id": 979,
+    "name": "band horizontal pallof press",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/6/9/4/5694.gif",
+    "id": 981,
+    "name": "band jack knife sit-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/6/9/8/5698.gif",
+    "id": 985,
+    "name": "band kneeling twisting crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/1/5/5715.gif",
+    "id": 1002,
+    "name": "band lying straight leg raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/0/5/5705.gif",
+    "id": 992,
+    "name": "band push sit-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/2/4/5724.gif",
+    "id": 1011,
+    "name": "band seated twist",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/1/8/5718.gif",
+    "id": 1005,
+    "name": "band standing crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/2/0/5720.gif",
+    "id": 1007,
+    "name": "band standing twisting crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/2/7/5727.gif",
+    "id": 1014,
+    "name": "band v-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/5/7/2/8/5728.gif",
+    "id": 1015,
+    "name": "band vertical pallof press",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/0/2/4802.gif",
+    "id": 71,
+    "name": "barbell press sit-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/4/1/4841.gif",
+    "id": 84,
+    "name": "barbell rollerout",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/1/7/4817.gif",
+    "id": 83,
+    "name": "barbell rollerout from bench",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/3/0/4830.gif",
+    "id": 94,
+    "name": "barbell seated twist",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/3/4/4834.gif",
+    "id": 96,
+    "name": "barbell side bent v. 2",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/5/9/7/14597.gif",
+    "id": 2799,
+    "name": "barbell sitted alternate leg raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/5/9/8/14598.gif",
+    "id": 2800,
+    "name": "barbell sitted alternate leg raise (female)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/4/1/4841.gif",
+    "id": 103,
+    "name": "barbell standing ab rollerout",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/7/9/3/2/27932.gif",
+    "id": 112,
+    "name": "barbell standing twist",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/1/1/3/14113.gif",
+    "id": 3544,
+    "name": "bodyweight incline side plank",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/4/8/7/4/4874.gif",
+    "id": 138,
+    "name": "bottoms-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/6/4/0/10640.gif",
+    "id": 2466,
+    "name": "bridge - mountain climber (cross body)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/9/1/5591.gif",
+    "id": 870,
+    "name": "butt-ups",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/0/7/4907.gif",
+    "id": 174,
+    "name": "cable judo flip",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/2/5/2/7/2/25272.gif",
+    "id": 175,
+    "name": "cable kneeling crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/3/4/1/4/0/34140.gif",
+    "id": 873,
+    "name": "cable reverse crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/9/0/3/14903.gif",
+    "id": 211,
+    "name": "cable russian twists (on stability ball)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/2/5/2/2/4/25224.gif",
+    "id": 212,
+    "name": "cable seated crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/4/1/3/10413.gif",
+    "id": 2399,
+    "name": "cable seated twist",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/1/1/4/13114.gif",
+    "id": 222,
+    "name": "cable side bend",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/5/4/4954.gif",
+    "id": 221,
+    "name": "cable side bend crunch (bosu ball)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/5/6/4956.gif",
+    "id": 223,
+    "name": "cable side crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/5/9/4959.gif",
+    "id": 226,
+    "name": "cable standing crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/2/5/2/3/0/25230.gif",
+    "id": 874,
+    "name": "cable standing crunch (with rope attachment)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/6/3/4963.gif",
+    "id": 230,
+    "name": "cable standing lift",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/7/5/4975.gif",
+    "id": 242,
+    "name": "cable tuck reverse crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/8/4/5584.gif",
+    "id": 243,
+    "name": "cable twist",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "cable",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/8/4/5584.gif",
+    "id": 862,
+    "name": "cable twist (up-down)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/2/1/8/0/6/21806.gif",
+    "id": 2963,
+    "name": "captains chair straight leg raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/9/3/4993.gif",
+    "id": 260,
+    "name": "cocoons",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/6/7/0/3/6703.gif",
+    "id": 1468,
+    "name": "crab twist toe touch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/4/9/9/5/4995.gif",
+    "id": 262,
+    "name": "cross body crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/0/0/5000.gif",
+    "id": 267,
+    "name": "crunch (hands overhead)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/0/4/5004.gif",
+    "id": 271,
+    "name": "crunch (on stability ball)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/0/4/5004.gif",
+    "id": 272,
+    "name": "crunch (on stability ball, arms straight)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://media.tenor.com/g2-zU-AHquoAAAAM/cats-gym.gif",
+    "id": 274,
+    "name": "crunch floor",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://media.tenor.com/O2KQs_1j0DIAAAAM/dog-tucking.gif",
+    "id": 3016,
+    "name": "curl-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/2/0/8/3/5/20835.gif",
+    "id": 276,
+    "name": "dead bug",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/0/1/0/5010.gif",
+    "id": 277,
+    "name": "decline crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/2/0/2/5/8/20258.gif",
+    "id": 282,
+    "name": "decline sit-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/2/5/8/2/9/25829.gif",
+    "id": 407,
+    "name": "dumbbell side bend",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/8/4/5184.gif",
+    "id": 443,
+    "name": "elbow-to-knee",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/2/0/2/9/8/20298.gif",
+    "id": 3303,
+    "name": "flag",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/1/9/7/5197.gif",
+    "id": 456,
+    "name": "flexion leg sit up (bent knee)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/2/1/5/6/1/21561.gif",
+    "id": 457,
+    "name": "flexion leg sit up (straight arm)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/5/6/0/10560.gif",
+    "id": 2429,
+    "name": "frog crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/1/5/0/13150.gif",
+    "id": 3301,
+    "name": "frog planche",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/2/3/5/13235.gif",
+    "id": 3296,
+    "name": "front lever",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/0/4/5204.gif",
+    "id": 464,
+    "name": "front plank with twist",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/2/0/3/13203.gif",
+    "id": 3315,
+    "name": "full maltese",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/1/4/8/13148.gif",
+    "id": 3299,
+    "name": "full planche",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/0/6/5206.gif",
+    "id": 467,
+    "name": "gorilla chin",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/0/8/5208.gif",
+    "id": 469,
+    "name": "groin crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/9/2/6/12926.gif",
+    "id": 3202,
+    "name": "half sit-up (male)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/7/6/0/3/7603.gif",
+    "id": 1764,
+    "name": "hanging leg hip raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://media1.tenor.com/m/LuTjJGyFOoUAAAAd/hanging-leg-raise.gif",
+    "id": 472,
+    "name": "hanging leg raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/7/5/7/6/7576.gif",
+    "id": 1761,
+    "name": "hanging oblique knee raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/1/2/5212.gif",
+    "id": 473,
+    "name": "hanging pike",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/1/3/5213.gif",
+    "id": 474,
+    "name": "hanging straight leg hip raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/9/4/4/24944.gif",
+    "id": 475,
+    "name": "hanging straight leg raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/2/0/8/4/7/20847.gif",
+    "id": 476,
+    "name": "hanging straight twisting leg hip raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/2/3/5223.gif",
+    "id": 484,
+    "name": "hip raise (bent knee)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://media.tenor.com/yy7OyIg6HeEAAAAM/worm.gif",
+    "id": 1471,
+    "name": "inchworm",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/5/1/4/8/15148.gif",
+    "id": 3698,
+    "name": "inchworm v. 2",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/3/0/5230.gif",
+    "id": 491,
+    "name": "incline leg hip raise (leg straight)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/2/4/3/0/7/24307.gif",
+    "id": 495,
+    "name": "incline twisting sit-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/4/5/5245.gif",
+    "id": 507,
+    "name": "jackknife sit-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/4/6/5246.gif",
+    "id": 508,
+    "name": "janda sit-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/5/5/5255.gif",
+    "id": 517,
+    "name": "kettlebell advanced windmill",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/6/2/5262.gif",
+    "id": 524,
+    "name": "kettlebell bent press",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/6/8/5268.gif",
+    "id": 530,
+    "name": "kettlebell double windmill",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/7/0/8/10708.gif",
+    "id": 532,
+    "name": "kettlebell figure 8",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "kettlebell",
+    "gifUrl": "https://gymvisual.com/img/p/5/2/9/2/5292.gif",
+    "id": 554,
+    "name": "kettlebell windmill",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/7/3/9/14739.gif",
+    "id": 3640,
+    "name": "knee touch crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/0/0/1/13001.gif",
+    "id": 3239,
+    "name": "kneeling plank tap shoulder (male)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/7/7/2/13772.gif",
+    "id": 3419,
+    "name": "l-sit on floor",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "barbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/0/0/5300.gif",
+    "id": 562,
+    "name": "landmine 180",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/1/4/9/13149.gif",
+    "id": 3300,
+    "name": "lean planche",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/0/7/5307.gif",
+    "id": 570,
+    "name": "leg pull in flat bench",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/2/0/5320.gif",
+    "id": 583,
+    "name": "lever kneeling twist",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/3/5/9/6359.gif",
+    "id": 1452,
+    "name": "lever seated crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/3/2/5332.gif",
+    "id": 595,
+    "name": "lever seated crunch (chest pad)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/1/6/6/8/0/16680.gif",
+    "id": 3760,
+    "name": "lever seated crunch v. 2",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/1/6/9/0/9/16909.gif",
+    "id": 600,
+    "name": "lever seated leg raise crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "leverage machine",
+    "gifUrl": "https://gymvisual.com/img/p/6/3/6/0/6360.gif",
+    "id": 1453,
+    "name": "lever seated twist",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/7/4/0/6/7406.gif",
+    "id": 1688,
+    "name": "lunge with twist",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/9/7/9/7/9797.gif",
+    "id": 2312,
+    "name": "lying elbow to knee",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/5/6/5356.gif",
+    "id": 620,
+    "name": "lying leg raise flat bench",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/8/6/1/8/18618.gif",
+    "id": 865,
+    "name": "lying leg-hip raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/6/9/5369.gif",
+    "id": 634,
+    "name": "negative crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/1/6/2/4/11624.gif",
+    "id": 1495,
+    "name": "oblique crunch v. 2",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://media.tenor.com/-Wb9RUhangMAAAAM/side-crunch.gif",
+    "id": 635,
+    "name": "oblique crunches floor",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "medicine ball",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/7/5/5375.gif",
+    "id": 640,
+    "name": "one arm slam (with medicine ball)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/7/6/5376.gif",
+    "id": 641,
+    "name": "otis up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/5/6/3/12563.gif",
+    "id": 3147,
+    "name": "pelvic tilt",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/7/4/0/5/7405.gif",
+    "id": 1687,
+    "name": "posterior step to overhead reach",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/4/5/5/12455.gif",
+    "id": 3119,
+    "name": "potty squat",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/7/5/0/14750.gif",
+    "id": 3665,
+    "name": "power point plank",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/9/2/7/12927.gif",
+    "id": 3203,
+    "name": "prisoner half sit-up (male)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/7/4/2/2/7422.gif",
+    "id": 1707,
+    "name": "prone twist on stability ball",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/5/3/8/4/5384.gif",
+    "id": 650,
+    "name": "pull-in (on stability ball)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/2/6/3/1/1/26311.gif",
+    "id": 664,
+    "name": "push-up to side plank",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/9/2/5/12925.gif",
+    "id": 3201,
+    "name": "quarter sit-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://media1.tenor.com/m/2Qczo92wOA4AAAAd/reverse-crunches-exercise.gif",
+    "id": 872,
+    "name": "reverse crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/7/4/8/14748.gif",
+    "id": 3663,
+    "name": "reverse plank with leg lift",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "roller",
+    "gifUrl": "https://gymvisual.com/img/p/2/3/1/8/6/23186.gif",
+    "id": 2204,
+    "name": "roller body saw",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "roller",
+    "gifUrl": "https://media1.tenor.com/m/2Qczo92wOA4AAAAd/reverse-crunches-exercise.gif",
+    "id": 2206,
+    "name": "roller reverse crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://media.tenor.com/OLwm7qK98FgAAAAM/russiantwist-core.gif",
+    "id": 687,
+    "name": "russian twist",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/2/2/5422.gif",
+    "id": 689,
+    "name": "seated leg raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/2/4/5424.gif",
+    "id": 691,
+    "name": "seated side crunch (wall)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://media.tenor.com/i3ZXMxhtFlIAAAAM/friends-matthew-perry.gif",
+    "id": 3699,
+    "name": "shoulder tap",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/3/4/5434.gif",
+    "id": 705,
+    "name": "side bridge v. 2",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/3/8/5438.gif",
+    "id": 709,
+    "name": "side hip (on parallel bars)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/2/9/3/7/12937.gif",
+    "id": 3213,
+    "name": "side-to-side toe touch (male)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/5/9/5459.gif",
+    "id": 735,
+    "name": "sit-up v. 2",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/6/6/9/14669.gif",
+    "id": 3679,
+    "name": "sit-up with arms on chest",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "hammer",
+    "gifUrl": "https://media.tenor.com/fYY6H9XATtkAAAAM/hamma.gif",
+    "id": 1496,
+    "name": "sledge hammer",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "smith machine",
+    "gifUrl": "https://gymvisual.com/img/p/5/4/8/0/5480.gif",
+    "id": 756,
+    "name": "smith hip raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "dumbbell",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/0/1/5501.gif",
+    "id": 777,
+    "name": "spell caster",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/1/6/2/10162.gif",
+    "id": 2329,
+    "name": "spine twist",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "stability ball",
+    "gifUrl": "https://gymvisual.com/img/p/9/7/9/3/9793.gif",
+    "id": 2297,
+    "name": "stability ball crunch (full range hands behind head)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "wheel roller",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/2/0/5520.gif",
+    "id": 796,
+    "name": "standing wheel rollerout",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/2/0/2/13202.gif",
+    "id": 3314,
+    "name": "straddle maltese",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/1/4/7/13147.gif",
+    "id": 3298,
+    "name": "straddle planche",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/2/8/5528.gif",
+    "id": 805,
+    "name": "suspended abdominal fallout",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/3/0/5530.gif",
+    "id": 807,
+    "name": "suspended reverse crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/9/2/5592.gif",
+    "id": 871,
+    "name": "tuck crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/6/0/0/14600.gif",
+    "id": 2802,
+    "name": "twisted leg raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/5/9/9/14599.gif",
+    "id": 2801,
+    "name": "twisted leg raise (female)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/3/7/7/3/13773.gif",
+    "id": 3420,
+    "name": "v-sit on floor",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/7/3/8/10738.gif",
+    "id": 826,
+    "name": "vertical leg raise (on parallel bars)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "weighted",
+    "gifUrl": "https://media.tenor.com/g2-zU-AHquoAAAAM/cats-gym.gif",
+    "id": 832,
+    "name": "weighted crunch",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/7/5/2/14752.gif",
+    "id": 3670,
+    "name": "weighted decline sit-up",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/1/4/5/8/9/14589.gif",
+    "id": 2135,
+    "name": "weighted front plank",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/8/8/5588.gif",
+    "id": 866,
+    "name": "weighted hanging leg-hip raise",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/6/2/5562.gif",
+    "id": 840,
+    "name": "weighted overhead crunch (on stability ball)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/6/8/5568.gif",
+    "id": 846,
+    "name": "weighted russian twist",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/6/7/5567.gif",
+    "id": 845,
+    "name": "weighted russian twist (legs up)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/1/0/2/9/8/10298.gif",
+    "id": 2371,
+    "name": "weighted russian twist v. 2",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/7/1/5571.gif",
+    "id": 849,
+    "name": "weighted seated twist (on stability ball)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "weighted",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/7/2/5572.gif",
+    "id": 850,
+    "name": "weighted side bend (on stability ball)",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "wheel roller",
+    "gifUrl": "https://gymvisual.com/img/p/2/7/6/3/4/27634.gif",
+    "id": 857,
+    "name": "wheel rollerout",
+    "target": "abs"
+  },
+  {
+    "bodyPart": "waist",
+    "equipment": "body weight",
+    "gifUrl": "https://gymvisual.com/img/p/5/5/8/0/5580.gif",
+    "id": 858,
+    "name": "wind sprints",
+    "target": "abs"
+  }
+]

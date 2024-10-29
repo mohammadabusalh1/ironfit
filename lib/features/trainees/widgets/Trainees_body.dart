@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/Trainee/screens/trainee_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -96,10 +97,10 @@ class _TraineesBodyState extends State<TraineesBody> {
   }
 
   Widget _buildHeaderTitle() {
-    return const Opacity(
+    return Opacity(
       opacity: 0.8,
       child: Text(
-        'المتدربين',
+        LocalizationService.translateFromGeneral('trainees'),
         style: TextStyle(
           fontFamily: 'Inter',
           color: Palette.white,
@@ -125,15 +126,16 @@ class _TraineesBodyState extends State<TraineesBody> {
           Expanded(child: _buildAddButton()),
           const SizedBox(width: 12),
           Expanded(
-              child: _buildSortButton('الإسم',
+              child: _buildSortButton(
+                  LocalizationService.translateFromGeneral('name'),
                   isNameSortUp ? Icons.north_rounded : Icons.south_rounded, () {
             _sortByName();
           })),
           const SizedBox(width: 12),
           Expanded(
               child: _buildSortButton(
-                  'الاشتراك', isSubscriptionSortUp ? Icons.add : Icons.minimize,
-                  () {
+                  LocalizationService.translateFromGeneral('subscription'),
+                  isSubscriptionSortUp ? Icons.add : Icons.minimize, () {
             _sortBySubscription();
             toggleSubscriptionSort();
           })),
@@ -190,7 +192,7 @@ class _TraineesBodyState extends State<TraineesBody> {
             _filterTrainees, // Call the filter function on every input change
         decoration: InputDecoration(
           isDense: true,
-          hintText: 'البحث',
+          hintText: LocalizationService.translateFromGeneral('search'),
           hintStyle: const TextStyle(fontFamily: 'Inter', fontSize: 14),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
@@ -218,9 +220,9 @@ class _TraineesBodyState extends State<TraineesBody> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: filtteredTrainees.isEmpty
-            ? const Center(
+            ? Center(
                 child: Text(
-                  'لا يوجد نتائج',
+                  LocalizationService.translateFromGeneral('noData'),
                   style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 16,
@@ -242,22 +244,27 @@ class _TraineesBodyState extends State<TraineesBody> {
                   return _buildTraineeCard(
                     context,
                     trainee['fullName'] ??
-                        'غير معروف', // Default name if fullName is null
+                        LocalizationService.translateFromGeneral(
+                            'unknown'), // Default name if fullName is null
                     trainee['endDate'] != null &&
                             DateTime.tryParse(trainee['endDate']) != null
                         ? (DateTime.parse(trainee['endDate'])
                                     .millisecondsSinceEpoch >
                                 DateTime.now().millisecondsSinceEpoch
-                            ? 'مشترك'
-                            : 'إنتهى الإشتراك')
-                        : 'غير معروف', // Default status if endDate is null or cannot be parsed
+                            ? LocalizationService.translateFromGeneral(
+                                'currently_subscribed')
+                            : LocalizationService.translateFromGeneral(
+                                'not_subscribed'))
+                        : LocalizationService.translateFromGeneral(
+                            'unknown'), // Default status if endDate is null or cannot be parsed
                     trainee['profileImageUrl'] ??
                         'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg', // Default image if profileImageUrl is null
                     () => Get.to(Directionality(
                         textDirection: TextDirection.rtl,
                         child: TraineeScreen(
                           username: trainee['username'] ??
-                              'unknown_user', // Default username if null
+                              LocalizationService.translateFromGeneral(
+                                  'unknown'), // Default username if null
                           fetchTrainees: fetchTrainees,
                         ))),
                   );
@@ -487,7 +494,8 @@ class _TraineesBodyState extends State<TraineesBody> {
             child: Directionality(
               textDirection: TextDirection.rtl,
               child: AlertDialog(
-                title: const Text('إضافة متدرب جديد',
+                title: Text(
+                    LocalizationService.translateFromGeneral('addNewTrainee'),
                     style: TextStyle(
                         color: Palette.white,
                         fontSize: 24,
@@ -499,7 +507,9 @@ class _TraineesBodyState extends State<TraineesBody> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('يرجى ملئ البيانات المطلوبة',
+                      Text(
+                          LocalizationService.translateFromGeneral(
+                              'pleaseFillRequiredData'),
                           style: TextStyle(
                               fontSize: 14, fontWeight: FontWeight.w500)),
                       const SizedBox(height: 16),
@@ -508,8 +518,10 @@ class _TraineesBodyState extends State<TraineesBody> {
                         children: [
                           TextFormField(
                             controller: usernameController,
-                            decoration: const InputDecoration(
-                              labelText: 'إسم الحساب',
+                            decoration: InputDecoration(
+                              labelText:
+                                  LocalizationService.translateFromGeneral(
+                                      'usernameLabel'),
                               border: OutlineInputBorder(),
                               labelStyle:
                                   TextStyle(color: Palette.gray, fontSize: 14),
@@ -525,7 +537,11 @@ class _TraineesBodyState extends State<TraineesBody> {
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'يرجى إدخال اسم الحساب';
+                                return LocalizationService.translateFromGeneral(
+                                        'create_account') +
+                                    ' ' +
+                                    LocalizationService.translateFromGeneral(
+                                        'usernameLabel');
                               }
                               return null;
                             },
@@ -536,8 +552,9 @@ class _TraineesBodyState extends State<TraineesBody> {
                           ),
                           const SizedBox(
                               height: 8), // Add spacing between field and note
-                          const Text(
-                            'ملاحظة: يجب على المتدرب إستخدام هذا الإسم عند إنشاء الحساب.',
+                          Text(
+                            LocalizationService.translateFromGeneral(
+                                'addTraineeNote'),
                             style: TextStyle(color: Colors.grey, fontSize: 12),
                           ),
                         ],
@@ -545,8 +562,9 @@ class _TraineesBodyState extends State<TraineesBody> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: startDateController,
-                        decoration: const InputDecoration(
-                          labelText: "تاريخ البدء",
+                        decoration: InputDecoration(
+                          labelText: LocalizationService.translateFromGeneral(
+                              'startDate'),
                           labelStyle:
                               TextStyle(color: Palette.gray, fontSize: 14),
                           border: OutlineInputBorder(),
@@ -566,7 +584,8 @@ class _TraineesBodyState extends State<TraineesBody> {
                         },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'يرجى إدخال تاريخ البدء';
+                            return LocalizationService.translateFromGeneral(
+                                'enterStartDate');
                           }
                           return null;
                         },
@@ -574,7 +593,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: endDateController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                             prefixIcon: const Padding(
                               padding: EdgeInsets.all(
                                   10.0), // Adjust padding if needed
@@ -586,7 +605,8 @@ class _TraineesBodyState extends State<TraineesBody> {
                             ),
                             labelStyle:
                                 TextStyle(color: Palette.gray, fontSize: 14),
-                            labelText: "تاريخ الانتهاء",
+                            labelText: LocalizationService.translateFromGeneral(
+                                'endDate'),
                             border: OutlineInputBorder()),
                         readOnly: true,
                         onTap: () {
@@ -594,7 +614,8 @@ class _TraineesBodyState extends State<TraineesBody> {
                         },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'يرجى إدخال تاريخ الانتهاء';
+                            return LocalizationService.translateFromGeneral(
+                                'enterEndDate');
                           }
                           if (startDateController.text.isNotEmpty &&
                               endDateController.text.isNotEmpty) {
@@ -605,7 +626,8 @@ class _TraineesBodyState extends State<TraineesBody> {
                                 DateTime.parse(endDateController.text);
 
                             if (startDate.isAfter(endDate)) {
-                              return 'تاريخ البدء لا يمكن أن يكون أكبر من تاريخ الانتهاء';
+                              return LocalizationService.translateFromGeneral(
+                                  'startDateCannotBeAfterEndDate');
                             }
                           }
                           return null;
@@ -615,7 +637,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                       TextFormField(
                         controller: amountPaidController,
                         keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           prefixIcon: const Padding(
                             padding: EdgeInsets.all(
                                 10.0), // Adjust padding if needed
@@ -625,14 +647,16 @@ class _TraineesBodyState extends State<TraineesBody> {
                               size: 20,
                             ),
                           ),
-                          labelText: 'المبلغ المدفوع',
+                          labelText: LocalizationService.translateFromGeneral(
+                              'amountPaid'),
                           labelStyle:
                               TextStyle(color: Palette.gray, fontSize: 14),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'يرجى إدخال المبلغ المدفوع';
+                            return LocalizationService.translateFromGeneral(
+                                'validation_amount_paid');
                           }
                           return null;
                         },
@@ -641,7 +665,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                       TextFormField(
                         controller: debtsController,
                         keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                             prefixIcon: const Padding(
                               padding: EdgeInsets.all(
                                   10.0), // Adjust padding if needed
@@ -653,11 +677,13 @@ class _TraineesBodyState extends State<TraineesBody> {
                             ),
                             labelStyle:
                                 TextStyle(color: Palette.gray, fontSize: 14),
-                            labelText: 'الديون',
+                            labelText: LocalizationService.translateFromGeneral(
+                                'debts'),
                             border: OutlineInputBorder()),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'يرجى إدخال الديون';
+                            return LocalizationService.translateFromGeneral(
+                                'validation_debt');
                           }
                           return null;
                         },
@@ -701,19 +727,22 @@ class _TraineesBodyState extends State<TraineesBody> {
                         // Trainee exists: Update existing trainee with new subscription details
                         if (traineeExists) {
                           Get.snackbar(
-                            'خطأ',
-                            'يتعذر  إنشاء حساب',
+                            LocalizationService.translateFromGeneral('error'),
+                            LocalizationService.translateFromPage(
+                                'title', 'snackbar_create_account'),
                             snackPosition: SnackPosition.BOTTOM,
                             colorText: Palette.white,
                             margin: EdgeInsets.all(10),
-                            titleText: const Text(
+                            titleText: Text(
                               textDirection: TextDirection.rtl,
-                              'يتعذر  إنشاء حساب',
+                              LocalizationService.translateFromPage(
+                                  'title', 'snackbar_create_account'),
                               style:
                                   TextStyle(color: Colors.white, fontSize: 16),
                             ),
                             messageText: Text(
-                              'اسم الحساب مستخدم',
+                              LocalizationService.translateFromPage(
+                                  'message', 'snackbar_create_account'),
                               style: const TextStyle(color: Colors.white),
                               textDirection: TextDirection.rtl,
                             ),
@@ -743,8 +772,11 @@ class _TraineesBodyState extends State<TraineesBody> {
                           });
 
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('تمت إضافة المتدرب بنجاح')),
+                            SnackBar(
+                                content: Text(
+                                    LocalizationService.translateFromPage(
+                                        'snackbar_success',
+                                        'snackbar_create_account'))),
                           );
                           Navigator.of(context).pop();
                         }
@@ -757,13 +789,17 @@ class _TraineesBodyState extends State<TraineesBody> {
                         // Close loading dialog
                       }
                     },
-                    child: const Text('حفظ'),
+                    child: Text(
+                      LocalizationService.translateFromGeneral('save'),
+                    ),
                   ),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop(); // Close the dialog
                     },
-                    child: const Text('إلغاء'),
+                    child: Text(
+                      LocalizationService.translateFromGeneral('cancel'),
+                    ),
                   ),
                 ],
                 actionsAlignment: MainAxisAlignment.start,

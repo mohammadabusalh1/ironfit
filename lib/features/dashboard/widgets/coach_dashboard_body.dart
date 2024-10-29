@@ -5,6 +5,7 @@ import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/widgets/PagesHeader.dart';
 import 'package:ironfit/core/presentation/widgets/StatisticsCard.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/features/dashboard/widgets/card_widget.dart';
 import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
 import 'package:ironfit/core/routes/routes.dart';
@@ -159,16 +160,19 @@ class CoachDashboardState extends State<CoachDashboardBody> {
                 const SizedBox(height: 24),
                 _buildCardWidget(
                   onTap: () => Get.toNamed(Routes.myGyms),
-                  subtitle: 'الصالات الرياضية الخاص بي',
+                  subtitle: LocalizationService.translateFromGeneral('myGyms'),
                   imagePath: Assets.myGymImage,
-                  description: 'أضف معلومات النادي الرياضي الخاص بك',
+                  description:
+                      LocalizationService.translateFromGeneral('addGymInfo'),
                 ),
                 const SizedBox(height: 24),
                 _buildCardWidget(
                   onTap: () => Get.toNamed(Routes.trainees),
-                  subtitle: 'المتدربين',
+                  subtitle:
+                      LocalizationService.translateFromGeneral('trainees'),
                   imagePath: Assets.myTrainerImage,
-                  description: 'أضف معلومات المتدربين الخاصين بك',
+                  description: LocalizationService.translateFromGeneral(
+                      'addTraineeInfo'),
                 ),
                 const SizedBox(height: 40),
               ],
@@ -191,11 +195,15 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   Widget _buildStatisticsRow(BuildContext context, Map<String, dynamic> data) {
     return Row(
       children: [
-        _buildStatisticsCard(data['trainees'].toString() + " متدرب",
-            "عدد المتدربين", context, Icons.person_outline),
+        _buildStatisticsCard(
+            data['trainees'].toString() +
+                LocalizationService.translateFromGeneral('trainee'),
+            LocalizationService.translateFromGeneral('numberOfTrainees'),
+            context,
+            Icons.person_outline),
         const Spacer(), // Adjusted for consistent spacing
         _buildStatisticsCard(data['subscriptions'].toString() + "+%",
-            "الإشتراك", context, Icons.percent_outlined),
+            LocalizationService.translateFromGeneral('subscription'), context, Icons.percent_outlined),
       ],
     );
   }

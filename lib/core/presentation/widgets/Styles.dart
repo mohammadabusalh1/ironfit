@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppStyles {
-  static TextStyle textCairoWhite(
+  static TextStyle textCairo(
       double fontSize, Color color, FontWeight fontWeight) {
     return GoogleFonts.cairo(
       color: color,

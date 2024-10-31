@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/user_nav_bar_controller.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
 class UserNavBar extends StatelessWidget {
   final UserNavController navController =
@@ -141,11 +142,11 @@ class UserNavBar extends StatelessWidget {
   String _getNavItemLabel(int index) {
     switch (index) {
       case 0:
-        return 'الرئيسية';
+        return LocalizationService.translateFromGeneral('home');
       case 1:
-        return 'البرنامج';
+        return LocalizationService.translateFromGeneral('program');
       case 2:
-        return 'الحساب';
+        return LocalizationService.translateFromGeneral('profile');
       default:
         return '';
     }

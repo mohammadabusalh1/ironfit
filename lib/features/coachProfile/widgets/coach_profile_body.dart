@@ -8,10 +8,16 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Button.dart';
+import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
+import 'package:ironfit/core/presentation/widgets/theme.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
+import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String? fullName;
@@ -33,19 +39,13 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   String coachId = FirebaseAuth.instance.currentUser!.uid;
 
   PreferencesService preferencesService = PreferencesService();
-  Future<void> _checkToken() async {
-    SharedPreferences prefs = await preferencesService.getPreferences();
-    String? token = prefs.getString('token');
-
-    if (token == null) {
-      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
-    }
-  }
+  TokenService tokenService = TokenService();
+  CustomSnackbar customSnackbar = CustomSnackbar();
 
   @override
   void initState() {
     super.initState();
-    _checkToken();
+    tokenService.checkTokenAndNavigateSingIn();
     if (!isDataLoaded) {
       fetchUserName();
       setState(() {
@@ -68,17 +68,16 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
 
       try {
         try {
-          Get.dialog(Center(child: CircularProgressIndicator()),
+          Get.dialog(const Center(child: CircularProgressIndicator()),
               barrierDismissible: false);
           final storageRef = FirebaseStorage.instance.ref().child(
               'profile_images/${FirebaseAuth.instance.currentUser!.uid}.jpg');
           await storageRef.putFile(File(pickedFile.path)).then(
             (snapshot) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text(LocalizationService.translateFromGeneral(
-                        'imageUploadSuccess'))),
-              );
+              customSnackbar.showMessage(
+                  context,
+                  LocalizationService.translateFromGeneral(
+                      'imageUploadSuccess'));
             },
           );
           final downloadUrl = await storageRef.getDownloadURL();
@@ -99,31 +98,16 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
             isLoading = false;
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(LocalizationService.translateFromGeneral(
-                    'imageUploadSuccess'))),
-          );
-
           Get.back();
         } catch (e) {
           Get.back();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(LocalizationService.translateFromGeneral(
-                    'unexpectedError'))),
-          );
+          customSnackbar.showFailureMessage(context);
         }
       } catch (e) {
         setState(() {
           isLoading = false;
         });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  '${LocalizationService.translateFromGeneral('unexpectedError')} $e')),
-        );
+        customSnackbar.showFailureMessage(context);
       }
     } else {
       setState(() {
@@ -133,25 +117,32 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   }
 
   Future<void> fetchUserName() async {
-    // Get user data from Firestore
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection(
-            'coaches') // or 'coaches', depending on where you store user data
-        .doc(coachId)
-        .get();
+    try {
+      // Get user data from Firestore
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('coaches')
+          .doc(coachId)
+          .get();
 
-    if (userDoc.exists) {
-      String? firstName = userDoc['firstName'];
-      String? lastName = userDoc['lastName'];
+      if (userDoc.exists) {
+        String? firstName = userDoc['firstName'];
+        String? lastName = userDoc['lastName'];
 
-      setState(() {
-        fullName = '$firstName $lastName';
-        email = userDoc['email'];
-        imageUrl = userDoc['profileImageUrl'];
-      });
-    } else {
-      print("User data not found");
-      return null;
+        setState(() {
+          fullName = '$firstName $lastName';
+          email = userDoc['email'] ?? ''; // Ensure to handle null safely
+          imageUrl =
+              userDoc['profileImageUrl'] ?? ''; // Ensure to handle null safely
+        });
+      } else {
+        // Handle case where document does not exist
+        print("User data not found for coach ID: $coachId");
+        // Perform fallback action or show appropriate message
+      }
+    } catch (e) {
+      // Handle specific exceptions
+      print("Error fetching user data: $e");
+      // Perform appropriate error handling actions, e.g., show error message
     }
   }
 
@@ -162,161 +153,125 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
     final TextEditingController ageController = TextEditingController();
     final TextEditingController experienceController = TextEditingController();
 
+    Future<void> updateInfo() async {
+      if (_formKey.currentState?.validate() ?? false) {
+        try {
+          // Prepare update data based on controller values
+          Map<String, dynamic> updateData = {};
+
+          if (firstNameController.text.isNotEmpty) {
+            updateData['firstName'] = firstNameController.text;
+          }
+
+          if (lastNameController.text.isNotEmpty) {
+            updateData['lastName'] = lastNameController.text;
+          }
+
+          if (ageController.text.isNotEmpty) {
+            updateData['age'] = ageController.text;
+          }
+
+          if (experienceController.text.isNotEmpty) {
+            updateData['experience'] = experienceController.text;
+          }
+
+          // Perform Firestore update if there is any data to update
+          if (updateData.isNotEmpty) {
+            await FirebaseFirestore.instance
+                .collection('coaches')
+                .doc(coachId)
+                .update(updateData)
+                .then((_) {
+              fetchUserName();
+              Navigator.of(context).pop();
+            });
+          } else {
+            // Handle case where no fields were updated
+            customSnackbar.showMessage(context,
+                LocalizationService.translateFromGeneral('NoFieldsToUpdate'));
+          }
+        } catch (e) {
+          customSnackbar.showFailureMessage(context);
+        }
+      }
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            dialogBackgroundColor: Colors.grey[900],
-            textTheme: const TextTheme(
-              bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
-              bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
-              headlineLarge: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24),
-            ),
-            elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFBB02),
-                foregroundColor: const Color(0xFF1C1503),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+          data: customThemeData,
+          child: SingleChildScrollView(
+            child: AlertDialog(
+              title: Text(
+                LocalizationService.translateFromGeneral('editInfo'),
+                style: AppStyles.textCairo(
+                  22,
+                  Palette.mainAppColorWhite,
+                  FontWeight.bold,
                 ),
               ),
-            ),
-            inputDecorationTheme: const InputDecorationTheme(
-              filled: true,
-              fillColor: Palette.secondaryColor,
-              labelStyle: TextStyle(color: Colors.white, fontSize: 14),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent),
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.yellow, width: 2),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red, width: 2),
-              ),
-              hintStyle: TextStyle(color: Colors.white, fontSize: 14),
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
-              ),
-            ),
-          ),
-          child: Expanded(
-            child: SingleChildScrollView(
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: AlertDialog(
-                  title: const Text(
-                    'تعديل المعلومات',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  content: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextFormField(
-                          controller: firstNameController,
-                          decoration:
-                              const InputDecoration(hintText: 'الاسم الأول'),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'الرجاء إدخال الاسم الأول';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: lastNameController,
-                          decoration:
-                              const InputDecoration(hintText: 'الاسم الأخير'),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'الرجاء إدخال الاسم الأخير';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: ageController,
-                          decoration: const InputDecoration(hintText: 'العمر'),
-                          keyboardType: TextInputType.number,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'الرجاء إدخال العمر';
-                            }
-                            if (int.tryParse(value) == null) {
-                              return 'يرجى إدخال قيمة صحيحة للعمر';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: experienceController,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(hintText: 'الخبرة'),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'الرجاء إدخال الخبرة';
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          try {
-                            await FirebaseFirestore.instance
-                                .collection('coaches')
-                                .doc(coachId)
-                                .update({
-                              'firstName': firstNameController.text,
-                              'lastName': lastNameController.text,
-                              'age': ageController.text,
-                              'experience': experienceController.text,
-                            }).then((value) {
-                              fetchUserName();
-                            });
-                            Navigator.of(context).pop();
-                          } catch (e) {
-                            // Handle errors (e.g., network issues, Firebase errors)
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text(
-                                    '${LocalizationService.translateFromGeneral('unexpectedError')} $e')));
-                          }
-                        }
+              content: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    BuildTextField(
+                      onChange: (firstName) {
+                        firstNameController.text = firstName;
                       },
-                      child: const Text('حفظ'),
+                      label: LocalizationService.translateFromGeneral(
+                          'firstNameLabel'),
+                      controller: firstNameController,
+                      icon: Icons.person_2_outlined,
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
+                    const SizedBox(height: 16),
+                    BuildTextField(
+                      onChange: (lastName) {
+                        lastNameController.text = lastName;
                       },
-                      child: const Text('إلغاء'),
+                      label: LocalizationService.translateFromGeneral(
+                          'lastNameLabel'),
+                      controller: lastNameController,
+                    ),
+                    const SizedBox(height: 16),
+                    BuildTextField(
+                      onChange: (age) {
+                        ageController.text = age;
+                      },
+                      label: LocalizationService.translateFromGeneral('age'),
+                      controller: ageController,
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 16),
+                    BuildTextField(
+                      onChange: (experience) {
+                        experienceController.text = experience;
+                      },
+                      controller: experienceController,
+                      keyboardType: TextInputType.number,
+                      label: LocalizationService.translateFromGeneral(
+                          'experience'),
                     ),
                   ],
-                  actionsAlignment: MainAxisAlignment.start,
                 ),
               ),
+              actions: [
+                BuildIconButton(
+                  onPressed: updateInfo,
+                  text: LocalizationService.translateFromGeneral('save'),
+                  width: 100,
+                  fontSize: 12,
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child:
+                      Text(LocalizationService.translateFromGeneral('cancel')),
+                ),
+              ],
+              actionsAlignment: MainAxisAlignment.start,
             ),
           ),
         );
@@ -331,176 +286,128 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
     final TextEditingController confirmPasswordController =
         TextEditingController();
 
+    Future<void> editPassword() async {
+      if (_formKey.currentState?.validate() ?? false) {
+        try {
+          User? user = FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            // Re-authenticate user to change password
+            final AuthCredential credential = EmailAuthProvider.credential(
+              email: user.email!,
+              password: oldPasswordController.text,
+            );
+            await user.reauthenticateWithCredential(credential);
+
+            // Update password
+            await user.updatePassword(newPasswordController.text);
+
+            Navigator.of(context).pop(); // Close the dialog
+          }
+        } catch (e) {
+          customSnackbar.showMessage(context,
+              '${LocalizationService.translateFromGeneral('unexpectedError')} ${e.toString()}');
+        }
+      }
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            dialogBackgroundColor: Colors.grey[900],
-            textTheme: const TextTheme(
-              bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
-              bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
-              headlineLarge: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24),
-            ),
-            elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFBB02),
-                foregroundColor: const Color(0xFF1C1503),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+          data: customThemeData,
+          child: SingleChildScrollView(
+            child: Directionality(
+              textDirection: TextDirection.rtl,
+              child: AlertDialog(
+                title: Text(
+                  LocalizationService.translateFromGeneral('changePassword'),
+                  style: AppStyles.textCairo(
+                    22,
+                    Palette.mainAppColorWhite,
+                    FontWeight.bold,
+                  ),
                 ),
-              ),
-            ),
-            inputDecorationTheme: const InputDecorationTheme(
-              filled: true,
-              fillColor: Palette.secondaryColor,
-              // Adjust color
-              labelStyle: TextStyle(color: Colors.white, fontSize: 14),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent),
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.yellow, width: 2),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red, width: 2),
-              ),
-              hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(foregroundColor: Colors.white),
-            ),
-          ),
-          child: Expanded(
-            child: SingleChildScrollView(
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: AlertDialog(
-                  title: Text(
-                    LocalizationService.translateFromGeneral('changePassword'),
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  content: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                            LocalizationService.translateFromGeneral(
-                                'pleaseFillRequiredData'),
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500)),
-                        SizedBox(height: 16),
-                        TextFormField(
-                          controller: oldPasswordController,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                              hintText:
-                                  LocalizationService.translateFromGeneral(
-                                      'oldPassword')),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return LocalizationService.translateFromGeneral(
-                                  'oldPasswordError');
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 16),
-                        TextFormField(
-                          controller: newPasswordController,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                              hintText:
-                                  LocalizationService.translateFromGeneral(
-                                      'newPassword')),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return LocalizationService.translateFromGeneral(
-                                  'newPasswordError');
-                            }
-                            if (value.length < 6) {
-                              return LocalizationService.translateFromGeneral(
-                                  'newPasswordError2');
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 16),
-                        TextFormField(
-                          controller: confirmPasswordController,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                              hintText:
-                                  LocalizationService.translateFromGeneral(
-                                      'confirmPassword')),
-                          validator: (value) {
-                            if (value != newPasswordController.text) {
-                              return LocalizationService.translateFromGeneral(
-                                  'passwordsDontMatch');
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          try {
-                            User? user = FirebaseAuth.instance.currentUser;
-                            if (user != null) {
-                              // Re-authenticate user to change password
-                              final AuthCredential credential =
-                                  EmailAuthProvider.credential(
-                                email: user.email!,
-                                password: oldPasswordController.text,
-                              );
-                              await user
-                                  .reauthenticateWithCredential(credential);
-
-                              // Update password
-                              await user
-                                  .updatePassword(newPasswordController.text);
-
-                              Navigator.of(context).pop(); // Close the dialog
-                            }
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(
-                                      '${LocalizationService.translateFromGeneral('unexpectedError')} ${e.toString()}')),
-                            );
+                content: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                          LocalizationService.translateFromGeneral(
+                              'pleaseFillRequiredData'),
+                          style: AppStyles.textCairo(
+                            14,
+                            Palette.mainAppColorWhite,
+                            FontWeight.w500,
+                          )),
+                      const SizedBox(height: 16),
+                      BuildTextField(
+                        onChange: (value) => oldPasswordController.text = value,
+                        controller: oldPasswordController,
+                        label: LocalizationService.translateFromGeneral(
+                            'oldPassword'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return LocalizationService.translateFromGeneral(
+                                'oldPasswordError');
                           }
-                        }
-                      },
-                      child: Text(
-                          LocalizationService.translateFromGeneral('save')),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
-                      },
-                      child: Text(
-                          LocalizationService.translateFromGeneral('cancel')),
-                    ),
-                  ],
-                  actionsAlignment: MainAxisAlignment.start,
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      BuildTextField(
+                        onChange: (value) => newPasswordController.text = value,
+                        controller: newPasswordController,
+                        label: LocalizationService.translateFromGeneral(
+                            'newPassword'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return LocalizationService.translateFromGeneral(
+                                'newPasswordError');
+                          }
+                          if (value.length < 6) {
+                            return LocalizationService.translateFromGeneral(
+                                'newPasswordError2');
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      BuildTextField(
+                        onChange: (value) =>
+                            confirmPasswordController.text = value,
+                        controller: confirmPasswordController,
+                        label: LocalizationService.translateFromGeneral(
+                            'confirmPassword'),
+                        validator: (value) {
+                          if (value != newPasswordController.text) {
+                            return LocalizationService.translateFromGeneral(
+                                'passwordsDontMatch');
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
                 ),
+                actions: [
+                  BuildIconButton(
+                    onPressed: editPassword,
+                    text: LocalizationService.translateFromGeneral('save'),
+                    width: 100,
+                    fontSize: 12,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: Text(
+                        LocalizationService.translateFromGeneral('cancel')),
+                  ),
+                ],
+                actionsAlignment: MainAxisAlignment.start,
               ),
             ),
           ),
@@ -517,7 +424,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
           children: [
             Stack(
               children: [
-                HeaderImage(),
+                const HeaderImage(),
                 _buildProfileContent(context),
               ],
             ),
@@ -585,7 +492,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
                 child: imageUrl.isEmpty
-                    ? CircularProgressIndicator() // Show loading indicator if image is empty
+                    ? const CircularProgressIndicator() // Show loading indicator if image is empty
                     : Image.network(
                         imageUrl,
                         width: 100,
@@ -618,18 +525,18 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
             fullName ??
                 LocalizationService.translateFromGeneral(
                     'noName'), // If no name, display a default message
-            style: const TextStyle(
-              color: Palette.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
+            style: AppStyles.textCairo(
+              20,
+              Palette.mainAppColorWhite,
+              FontWeight.w600,
             ),
           ),
           Text(
             email, // If no name, display a default message
-            style: const TextStyle(
-              color: Palette.subTitleGrey,
-              fontSize: 14,
-              fontWeight: FontWeight.w100,
+            style: AppStyles.textCairo(
+              14,
+              Palette.subTitleGrey,
+              FontWeight.w100,
             ),
           ),
         ],
@@ -649,19 +556,19 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
           children: [
             Icon(
               icon,
-              color: Colors.white,
+              color: Palette.white,
               size: 32,
             ),
             const SizedBox(width: 24), // Space between icon and text
             Text(
               tilte,
-              style: const TextStyle(
-                fontFamily: 'Inter',
-                color: Colors.white,
-                letterSpacing: 0.0,
+              style: AppStyles.textCairo(
+                14,
+                Palette.mainAppColorWhite,
+                FontWeight.w500,
               ),
             ),
-            Spacer(), // Space between text and trailing icon
+            const Spacer(), // Space between text and trailing icon
             Icon(
               leftIcon,
               color: Colors.grey, // Replace with the theme color if needed
@@ -680,16 +587,8 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
       prefs.clear();
       Get.toNamed(Routes.singIn);
     } catch (e) {
-      Get.snackbar(LocalizationService.translateFromGeneral('error'),
-          LocalizationService.translateFromGeneral('logoutError'),
-          titleText: Text(
-            LocalizationService.translateFromGeneral('error'),
-            textAlign: TextAlign.right,
-          ),
-          messageText: Text(
-            LocalizationService.translateFromGeneral('logoutError'),
-            textAlign: TextAlign.right,
-          ));
+      customSnackbar.showMessage(
+          context, LocalizationService.translateFromGeneral('logoutError'));
     }
   }
 }

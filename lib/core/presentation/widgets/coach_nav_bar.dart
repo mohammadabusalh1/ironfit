@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/coach_nav_bar_controller.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
 class CoachNavBar extends StatelessWidget {
   final CoachNavController navController =
@@ -45,14 +46,14 @@ class CoachNavBar extends StatelessWidget {
       bool isSelected = navController.selectedIndex.value == index;
 
       return SizedBox(
-        width: isSelected ? Get.width * 0.28 : Get.width * 0.16,
+        width: isSelected ? Get.width * 0.29 : Get.width * 0.16,
         height: Get.height * 0.09,
         child: InkWell(
           onTap: () {
             navController.updateIndex(index);
           },
           child: Container(
-            width: isSelected ? Get.width * 0.28 : Get.width * 0.16,
+            width: isSelected ? Get.width * 0.29 : Get.width * 0.16,
             height: Get.height * 0.09,
             child: AnimatedContainer(
               duration: const Duration(
@@ -117,15 +118,15 @@ class CoachNavBar extends StatelessWidget {
   String _getNavItemLabel(int index) {
     switch (index) {
       case 0:
-        return 'الرئيسية';
+        return LocalizationService.translateFromGeneral('home');
       case 1:
-        return 'المتدربين';
+        return LocalizationService.translateFromGeneral('trainees');
       case 2:
-        return 'البرامج';
+        return LocalizationService.translateFromGeneral('programs');
       case 3:
-        return 'إحصائيات';
+        return LocalizationService.translateFromGeneral('statistics');
       case 4:
-        return 'الحساب';
+        return LocalizationService.translateFromGeneral('profile');
       default:
         return '';
     }

@@ -46,7 +46,7 @@ class _AnimatedWelcomeText extends State<WelcomeText>
       child: Text(
         textAlign: TextAlign.center,
         LocalizationService.translateFromGeneral('welcome_message'),
-        style: AppStyles.textCairoWhite(
+        style: AppStyles.textCairo(
             16, Palette.mainAppColorWhite, FontWeight.w700),
       ),
     );

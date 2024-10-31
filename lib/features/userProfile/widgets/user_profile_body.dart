@@ -161,10 +161,10 @@ class _UserProfileBodyState extends State<UserProfileBody> {
           data: Theme.of(context).copyWith(
             dialogBackgroundColor: Colors.grey[900],
             textTheme: const TextTheme(
-              bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
-              bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
+              bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
+              bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
               headlineLarge: TextStyle(
-                  color: Colors.white,
+                  color: Palette.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 24),
             ),
@@ -180,7 +180,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
             inputDecorationTheme: const InputDecorationTheme(
               filled: true,
               fillColor: Palette.secondaryColor,
-              labelStyle: TextStyle(color: Colors.white, fontSize: 14),
+              labelStyle: TextStyle(color: Palette.white, fontSize: 14),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.transparent),
                 borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -194,11 +194,11 @@ class _UserProfileBodyState extends State<UserProfileBody> {
               focusedErrorBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.red, width: 2),
               ),
-              hintStyle: TextStyle(color: Colors.white, fontSize: 14),
+              hintStyle: TextStyle(color: Palette.gray, fontSize: 14),
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
+                foregroundColor: Palette.white,
               ),
             ),
           ),
@@ -210,7 +210,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                   title: Text(
                     LocalizationService.translateFromGeneral('editInfo'),
                     style: const TextStyle(
-                        color: Colors.white,
+                        color: Palette.white,
                         fontSize: 22,
                         fontWeight: FontWeight.bold),
                   ),
@@ -222,6 +222,15 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         TextFormField(
                           controller: firstNameController,
                           decoration: InputDecoration(
+                              prefixIcon: const Padding(
+                                padding: EdgeInsets.all(
+                                    10.0), // Adjust padding if needed
+                                child: Icon(
+                                  Icons.person_outline,
+                                  color: Palette.gray,
+                                  size: 20,
+                                ),
+                              ),
                               label: Text(
                                   LocalizationService.translateFromGeneral(
                                       'firstNameLabel'),
@@ -238,6 +247,15 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         TextFormField(
                           controller: lastNameController,
                           decoration: InputDecoration(
+                              prefixIcon: const Padding(
+                                padding: EdgeInsets.all(
+                                    10.0), // Adjust padding if needed
+                                child: Icon(
+                                  Icons.person_outline,
+                                  color: Palette.gray,
+                                  size: 20,
+                                ),
+                              ),
                               label: Text(
                                   LocalizationService.translateFromGeneral(
                                       'lastNameLabel'),
@@ -254,6 +272,15 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         TextFormField(
                           controller: ageController,
                           decoration: InputDecoration(
+                              prefixIcon: const Padding(
+                                padding: EdgeInsets.all(
+                                    10.0), // Adjust padding if needed
+                                child: Icon(
+                                  Icons.group_outlined,
+                                  color: Palette.gray,
+                                  size: 20,
+                                ),
+                              ),
                               label: Text(
                                   LocalizationService.translateFromGeneral(
                                       'age'),
@@ -277,6 +304,15 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                           controller: wightController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
+                              prefixIcon: const Padding(
+                                padding: EdgeInsets.all(
+                                    10.0), // Adjust padding if needed
+                                child: Icon(
+                                  Icons.scale_outlined,
+                                  color: Palette.gray,
+                                  size: 20,
+                                ),
+                              ),
                               label: Text(
                                   LocalizationService.translateFromGeneral(
                                       'wight'),
@@ -294,6 +330,15 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                           controller: heightController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
+                              prefixIcon: const Padding(
+                                padding: EdgeInsets.all(
+                                    10.0), // Adjust padding if needed
+                                child: Icon(
+                                  Icons.height_outlined,
+                                  color: Palette.gray,
+                                  size: 20,
+                                ),
+                              ),
                               label: Text(
                                   LocalizationService.translateFromGeneral(
                                       'height'),
@@ -376,10 +421,10 @@ class _UserProfileBodyState extends State<UserProfileBody> {
           data: Theme.of(context).copyWith(
             dialogBackgroundColor: Colors.grey[900],
             textTheme: const TextTheme(
-              bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
-              bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
+              bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
+              bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
               headlineLarge: TextStyle(
-                  color: Colors.white,
+                  color: Palette.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 24),
             ),
@@ -395,7 +440,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
             inputDecorationTheme: const InputDecorationTheme(
               filled: true,
               fillColor: Palette.secondaryColor, // Adjust color
-              labelStyle: TextStyle(color: Colors.white, fontSize: 14),
+              labelStyle: TextStyle(color: Palette.white, fontSize: 14),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.transparent),
                 borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -412,7 +457,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
               hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
             ),
             textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(foregroundColor: Colors.white),
+              style: TextButton.styleFrom(foregroundColor: Palette.white),
             ),
           ),
           child: Expanded(
@@ -423,7 +468,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                   title: Text(
                     LocalizationService.translateFromGeneral('changePassword'),
                     style: const TextStyle(
-                        color: Colors.white,
+                        color: Palette.white,
                         fontSize: 22,
                         fontWeight: FontWeight.bold),
                   ),
@@ -444,6 +489,15 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                           controller: oldPasswordController,
                           obscureText: true,
                           decoration: InputDecoration(
+                            prefixIcon: const Padding(
+                              padding: EdgeInsets.all(
+                                  10.0), // Adjust padding if needed
+                              child: Icon(
+                                Icons.lock_outline,
+                                color: Palette.gray,
+                                size: 20,
+                              ),
+                            ),
                             label: Text(
                                 LocalizationService.translateFromGeneral(
                                     'oldPassword'),
@@ -461,6 +515,15 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                           controller: newPasswordController,
                           obscureText: true,
                           decoration: InputDecoration(
+                            prefixIcon: const Padding(
+                              padding: EdgeInsets.all(
+                                  10.0), // Adjust padding if needed
+                              child: Icon(
+                                Icons.lock_outline,
+                                color: Palette.gray,
+                                size: 20,
+                              ),
+                            ),
                             label: Text(
                                 LocalizationService.translateFromGeneral(
                                     'newPassword'),
@@ -483,6 +546,15 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                           controller: confirmPasswordController,
                           obscureText: true,
                           decoration: InputDecoration(
+                            prefixIcon: const Padding(
+                              padding: EdgeInsets.all(
+                                  10.0), // Adjust padding if needed
+                              child: Icon(
+                                Icons.lock_outline,
+                                color: Palette.gray,
+                                size: 20,
+                              ),
+                            ),
                             label: Text(
                                 LocalizationService.translateFromGeneral(
                                     'confirmPassword'),
@@ -651,15 +723,18 @@ class _UserProfileBodyState extends State<UserProfileBody> {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            "${LocalizationService.translateFromGeneral('daysRemaining')} $numberOfDays ${LocalizationService.translateFromGeneral('days')}",
-            style: const TextStyle(
-              color: Palette.subTitleGrey,
-              fontSize: 14,
-              fontWeight: FontWeight.w300,
-              letterSpacing: 0.8,
-            ),
-          ),
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                "${LocalizationService.translateFromGeneral('daysRemaining')} $numberOfDays ${LocalizationService.translateFromGeneral('days')}",
+                style: const TextStyle(
+                  color: Palette.subTitleGrey,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w300,
+                  letterSpacing: 0.8,
+                ),
+                textAlign: TextAlign.center,
+              )),
         ],
       ),
     );
@@ -677,7 +752,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
           children: [
             Icon(
               icon,
-              color: Colors.white,
+              color: Palette.white,
               size: 32,
             ),
             const SizedBox(width: 24), // Space between icon and text
@@ -685,7 +760,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
               tilte,
               style: const TextStyle(
                 fontFamily: 'Inter',
-                color: Colors.white,
+                color: Palette.white,
                 letterSpacing: 0.0,
               ),
             ),

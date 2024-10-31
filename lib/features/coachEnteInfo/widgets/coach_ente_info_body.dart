@@ -4,10 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Button.dart';
+import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 
 class CoachEnterInfoBody extends StatefulWidget {
   CoachEnterInfoBody({Key? key}) : super(key: key);
@@ -30,27 +34,27 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
   String coachId = FirebaseAuth.instance.currentUser!.uid;
 
   PreferencesService preferencesService = PreferencesService();
-  Future<void> _checkToken() async {
-    SharedPreferences prefs = await preferencesService.getPreferences();
-    String? token = prefs.getString('token');
-
-    if (token == null) {
-      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
-    }
-  }
+  TokenService tokenService = TokenService();
+  CustomSnackbar customSnackbar = CustomSnackbar();
 
   @override
   void initState() {
     super.initState();
-    _checkToken();
+    tokenService.checkTokenAndNavigateSingIn();
   }
 
   Future<void> updateCoachInfo(
       String coachId, Map<String, dynamic> data) async {
-    await FirebaseFirestore.instance
-        .collection('coaches')
-        .doc(coachId)
-        .update(data);
+    try {
+      await FirebaseFirestore.instance
+          .collection('coaches')
+          .doc(coachId)
+          .update(data);
+      // Success handling, if needed
+    } catch (e) {
+      // Error handling
+      print('Error updating coach info: $e');
+    }
   }
 
   void _submitForm() async {
@@ -73,12 +77,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
           bool usernameExists = await _checkIfUsernameExists(username);
 
           if (usernameExists) {
-            // If the username already exists, show an error message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text(LocalizationService.translateFromGeneral(
-                      'usernameExistsError'))),
-            );
+            customSnackbar.showDoesNotExistMessage(context);
             return;
           }
 
@@ -91,52 +90,37 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
             'username': username,
           };
 
-          await updateCoachInfo(coachId, coachData);
-          // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(LocalizationService.translateFromGeneral(
-                    'accountCreationSuccess'))),
-          );
-
-          Get.toNamed(Routes.coachDashboard)?.then(
-            (value) => Get.back(),
+          await updateCoachInfo(coachId, coachData).then(
+            (value) {
+              customSnackbar.showSuccessMessage(context);
+              Get.toNamed(Routes.coachDashboard)?.then(
+                (value) => Get.back(),
+              );
+            },
           );
         }
         // Navigate to the next page or perform any other action
       } on FirebaseException {
         Get.back();
-        // Firebase-specific error handling
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(LocalizationService.translateFromGeneral(
-                  'databaseConnectionError'))),
-        );
+        customSnackbar.showFailureMessage(context);
       } on FormatException {
         Get.back();
         // Handle invalid number format (e.g., age or experience)
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(LocalizationService.translateFromGeneral(
-                  'invalidFormatError'))),
-        );
+        customSnackbar.showInvalidFormatMessage(context);
       } catch (e) {
         Get.back();
-        // Handle any other generic errors
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(LocalizationService.translateFromGeneral(
-                  'unexpectedError' + e.toString()))),
-        );
+        customSnackbar.showFailureMessage(context);
       }
     } else {
-      // Form is not valid, show a message or error handling
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(LocalizationService.translateFromGeneral(
-                'invalidInformationMessage'))),
-      );
+      customSnackbar.showInvalidFormatMessage(context);
     }
+  }
+
+  String? validator(value) {
+    if (value!.isEmpty) {
+      return LocalizationService.translateFromGeneral('thisFieldRequired');
+    }
+    return null;
   }
 
   // Function to check if username exists in the database
@@ -151,172 +135,165 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
       // If snapshot contains documents, username exists
       return snapshot.docs.isNotEmpty;
     } catch (e) {
-      // Handle any Firestore errors
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(LocalizationService.translateFromGeneral(
-                'databaseConnectionError'))),
-      );
+      customSnackbar.showFailureMessage(context);
       return false;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildImageStack(),
-            stage == 2 ? const SizedBox(height: 24) : Container(),
-            stage == 2
-                ? ImagePickerComponent(
-                    userId: coachId,
-                    onImageUploaded: (imageUrl) {
-                      setState(() {
-                        _uploadedImageUrl = imageUrl;
-                      });
-                    })
-                : Container(),
-            const SizedBox(height: 12),
-            stage == 1
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Align(
-                      alignment: AlignmentDirectional.center,
-                      child: Text(
-                        LocalizationService.translateFromGeneral(
-                            'completeInfoPrompt'),
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildImageStack(),
+                stage == 2 ? const SizedBox(height: 24) : Container(),
+                stage == 2
+                    ? ImagePickerComponent(
+                        userId: coachId,
+                        onImageUploaded: (imageUrl) {
+                          setState(() {
+                            _uploadedImageUrl = imageUrl;
+                          });
+                        })
+                    : Container(),
+                const SizedBox(height: 12),
+                stage == 1
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Align(
+                          alignment: AlignmentDirectional.center,
+                          child: Text(
+                            LocalizationService.translateFromGeneral(
+                                'completeInfoPrompt'),
+                            style: AppStyles.textCairo(
+                              16,
+                              Palette.mainAppColorWhite,
+                              FontWeight.w600,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  )
-                : Container(),
-            stage == 1 ? const SizedBox(height: 12) : Container(),
-            stage == 1
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Text(
-                        LocalizationService.translateFromGeneral('account'),
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold)),
-                  )
-                : Container(),
-            stage == 1 ? const SizedBox(height: 12) : Container(),
-            stage == 1
-                ? _buildTextField(
-                    LocalizationService.translateFromGeneral('usernameLabel'),
-                    '',
-                    _usernameController,
-                    TextInputType.text,
-                    Icons.person)
-                : Container(),
-            stage == 1 ? const SizedBox(height: 12) : Container(),
-            stage == 1
-                ? _buildTextField(
-                    LocalizationService.translateFromGeneral('firstNameLabel'),
-                    '',
-                    _firstNameController,
-                    TextInputType.text,
-                    Icons.face)
-                : Container(),
-            stage == 1 ? const SizedBox(height: 12) : Container(),
-            stage == 1
-                ? _buildTextField(
-                    LocalizationService.translateFromGeneral('lastNameLabel'),
-                    '',
-                    _lastNameController,
-                    TextInputType.text,
-                    Icons.face)
-                : Container(),
-            stage == 1 ? const SizedBox(height: 12) : Container(),
-            stage == 1
-                ? const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    child: Divider(
-                      color: Palette.gray,
-                    ))
-                : Container(),
-            stage == 1 ? const SizedBox(height: 12) : Container(),
-            stage == 1
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Text(
+                      )
+                    : Container(),
+                stage == 1 ? const SizedBox(height: 12) : Container(),
+                stage == 1
+                    ? Text(LocalizationService.translateFromGeneral('account'),
+                        style: AppStyles.textCairo(
+                          16,
+                          Palette.mainAppColorWhite,
+                          FontWeight.bold,
+                        ))
+                    : Container(),
+                stage == 1 ? const SizedBox(height: 12) : Container(),
+                stage == 1
+                    ? BuildTextField(
+                        onChange: (value) {
+                          setState(() {
+                            _usernameController.text = value;
+                          });
+                        },
+                        label: LocalizationService.translateFromGeneral(
+                            'usernameLabel'),
+                        controller: _usernameController,
+                        keyboardType: TextInputType.text,
+                        icon: Icons.person,
+                        validator: validator)
+                    : Container(),
+                stage == 1 ? const SizedBox(height: 12) : Container(),
+                stage == 1
+                    ? BuildTextField(
+                        onChange: (value) {
+                          setState(() {
+                            _firstNameController.text = value;
+                          });
+                        },
+                        label: LocalizationService.translateFromGeneral(
+                            'firstNameLabel'),
+                        controller: _firstNameController,
+                        keyboardType: TextInputType.text,
+                        icon: Icons.face,
+                        validator: validator)
+                    : Container(),
+                stage == 1 ? const SizedBox(height: 12) : Container(),
+                stage == 1
+                    ? BuildTextField(
+                        onChange: (value) {
+                          setState(() {
+                            _lastNameController.text = value;
+                          });
+                        },
+                        label: LocalizationService.translateFromGeneral(
+                            'lastNameLabel'),
+                        controller: _lastNameController,
+                        keyboardType: TextInputType.text,
+                        icon: Icons.face,
+                        validator: validator)
+                    : Container(),
+                stage == 1 ? const SizedBox(height: 12) : Container(),
+                stage == 1
+                    ? const Divider(
+                        color: Palette.gray,
+                      )
+                    : Container(),
+                stage == 1 ? const SizedBox(height: 12) : Container(),
+                stage == 1
+                    ? Text(
                         LocalizationService.translateFromGeneral(
                             'personalInformation'),
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold)),
-                  )
-                : Container(),
-            stage == 1 ? const SizedBox(height: 12) : Container(),
-            stage == 1
-                ? _buildTextField(
-                    LocalizationService.translateFromGeneral('age'),
-                    '',
-                    _ageController,
-                    TextInputType.number,
-                    Icons.group)
-                : Container(),
-            stage == 1 ? const SizedBox(height: 12) : Container(),
-            stage == 1
-                ? _buildTextField(
-                    LocalizationService.translateFromGeneral('experience'),
-                    '',
-                    _experienceController,
-                    TextInputType.number,
-                    Icons.star)
-                : Container(),
-            stage == 1 ? const SizedBox(height: 24) : Container(),
-            SizedBox(
-              width: double.infinity,
-              child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
-                child: ElevatedButton.icon(
-                  onPressed: _submitForm,
-                  label: Text(
-                    LocalizationService.translateFromGeneral('next'),
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      color: Palette.white, // Text color
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  icon: const Icon(
-                    Icons.west,
-                    size: 22,
-                    color: Palette.white, // Icon color
-                  ),
-                  iconAlignment: IconAlignment.end,
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: const Color(0xFF1C1503),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 10),
-                    backgroundColor: const Color(0xFFFFBB02),
-                    textStyle: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-              ),
+                        style: AppStyles.textCairo(
+                          16,
+                          Palette.mainAppColorWhite,
+                          FontWeight.w600,
+                        ),
+                      )
+                    : Container(),
+                stage == 1 ? const SizedBox(height: 12) : Container(),
+                stage == 1
+                    ? BuildTextField(
+                        onChange: (value) {
+                          setState(() {
+                            _ageController.text = value;
+                          });
+                        },
+                        label: LocalizationService.translateFromGeneral('age'),
+                        controller: _ageController,
+                        keyboardType: TextInputType.number,
+                        icon: Icons.group,
+                        validator: validator)
+                    : Container(),
+                stage == 1 ? const SizedBox(height: 12) : Container(),
+                stage == 1
+                    ? BuildTextField(
+                        onChange: (value) {
+                          setState(() {
+                            _experienceController.text = value;
+                          });
+                        },
+                        label: LocalizationService.translateFromGeneral(
+                            'experience'),
+                        controller: _experienceController,
+                        keyboardType: TextInputType.number,
+                        icon: Icons.star,
+                        validator: validator)
+                    : Container(),
+                stage == 1 ? const SizedBox(height: 24) : Container(),
+              ],
             ),
-          ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(20),
+        child: BuildIconButton(
+          onPressed: _submitForm,
+          text: LocalizationService.translateFromGeneral('next'),
+          icon: Icons.west,
+          iconAlignment: IconAlignment.end,
         ),
       ),
     );
@@ -339,48 +316,6 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
         width: double.infinity,
         height: 200,
         fit: BoxFit.cover,
-      ),
-    );
-  }
-
-  Widget _buildTextField(
-    String label,
-    String hint,
-    TextEditingController controller,
-    TextInputType keyboardType,
-    IconData? icon,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: hint,
-          hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
-          labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
-          filled: true,
-          fillColor: const Color(0xFF454038),
-          enabledBorder: _buildInputBorder(Palette.mainAppColor),
-          focusedBorder: _buildInputBorder(Palette.white),
-          prefixIcon: Padding(
-            padding: const EdgeInsets.all(10.0), // Adjust padding if needed
-            child: Icon(
-              icon,
-              color: Palette.gray,
-              size: 20,
-            ),
-          ),
-        ),
-        style: const TextStyle(color: Palette.white, fontSize: 14),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return LocalizationService.translateFromGeneral('requiredField') +
-                label;
-          }
-          return null;
-        },
       ),
     );
   }

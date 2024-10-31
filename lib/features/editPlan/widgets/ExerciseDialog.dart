@@ -8,10 +8,9 @@ import 'package:ironfit/features/editPlan/widgets/buildTextField.dart';
 
 class ExerciseDialog extends StatefulWidget {
   final Function addExercise;
-  final List<Map<String, dynamic>> exercisesJson;
 
   const ExerciseDialog(
-      {Key? key, required this.addExercise, required this.exercisesJson})
+      {Key? key, required this.addExercise})
       : super(key: key);
 
   @override
@@ -49,7 +48,8 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
         textDirection: TextDirection.rtl,
         child: AlertDialog(
           title:
-              const Text("أضف تمرين", style: TextStyle(color: Palette.white)),
+               Text(LocalizationService.translateFromGeneral(
+                  'addExercise'), style: TextStyle(color: Palette.white)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -65,7 +65,7 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                     final val = await showDialog(
                         context: context,
                         builder: (context) =>
-                            _buildTrainDialog(widget.exercisesJson));
+                            _buildTrainDialog());
 
                     // If an exercise is selected, update the state to reflect it
                     if (val != null) {
@@ -75,7 +75,8 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                       });
                     }
                   },
-                  child: const Text('إختر التمرين',
+                  child:  Text(LocalizationService.translateFromGeneral(
+                  'selectExercise'),
                       style: TextStyle(color: Palette.black)),
                 ),
                 const SizedBox(height: 16),
@@ -90,7 +91,8 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                   onChange: (value) => setState(() {
                     rounds = value;
                   }),
-                  label: "عدد الجولات",
+                  label: LocalizationService.translateFromGeneral(
+                  'rounds'),
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 16),
@@ -98,7 +100,8 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                   onChange: (value) => setState(() {
                     repetitions = value;
                   }),
-                  label: "عدد التكرارات",
+                  label:  LocalizationService.translateFromGeneral(
+                  'repetitions'),
                   keyboardType: TextInputType.number,
                 ),
               ],
@@ -118,12 +121,13 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                   widget.addExercise(exercise);
                 }
               },
-              child: const Text('حفظ', style: TextStyle(color: Palette.black)),
+              child: Text(LocalizationService.translateFromGeneral('save'),
+                  style: TextStyle(color: Palette.black)),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child:
-                  const Text('إلغاء', style: TextStyle(color: Palette.white)),
+              child: Text(LocalizationService.translateFromGeneral('cancel'),
+                  style: TextStyle(color: Palette.white)),
             ),
           ],
           actionsAlignment: MainAxisAlignment.start,
@@ -132,7 +136,7 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
     );
   }
 
-  Widget _buildTrainDialog(List<Map<String, dynamic>> exercisesJson) {
+  Widget _buildTrainDialog() {
     return Theme(
       data: Theme.of(context).copyWith(
         dialogBackgroundColor: Colors.grey[900],
@@ -159,13 +163,13 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
         child: AlertDialog(
           title: Text(
               LocalizationService.translateFromGeneral(
-                  'selectExerciseBodyPart'),
-              style: TextStyle(color: Palette.white)),
+                  'selectExercise'),
+              style: TextStyle(color: Palette.white, fontSize: 20)),
           content: StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
             return SingleChildScrollView(
               child: ExercisesScreen(
-                exercisesJson: exercisesJson,
+                fileName: 'back_exercises',
               ),
             );
           }),

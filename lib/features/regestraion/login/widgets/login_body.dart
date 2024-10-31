@@ -397,7 +397,7 @@ class _LoginBodyState extends State<LoginBody> {
       children: [
         Text(
           LocalizationService.translateFromGeneral('are_you_a_trainer'),
-          style: AppStyles.textCairoWhite(
+          style: AppStyles.textCairo(
               16, Palette.mainAppColorWhite, FontWeight.normal),
         ),
         Switch.adaptive(

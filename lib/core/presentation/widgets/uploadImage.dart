@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
 class ImagePickerComponent extends StatefulWidget {
   final String userId;
@@ -50,19 +51,23 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تمت إزالة الصورة بنجاح'),
+          SnackBar(
+            content: Text(LocalizationService.translateFromGeneral(
+                'imageRemovedSuccess')),
           ),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('حدث خطأ أثناء إزالة الصورة')),
+          SnackBar(
+              content: Text(LocalizationService.translateFromGeneral(
+                  'imageRemoveError'))),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('لا توجد صورة لإزالتها'),
+        SnackBar(
+          content:
+              Text(LocalizationService.translateFromGeneral('noImageToRemove')),
         ),
       );
     }
@@ -79,7 +84,9 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
         await storageRef.putFile(_selectedImage!).then(
           (snapshot) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('تم تحميل الصورة بنجاح')),
+              SnackBar(
+                  content: Text(LocalizationService.translateFromGeneral(
+                      'imageUploadSuccess'))),
             );
           },
         );
@@ -98,7 +105,9 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
       } catch (e) {
         Get.back();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('حدث خطأ ما')),
+          SnackBar(
+              content: Text(
+                  LocalizationService.translateFromGeneral('unexpectedError'))),
         );
       }
     }
@@ -122,8 +131,8 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'أضف صورتك الشخصية!',
+              Text(
+                LocalizationService.translateFromGeneral('addProfilePicture'),
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -133,7 +142,8 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
               ),
               const SizedBox(height: 8),
               Text(
-                'أضف صورة إلى ملفك الشخصي! ما عليك سوى النقر على هذا الزر واختيار صورتك المفضلة!',
+                LocalizationService.translateFromGeneral(
+                    'addProfilePicturePrompt'),
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey.shade700,
@@ -167,8 +177,8 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
                   Icons.upload,
                   color: Colors.white,
                 ),
-                label: const Text(
-                  'اختر صورة',
+                label: Text(
+                  LocalizationService.translateFromGeneral('chooseImage'),
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -190,8 +200,8 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'إزالة الصورة',
+                  child: Text(
+                    LocalizationService.translateFromGeneral('removeImage'),
                     style: TextStyle(color: Colors.white),
                   ),
                 ),

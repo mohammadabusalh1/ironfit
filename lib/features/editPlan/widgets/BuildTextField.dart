@@ -1,23 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 
-Widget BuildTextField(
-    {required Function(String) onChange,
-    required String label,
-    TextInputType? keyboardType,
-    TextEditingController? controller,
-    String? hint // Initial value parameter
-    }) {
-  return TextField(
-    controller: controller, // Assign the controller
+Widget BuildTextField({
+  required Function(String) onChange,
+  required String label,
+  TextInputType? keyboardType,
+  TextEditingController? controller,
+  String? hint,
+  IconData? icon,
+  String? Function(String?)? validator, // Add validator function
+}) {
+  return TextFormField(
+    controller: controller,
     onChanged: (value) => onChange(value),
     keyboardType: keyboardType ?? TextInputType.text,
     style: const TextStyle(color: Palette.white, fontSize: 14),
     decoration: InputDecoration(
+      prefixIcon: icon == null
+          ? null
+          : Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Icon(
+                icon,
+                color: Palette.gray,
+                size: 20,
+              ),
+            ),
       hintText: hint,
       hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
       labelText: label,
+      labelStyle: const TextStyle(color: Palette.subTitleGrey, fontSize: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(
@@ -25,7 +37,7 @@ Widget BuildTextField(
           color: Palette.mainAppColor,
         ),
       ),
-      labelStyle: const TextStyle(color: Palette.subTitleGrey, fontSize: 14),
     ),
+    validator: validator, // Assign validator function here
   );
 }

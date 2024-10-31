@@ -26,7 +26,7 @@ class _SelectLanguageBodyState extends State<SelectLanguageBody>
   @override
   void initState() {
     super.initState();
-    tokenService.checkTokenAndNavigatePreLogin();
+    tokenService.checkTokenAndNavigateDashboard();
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -77,14 +77,14 @@ class _SelectLanguageBodyState extends State<SelectLanguageBody>
                           textAlign: TextAlign.center,
                           LocalizationService.translateFromPage(
                               'title', 'selectLang'),
-                          style: AppStyles.textCairoWhite(
+                          style: AppStyles.textCairo(
                               24, Palette.white, FontWeight.bold),
                         ),
                         Text(
                           textAlign: TextAlign.center,
                           LocalizationService.translateFromPage(
                               'description', 'selectLang'),
-                          style: AppStyles.textCairoWhite(
+                          style: AppStyles.textCairo(
                               14, Palette.mainAppColorWhite, FontWeight.normal),
                         ),
                         SizedBox(

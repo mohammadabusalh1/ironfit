@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/confirmRemove.dart';
 import 'package:ironfit/core/presentation/widgets/exrciseCard.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
@@ -30,9 +29,6 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
 
   List<TrainingDay> trainingDays = [];
 
-  List<Map<String, dynamic>> exercisesJson =
-      List<Map<String, dynamic>>.from(jsonDecode(''));
-
   String planName = '';
   String planDescription = '';
   String selectedExerciseName = '';
@@ -44,7 +40,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   @override
   void initState() {
     super.initState();
-    // _checkToken();
+    _checkToken();
   }
 
   @override
@@ -346,36 +342,50 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   dayName == 'sun'
-                      ? 'الاحد'
+                      ? LocalizationService.translateFromGeneral('sunday')
                       : dayName == 'mon'
-                          ? 'الاثنين'
+                          ? LocalizationService.translateFromGeneral('monday')
                           : dayName == 'tue'
-                              ? 'الثلاثاء'
+                              ? LocalizationService.translateFromGeneral(
+                                  'tuesday')
                               : dayName == 'wed'
-                                  ? 'الاربعاء'
+                                  ? LocalizationService.translateFromGeneral(
+                                      'wednesday')
                                   : dayName == 'thu'
-                                      ? 'الخميس'
+                                      ? LocalizationService
+                                          .translateFromGeneral('thursday')
                                       : dayName == 'fri'
-                                          ? 'الجمعة'
-                                          : 'السبت',
+                                          ? LocalizationService
+                                              .translateFromGeneral('friday')
+                                          : LocalizationService
+                                              .translateFromGeneral('saturday'),
                   style: const TextStyle(
                       color: Palette.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold),
                 ),
+                IconButton(
+                  onPressed: () =>
+                      _editTrainingDay(context, day, index), // Edit button,
+                  icon:
+                      const Icon(Icons.edit, color: Palette.mainAppColorOrange),
+                  iconSize: 20,
+                ),
                 Spacer(),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    onPressed: () =>
-                        _editTrainingDay(context, day, index), // Edit button
-                    child: Text(
-                        LocalizationService.translateFromGeneral('edit'),
-                        style: TextStyle(color: Palette.black)),
+                IconButton(
+                  style: IconButton.styleFrom(
+                    backgroundColor: Palette.mainAppColorWhite,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
+                  onPressed: () => _removeTrainingDay(index),
+                  icon: const Icon(Icons.delete, color: Palette.redDelete),
                 ),
               ],
             ),
@@ -386,17 +396,18 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                   children: [
                     Row(
                       children: [
-                        Expanded(
-                          child: ExrciseCard(
-                            spaceBetweenItems: 5,
-                            padding: 0,
-                            withIconButton: false,
-                            title: exercise.name,
-                            subtitle1: "${exercise.rounds} جولات",
-                            subtitle2: "${exercise.repetitions} تكرار",
-                            image: exercise.image,
-                          ),
+                        ExrciseCard(
+                          spaceBetweenItems: 5,
+                          padding: 0,
+                          withIconButton: false,
+                          title: exercise.name,
+                          subtitle1:
+                              "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
+                          subtitle2:
+                              "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
+                          image: exercise.image,
                         ),
+                        Spacer(),
                         IconButton(
                           onPressed: () => _removeExercise(day, exercise),
                           icon: const Icon(Icons.delete, color: Colors.red),
@@ -412,7 +423,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
             ),
             const SizedBox(height: 8),
             Align(
-              alignment: Alignment.centerRight,
+              alignment: Alignment.centerLeft,
               child: ElevatedButton(
                 onPressed: () => _addExerciseToDay(day),
                 style: ElevatedButton.styleFrom(
@@ -421,18 +432,10 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text("أضف تمرين",
+                child: Text(
+                    LocalizationService.translateFromGeneral('addExercise'),
                     style: TextStyle(color: Palette.black)),
               ),
-            ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: ElevatedButton(
-                  onPressed: () => _removeTrainingDay(index),
-                  child: Text(
-                      LocalizationService.translateFromGeneral('delete'),
-                      style: TextStyle(color: Palette.redDelete))),
             ),
           ],
         ),
@@ -464,13 +467,15 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          title: const Text("إختر يوم التدريب",
+          title: Text(
+              LocalizationService.translateFromGeneral('chooseTrainingDay'),
               style: TextStyle(color: Palette.white)),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return DropdownButton<String>(
                 dropdownColor: Colors.grey[800],
-                hint: const Text("يوم التدريب",
+                hint: Text(
+                    LocalizationService.translateFromGeneral('trainingDay'),
                     style: TextStyle(color: Palette.white)),
                 value: selectedDay,
                 onChanged: (newValue) {
@@ -478,14 +483,38 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                     selectedDay = newValue;
                   });
                 },
-                items: const [
-                  {'value': 'sun', 'label': 'الأحد'},
-                  {'value': 'mon', 'label': 'الأثنين'},
-                  {'value': 'tue', 'label': 'الثلاثاء'},
-                  {'value': 'wed', 'label': 'الأربعاء'},
-                  {'value': 'thu', 'label': 'الخميس'},
-                  {'value': 'fri', 'label': 'الجمعة'},
-                  {'value': 'sat', 'label': 'السبت'},
+                items: [
+                  {
+                    'value': 'sun',
+                    'label': LocalizationService.translateFromGeneral('sunday')
+                  },
+                  {
+                    'value': 'mon',
+                    'label': LocalizationService.translateFromGeneral('monday')
+                  },
+                  {
+                    'value': 'tue',
+                    'label': LocalizationService.translateFromGeneral('tuesday')
+                  },
+                  {
+                    'value': 'wed',
+                    'label':
+                        LocalizationService.translateFromGeneral('wednesday')
+                  },
+                  {
+                    'value': 'thu',
+                    'label':
+                        LocalizationService.translateFromGeneral('thursday')
+                  },
+                  {
+                    'value': 'fri',
+                    'label': LocalizationService.translateFromGeneral('friday')
+                  },
+                  {
+                    'value': 'sat',
+                    'label':
+                        LocalizationService.translateFromGeneral('saturday')
+                  },
                 ]
                     .map((day) => DropdownMenuItem(
                           value: '${day['label']}-${day['value']}',
@@ -510,12 +539,13 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                   Navigator.pop(context);
                 }
               },
-              child: const Text('حفظ', style: TextStyle(color: Palette.black)),
+              child: Text(LocalizationService.translateFromGeneral('save'),
+                  style: TextStyle(color: Palette.black)),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child:
-                  const Text('إلغاء', style: TextStyle(color: Palette.white)),
+              child: Text(LocalizationService.translateFromGeneral('cancel'),
+                  style: TextStyle(color: Palette.white)),
             ),
           ],
           actionsAlignment: MainAxisAlignment.start,
@@ -525,95 +555,20 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   }
 
   void _removeExercise(TrainingDay day, Exercise exercise) async {
-    bool confirmCancel = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          alignment: Alignment.center,
-          title: const Text(
-            'تأكيد الإلغاء',
-            textAlign: TextAlign.center,
-          ),
-          content: const Text(
-            'هل أنت متأكد أنك تريد الحذف؟',
-            textAlign: TextAlign.end,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false); // User canceled
-              },
-              child:
-                  const Text('إلغاء', style: TextStyle(color: Palette.black)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Palette.redDelete,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop(true); // User confirmed
-              },
-              child:
-                  const Text('تأكيد', style: TextStyle(color: Palette.white)),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (!confirmCancel) {
-      return;
+    if (await confirmCancel(context)) {
+      setState(() {
+        day.exercises.remove(exercise);
+      });
     }
-
-    setState(() {
-      day.exercises.remove(exercise);
-    });
   }
 
   void _removeTrainingDay(int index) async {
-    bool confirmCancel = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          alignment: Alignment.center,
-          title: const Text(
-            'تأكيد الإلغاء',
-            textAlign: TextAlign.center,
-          ),
-          content: const Text(
-            'هل أنت متأكد أنك تريد الحذف؟',
-            textAlign: TextAlign.end,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false); // User canceled
-              },
-              child:
-                  const Text('إلغاء', style: TextStyle(color: Palette.black)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Palette.redDelete,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop(true); // User confirmed
-              },
-              child:
-                  const Text('تأكيد', style: TextStyle(color: Palette.white)),
-            ),
-          ],
-        );
-      },
-    );
-
     // If the user cancels, return early
-    if (!confirmCancel) {
-      return;
+    if (await confirmCancel(context)) {
+      setState(() {
+        trainingDays.removeAt(index);
+      });
     }
-    setState(() {
-      trainingDays.removeAt(index);
-    });
   }
 
   void _editTrainingDay(BuildContext context, TrainingDay day, int index) {
@@ -813,7 +768,6 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       context: context,
       builder: (context) => ExerciseDialog(
         addExercise: _addExercise,
-        exercisesJson: exercisesJson,
       ),
     );
   }

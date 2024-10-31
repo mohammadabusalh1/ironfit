@@ -59,7 +59,9 @@ class _ExrciseCardState extends State<ExrciseCard> {
           buildImage(),
           SizedBox(width: widget.spaceBetweenItems),
           buildTextColumn(context),
-          SizedBox(width: widget.spaceBetweenItems),
+          widget.withIconButton
+              ? SizedBox(width: widget.spaceBetweenItems)
+              : Container(),
           widget.withIconButton ? buildIconButton(context) : Container(),
         ],
       ),
@@ -81,19 +83,22 @@ class _ExrciseCardState extends State<ExrciseCard> {
 
   // Reusable Text Column Widget
   Widget buildTextColumn(BuildContext context) {
-    return Expanded(
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.35,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.title,
+            widget.title.length > 16
+                ? '...' + widget.title.substring(0, 16)
+                : widget.title,
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 14,
+              fontSize: 12,
               color: Colors.white,
             ),
-          ),
-          SizedBox(height: 8), // Space between text and icon row
+          ), // Space between text and icon row
+          SizedBox(height: 4),
           buildIconRow(context),
         ],
       ),
@@ -102,10 +107,10 @@ class _ExrciseCardState extends State<ExrciseCard> {
 
   // Reusable Icon and Text Row Widget
   Widget buildIconRow(BuildContext context) {
-    return Row(
+    return Column(
       children: [
         buildIconText(context, Icons.access_time_filled, widget.subtitle1),
-        SizedBox(width: 8), // Space between the two icon-text pairs
+        SizedBox(height: 4), // Space between the two icon-text pairs
         buildIconText(context, Icons.electric_bolt_sharp, widget.subtitle2),
       ],
     );

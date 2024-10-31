@@ -26,7 +26,7 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
   @override
   void initState() {
     super.initState();
-    tokenService.checkTokenAndNavigatePreLogin();
+    tokenService.checkTokenAndNavigateDashboard();
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -77,14 +77,14 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                           textAlign: TextAlign.center,
                           LocalizationService.translateFromPage(
                               'title', 'selectEnter'),
-                          style: AppStyles.textCairoWhite(
+                          style: AppStyles.textCairo(
                               24, Palette.white, FontWeight.bold),
                         ),
                         Text(
                           textAlign: TextAlign.center,
                           LocalizationService.translateFromPage(
                               'description', 'selectEnter'),
-                          style: AppStyles.textCairoWhite(
+                          style: AppStyles.textCairo(
                               14, Palette.mainAppColorWhite, FontWeight.normal),
                         ),
                         SizedBox(

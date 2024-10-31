@@ -4,8 +4,9 @@ import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 
 Widget buildCarouselItem(Map<String, String> item, {double? padding}) {
+
   // Ensure that the keys exist before accessing them
-  String image = item['image'] ?? item['Exercise_Image'] ?? Assets.notFound;
+  String image = item['image'] ?? item['gifUrl'] ?? Assets.notFound;
   String title = item['name'] ?? item['Exercise_Name'] ?? 'No Name';
 
   return Stack(

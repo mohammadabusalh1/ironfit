@@ -69,6 +69,16 @@ flutter:
     - assets/images/logo.png
     - assets/lang/en.json
     - assets/lang/ar.json
+    - assets/exresices/back_exercises.json
+    - assets/exresices/cardio_exercises.json
+    - assets/exresices/chest_exercises.json
+    - assets/exresices/lower arms_exercises.json
+    - assets/exresices/lower legs_exercises.json
+    - assets/exresices/neck_exercises.json
+    - assets/exresices/shoulders_exercises.json
+    - assets/exresices/upper arms_exercises.json
+    - assets/exresices/upper legs_exercises.json
+    - assets/exresices/waist_exercises.json
 
   # Fonts can also be added if required for custom typography
   # fonts:

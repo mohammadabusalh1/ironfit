@@ -29,7 +29,7 @@ class _PreLoginBodyState extends State<PreLoginBody>
   @override
   void initState() {
     super.initState();
-    tokenService.checkTokenAndNavigatePreLogin();
+    tokenService.checkTokenAndNavigateDashboard();
     _initializePreferences();
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
@@ -140,7 +140,7 @@ class _PreLoginBodyState extends State<PreLoginBody>
                           Text(
                             text,
                             textAlign: TextAlign.center,
-                            style: AppStyles.textCairoWhite(
+                            style: AppStyles.textCairo(
                                 18, Palette.white, FontWeight.bold),
                           ),
                           const SizedBox(height: 28),
@@ -172,7 +172,7 @@ class _PreLoginBodyState extends State<PreLoginBody>
                                           await SharedPreferences.getInstance();
                                       prefs.setBool(
                                           'hasSeenPreLoginScreen', true);
-                                      Get.toNamed(Routes.singUp);
+                                      Get.toNamed(Routes.selectEnter);
                                     },
                                     width: MediaQuery.of(context).size.width *
                                         0.85,

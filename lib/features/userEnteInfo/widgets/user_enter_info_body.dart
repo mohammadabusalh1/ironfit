@@ -59,18 +59,20 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
             stage = 2;
           });
         } else if (stage == 2) {
+          if (_selectedGender == null || _selectedGender!.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(LocalizationService.translateFromGeneral(
+                      'SelectGender'))),
+            );
+            return;
+          }
           setState(() {
             stage = 3;
           });
         } else {
           Get.dialog(const Center(child: CircularProgressIndicator()),
               barrierDismissible: false);
-
-          if (_selectedGender == null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('يرجى اختيار الجنس')),
-            );
-          }
 
           Map<String, dynamic> userData = {
             'username': _usernameController.text,
@@ -85,7 +87,9 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
           await updateCoachInfo(userId, userData).then(
             (value) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
+                SnackBar(
+                    content: Text(LocalizationService.translateFromGeneral(
+                        'accountCreationSuccess'))),
               );
 
               Navigator.of(context).pop();

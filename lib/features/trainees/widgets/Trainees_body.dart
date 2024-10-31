@@ -168,7 +168,7 @@ class _TraineesBodyState extends State<TraineesBody> {
     return ElevatedButton.icon(
       onPressed: () => onPressed(), // Invoke the passed sorting function
       icon: Icon(icon, size: 15),
-      label: Text(label),
+      label: Text(label.length > 8 ? '${label.substring(0, 8)}...' : label),
       style: ElevatedButton.styleFrom(
         foregroundColor: const Color(0xFF1C1503),
         backgroundColor: Palette.white,

@@ -196,14 +196,16 @@ class CoachDashboardState extends State<CoachDashboardBody> {
     return Row(
       children: [
         _buildStatisticsCard(
-            data['trainees'].toString() +
-                LocalizationService.translateFromGeneral('trainee'),
-            LocalizationService.translateFromGeneral('numberOfTrainees'),
+            "${data['trainees']} ${LocalizationService.translateFromGeneral('trainee')}",
+            LocalizationService.translateFromGeneral('trainees'),
             context,
             Icons.person_outline),
         const Spacer(), // Adjusted for consistent spacing
-        _buildStatisticsCard(data['subscriptions'].toString() + "+%",
-            LocalizationService.translateFromGeneral('subscription'), context, Icons.percent_outlined),
+        _buildStatisticsCard(
+            data['subscriptions'].toString() + "+%",
+            LocalizationService.translateFromGeneral('subscription'),
+            context,
+            Icons.percent_outlined),
       ],
     );
   }

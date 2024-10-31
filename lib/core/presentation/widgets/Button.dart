@@ -11,6 +11,7 @@ Widget BuildIconButton({
   Color textColor = Palette.white,
   double width = double.infinity,
   IconAlignment iconAlignment = IconAlignment.end,
+  double fontSize = 16,
 }) {
   return icon != null
       ? ElevatedButton.icon(
@@ -38,7 +39,7 @@ Widget BuildIconButton({
               borderRadius: BorderRadius.circular(10),
             ),
             minimumSize: Size(width, 45),
-            textStyle: AppStyles.textCairoButton(16),
+            textStyle: AppStyles.textCairoButton(fontSize),
           ),
         );
 }

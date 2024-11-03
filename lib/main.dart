@@ -47,7 +47,7 @@ void main() async {
     await Firebase.initializeApp();
   }
 
-  LocalizationService.load('ar');
+  LocalizationService.load('en');
 
   final notificationService = NotificationService();
   await notificationService.init();

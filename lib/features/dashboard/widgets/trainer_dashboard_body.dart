@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
 import 'package:ironfit/core/presentation/widgets/PagesHeader.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/exersiceCarousel.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
@@ -31,19 +33,12 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
   List<Map<String, String>> exercises = [];
 
   PreferencesService preferencesService = PreferencesService();
-  Future<void> _checkToken() async {
-    SharedPreferences prefs = await preferencesService.getPreferences();
-    String? token = prefs.getString('token');
-
-    if (token == null) {
-      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
-    }
-  }
+  TokenService tokenService = TokenService();
 
   @override
   void initState() {
     super.initState();
-    _checkToken();
+    tokenService.checkTokenAndNavigateSingIn();
     _fetchTrainerData();
     if (!isDataLoaded) {
       _fetchTrainerNameAndImage();
@@ -54,29 +49,38 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
   }
 
   Future<void> _fetchTrainerNameAndImage() async {
-    User? user = _auth.currentUser;
-    if (user == null) {
-      print('User is not logged in');
-      return;
+    try {
+      User? user = _auth.currentUser;
+
+      // Check if user is authenticated
+      if (user == null) {
+        print('User is not logged in');
+        return;
+      }
+
+      // Fetch user document from Firestore
+      DocumentSnapshot userDoc =
+          await _firestore.collection('trainees').doc(user.uid).get();
+
+      // Check if user document exists
+      if (!userDoc.exists) {
+        print('User document does not exist');
+        return;
+      }
+
+      // Fetch user details with null safety checks
+      setState(() {
+        trainerName =
+            '${userDoc['firstName'] ?? 'لا يوجد'} ${userDoc['lastName'] ?? 'لا يوجد'}';
+        trainerEmail = userDoc['email'] ?? 'البريد الإلكتروني';
+        trainerImage = userDoc['profileImageUrl'] ??
+            'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+      });
+    } catch (e) {
+      // Handle any errors that occur during the Firestore operation
+      print('Error fetching trainer details: $e');
+      // You might want to show a snackbar, toast, or other UI feedback for the user here
     }
-
-    // Fetch user document from Firestore
-    DocumentSnapshot userDoc =
-        await _firestore.collection('trainees').doc(user.uid).get();
-
-    if (!userDoc.exists) {
-      print('User document does not exist');
-      return;
-    }
-
-    // Fetch user details with null safety checks
-    setState(() {
-      trainerName =
-          '${userDoc['firstName'] ?? 'لا يوجد'} ${userDoc['lastName'] ?? 'لا يوجد'}';
-      trainerEmail = userDoc['email'] ?? 'البريد الإلكتروني';
-      trainerImage = userDoc['profileImageUrl'] ??
-          'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
-    });
   }
 
   // Fetch trainer data from Firebase
@@ -142,7 +146,12 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
       backgroundColor: Palette.black,
       body: Column(
         children: [
-          _buildDashboardHeader(),
+          DashboardHeader(
+            backgroundImage: Assets.dashboardBackground,
+            trainerImage: trainerImage,
+            trainerName: trainerName,
+            trainerEmail: trainerEmail,
+          ),
           const SizedBox(height: 24),
           Expanded(
             child: SingleChildScrollView(
@@ -161,15 +170,6 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildDashboardHeader() {
-    return DashboardHeader(
-      backgroundImage: Assets.dashboardBackground,
-      trainerImage: trainerImage,
-      trainerName: trainerName,
-      trainerEmail: trainerEmail,
     );
   }
 
@@ -201,8 +201,7 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
         ),
         child: Text(
           LocalizationService.translateFromGeneral('todayExercises'),
-          style: const TextStyle(
-              fontSize: 16, color: Palette.white, fontWeight: FontWeight.w500),
+          style: AppStyles.textCairo(16, Palette.white, FontWeight.w500),
         ),
       ),
     );

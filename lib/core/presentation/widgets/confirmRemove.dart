@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
 Future<bool> confirmCancel(context) async {
@@ -22,7 +23,7 @@ Future<bool> confirmCancel(context) async {
               Navigator.of(context).pop(false); // User canceled
             },
             child: Text(LocalizationService.translateFromGeneral('cancel'),
-                style: TextStyle(color: Palette.black)),
+                style: AppStyles.textCairo(14, Palette.black, FontWeight.w500)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -32,7 +33,7 @@ Future<bool> confirmCancel(context) async {
               Navigator.of(context).pop(true); // User confirmed
             },
             child: Text(LocalizationService.translateFromGeneral('confirm'),
-                style: TextStyle(color: Palette.white)),
+                style: AppStyles.textCairo(14, Palette.white, FontWeight.w500)),
           ),
         ],
       );

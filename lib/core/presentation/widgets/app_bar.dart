@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 
 // CustomAppBar is a reusable widget that extends the AppBar.
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -46,10 +47,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               const Duration(milliseconds: 300), // Duration for fade effect
           child: AppBar(
             title: AnimatedDefaultTextStyle(
-              style: const TextStyle(
-                fontWeight: FontWeight.bold, // Bold font weight for the title.
-                fontSize: 20.0, // Font size for the title.
-                color: Colors.white, // Title text color
+              style: AppStyles.textCairo(
+                20,
+                Palette.mainAppColorWhite,
+                FontWeight.bold,
               ),
               duration: const Duration(
                   milliseconds: 300), // Animation duration for text style

@@ -84,9 +84,9 @@ class MyApp extends StatelessWidget {
         prefs.getBool('hasSeenPreLoginScreen') ?? false;
 
     if (hasSeenPreLoginScreen) {
-      return Routes.coachProfile; // Direct to the login screen
+      return Routes.coachDashboard; // Direct to the login screen
     } else {
-      return Routes.coachProfile; // Direct to the pre-login screen
+      return Routes.coachDashboard; // Direct to the pre-login screen
     }
   }
 
@@ -131,7 +131,7 @@ class MyApp extends StatelessWidget {
                 iconTheme: IconThemeData(color: Palette.black),
               ),
             ),
-            initialRoute: Routes.coachProfile,
+            initialRoute: Routes.coachDashboard,
             getPages: [
               GetPage(
                   name: Routes.selectEnter,

@@ -6,10 +6,15 @@ import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Button.dart';
+import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:ironfit/core/presentation/widgets/confirmRemove.dart';
+import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
+import 'package:ironfit/core/presentation/widgets/theme.dart';
 import 'package:ironfit/core/routes/routes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TraineeBody extends StatefulWidget {
   final String username;
@@ -36,27 +41,21 @@ class _TraineeBodyState extends State<TraineeBody> {
   late String subscriptionId;
 
   PreferencesService preferencesService = PreferencesService();
-  Future<void> _checkToken() async {
-    SharedPreferences prefs = await preferencesService.getPreferences();
-    String? token = prefs.getString('token');
-
-    if (token == null) {
-      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
-    }
-  }
+  TokenService tokenService = TokenService();
+  CustomSnackbar customSnackbar = CustomSnackbar();
 
   @override
   void initState() {
     super.initState();
-    _checkToken();
+    tokenService.checkTokenAndNavigateSingIn();
     _plans = [];
-    planName = '';
+    planName = LocalizationService.translateFromGeneral('noData');
     _numberOfDaysUserHave = 0;
-    debts = '';
-    amountPaid = '';
-    userName = '';
+    debts = LocalizationService.translateFromGeneral('noData');
+    amountPaid = LocalizationService.translateFromGeneral('noData');
+    userName = LocalizationService.translateFromGeneral('noData');
     imageURL = Assets.notFound;
-    subscriptionId = '';
+    subscriptionId = LocalizationService.translateFromGeneral('noData');
     fetchPlans();
     fetchNumberOfDays();
     fetchUserPlan();
@@ -81,7 +80,6 @@ class _TraineeBodyState extends State<TraineeBody> {
       if (subscriptions.docs.isNotEmpty) {
         // Safely extract the end date and calculate the difference
         var endDateStr = subscriptions.docs[0]['endDate'];
-        print('endDateStr: $endDateStr');
         if (endDateStr.toString().isNotEmpty) {
           try {
             // Parse the end date and calculate the difference in days
@@ -108,90 +106,49 @@ class _TraineeBodyState extends State<TraineeBody> {
         } else {
           // Handle the case where 'endDate' is null
           print('Error: endDate is null');
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('تاريخ الانتهاء غير موجود')),
-          );
         }
       } else {
         // Handle the case where no documents were returned
         print('No subscriptions found for this user');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('لم يتم العثور على الاشتراك')),
-        );
       }
     } catch (e) {
       // Catch any errors during the Firestore request or network issues
       print('Error fetching user subscription: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('حدث خطأ أثناء جلب البيانات')),
-      );
     }
   }
 
   Future<void> fetchPlans() async {
-    final plans = await _firestore
-        .collection('coaches')
-        .doc(_auth.currentUser?.uid)
-        .collection('plans')
-        .get();
+    try {
+      final plans = await _firestore
+          .collection('coaches')
+          .doc(_auth.currentUser?.uid)
+          .collection('plans')
+          .get();
 
-    setState(() {
-      _plans = plans.docs.map((doc) {
-        return {
-          'id': doc.id, // The document ID
-          ...doc.data(), // The document data
-        };
-      }).toList();
-    });
+      setState(() {
+        _plans = plans.docs.map((doc) {
+          return {
+            'id': doc.id, // The document ID
+            ...doc.data(), // The document data
+          };
+        }).toList();
+      });
+    } catch (e) {
+      // Handle any errors that occur during the fetch operation
+      print('Error fetching plans: $e');
+    }
   }
 
   Future<void> cancelSubscription(BuildContext context, String username) async {
     // Show a confirmation dialog before canceling
-    bool confirmCancel = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          alignment: Alignment.center,
-          title: const Text(
-            'تأكيد الإلغاء',
-            textAlign: TextAlign.center,
-          ),
-          content: const Text(
-            'هل أنت متأكد أنك تريد إلغاء الاشتراك لهذا المستخدم؟',
-            textAlign: TextAlign.end,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false); // User canceled
-              },
-              child:
-                  const Text('إلغاء', style: TextStyle(color: Palette.black)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Palette.redDelete,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop(true); // User confirmed
-              },
-              child:
-                  const Text('تأكيد', style: TextStyle(color: Palette.white)),
-            ),
-          ],
-        );
-      },
-    );
-
+    bool cancel = await confirmCancel(context);
     // If the user confirms cancellation
-    if (confirmCancel) {
+    if (cancel) {
       try {
-        // Show a loading indicator while canceling
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('جاري الغاء الاشتراك...'),
-          ),
-        );
+        customSnackbar.showMessage(
+            context,
+            LocalizationService.translateFromGeneral(
+                'cancelSubscriptionIsStarted'));
 
         // Call removePlan function
         await cleanSubscription();
@@ -199,7 +156,7 @@ class _TraineeBodyState extends State<TraineeBody> {
         // Fetch current user ID
         String? coachId = _auth.currentUser?.uid;
         if (coachId == null) {
-          throw Exception("لا يوجد مستخدم مسجل الدخول");
+          throw Exception(LocalizationService.translateFromGeneral('noUser'));
         }
 
         // Retrieve the user's subscription data
@@ -223,47 +180,39 @@ class _TraineeBodyState extends State<TraineeBody> {
           });
 
           // Show a success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('تم الغاء الاشتراك بنجاح'),
-            ),
-          );
+          customSnackbar.showMessage(
+              context,
+              LocalizationService.translateFromGeneral(
+                  'subscriptionCancelled'));
 
           widget.fetchTrainees();
         } else {
           // No subscription found for the user
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('لا يوجد اشتراك بهذا الاسم'),
-            ),
-          );
+          customSnackbar.showMessage(
+              context,
+              LocalizationService.translateFromGeneral(
+                  'noSubscriptionWithName'));
         }
       } catch (e) {
         String errorMessage;
 
         // Handle Firebase and network-related errors specifically
         if (e is FirebaseException) {
-          errorMessage = 'خطأ في الاتصال بقاعدة البيانات: ${e.message}';
+          errorMessage = LocalizationService.translateFromGeneral(
+              'networkConnectionFailed');
         } else if (e is NetworkImageLoadException) {
-          errorMessage = 'فشل الاتصال بالشبكة، تحقق من اتصالك بالإنترنت';
+          errorMessage = LocalizationService.translateFromGeneral(
+              'networkConnectionFailed');
         } else {
-          errorMessage = 'حدث خطأ غير متوقع: $e';
+          errorMessage =
+              LocalizationService.translateFromGeneral('unexpectedError');
         }
 
-        // Show detailed error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-          ),
-        );
+        customSnackbar.showMessage(context, errorMessage);
       }
     } else {
-      // User canceled the operation
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم إلغاء عملية الحذف'),
-        ),
-      );
+      customSnackbar.showMessage(context,
+          LocalizationService.translateFromGeneral('cancellationCompleted'));
     }
   }
 
@@ -318,43 +267,9 @@ class _TraineeBodyState extends State<TraineeBody> {
   Future<void> removePlan() async {
     try {
       // Show confirmation dialog
-      bool confirmCancel = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            alignment: Alignment.center,
-            title: const Text(
-              'تأكيد الإلغاء',
-              textAlign: TextAlign.center,
-            ),
-            content: const Text(
-              'هل أنت متأكد أنك تريد حذف الخطة لهذا المستخدم؟',
-              textAlign: TextAlign.end,
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(false); // User canceled
-                },
-                child:
-                    const Text('إلغاء', style: TextStyle(color: Palette.black)),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Palette.redDelete,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop(true); // User confirmed
-                },
-                child:
-                    const Text('تأكيد', style: TextStyle(color: Palette.white)),
-              ),
-            ],
-          );
-        },
-      );
+      bool cancel = await confirmCancel(context);
 
-      if (!confirmCancel) {
+      if (!cancel) {
         return; // If user cancels, exit the method
       }
 
@@ -365,47 +280,49 @@ class _TraineeBodyState extends State<TraineeBody> {
       await fetchPlans();
 
       // Notify the user of success
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم حذف الخطة بنجاح!')),
-      );
+      customSnackbar.showMessage(context,
+          LocalizationService.translateFromGeneral('planDeletedSuccessfully'));
     } catch (e) {
       // Catch any unexpected errors that occur in the try block
       print('Error in removePlan: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('حدث خطأ أثناء إلغاء الخطة')),
-      );
+      customSnackbar.showMessage(
+          context,
+          LocalizationService.translateFromGeneral(
+              'unexpectedErrorDeletingPlan'));
     }
   }
 
   Future<void> cleanSubscription() async {
-    // Fetch the user based on the username
-    var querySnapshot = await _firestore
-        .collection('trainees')
-        .where('username', isEqualTo: widget.username)
-        .get();
-
-    // Check if any documents are found
-    if (querySnapshot.docs.isEmpty) {
-      // If no user is found, notify the user
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('لا يوجد مستخدم بهذا الاسم!')),
-      );
-      return;
-    }
-
     try {
+      // Fetch the user based on the username
+      var querySnapshot = await _firestore
+          .collection('trainees')
+          .where('username', isEqualTo: widget.username)
+          .get();
+
+      // Check if any documents are found
+      if (querySnapshot.docs.isEmpty) {
+        // If no user is found, notify the user
+        customSnackbar.showMessage(context,
+            LocalizationService.translateFromGeneral('noSubscriptionWithName'));
+        return;
+      }
+
+      // Update Firestore document to remove planId and coachId
       await _firestore
           .collection('trainees')
           .doc(querySnapshot.docs.first.id)
           .update({'planId': null, 'coachId': null});
+
+      // Show success message if update is successful
+      customSnackbar.showMessage(context,
+          LocalizationService.translateFromGeneral('subscriptionCancelled'));
     } catch (e) {
-      // If there is an error while updating the Firestore document, log it
-      print('Error removing plan for user ${querySnapshot.docs.first.id}: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content:
-                Text('فشل حذف الخطة للمستخدم ${querySnapshot.docs.first.id}')),
-      );
+      // Handle specific exceptions if needed (e.g., FirebaseException)
+      print('Error removing plan: $e');
+      // Show error message to user
+      customSnackbar.showMessage(
+          context, LocalizationService.translateFromGeneral('unexpectedError'));
     }
   }
 
@@ -440,10 +357,9 @@ class _TraineeBodyState extends State<TraineeBody> {
           });
 
           // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('تم إضافة الخطة بنجاح'),
-            ),
+          customSnackbar.showMessage(
+            context,
+            LocalizationService.translateFromPage('message', 'snackbarSuccess'),
           );
 
           // Refresh data
@@ -454,31 +370,25 @@ class _TraineeBodyState extends State<TraineeBody> {
           });
         } else {
           // Handle case where plan doesn't exist
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('لم يتم العثور على الخطة'),
-            ),
+          customSnackbar.showMessage(
+            context,
+            LocalizationService.translateFromGeneral('planNotFound'),
           );
           Navigator.of(context).pop();
           Navigator.of(context).pop();
         }
       } else {
-        // Handle case where trainee document is not found
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('لم يتم العثور على المتدرب'),
-          ),
+        customSnackbar.showMessage(
+          context,
+          LocalizationService.translateFromGeneral('traineeNotFound'),
         );
         Navigator.of(context).pop();
       }
     } catch (e) {
       // Catch any errors that occur during Firestore operations
       print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('حدث خطأ أثناء تحديث الخطة: $e'),
-        ),
-      );
+      customSnackbar.showMessage(
+          context, LocalizationService.translateFromGeneral('unexpectedError'));
     }
   }
 
@@ -501,10 +411,9 @@ class _TraineeBodyState extends State<TraineeBody> {
       });
 
       // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم أضافة الدين بنجاح'),
-        ),
+      customSnackbar.showMessage(
+        context,
+        LocalizationService.translateFromPage('message', 'snackbarSuccess'),
       );
 
       fetchNumberOfDays().then((v) {
@@ -514,10 +423,9 @@ class _TraineeBodyState extends State<TraineeBody> {
     } catch (e) {
       // Catch any errors that occur during Firestore operations
       print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('حدث خطأ أثناء تحديث الخطة: $e'),
-        ),
+      customSnackbar.showMessage(
+        context,
+        LocalizationService.translateFromGeneral('unexpectedError'),
       );
     }
   }
@@ -528,142 +436,83 @@ class _TraineeBodyState extends State<TraineeBody> {
       context: context,
       builder: (BuildContext context) {
         return Theme(
-            data: Theme.of(context).copyWith(
-                // Customize the dialog theme here
-                dialogBackgroundColor:
-                    Colors.grey[900], // Dialog background color
-                textTheme: const TextTheme(
-                  bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
-                  bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
-                  headlineLarge: TextStyle(
-                      color: Palette.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24),
-                ),
-                elevatedButtonTheme: ElevatedButtonThemeData(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        const Color(0xFFFFBB02), // Customize button color
-                    foregroundColor:
-                        const Color(0xFF1C1503), // Customize text color
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                inputDecorationTheme: const InputDecorationTheme(
-                  filled: true, // Fill the text field background
-                  fillColor: Palette
-                      .secondaryColor, // Background color of the text field
-                  labelStyle: TextStyle(
-                      color: Palette.white, fontSize: 14), // Label text style
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color:
-                              Colors.transparent), // Border color when enabled
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(12),
-                      )),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.yellow,
-                        width: 2), // Border color when focused
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.red), // Border color on error
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.red,
-                        width: 2), // Border color on error when focused
-                  ),
-                ),
-                textButtonTheme: TextButtonThemeData(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Palette.white, // Customize text color
-                  ),
-                )),
-            child: Expanded(
-              child: SingleChildScrollView(
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: AlertDialog(
-                    title: Row(
-                      children: [
-                        Text(
-                            LocalizationService.translateFromGeneral('addPlan'),
-                            style: TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.bold)),
-                        const Spacer(),
-                        IconButton(
-                          onPressed: () {
-                            Get.toNamed(Routes.myPlans);
-                          },
-                          icon: const Icon(Icons.add),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Palette.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    content: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                            LocalizationService.translateFromGeneral(
-                                'pleaseFillRequiredData'),
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500)),
-                        const SizedBox(height: 16),
-                        DropdownButtonFormField<String>(
-                          dropdownColor: Palette.secondaryColor,
-                          decoration: InputDecoration(
-                            labelText: LocalizationService.translateFromGeneral(
-                                'yourPlans'), // Label for the dropdown
-                            border: const OutlineInputBorder(),
-                          ),
-                          value: selectedValue, // Selected value from dropdown
-                          items: _plans
-                              .map<DropdownMenuItem<String>>((dynamic value) {
-                            return DropdownMenuItem<String>(
-                              value: value['id']
-                                  as String, // Casting dynamic to String
-                              child: Align(
-                                alignment: AlignmentDirectional
-                                    .centerEnd, // Align to the right
-                                child: Text(
-                                  value['name'],
-                                  style: const TextStyle(color: Palette.white),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-
-                          onChanged: _updatePlan,
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
-                        },
-                        child: Text(
-                          LocalizationService.translateFromGeneral('cancel'),
-                        ),
+          data: customThemeData,
+          child: SingleChildScrollView(
+            child: AlertDialog(
+              title: Row(
+                children: [
+                  Text(LocalizationService.translateFromGeneral('addPlan'),
+                      style: AppStyles.textCairo(
+                          22, Palette.mainAppColorWhite, FontWeight.bold)),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {
+                      Get.toNamed(Routes.myPlans);
+                    },
+                    icon: const Icon(Icons.add),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Palette.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    ],
-                    actionsAlignment: MainAxisAlignment.start,
+                    ),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                      LocalizationService.translateFromGeneral(
+                          'pleaseFillRequiredData'),
+                      style: AppStyles.textCairo(
+                          22, Palette.mainAppColorWhite, FontWeight.w500)),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    dropdownColor: Palette.secondaryColor,
+                    decoration: InputDecoration(
+                      labelText: LocalizationService.translateFromGeneral(
+                          'yourPlans'), // Label for the dropdown
+                      border: const OutlineInputBorder(),
+                    ),
+                    value: selectedValue, // Selected value from dropdown
+                    items:
+                        _plans.map<DropdownMenuItem<String>>((dynamic value) {
+                      return DropdownMenuItem<String>(
+                        value:
+                            value['id'] as String, // Casting dynamic to String
+                        child: Align(
+                          alignment: AlignmentDirectional
+                              .centerEnd, // Align to the right
+                          child: Text(
+                            value['name'],
+                            style: AppStyles.textCairo(
+                                14, Palette.mainAppColorWhite, FontWeight.w500),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+
+                    onChanged: _updatePlan,
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text(
+                    LocalizationService.translateFromGeneral('cancel'),
                   ),
                 ),
-              ),
-            ));
+              ],
+              actionsAlignment: MainAxisAlignment.start,
+            ),
+          ),
+        );
       },
     );
   }
@@ -674,112 +523,58 @@ class _TraineeBodyState extends State<TraineeBody> {
       context: context,
       builder: (BuildContext context) {
         return Theme(
-            data: Theme.of(context).copyWith(
-                // Customize the dialog theme here
-                dialogBackgroundColor:
-                    Colors.grey[900], // Dialog background color
-                textTheme: const TextTheme(
-                  bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
-                  bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
-                  headlineLarge: TextStyle(
-                      color: Palette.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24),
-                ),
-                elevatedButtonTheme: ElevatedButtonThemeData(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        const Color(0xFFFFBB02), // Customize button color
-                    foregroundColor:
-                        const Color(0xFF1C1503), // Customize text color
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+          data: customThemeData,
+          child: SingleChildScrollView(
+            child: AlertDialog(
+              title: Text(
+                  LocalizationService.translateFromGeneral('modifyDebts'),
+                  style: AppStyles.textCairo(
+                      22, Palette.mainAppColorWhite, FontWeight.bold)),
+              content: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                      LocalizationService.translateFromGeneral(
+                          'addIncrementOrDecrementNegative'),
+                      style: AppStyles.textCairo(
+                          14, Palette.mainAppColorWhite, FontWeight.w500)),
+                  const SizedBox(height: 16),
+                  TextField(
+                    keyboardType: TextInputType.number,
+                    onChanged: (updateValue) {
+                      selectedValue = updateValue;
+                    },
+                    decoration: InputDecoration(
+                      labelText:
+                          LocalizationService.translateFromGeneral('amount'),
+                      border: OutlineInputBorder(),
                     ),
                   ),
-                ),
-                inputDecorationTheme: const InputDecorationTheme(
-                  filled: true, // Fill the text field background
-                  fillColor: Palette
-                      .secondaryColor, // Background color of the text field
-                  labelStyle: TextStyle(
-                      color: Palette.white, fontSize: 14), // Label text style
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color:
-                              Colors.transparent), // Border color when enabled
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(12),
-                      )),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.yellow,
-                        width: 2), // Border color when focused
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.red), // Border color on error
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.red,
-                        width: 2), // Border color on error when focused
-                  ),
-                ),
-                textButtonTheme: TextButtonThemeData(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Palette.white, // Customize text color
-                  ),
-                )),
-            child: Expanded(
-              child: SingleChildScrollView(
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: AlertDialog(
-                    title: const Text('تعديل الديون',
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold)),
-                    content: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text('أضف مقدار الزيادة او الخضم بالسالب',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500)),
-                        const SizedBox(height: 16),
-                        TextField(
-                          keyboardType: TextInputType.number,
-                          onChanged: (updateValue) {
-                            selectedValue = updateValue;
-                          },
-                          decoration: const InputDecoration(
-                            labelText: "المقدار",
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      ElevatedButton(
-                        onPressed: () {
-                          if (selectedValue != null) {
-                            _updateDebt(selectedValue, subscriptionId);
-                          }
-                        },
-                        child: const Text('حفظ'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
-                        },
-                        child: const Text('إلغاء'),
-                      ),
-                    ],
-                    actionsAlignment: MainAxisAlignment.start,
-                  ),
-                ),
+                ],
               ),
-            ));
+              actions: [
+                BuildIconButton(
+                  onPressed: () {
+                    if (selectedValue != null) {
+                      _updateDebt(selectedValue, subscriptionId);
+                    }
+                  },
+                  text: LocalizationService.translateFromGeneral('save'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child:
+                      Text(LocalizationService.translateFromGeneral('cancel')),
+                ),
+              ],
+              actionsAlignment: MainAxisAlignment.start,
+            ),
+          ),
+        );
       },
     );
   }
@@ -801,10 +596,9 @@ class _TraineeBodyState extends State<TraineeBody> {
       await subscription.update({'startDate': stratDate, 'endDate': endDate});
 
       // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم أضافة تجديد الإشتراك بنجاح'),
-        ),
+      customSnackbar.showMessage(
+        context,
+        LocalizationService.translateFromPage('message', 'snackbarSuccess'),
       );
 
       fetchNumberOfDays().then((v) {
@@ -814,11 +608,8 @@ class _TraineeBodyState extends State<TraineeBody> {
     } catch (e) {
       // Catch any errors that occur during Firestore operations
       print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('حدث خطأ أثناء تحديث الخطة: $e'),
-        ),
-      );
+      customSnackbar.showMessage(
+          context, LocalizationService.translateFromGeneral('unexpectedError'));
     }
   }
 
@@ -846,143 +637,98 @@ class _TraineeBodyState extends State<TraineeBody> {
       context: context,
       builder: (BuildContext context) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            dialogBackgroundColor: Colors.grey[900],
-            textTheme: const TextTheme(
-              bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
-              bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
-              headlineLarge: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24),
-            ),
-            elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFBB02),
-                foregroundColor: const Color(0xFF1C1503),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
-            inputDecorationTheme: const InputDecorationTheme(
-              filled: true,
-              fillColor: Palette.secondaryColor,
-              labelStyle: TextStyle(color: Colors.white, fontSize: 14),
-              enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent),
-                  borderRadius: BorderRadius.all(Radius.circular(12))),
-              focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.yellow, width: 2)),
-              errorBorder:
-                  OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
-              focusedErrorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red, width: 2)),
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(foregroundColor: Colors.white),
-            ),
-          ),
-          child: Expanded(
-            child: SingleChildScrollView(
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: AlertDialog(
-                  title: Text(
-                      LocalizationService.translateFromGeneral('addNewTrainee'),
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold)),
-                  content: Form(
-                    key: _formKey, // Use the form key for validation
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                            LocalizationService.translateFromGeneral(
-                                'pleaseFillRequiredData'),
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500)),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: startDateController,
-                          decoration: InputDecoration(
-                              labelText:
-                                  LocalizationService.translateFromGeneral(
-                                      'startDate'),
-                              border: const OutlineInputBorder()),
-                          readOnly: true,
-                          onTap: () {
-                            _selectDate(context, startDateController);
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return LocalizationService.translateFromGeneral(
-                                  'enterStartDate');
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: endDateController,
-                          decoration: InputDecoration(
-                              labelText:
-                                  LocalizationService.translateFromGeneral(
-                                      'endDate'),
-                              border: const OutlineInputBorder()),
-                          readOnly: true,
-                          onTap: () {
-                            _selectDate(context, endDateController);
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return LocalizationService.translateFromGeneral(
-                                  'enterEndDate');
-                            }
-                            if (startDateController.text.isNotEmpty &&
-                                endDateController.text.isNotEmpty) {
-                              // Compare the dates
-                              DateTime startDate =
-                                  DateTime.parse(startDateController.text);
-                              DateTime endDate =
-                                  DateTime.parse(endDateController.text);
-
-                              if (startDate.isAfter(endDate)) {
-                                return LocalizationService.translateFromGeneral(
-                                    'startDateCannotBeAfterEndDate');
-                              }
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          _updateSubscription(startDateController.text,
-                              endDateController.text, subscriptionId);
+          data: customThemeData,
+          child: SingleChildScrollView(
+            child: AlertDialog(
+              title: Text(
+                  LocalizationService.translateFromGeneral('addNewTrainee'),
+                  style: AppStyles.textCairo(
+                      24, Palette.mainAppColorWhite, FontWeight.bold)),
+              content: Form(
+                key: _formKey, // Use the form key for validation
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                        LocalizationService.translateFromGeneral(
+                            'pleaseFillRequiredData'),
+                        style: AppStyles.textCairo(
+                            14, Palette.mainAppColorWhite, FontWeight.w500)),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: startDateController,
+                      decoration: InputDecoration(
+                          labelText: LocalizationService.translateFromGeneral(
+                              'startDate'),
+                          border: const OutlineInputBorder()),
+                      readOnly: true,
+                      onTap: () {
+                        _selectDate(context, startDateController);
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return LocalizationService.translateFromGeneral(
+                              'enterStartDate');
                         }
+                        return null;
                       },
-                      child: Text(
-                          LocalizationService.translateFromGeneral('save')),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: endDateController,
+                      decoration: InputDecoration(
+                          labelText: LocalizationService.translateFromGeneral(
+                              'endDate'),
+                          border: const OutlineInputBorder()),
+                      readOnly: true,
+                      onTap: () {
+                        _selectDate(context, endDateController);
                       },
-                      child: Text(
-                          LocalizationService.translateFromGeneral('cancel')),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return LocalizationService.translateFromGeneral(
+                              'enterEndDate');
+                        }
+                        if (startDateController.text.isNotEmpty &&
+                            endDateController.text.isNotEmpty) {
+                          // Compare the dates
+                          DateTime startDate =
+                              DateTime.parse(startDateController.text);
+                          DateTime endDate =
+                              DateTime.parse(endDateController.text);
+
+                          if (startDate.isAfter(endDate)) {
+                            return LocalizationService.translateFromGeneral(
+                                'startDateCannotBeAfterEndDate');
+                          }
+                        }
+                        return null;
+                      },
                     ),
                   ],
-                  actionsAlignment: MainAxisAlignment.start,
                 ),
               ),
+              actions: [
+                BuildIconButton(
+                  text: LocalizationService.translateFromGeneral('save'),
+                  onPressed: () async {
+                    if (_formKey.currentState?.validate() ?? false) {
+                      _updateSubscription(startDateController.text,
+                          endDateController.text, subscriptionId);
+                    }
+                  },
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child:
+                      Text(LocalizationService.translateFromGeneral('cancel')),
+                ),
+              ],
+              actionsAlignment: MainAxisAlignment.start,
             ),
           ),
         );
@@ -1033,30 +779,16 @@ class _TraineeBodyState extends State<TraineeBody> {
                                   ? LocalizationService.translateFromGeneral(
                                       'noUser')
                                   : userName,
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                color: Palette.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                                shadows: [
-                                  Shadow(
-                                    color: Color(0xFF2F3336),
-                                    offset: Offset(4.0, 4.0),
-                                    blurRadius: 2.0,
-                                  ),
-                                ],
-                              ),
+                              style: AppStyles.textCairo(18,
+                                  Palette.mainAppColorWhite, FontWeight.bold),
                             ),
                           ),
                           Align(
                             alignment: const AlignmentDirectional(0, 0),
                             child: Text(
                               '${LocalizationService.translateFromGeneral('daysRemaining')} ${_numberOfDaysUserHave} ${LocalizationService.translateFromGeneral('days')}',
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                color: Color(0xA0FFFFFF),
-                                fontSize: 12,
-                              ),
+                              style: AppStyles.textCairo(
+                                  12, Palette.gray, FontWeight.w500),
                             ),
                           ),
                         ],
@@ -1076,53 +808,26 @@ class _TraineeBodyState extends State<TraineeBody> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: ElevatedButton(
+                  child: BuildIconButton(
+                    text: LocalizationService.translateFromGeneral(
+                        'cancelSubscription'),
                     onPressed: () {
                       cancelSubscription(context, widget.username);
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Palette.redDelete, // Button color
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      fixedSize: const Size(double.infinity, 45),
-                    ),
-                    child: Text(
-                      LocalizationService.translateFromGeneral(
-                          'cancelSubscription'),
-                      style: const TextStyle(
-                        fontFamily: 'Inter Tight',
-                        color: Palette.white,
-                      ),
-                    ),
+                    backgroundColor: Palette.redDelete,
+                    textColor: Palette.white,
                   ),
                 ),
                 const SizedBox(width: 12), // Spacing between buttons
                 Expanded(
                   flex: 1,
-                  child: ElevatedButton(
+                  child: BuildIconButton(
                     onPressed: () {
                       showAddPlanDialog(context);
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFFBB02), // Button color
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      fixedSize: const Size(double.infinity, 45),
-                    ),
-                    child: Text(
-                      LocalizationService.translateFromGeneral(
-                          'renewSubscription'),
-                      style: const TextStyle(
-                        fontFamily: 'Inter Tight',
-                        color: Color(0xFF1C1503),
-                      ),
-                    ),
+                    text: LocalizationService.translateFromGeneral(
+                        'renewSubscription'),
+                    backgroundColor: Palette.mainAppColor,
                   ),
                 ),
               ],
@@ -1137,27 +842,13 @@ class _TraineeBodyState extends State<TraineeBody> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: ElevatedButton(
+                  child: BuildIconButton(
                     onPressed: () {
                       showEditSubscriptionDialog(context);
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Palette.mainAppColorNavy, // Button color
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      fixedSize: const Size(double.infinity, 45),
-                    ),
-                    child: Text(
-                      LocalizationService.translateFromGeneral(
-                          'renewSubscription'),
-                      style: const TextStyle(
-                        fontFamily: 'Inter Tight',
-                        color: Palette.white,
-                      ),
-                    ),
+                    text: LocalizationService.translateFromGeneral(
+                        'renewSubscription'),
+                    backgroundColor: Palette.mainAppColorNavy,
                   ),
                 ),
               ],
@@ -1169,12 +860,8 @@ class _TraineeBodyState extends State<TraineeBody> {
             child: Text(LocalizationService.translateFromGeneral('addedPlan'),
                 textAlign: TextAlign.right,
                 textDirection: TextDirection.rtl,
-                style: const TextStyle(
-                  fontFamily: 'Inter',
-                  color: Palette.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                )),
+                style: AppStyles.textCairo(
+                    14, Palette.mainAppColorWhite, FontWeight.bold)),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -1196,12 +883,8 @@ class _TraineeBodyState extends State<TraineeBody> {
                     'financialTransactions'),
                 textAlign: TextAlign.right,
                 textDirection: TextDirection.rtl,
-                style: const TextStyle(
-                  fontFamily: 'Inter',
-                  color: Palette.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                )),
+                style: AppStyles.textCairo(
+                    14, Palette.mainAppColorWhite, FontWeight.bold)),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -1252,21 +935,13 @@ Widget _buildCard(BuildContext context, String planName, Function onTap,
             children: [
               Text(
                 planName,
-                style: const TextStyle(
-                  fontFamily: 'Inter',
-                  color: Palette.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppStyles.textCairo(
+                    16, Palette.mainAppColorWhite, FontWeight.w500),
               ),
               const SizedBox(width: 8),
               Text(
                 iconText,
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  color: iconColor,
-                  fontSize: 12,
-                ),
+                style: AppStyles.textCairo(12, iconColor, FontWeight.w500),
               ),
             ],
           ),

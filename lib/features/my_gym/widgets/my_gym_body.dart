@@ -51,84 +51,86 @@ class MyGymBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String?>(
-      future: _fetchCoachId(), // Fetch the coach ID
-      builder: (context, coachSnapshot) {
-        if (coachSnapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (coachSnapshot.hasError || coachSnapshot.data == null) {
-          return Center(child: Text('المستخدم ليس مسجلاً')); // Display a message if coachId is null
-        }
+    return Container();
 
-        String coachId = coachSnapshot.data!;
-        return Scaffold(
-          backgroundColor: Colors.black, // Adjust according to your palette
-          body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-            future: _fetchGymData(coachId),
-            builder: (context, gymSnapshot) {
-              if (gymSnapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (gymSnapshot.hasError) {
-                return Center(child: Text('خطأ في تحميل البيانات'));
-              } else if (!gymSnapshot.hasData || gymSnapshot.data!.data() == null) {
-                return Center(child: Text('لا توجد صالات رياضية متاحة'));
-              }
+    // FutureBuilder<String?>(
+    //   future: _fetchCoachId(), // Fetch the coach ID
+    //   builder: (context, coachSnapshot) {
+    //     if (coachSnapshot.connectionState == ConnectionState.waiting) {
+    //       return Center(child: CircularProgressIndicator());
+    //     } else if (coachSnapshot.hasError || coachSnapshot.data == null) {
+    //       return Center(child: Text('المستخدم ليس مسجلاً')); // Display a message if coachId is null
+    //     }
 
-              final gymData = gymSnapshot.data!.data()!;
-              String gymName = gymData['name'] ?? 'اسم الصالة';
-              String gymLocation = gymData['location'] ?? 'الموقع';
+    //     String coachId = coachSnapshot.data!;
+    //     return Scaffold(
+    //       backgroundColor: Colors.black, // Adjust according to your palette
+    //       body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+    //         future: _fetchGymData(coachId),
+    //         builder: (context, gymSnapshot) {
+    //           if (gymSnapshot.connectionState == ConnectionState.waiting) {
+    //             return Center(child: CircularProgressIndicator());
+    //           } else if (gymSnapshot.hasError) {
+    //             return Center(child: Text('خطأ في تحميل البيانات'));
+    //           } else if (!gymSnapshot.hasData || gymSnapshot.data!.data() == null) {
+    //             return Center(child: Text('لا توجد صالات رياضية متاحة'));
+    //           }
 
-              return Column(
-                children: [
-                  Stack(
-                    children: [
-                      _buildBackgroundImage(),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(0, MediaQuery.of(context).size.height * 0.1, 24, 0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Get.back();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue, // Adjust according to your palette
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            elevation: 0,
-                          ),
-                          child: const Icon(
-                            Icons.arrow_left,
-                            color: Colors.yellow, // Adjust according to your palette
-                            size: 24,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(0, MediaQuery.of(context).size.height * 0.6, 24, 0),
-                        child: _buildProfileContent(context, gymName, gymLocation),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildButtonCard(context, 'تعديل المعلومات', Icons.person, () {
-                          _showEditInfoDialog(context);
-                        }),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        );
-      },
-    );
+    //           final gymData = gymSnapshot.data!.data()!;
+    //           String gymName = gymData['name'] ?? 'اسم الصالة';
+    //           String gymLocation = gymData['location'] ?? 'الموقع';
+
+    //           return Column(
+    //             children: [
+    //               Stack(
+    //                 children: [
+    //                   _buildBackgroundImage(),
+    //                   Padding(
+    //                     padding: EdgeInsets.fromLTRB(0, MediaQuery.of(context).size.height * 0.1, 24, 0),
+    //                     child: ElevatedButton(
+    //                       onPressed: () {
+    //                         Get.back();
+    //                       },
+    //                       style: ElevatedButton.styleFrom(
+    //                         backgroundColor: Colors.blue, // Adjust according to your palette
+    //                         shape: RoundedRectangleBorder(
+    //                           borderRadius: BorderRadius.circular(12),
+    //                         ),
+    //                         padding: const EdgeInsets.symmetric(horizontal: 8),
+    //                         elevation: 0,
+    //                       ),
+    //                       child: const Icon(
+    //                         Icons.arrow_left,
+    //                         color: Colors.yellow, // Adjust according to your palette
+    //                         size: 24,
+    //                       ),
+    //                     ),
+    //                   ),
+    //                   Padding(
+    //                     padding: EdgeInsets.fromLTRB(0, MediaQuery.of(context).size.height * 0.6, 24, 0),
+    //                     child: _buildProfileContent(context, gymName, gymLocation),
+    //                   ),
+    //                 ],
+    //               ),
+    //               const SizedBox(height: 24),
+    //               Padding(
+    //                 padding: const EdgeInsets.symmetric(horizontal: 12),
+    //                 child: Column(
+    //                   crossAxisAlignment: CrossAxisAlignment.start,
+    //                   children: [
+    //                     _buildButtonCard(context, 'تعديل المعلومات', Icons.person, () {
+    //                       _showEditInfoDialog(context);
+    //                     }),
+    //                   ],
+    //                 ),
+    //               ),
+    //             ],
+    //           );
+    //         },
+    //       ),
+    //     );
+    //   },
+    // )
   }
 
   Widget _buildBackgroundImage() {

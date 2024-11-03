@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
-import 'package:ironfit/core/presentation/widgets/custom_text_widget.dart';
-
 // CoachCard is a reusable widget that displays coach information.
 class CoachCard extends StatelessWidget {
   final String name; // Name of the coach.
@@ -41,22 +39,22 @@ class CoachCard extends StatelessWidget {
                       CrossAxisAlignment.start, // Align text to the start.
                   children: [
                     // Coach's name displayed in bold.
-                    CustomTextWidget(
-                      text: name,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Palette.black,
-                    ),
-                    // Coach's address.
-                    CustomTextWidget(
-                      text: address,
-                      color: Palette.subTitleBlack,
-                    ),
-                    // Coach's description.
-                    CustomTextWidget(
-                      text: description,
-                      color: Palette.subTitleBlack,
-                    ),
+                    // CustomTextWidget(
+                    //   text: name,
+                    //   fontWeight: FontWeight.bold,
+                    //   fontSize: 20,
+                    //   color: Palette.black,
+                    // ),
+                    // // Coach's address.
+                    // CustomTextWidget(
+                    //   text: address,
+                    //   color: Palette.subTitleBlack,
+                    // ),
+                    // // Coach's description.
+                    // CustomTextWidget(
+                    //   text: description,
+                    //   color: Palette.subTitleBlack,
+                    // ),
                   ],
                 ),
               ),

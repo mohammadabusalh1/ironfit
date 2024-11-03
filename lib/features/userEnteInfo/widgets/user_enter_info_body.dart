@@ -7,9 +7,12 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 
 class UserEnterInfoBody extends StatefulWidget {
   UserEnterInfoBody({Key? key}) : super(key: key);
@@ -37,6 +40,14 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
     LocalizationService.translateFromGeneral('female'),
     LocalizationService.translateFromGeneral('other')
   ];
+
+  TokenService tokenService = TokenService();
+
+  @override
+  void initState() {
+    super.initState();
+    tokenService.checkTokenAndNavigateDashboard();
+  }
 
   Future<void> updateCoachInfo(String userId, Map<String, dynamic> data) async {
     try {
@@ -150,11 +161,10 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                         child: Text(
                           LocalizationService.translateFromGeneral(
                               'completeInfoPrompt'),
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                          style: AppStyles.textCairo(
+                            16,
+                            Palette.mainAppColorWhite,
+                            FontWeight.w500,
                           ),
                         ),
                       ),
@@ -166,39 +176,39 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                       padding: EdgeInsets.symmetric(horizontal: 24),
                       child: Text(
                           LocalizationService.translateFromGeneral('account'),
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold)),
+                          style: AppStyles.textCairo(
+                            16,
+                            Palette.mainAppColorWhite,
+                            FontWeight.bold,
+                          )),
                     )
                   : Container(),
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
-                  ? _buildTextField(
-                      LocalizationService.translateFromGeneral('usernameLabel'),
-                      '',
-                      _usernameController,
-                      TextInputType.text,
-                      Icons.person)
+                  ? BuildTextField(
+                      label: LocalizationService.translateFromGeneral(
+                          'usernameLabel'),
+                      controller: _usernameController,
+                      keyboardType: TextInputType.text,
+                      icon: Icons.person)
                   : Container(),
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
-                  ? _buildTextField(
-                      LocalizationService.translateFromGeneral(
+                  ? BuildTextField(
+                      label: LocalizationService.translateFromGeneral(
                           'firstNameLabel'),
-                      '',
-                      _firstNameController,
-                      TextInputType.text,
-                      Icons.face)
+                      controller: _firstNameController,
+                      keyboardType: TextInputType.text,
+                      icon: Icons.face)
                   : Container(),
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
-                  ? _buildTextField(
-                      LocalizationService.translateFromGeneral('lastNameLabel'),
-                      '',
-                      _lastNameController,
-                      TextInputType.text,
-                      Icons.face)
+                  ? BuildTextField(
+                      label: LocalizationService.translateFromGeneral(
+                          'lastNameLabel'),
+                      controller: _lastNameController,
+                      keyboardType: TextInputType.text,
+                      icon: Icons.face)
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
@@ -207,10 +217,11 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                       child: Text(
                           LocalizationService.translateFromGeneral(
                               'personalInfoSection'),
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold)),
+                          style: AppStyles.textCairo(
+                            16,
+                            Palette.mainAppColorWhite,
+                            FontWeight.bold,
+                          )),
                     )
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
@@ -220,8 +231,11 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                       child: DropdownButton<String>(
                         dropdownColor:
                             Palette.secondaryColor, // Dropdown background color
-                        style:
-                            const TextStyle(color: Palette.gray, fontSize: 14),
+                        style: AppStyles.textCairo(
+                          14,
+                          Palette.gray,
+                          FontWeight.w500,
+                        ),
                         value: _selectedGender,
                         isExpanded:
                             true, // Make the dropdown take the full width
@@ -229,8 +243,11 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                           LocalizationService.translateFromGeneral(
                               'SelectGender'),
 
-                          style: const TextStyle(
-                              color: Palette.gray), // Hint style
+                          style: AppStyles.textCairo(
+                            14,
+                            Palette.gray,
+                            FontWeight.w500,
+                          ), // Hint style
                         ),
                         items: _genders.map((String gender) {
                           return DropdownMenuItem<String>(
@@ -253,30 +270,27 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? _buildTextField(
-                      LocalizationService.translateFromGeneral('age'),
-                      '',
-                      _ageController,
-                      TextInputType.number,
-                      Icons.group)
+                  ? BuildTextField(
+                      label: LocalizationService.translateFromGeneral('age'),
+                      controller: _ageController,
+                      keyboardType: TextInputType.number,
+                      icon: Icons.group)
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? _buildTextField(
-                      LocalizationService.translateFromGeneral('weight'),
-                      '',
-                      _weightController,
-                      TextInputType.number,
-                      Icons.scale)
+                  ? BuildTextField(
+                      label: LocalizationService.translateFromGeneral('weight'),
+                      controller: _weightController,
+                      keyboardType: TextInputType.number,
+                      icon: Icons.scale)
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? _buildTextField(
-                      LocalizationService.translateFromGeneral('height'),
-                      '',
-                      _lengthController,
-                      TextInputType.number,
-                      Icons.accessibility)
+                  ? BuildTextField(
+                      label: LocalizationService.translateFromGeneral('height'),
+                      controller: _lengthController,
+                      keyboardType: TextInputType.number,
+                      icon: Icons.accessibility)
                   : Container(),
               const SizedBox(height: 24),
               Padding(
@@ -285,11 +299,10 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                   onPressed: _submitForm,
                   label: Text(
                     LocalizationService.translateFromGeneral('next'),
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      color: Palette.white, // Text color
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                    style: AppStyles.textCairo(
+                      16,
+                      Palette.mainAppColorWhite,
+                      FontWeight.w500,
                     ),
                   ),
                   icon: const Icon(
@@ -303,10 +316,10 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24, vertical: 12),
                     backgroundColor: const Color(0xFFFFBB02),
-                    textStyle: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                    textStyle: AppStyles.textCairo(
+                      14,
+                      Palette.mainAppColorWhite,
+                      FontWeight.bold,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -340,54 +353,6 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
         height: 200,
         fit: BoxFit.cover,
       ),
-    );
-  }
-
-  Widget _buildTextField(
-    String label,
-    String hint,
-    TextEditingController controller,
-    TextInputType keyboardType,
-    IconData? icon,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: hint,
-          hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
-          labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
-          filled: true,
-          fillColor: Palette.secondaryColor,
-          enabledBorder: _buildInputBorder(Palette.mainAppColor),
-          focusedBorder: _buildInputBorder(Palette.white),
-          prefixIcon: Padding(
-            padding: const EdgeInsets.all(10.0), // Adjust padding if needed
-            child: Icon(
-              icon,
-              color: Palette.gray,
-              size: 20,
-            ),
-          ),
-        ),
-        style: const TextStyle(color: Palette.white, fontSize: 14),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return '${LocalizationService.translateFromGeneral('requiredField')} $label';
-          }
-          return null;
-        },
-      ),
-    );
-  }
-
-  OutlineInputBorder _buildInputBorder(Color borderColor) {
-    return OutlineInputBorder(
-      borderSide: BorderSide(color: borderColor, width: 1),
-      borderRadius: BorderRadius.circular(10),
     );
   }
 }

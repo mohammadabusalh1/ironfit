@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
-import 'package:ironfit/core/presentation/widgets/custom_text_widget.dart';
 
 class GymTicket extends StatelessWidget {
   final String name;
@@ -91,32 +90,10 @@ class GymTicket extends StatelessWidget {
 
   // Build the text content
   Widget _buildTextContent() {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CustomTextWidget(
-            text: name,
-            color: Palette.mainAppColor,
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
-          const SizedBox(height: 4),
-          CustomTextWidget(
-            text: description,
-            color: Palette.subTitleGrey,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-          CustomTextWidget(
-            text: address,
-            color: Palette.subTitleGrey,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [],
     );
   }
 }

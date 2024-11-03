@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/CarouselItem.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
 class ExercisesScreen extends StatefulWidget {
@@ -106,7 +106,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             child: DropdownButton<String>(
               dropdownColor: Colors.grey[800],
               hint: Text(LocalizationService.translateFromGeneral('bodyPart'),
-                  style: TextStyle(color: Palette.white)),
+                  style:
+                      AppStyles.textCairo(14, Palette.white, FontWeight.w500)),
               value: fileNameSelected,
               onChanged: (newValue) {
                 setState(() {
@@ -161,7 +162,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                         child: Align(
                           alignment: AlignmentDirectional.centerEnd,
                           child: Text(day['label']!,
-                              style: const TextStyle(color: Palette.white)),
+                              style: AppStyles.textCairo(
+                                  14, Palette.white, FontWeight.w500)),
                         ),
                       ))
                   .toList(),
@@ -174,7 +176,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             child: DropdownButton<String>(
               dropdownColor: Colors.grey[800],
               hint: Text(LocalizationService.translateFromGeneral('bodyPart'),
-                  style: TextStyle(color: Palette.white)),
+                  style:
+                      AppStyles.textCairo(14, Palette.white, FontWeight.w500)),
               value: targetMuscleSelected,
               onChanged: (newValue) {
                 setState(() {
@@ -198,7 +201,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                         child: Align(
                           alignment: AlignmentDirectional.centerEnd,
                           child: Text(day['label']!,
-                              style: const TextStyle(color: Palette.white)),
+                              style: AppStyles.textCairo(
+                                  14, Palette.white, FontWeight.w500)),
                         ),
                       ))
                   .toList(),
@@ -207,9 +211,10 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           SizedBox(height: 8),
           TextField(
             decoration: InputDecoration(
-              hintText: LocalizationService.translateFromGeneral('searchPrompt'),
+              hintText:
+                  LocalizationService.translateFromGeneral('searchPrompt'),
               prefixIcon: Icon(Icons.search),
-              hintStyle: TextStyle(color: Palette.gray),
+              hintStyle: AppStyles.textCairo(14, Palette.gray, FontWeight.w500),
             ),
             onChanged: _searchExercises,
           ),

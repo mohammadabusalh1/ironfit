@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Button.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
 import 'package:ironfit/core/presentation/widgets/StatisticsCard.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
@@ -184,6 +186,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
       // Log detailed error and stack trace for debugging
       print("Error fetching age distribution: $e");
       print("Stack trace: $stackTrace");
+      customSnackbar.showFailureMessage(context);
 
       // Return default values when an error occurs
       return _defaultAgeDistribution();
@@ -221,170 +224,135 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
             return Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                Expanded(
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            width: double.infinity,
-                            child: Stack(
-                              children: [
-                                const HeaderImage(),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(24, 50, 24, 50),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      ElevatedButton(
-                                        onPressed: () {},
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                              const Color(0xFF1C1503),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8),
-                                          elevation: 0,
-                                        ),
-                                        child: const Icon(
-                                          Icons.arrow_left,
-                                          color: Color(0xFFFFBB02),
-                                          size: 24,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Opacity(
-                                        opacity: 0.8,
-                                        child: Text(
-                                          LocalizationService
-                                              .translateFromGeneral(
-                                                  'statistics'),
-                                          style: const TextStyle(
-                                            fontFamily: 'Inter',
-                                            color: Colors.white,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w800,
-                                            shadows: [
-                                              Shadow(
-                                                color: Color(0xFF2F3336),
-                                                offset: Offset(4.0, 4.0),
-                                                blurRadius: 2.0,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: Row(
-                              children: [
-                                StatisticsCard(
-                                  cardSubTitle:
-                                      '${data['trainees']} ${LocalizationService.translateFromGeneral('trainee')}',
-                                  cardTitle:
-                                      LocalizationService.translateFromGeneral(
-                                          'trainees'),
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.4,
-                                  height: 90,
-                                  icon: Icons.people,
-                                ),
-                                const Spacer(),
-                                StatisticsCard(
-                                  cardSubTitle:
-                                      '${data['trainees']} ${LocalizationService.translateFromGeneral('Trainee')}',
-                                  cardTitle:
-                                      LocalizationService.translateFromGeneral(
-                                          'newTrainees'),
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.4,
-                                  height: 90,
-                                  icon: Icons.network_ping,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: StatisticsCard(
-                              cardSubTitle: '${data['income']} \$',
-                              cardTitle:
-                                  LocalizationService.translateFromGeneral(
-                                      'incomeThisMonth'),
-                              width: MediaQuery.of(context).size.width * 0.86,
-                              height: 90,
-                              icon: Icons.monetization_on,
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                SizedBox(
+                  width: double.infinity,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: Stack(
                             children: [
-                              Container(
-                                width: double.infinity,
-                                alignment: Alignment.center,
-                                padding: const EdgeInsets.all(8),
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 24),
-                                decoration: const BoxDecoration(
-                                  color: Palette.mainAppColorWhite,
+                              const HeaderImage(),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(24, 50, 24, 50),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    ReturnBackButton(),
+                                    const SizedBox(width: 12),
+                                    Opacity(
+                                      opacity: 0.8,
+                                      child: Text(
+                                        LocalizationService
+                                            .translateFromGeneral('statistics'),
+                                        style: AppStyles.textCairo(
+                                            20,
+                                            Palette.mainAppColorWhite,
+                                            FontWeight.w800),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                child: Text(
-                                  LocalizationService.translateFromGeneral(
-                                      'ageDistribution'),
-                                  style: TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: Palette.black.withOpacity(0.7),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 32),
-                              FutureBuilder<Map<String, int>>(
-                                future: ageDistributionData,
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const Center(
-                                        child: CircularProgressIndicator());
-                                  }
-
-                                  if (snapshot.hasError) {
-                                    return Center(
-                                        child:
-                                            Text('Error: ${snapshot.error}'));
-                                  }
-
-                                  if (snapshot.hasData) {
-                                    Map<String, int> data = snapshot.data!;
-                                    return AgeDonutChart(ageData: data);
-                                  }
-
-                                  return Center(
-                                      child: Text(LocalizationService
-                                          .translateFromGeneral(
-                                              'noDataForAgeDistribution')));
-                                },
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 24),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Row(
+                            children: [
+                              StatisticsCard(
+                                cardSubTitle:
+                                    '${data['trainees']} ${LocalizationService.translateFromGeneral('trainee')}',
+                                cardTitle:
+                                    LocalizationService.translateFromGeneral(
+                                        'trainees'),
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                height: 90,
+                                icon: Icons.people,
+                              ),
+                              const Spacer(),
+                              StatisticsCard(
+                                cardSubTitle:
+                                    '${data['trainees']} ${LocalizationService.translateFromGeneral('Trainee')}',
+                                cardTitle:
+                                    LocalizationService.translateFromGeneral(
+                                        'newTrainees'),
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                height: 90,
+                                icon: Icons.network_ping,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: StatisticsCard(
+                            cardSubTitle: '${data['income']} \$',
+                            cardTitle: LocalizationService.translateFromGeneral(
+                                'incomeThisMonth'),
+                            width: MediaQuery.of(context).size.width * 0.86,
+                            height: 90,
+                            icon: Icons.monetization_on,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.all(8),
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 24),
+                              decoration: const BoxDecoration(
+                                color: Palette.mainAppColorWhite,
+                              ),
+                              child: Text(
+                                LocalizationService.translateFromGeneral(
+                                    'ageDistribution'),
+                                style: AppStyles.textCairo(
+                                  14,
+                                  Palette.black.withOpacity(0.7),
+                                  FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+                            FutureBuilder<Map<String, int>>(
+                              future: ageDistributionData,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                }
+
+                                if (snapshot.hasError) {
+                                  return Center(
+                                      child: Text('Error: ${snapshot.error}'));
+                                }
+
+                                if (snapshot.hasData) {
+                                  Map<String, int> data = snapshot.data!;
+                                  return AgeDonutChart(ageData: data);
+                                }
+
+                                return Center(
+                                    child: Text(LocalizationService
+                                        .translateFromGeneral(
+                                            'noDataForAgeDistribution')));
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -417,15 +385,15 @@ class AgeDonutChart extends StatelessWidget {
           centerSpaceRadius: 30,
           sections: [
             PieChartSectionData(
-              color: Colors.blue,
+              color: Palette.blue,
               // value: ageData['18-25'] ?? 1,
               value: double.parse(ageData['18-25'].toString()),
               title: '18-25',
               radius: 50,
-              titleStyle: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+              titleStyle: AppStyles.textCairo(
+                12,
+                Palette.mainAppColorWhite,
+                FontWeight.bold,
               ),
             ),
             PieChartSectionData(
@@ -434,33 +402,33 @@ class AgeDonutChart extends StatelessWidget {
               value: double.parse(ageData['26-35'].toString()),
               title: '26-35',
               radius: 50,
-              titleStyle: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+              titleStyle: AppStyles.textCairo(
+                12,
+                Palette.mainAppColorWhite,
+                FontWeight.bold,
               ),
             ),
             PieChartSectionData(
-              color: Colors.orange,
+              color: Palette.mainAppColorOrange,
               // value: ageData['36-45'] ?? 1,
               value: double.parse(ageData['36-45'].toString()),
               title: '36-45',
               radius: 50,
-              titleStyle: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+              titleStyle: AppStyles.textCairo(
+                12,
+                Palette.mainAppColorWhite,
+                FontWeight.bold,
               ),
             ),
             PieChartSectionData(
-              color: Colors.red,
+              color: Palette.accentRed,
               value: double.parse(ageData['46+'].toString()),
               title: '46+',
               radius: 50,
-              titleStyle: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+              titleStyle: AppStyles.textCairo(
+                12,
+                Palette.mainAppColorWhite,
+                FontWeight.bold,
               ),
             ),
           ],

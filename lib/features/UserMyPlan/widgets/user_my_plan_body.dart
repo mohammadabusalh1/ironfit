@@ -2,14 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
-import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Button.dart';
+import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
 import 'package:ironfit/core/presentation/widgets/DaysTabBar.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
-import 'package:ironfit/core/routes/routes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 class UserMyPlanBody extends StatefulWidget {
   const UserMyPlanBody({super.key});
 
@@ -24,19 +24,12 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
   late Map<String, dynamic> plan;
 
   PreferencesService preferencesService = PreferencesService();
-  Future<void> _checkToken() async {
-    SharedPreferences prefs = await preferencesService.getPreferences();
-    String? token = prefs.getString('token');
-
-    if (token == null) {
-      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
-    }
-  }
+  TokenService tokenService = TokenService();
 
   @override
   void initState() {
     super.initState();
-    _checkToken();
+    tokenService.checkTokenAndNavigateSingIn();
     plan = {};
     _fetchPlan();
   }
@@ -72,104 +65,50 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
   Widget build(BuildContext context) {
     return SafeArea(
       top: true,
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(
-            child: SizedBox(
+      child: SizedBox(
+        width: double.infinity,
+        child: Column(
+          children: [
+            SizedBox(
               width: double.infinity,
-              child: Column(
+              child: Stack(
                 children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: Stack(
+                  const Align(
+                    alignment: AlignmentDirectional(0, -1),
+                    child: HeaderImage(),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                        24,
+                        MediaQuery.of(context).size.height * 0.08,
+                        24,
+                        MediaQuery.of(context).size.height * 0.08),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Align(
-                          alignment: const AlignmentDirectional(0, -1),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Stack(
-                              children: [
-                                Image.asset(
-                                  Assets.header,
-                                  width: double.infinity,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.2,
-                                  fit: BoxFit.cover,
-                                ),
-                                Container(
-                                  width: double.infinity,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.2,
-                                  color: Colors.black.withOpacity(
-                                      0.5), // Black filter with 50% opacity
-                                ),
-                              ],
+                        Opacity(
+                          opacity: 0.9,
+                          child: Text(
+                            LocalizationService.translateFromGeneral('my_plan'),
+                            style: AppStyles.textCairo(
+                              20,
+                              Palette.mainAppColorWhite,
+                              FontWeight.bold,
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(
-                              24,
-                              MediaQuery.of(context).size.height * 0.08,
-                              24,
-                              MediaQuery.of(context).size.height * 0.08),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Opacity(
-                                opacity: 0.9,
-                                child: Text(
-                                  LocalizationService.translateFromGeneral(
-                                      'my_plan'),
-                                  style: TextStyle(
-                                    fontFamily: 'Inter',
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w800,
-                                    shadows: [
-                                      Shadow(
-                                        color: Color(0xFF2F3336),
-                                        offset: Offset(4.0, 4.0),
-                                        blurRadius: 2.0,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Get.back();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF1C1503),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 8),
-                                  elevation: 0,
-                                ),
-                                child: const Icon(
-                                  Icons.arrow_right,
-                                  color: Color(0xFFFFBB02),
-                                  size: 24,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        const SizedBox(width: 12),
+                        ReturnBackButton(),
                       ],
                     ),
                   ),
-                  CustomTabBarWidget(plan: plan),
                 ],
               ),
             ),
-          ),
-        ],
+            CustomTabBarWidget(plan: plan),
+          ],
+        ),
       ),
     );
   }

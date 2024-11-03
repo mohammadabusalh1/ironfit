@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/coach_nav_bar_controller.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
 class CoachNavBar extends StatelessWidget {
@@ -87,12 +88,12 @@ class CoachNavBar extends StatelessWidget {
                             duration: const Duration(milliseconds: 300),
                             child: AnimatedDefaultTextStyle(
                               duration: const Duration(milliseconds: 300),
-                              style: TextStyle(
-                                color: isSelected
+                              style: AppStyles.textCairo(
+                                10,
+                                isSelected
                                     ? Palette.black.withOpacity(0.7)
                                     : Palette.mainAppColor.withOpacity(0.6),
-                                fontSize: isSelected ? 10 : 10,
-                                fontWeight: isSelected
+                                isSelected
                                     ? FontWeight.bold
                                     : FontWeight.normal,
                               ),

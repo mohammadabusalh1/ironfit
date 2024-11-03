@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:flutter/animation.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 
 class DashboardHeader extends StatelessWidget {
   final String backgroundImage; // Background image path.
@@ -67,7 +68,7 @@ class DashboardHeader extends StatelessWidget {
       scale: 1.1, // Scale animation on hover/tap
       duration: Duration(seconds: 1),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(50),
         child: Image.network(trainerImage,
             width: MediaQuery.of(context).size.width * 0.16,
             height: MediaQuery.of(context).size.height * 0.08,
@@ -136,10 +137,10 @@ class TrainerInfo extends StatelessWidget {
             trainerName.length > 12
                 ? '...' + trainerName.substring(0, 12)
                 : trainerName,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+            style: AppStyles.textCairo(
+              16,
+              Palette.mainAppColorWhite,
+              FontWeight.bold,
             ),
           ),
         ));
@@ -153,9 +154,10 @@ class TrainerInfo extends StatelessWidget {
         trainerEmail.length > 20
             ? '...' + trainerEmail.substring(0, 20)
             : trainerEmail,
-        style: const TextStyle(
-          color: Colors.grey,
-          fontSize: 12,
+        style: AppStyles.textCairo(
+          12,
+          Palette.gray,
+          FontWeight.w500,
         ),
       ),
     );

@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Button.dart';
+import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/editPlan/screens/edit_plan_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MyPlansBody extends StatefulWidget {
   const MyPlansBody({super.key});
@@ -26,19 +29,13 @@ class _MyPlansBodyState extends State<MyPlansBody> {
   bool isLoading = true;
 
   PreferencesService preferencesService = PreferencesService();
-  Future<void> _checkToken() async {
-    SharedPreferences prefs = await preferencesService.getPreferences();
-    String? token = prefs.getString('token');
-
-    if (token == null) {
-      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
-    }
-  }
+  TokenService tokenService = TokenService();
+  CustomSnackbar customSnackbar = CustomSnackbar();
 
   @override
   void initState() {
     super.initState();
-    _checkToken();
+    tokenService.checkTokenAndNavigateSingIn();
     getPlans();
   }
 
@@ -65,19 +62,16 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                   Navigator.of(context).pop(false); // User canceled
                 },
                 child: Text(LocalizationService.translateFromGeneral('cancel'),
-                    style: TextStyle(color: Palette.black)),
+                    style: AppStyles.textCairo(
+                        14, Palette.black, FontWeight.w500)),
               ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Palette.redDelete,
-                ),
+              BuildIconButton(
+                text: LocalizationService.translateFromGeneral(
+                    'cancelConfirmation'),
+                backgroundColor: Palette.redDelete,
                 onPressed: () {
                   Navigator.of(context).pop(true); // User confirmed
                 },
-                child: Text(
-                    LocalizationService.translateFromGeneral(
-                        'cancelConfirmation'),
-                    style: TextStyle(color: Palette.white)),
               ),
             ],
           );
@@ -91,11 +85,10 @@ class _MyPlansBodyState extends State<MyPlansBody> {
 
       // Check for null planId or current user
       if (planId.isEmpty || _auth.currentUser == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(LocalizationService.translateFromGeneral(
-                  'userNotLoggedInOrPlanIdMissing'))),
-        );
+        customSnackbar.showMessage(
+            context,
+            LocalizationService.translateFromGeneral(
+                'userNotLoggedInOrPlanIdMissing'));
         return;
       }
 
@@ -111,27 +104,18 @@ class _MyPlansBodyState extends State<MyPlansBody> {
           );
 
       // Notify the user of success
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(LocalizationService.translateFromGeneral(
-                'planDeletedSuccessfully'))),
-      );
+      customSnackbar.showMessage(context,
+          LocalizationService.translateFromGeneral('planDeletedSuccessfully'));
     } on FirebaseException catch (e) {
       // Handle Firebase-specific errors
       print('Firebase error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                ' ${LocalizationService.translateFromGeneral('firebaseErrorDeletingPlan')} ${e.message}')),
-      );
+      customSnackbar.showMessage(context,
+          '${LocalizationService.translateFromGeneral('firebaseErrorDeletingPlan')} ${e.message}');
     } catch (e) {
       // Handle other types of errors
       print('Unexpected error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                ' ${LocalizationService.translateFromGeneral('unexpectedErrorDeletingPlan')}')),
-      );
+      customSnackbar.showMessage(context,
+          '${LocalizationService.translateFromGeneral('unexpectedErrorDeletingPlan')}');
     }
   }
 
@@ -174,191 +158,129 @@ class _MyPlansBodyState extends State<MyPlansBody> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
-            child: SizedBox(
-                width: double.infinity,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: Stack(
-                          children: [
-                            HeaderImage(),
-                            Container(
-                              height: MediaQuery.of(context).size.height * 0.2,
-                              padding: EdgeInsets.symmetric(horizontal: 24),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Get.back();
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF1C1503),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8),
-                                    ),
-                                    child: const Icon(
-                                      Icons.arrow_left,
-                                      color: Color(0xFFFFBB02),
-                                      size: 24,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Opacity(
-                                    opacity: 0.8,
-                                    child: Text(
-                                      LocalizationService.translateFromGeneral(
-                                          'myPrograms'),
-                                      style: const TextStyle(
-                                        fontFamily: 'Inter',
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w800,
-                                        shadows: [
-                                          Shadow(
-                                            color: Color(0xFF2F3336),
-                                            offset: Offset(4.0, 4.0),
-                                            blurRadius: 2.0,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Get.toNamed(Routes.createPlan);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  fixedSize: Size(double.infinity, 50),
-                                  backgroundColor: const Color(0xFFFFBB02),
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 15, 0, 15),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                ),
-                                child: const Center(
-                                  // Centering the icon
-                                  child: Icon(
-                                    Icons.add,
-                                    size: 22,
-                                    color: Color(0xFF1C1503),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              flex: 1,
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  toggleDateSort();
-                                },
-                                icon: Icon(
-                                  isDateSortUp
-                                      ? Icons.north_outlined
-                                      : Icons.south_outlined,
-                                  size: 15,
-                                  color: Color(0xFF1C1503),
-                                ),
-                                label: Text(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: Stack(
+                      children: [
+                        HeaderImage(),
+                        Container(
+                          height: MediaQuery.of(context).size.height * 0.2,
+                          padding: EdgeInsets.symmetric(horizontal: 24),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              ReturnBackButton(),
+                              const SizedBox(width: 12),
+                              Opacity(
+                                opacity: 0.8,
+                                child: Text(
                                   LocalizationService.translateFromGeneral(
-                                      'date'),
-                                  style: const TextStyle(
-                                    fontFamily: 'Inter',
-                                    color: Color(0xFF1C1503),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  fixedSize: Size(double.infinity, 50),
-                                  backgroundColor: Colors.white,
-                                  padding: const EdgeInsets.fromLTRB(
-                                      0, 15, 0, 15), // Remove padding
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
+                                      'myPrograms'),
+                                  style: AppStyles.textCairo(
+                                    20,
+                                    Palette.mainAppColorWhite,
+                                    FontWeight.bold,
                                   ),
                                 ),
                               ),
-                            ), // Space between buttons
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      isLoading
-                          ? Center(
-                              child: CircularProgressIndicator(), // Show loader
-                            )
-                          : Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  24, 0, 24, 0),
-                              child: ListView(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                children:
-                                    plans.map((DocumentSnapshot document) {
-                                  // 5. Check that the document data is not null.
-                                  Map<String, dynamic>? data =
-                                      document.data() as Map<String, dynamic>?;
-
-                                  if (data == null) {
-                                    return const Text(
-                                        'Error: Invalid plan data'); // Handle null data.
-                                  }
-
-                                  // 6. Fallbacks for null fields.
-                                  String title = data['name'] ??
-                                      LocalizationService.translateFromGeneral(
-                                          'noTitle'); // Provide default values if null.
-                                  String description = data['description'] ??
-                                      LocalizationService.translateFromGeneral(
-                                          'noDescription'); // Provide default values if null.
-
-                                  return CustomCard(
-                                    onPressedEdit: () {
-                                      Get.to(Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: EditPlanScreen(
-                                              planId: document.id)));
-                                    },
-                                    title: title, // Use non-nullable strings.
-                                    description:
-                                        description, // Use non-nullable strings.
-                                    icon: Icons.arrow_back,
-                                    onPressed: () {
-                                      deletePlan(context, document.id);
-                                    },
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-                      const SizedBox(height: 24),
-                    ],
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                )),
+                  const SizedBox(height: 24),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: BuildIconButton(
+                            onPressed: () {
+                              Get.toNamed(Routes.createPlan);
+                            },
+                            iconSize: 20,
+                            icon: Icons.add,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          flex: 1,
+                          child: BuildIconButton(
+                            onPressed: () {
+                              toggleDateSort();
+                            },
+                            iconSize: 18,
+                            icon: isDateSortUp
+                                ? Icons.north_outlined
+                                : Icons.south_outlined,
+                            text: LocalizationService.translateFromGeneral(
+                                'date'),
+                            backgroundColor: Palette.mainAppColorWhite,
+                            textColor: Palette.black,
+                          ),
+                        ), // Space between buttons
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  isLoading
+                      ? Center(
+                          child: CircularProgressIndicator(), // Show loader
+                        )
+                      : Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              24, 0, 24, 0),
+                          child: ListView(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: plans.map((DocumentSnapshot document) {
+                              // 5. Check that the document data is not null.
+                              Map<String, dynamic>? data =
+                                  document.data() as Map<String, dynamic>?;
+
+                              if (data == null) {
+                                return const Text(
+                                    'Error: Invalid plan data'); // Handle null data.
+                              }
+
+                              // 6. Fallbacks for null fields.
+                              String title = data['name'] ??
+                                  LocalizationService.translateFromGeneral(
+                                      'noTitle'); // Provide default values if null.
+                              String description = data['description'] ??
+                                  LocalizationService.translateFromGeneral(
+                                      'noDescription'); // Provide default values if null.
+
+                              return CustomCard(
+                                onPressedEdit: () {
+                                  Get.to(Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child:
+                                          EditPlanScreen(planId: document.id)));
+                                },
+                                title: title, // Use non-nullable strings.
+                                description:
+                                    description, // Use non-nullable strings.
+                                icon: Icons.arrow_back,
+                                onPressed: () {
+                                  deletePlan(context, document.id);
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -366,7 +288,6 @@ class _MyPlansBodyState extends State<MyPlansBody> {
   }
 }
 
-// Reusable Card Component
 class CustomCard extends StatelessWidget {
   final String title;
   final String description;
@@ -417,19 +338,18 @@ class CustomCard extends StatelessWidget {
                             children: [
                               Text(
                                 title,
-                                style: const TextStyle(
-                                  fontFamily: 'Inter',
-                                  color: Color(0xFFFFBB02),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
+                                style: AppStyles.textCairo(
+                                  14,
+                                  Palette.mainAppColor,
+                                  FontWeight.bold,
                                 ),
                               ),
                               Text(
                                 description,
-                                style: const TextStyle(
-                                  fontFamily: 'Inter',
-                                  color: Color(0x93FFFFFF),
-                                  fontSize: 10,
+                                style: AppStyles.textCairo(
+                                  10,
+                                  Palette.gray,
+                                  FontWeight.w400,
                                 ),
                               ),
                             ],
@@ -443,14 +363,14 @@ class CustomCard extends StatelessWidget {
                         IconButton(
                           icon: const Icon(
                             Icons.remove_circle,
-                            color: Colors.red,
+                            color: Palette.redDelete,
                             size: 24,
                           ),
                           onPressed: onPressed,
                         ),
                         const Icon(
                           Icons.arrow_forward,
-                          color: Colors.white,
+                          color: Palette.mainAppColorWhite,
                           size: 24,
                         ),
                       ],

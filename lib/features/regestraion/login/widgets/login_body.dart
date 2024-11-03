@@ -8,7 +8,9 @@ import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Button.dart';
+import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildHeaderImages.dart';
@@ -29,26 +31,12 @@ class _LoginBodyState extends State<LoginBody> {
   bool isCoach = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   PreferencesService preferencesService = PreferencesService();
+  TokenService tokenService = TokenService();
+  CustomSnackbar customSnackbar = CustomSnackbar();
 
   @override
   void initState() {
     super.initState();
-    _checkToken();
-  }
-
-  Future<void> _checkToken() async {
-    SharedPreferences prefs = await preferencesService.getPreferences();
-    String? token = prefs.getString('token');
-
-    if (token != null) {
-      bool isCoach = prefs.getBool('isCoach') ?? false;
-      // If the token exists, navigate to the respective dashboard
-      if (isCoach) {
-        Get.toNamed(Routes.coachDashboard); // Navigate to coach dashboard
-      } else {
-        Get.toNamed(Routes.trainerDashboard); // Navigate to trainer dashboard
-      }
-    }
   }
 
   Future<void> signInWithGoogle() async {
@@ -174,7 +162,8 @@ class _LoginBodyState extends State<LoginBody> {
               // Navigate to coach dashboard
               Get.toNamed(Routes.coachDashboard);
             } else {
-              throw Exception('المستخدم غير موجود');
+              throw Exception(LocalizationService.translateFromGeneral(
+                  'userNotLoggedInOrPlanIdMissing'));
             }
           }
         } else if (!isCoach) {
@@ -191,29 +180,14 @@ class _LoginBodyState extends State<LoginBody> {
               prefs.setBool('isCoach', false);
               Get.toNamed(Routes.trainerDashboard);
             } else {
-              throw Exception('المستخدم غير موجود');
+              throw Exception(LocalizationService.translateFromGeneral(
+                  'userNotLoggedInOrPlanIdMissing'));
             }
           }
         }
       } catch (e) {
-        // stop loading indicator
         Get.back();
-
-        // Handle sign-in error
-        Get.snackbar('خطأ', 'يتعذر تسجيل الدخول',
-            snackPosition: SnackPosition.BOTTOM,
-            colorText: Palette.white,
-            margin: const EdgeInsets.all(10),
-            titleText: const Text(
-              textDirection: TextDirection.rtl,
-              'يتعذر تسجيل الدخول',
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-            messageText: const Text(
-              'الأيميل او كلمة المرور غير صحيحة',
-              style: TextStyle(color: Colors.white),
-              textDirection: TextDirection.rtl,
-            ));
+        customSnackbar.showMessage(context, 'loginFailed');
       }
     }
   }
@@ -258,24 +232,7 @@ class _LoginBodyState extends State<LoginBody> {
                         try {
                           await signInWithGoogle();
                         } catch (e) {
-                          Get.snackbar(
-                            'فشل',
-                            'يتعذر تسجيل الدخول باستخدام Google',
-                            titleText: const Text(
-                              'فشل',
-                              textAlign: TextAlign.right,
-                              textDirection: TextDirection.rtl,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            messageText: const Text(
-                              'يتعذر تسجيل الدخول باستخدام Google',
-                              textAlign: TextAlign.right,
-                              textDirection: TextDirection.rtl,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            snackPosition: SnackPosition.BOTTOM,
-                            colorText: Colors.white,
-                          );
+                          customSnackbar.showFailureMessage(context);
                         }
                       },
                       backgroundColor: Palette.mainAppColorWhite,
@@ -305,8 +262,8 @@ class _LoginBodyState extends State<LoginBody> {
       decoration: InputDecoration(
         labelText: LocalizationService.translateFromGeneral('email'),
         hintText: 'abc@gmail.com',
-        hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
-        labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
+        hintStyle: AppStyles.textCairo(14, Palette.gray, FontWeight.w500),
+        labelStyle: AppStyles.textCairo(14, Palette.gray, FontWeight.w500),
         filled: true,
         fillColor: Palette.secondaryColor,
         enabledBorder: OutlineInputBorder(
@@ -326,15 +283,16 @@ class _LoginBodyState extends State<LoginBody> {
           ),
         ),
       ),
-      style: const TextStyle(color: Colors.white, fontSize: 14),
+      style:
+          AppStyles.textCairo(14, Palette.mainAppColorWhite, FontWeight.w500),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'لا يمكنك ترك الحقل فارغ';
+          return LocalizationService.translateFromGeneral('thisFieldRequired');
         }
         if (!RegExp(
                 r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
             .hasMatch(value)) {
-          return 'الإيميل غير صالح';
+          return LocalizationService.translateFromGeneral('invalidEmail');
         }
         return null;
       },
@@ -348,8 +306,8 @@ class _LoginBodyState extends State<LoginBody> {
       decoration: InputDecoration(
         labelText: LocalizationService.translateFromGeneral('password'),
         hintText: '**',
-        hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
-        labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
+        hintStyle: AppStyles.textCairo(14, Palette.gray, FontWeight.w500),
+        labelStyle: AppStyles.textCairo(14, Palette.gray, FontWeight.w500),
         filled: true,
         fillColor: Palette.secondaryColor,
         enabledBorder: OutlineInputBorder(
@@ -378,13 +336,13 @@ class _LoginBodyState extends State<LoginBody> {
           ),
         ),
       ),
-      style: const TextStyle(color: Colors.white, fontSize: 14),
+      style: AppStyles.textCairo(14, Palette.white, FontWeight.w500),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'لا يمكنك ترك الحقل فارغ';
+          return LocalizationService.translateFromGeneral('thisFieldRequired');
         }
         if (value.length < 6) {
-          return 'كلمة المرور قصيرة جداً';
+          return LocalizationService.translateFromGeneral('newPasswordError2');
         }
         return null;
       },
@@ -463,14 +421,16 @@ class _LoginTextWidgetState extends State<LoginTextWidget>
         children: [
           Text(
             LocalizationService.translateFromGeneral('no_account') + " ",
-            style: TextStyle(color: Colors.white, fontSize: 14),
+            style: AppStyles.textCairo(
+                14, Palette.mainAppColorWhite, FontWeight.w500),
           ),
           const SizedBox(width: 4),
           InkWell(
             onTap: () => Get.toNamed(Routes.singUp), // Use your desired route
             child: Text(
               LocalizationService.translateFromGeneral('create_account'),
-              style: TextStyle(color: Color(0xFFFFBB02), fontSize: 14),
+              style: AppStyles.textCairo(
+                  14, Palette.mainAppColor, FontWeight.w500),
             ),
           ),
         ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
-import 'package:ironfit/core/presentation/widgets/custom_text_widget.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 
 class CardWidget extends StatelessWidget {
   final String subtitle;
@@ -47,19 +47,29 @@ class CardWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.max, // Align content to the right
               children: [
-                CustomTextWidget(
-                    text: subtitle,
-                    color: Palette.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
+                Text(
+                  textAlign: TextAlign.start,
+                  subtitle,
+                  style: AppStyles.textCairo(
+                    16,
+                    Palette.mainAppColorWhite,
+                    FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                CustomTextWidget(
-                    text: description,
-                    color: Palette.suffixColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400),
+                Text(
+                  textAlign: TextAlign.start,
+                  description,
+                  style: AppStyles.textCairo(
+                    12,
+                    Palette.subTitleGrey,
+                    FontWeight.w400,
+                  ),
+                ),
                 const SizedBox(height: 24),
               ],
             ),

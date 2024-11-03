@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 
 class StatisticsCard extends StatefulWidget {
   final String cardSubTitle;
@@ -73,13 +74,14 @@ class _StatisticsCardState extends State<StatisticsCard> {
             children: [
               Icon(icon, size: 16, color: Palette.white.withOpacity(0.7)),
               const SizedBox(width: 4),
-              _buildCardText(widget.cardTitle, 10, FontWeight.w800, Palette.white.withOpacity(0.7)),
+              _buildCardText(widget.cardTitle, 10, FontWeight.w800,
+                  Palette.white.withOpacity(0.7)),
             ],
           ),
           const SizedBox(height: 12),
           Center(
             child: _buildCardText(
-              widget.cardSubTitle, 14, FontWeight.w600, Palette.mainAppColor),
+                widget.cardSubTitle, 14, FontWeight.w600, Palette.mainAppColor),
           )
         ],
       ),
@@ -92,11 +94,10 @@ class _StatisticsCardState extends State<StatisticsCard> {
     return Text(
       text,
       textAlign: TextAlign.center,
-      style: TextStyle(
-        fontSize: fontSize,
-        color: color,
-        fontWeight: fontWeight,
-        letterSpacing: 0.5,
+      style: AppStyles.textCairo(
+        fontSize,
+        color,
+        fontWeight,
       ),
     );
   }

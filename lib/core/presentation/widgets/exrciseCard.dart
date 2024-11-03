@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ExrciseCard extends StatefulWidget {
@@ -92,10 +93,10 @@ class _ExrciseCardState extends State<ExrciseCard> {
             widget.title.length > 16
                 ? '...' + widget.title.substring(0, 16)
                 : widget.title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              color: Colors.white,
+            style: AppStyles.textCairo(
+              12,
+              Palette.mainAppColorWhite,
+              FontWeight.bold,
             ),
           ), // Space between text and icon row
           SizedBox(height: 4),
@@ -128,9 +129,10 @@ class _ExrciseCardState extends State<ExrciseCard> {
         SizedBox(width: 4), // Space between icon and text
         Text(
           text,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 10,
+          style: AppStyles.textCairo(
+            10,
+            Palette.mainAppColorWhite,
+            FontWeight.w500,
           ),
         ),
       ],

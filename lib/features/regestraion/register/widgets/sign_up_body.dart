@@ -7,7 +7,9 @@ import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Button.dart';
+import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildHeaderImages.dart';
@@ -34,26 +36,13 @@ class _SignUpBodyState extends State<SignUpBody> {
 
   // Firebase Auth instance
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  TokenService tokenService = TokenService();
+  CustomSnackbar customSnackbar = CustomSnackbar();
 
   @override
   void initState() {
     super.initState();
-    _checkToken();
-  }
-
-  Future<void> _checkToken() async {
-    SharedPreferences prefs = await preferencesService.getPreferences();
-    String? token = prefs.getString('token');
-
-    if (token != null) {
-      bool isCoach = prefs.getBool('isCoach') ?? false;
-      // If the token exists, navigate to the respective dashboard
-      if (isCoach) {
-        Get.toNamed(Routes.coachDashboard); // Navigate to coach dashboard
-      } else {
-        Get.toNamed(Routes.trainerDashboard); // Navigate to trainer dashboard
-      }
-    }
+    tokenService.checkTokenAndNavigateDashboard();
   }
 
   // Method to save coach data
@@ -162,23 +151,7 @@ class _SignUpBodyState extends State<SignUpBody> {
         }
       } catch (e) {
         Navigator.pop(context);
-
-        // Handle errors
-        Get.snackbar(LocalizationService.translateFromGeneral('error'),
-            LocalizationService.translateFromGeneral('accountCreationError'),
-            snackPosition: SnackPosition.BOTTOM,
-            colorText: Palette.white,
-            margin: EdgeInsets.all(10),
-            titleText: Text(
-              textDirection: TextDirection.rtl,
-              LocalizationService.translateFromGeneral('accountCreationError'),
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-            messageText: Text(
-              LocalizationService.translateFromGeneral('accountExist'),
-              style: const TextStyle(color: Colors.white),
-              textDirection: TextDirection.rtl,
-            ));
+        customSnackbar.showFailureMessage(context);
       }
     }
   }
@@ -277,20 +250,20 @@ class _SignUpBodyState extends State<SignUpBody> {
   // Input Validation Method
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
-      return 'لا يمكنك ترك هذا الحقل فارغاً';
+      return LocalizationService.translateFromGeneral('thisFieldRequired');
     }
     if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-      return 'البريد الإلكتروني غير صالح';
+      return LocalizationService.translateFromGeneral('invalidEmail');
     }
     return null;
   }
 
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'لا يمكنك ترك هذا الحقل فارغاً';
+      return LocalizationService.translateFromGeneral('thisFieldRequired');
     }
     if (value.length < 6) {
-      return 'كلمة المرور قصيرة جداً';
+      return LocalizationService.translateFromGeneral('newPasswordError2');
     }
     return null;
   }
@@ -344,14 +317,16 @@ class _SignUpBodyState extends State<SignUpBody> {
                                     'error'),
                                 textAlign: TextAlign.right,
                                 textDirection: TextDirection.rtl,
-                                style: TextStyle(color: Colors.white),
+                                style: AppStyles.textCairo(14,
+                                    Palette.mainAppColorWhite, FontWeight.w500),
                               ),
                               messageText: Text(
                                 LocalizationService.translateFromGeneral(
                                     'googleLoginFailure'),
                                 textAlign: TextAlign.right,
                                 textDirection: TextDirection.rtl,
-                                style: TextStyle(color: Colors.white),
+                                style: AppStyles.textCairo(14,
+                                    Palette.mainAppColorWhite, FontWeight.w500),
                               ),
                               snackPosition: SnackPosition.BOTTOM,
                               colorText: Colors.white,
@@ -384,8 +359,8 @@ class _SignUpBodyState extends State<SignUpBody> {
       decoration: InputDecoration(
         labelText: LocalizationService.translateFromGeneral('email'),
         hintText: 'abc@gmail.com',
-        hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
-        labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
+        hintStyle: AppStyles.textCairo(14, Palette.gray, FontWeight.w500),
+        labelStyle: AppStyles.textCairo(14, Palette.gray, FontWeight.w500),
         filled: true,
         fillColor: const Color(0xFF454038),
         enabledBorder: OutlineInputBorder(
@@ -405,7 +380,8 @@ class _SignUpBodyState extends State<SignUpBody> {
           ),
         ),
       ),
-      style: const TextStyle(color: Colors.white, fontSize: 14),
+      style:
+          AppStyles.textCairo(14, Palette.mainAppColorWhite, FontWeight.w500),
       validator: _validateEmail,
     );
   }
@@ -417,8 +393,8 @@ class _SignUpBodyState extends State<SignUpBody> {
       decoration: InputDecoration(
         labelText: LocalizationService.translateFromGeneral('password'),
         hintText: '**',
-        hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
-        labelStyle: const TextStyle(color: Palette.gray, fontSize: 14),
+        hintStyle: AppStyles.textCairo(14, Palette.gray, FontWeight.w500),
+        labelStyle: AppStyles.textCairo(14, Palette.gray, FontWeight.w500),
         filled: true,
         fillColor: const Color(0xFF454038),
         enabledBorder: OutlineInputBorder(
@@ -449,7 +425,8 @@ class _SignUpBodyState extends State<SignUpBody> {
           ),
         ),
       ),
-      style: const TextStyle(color: Colors.white, fontSize: 14),
+      style:
+          AppStyles.textCairo(14, Palette.mainAppColorWhite, FontWeight.w500),
       validator: _validatePassword,
     );
   }
@@ -482,7 +459,8 @@ class _SignUpBodyState extends State<SignUpBody> {
       children: [
         Text(
           LocalizationService.translateFromGeneral('already_have_account'),
-          style: TextStyle(color: Colors.white, fontSize: 14),
+          style: AppStyles.textCairo(
+              14, Palette.mainAppColorWhite, FontWeight.w500),
         ),
         TextButton(
           onPressed: () {
@@ -490,7 +468,8 @@ class _SignUpBodyState extends State<SignUpBody> {
           },
           child: Text(
             LocalizationService.translateFromGeneral('login'),
-            style: TextStyle(color: Palette.mainAppColor, fontSize: 14),
+            style:
+                AppStyles.textCairo(14, Palette.mainAppColor, FontWeight.w500),
           ),
         ),
       ],

@@ -121,8 +121,8 @@
   "deletePlanConfirmation": "Are you sure you want to delete the plan?",
   "userNotLoggedInOrPlanIdMissing": "User not logged in or plan ID missing",
   "planDeletedSuccessfully": "Plan deleted successfully",
-  "firebaseErrorDeletingPlan": "An error occurred while deleting the plan: ",
-  "unexpectedErrorDeletingPlan": "An unexpected error occurred while deleting the plan",
+  "firebaseErrorDeletingPlan": "An error occurred while deleting the plan, please try again",
+  "unexpectedErrorDeletingPlan": "An unexpected error occurred while deleting the plan, please try again",
   "addPlan": "Add Plan",
   "pleaseFillRequiredData": "Please fill in the required data",
   "yourPlans": "Your Plans",
@@ -222,5 +222,23 @@
     "doesNotExist": "Does not exist"
   },
   "thisFieldRequired": "This field is required",
-  "NoFieldsToUpdate": "No fields to update"
+  "NoFieldsToUpdate": "No fields to update",
+  "enterPlanName": "Please enter the plan name",
+  "enterPlanDescription": "Please enter the plan description",
+  "addAtLeastOneTrainingDay": "Please add at least one training day",
+  "addAtLeastOneExercisePerTrainingDay": "Please add at least one exercise for each training day",
+  "planNameExists": "Plan name already exists. Please choose another name",
+  "loginFailed": "Unable to log in",
+  "invalidEmail": "Invalid email",
+  "cancelSubscriptionIsStarted": "Cancelling subscription...",
+  "subscriptionCancelled": "Subscription successfully cancelled",
+  "noSubscriptionWithName": "No subscription found with this name",
+  "networkConnectionFailed": "Network connection failed. Please check your internet connection",
+  "cancellationCompleted": "Cancellation completed",
+  "planNotFound": "Plan not found",
+  "traineeNotFound": "Trainee not found",
+  "modifyDebts": "Modify debts",
+  "addIncrementOrDecrementNegative": "Add increment or decrement with a negative value",
+  "amount": "Amount"
+
 }

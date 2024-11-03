@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/CarouselItem.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
 class ExerciseCarousel extends StatelessWidget {
@@ -19,11 +21,8 @@ class ExerciseCarousel extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           LocalizationService.translateFromGeneral('noExercisesAvailable'),
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppStyles.textCairo(
+              16, Palette.mainAppColorWhite, FontWeight.bold),
         ),
       );
     }

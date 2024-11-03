@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
 import 'package:ironfit/core/presentation/widgets/PagesHeader.dart';
 import 'package:ironfit/core/presentation/widgets/StatisticsCard.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
@@ -10,11 +11,10 @@ import 'package:ironfit/features/dashboard/widgets/card_widget.dart';
 import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 bool isDataLoaded = false;
-String fullName = 'إسم المستخد';
-String email = 'لا يوجد بيانات';
+String fullName = LocalizationService.translateFromGeneral('noData');
+String email = LocalizationService.translateFromGeneral('noData');
 String imageUrl =
     'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
 Map<String, dynamic> data = {
@@ -36,21 +36,14 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   String coachId = FirebaseAuth.instance.currentUser!.uid;
 
   PreferencesService preferencesService = PreferencesService();
-  Future<void> _checkToken() async {
-    SharedPreferences prefs = await preferencesService.getPreferences();
-    String? token = prefs.getString('token');
-
-    if (token == null) {
-      Get.toNamed(Routes.singIn); // Navigate to coach dashboard
-    }
-  }
+  TokenService tokenService = TokenService();
 
   @override
   void initState() {
     super.initState();
+    tokenService.checkTokenAndNavigateSingIn();
     fetchStatisticsData();
     if (!isDataLoaded) {
-      _checkToken();
       fetchUserName();
       setState(() {
         isDataLoaded = true;
@@ -122,25 +115,31 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   }
 
   Future<void> fetchUserName() async {
-    // Get user data from Firestore
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection(
-            'coaches') // or 'coaches', depending on where you store user data
-        .doc(coachId)
-        .get();
+    try {
+      // Get user data from Firestore
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('coaches')
+          .doc(coachId)
+          .get();
 
-    if (userDoc.exists) {
-      String? firstName = userDoc['firstName'];
-      String? lastName = userDoc['lastName'];
+      if (userDoc.exists) {
+        String? firstName = userDoc['firstName'];
+        String? lastName = userDoc['lastName'];
 
-      setState(() {
-        fullName = '$firstName $lastName';
-        email = userDoc['email'];
-        imageUrl = userDoc['profileImageUrl'];
-      });
-    } else {
-      print("User data not found");
-      return null;
+        setState(() {
+          fullName = '$firstName $lastName';
+          email = userDoc['email'];
+          imageUrl = userDoc['profileImageUrl'];
+        });
+      } else {
+        // Handle case where user data is not found
+        print("User data not found for coach ID: $coachId");
+        // Consider throwing an exception or returning an error status here
+      }
+    } catch (e) {
+      // Handle any errors that occur during the Firestore operation
+      print("Error fetching user data: $e");
+      // Consider throwing an exception or returning an error status here
     }
   }
 
@@ -148,7 +147,12 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _buildDashboardHeader(),
+        DashboardHeader(
+          backgroundImage: Assets.dashboardBackground, // Background image path
+          trainerImage: imageUrl, // Trainer image path
+          trainerName: fullName, // Trainer's name
+          trainerEmail: email, // Trainer's email
+        ),
         const SizedBox(height: 24),
         Container(
           height: MediaQuery.of(context).size.height * 0.63,
@@ -158,7 +162,7 @@ class CoachDashboardState extends State<CoachDashboardBody> {
               children: [
                 _buildStatisticsRow(context, data),
                 const SizedBox(height: 24),
-                _buildCardWidget(
+                CardWidget(
                   onTap: () => Get.toNamed(Routes.myGyms),
                   subtitle: LocalizationService.translateFromGeneral('myGyms'),
                   imagePath: Assets.myGymImage,
@@ -166,7 +170,7 @@ class CoachDashboardState extends State<CoachDashboardBody> {
                       LocalizationService.translateFromGeneral('addGymInfo'),
                 ),
                 const SizedBox(height: 24),
-                _buildCardWidget(
+                CardWidget(
                   onTap: () => Get.toNamed(Routes.trainees),
                   subtitle:
                       LocalizationService.translateFromGeneral('trainees'),
@@ -183,55 +187,24 @@ class CoachDashboardState extends State<CoachDashboardBody> {
     );
   }
 
-  Widget _buildDashboardHeader() {
-    return DashboardHeader(
-      backgroundImage: Assets.dashboardBackground, // Background image path
-      trainerImage: imageUrl, // Trainer image path
-      trainerName: fullName, // Trainer's name
-      trainerEmail: email, // Trainer's email
-    );
-  }
-
   Widget _buildStatisticsRow(BuildContext context, Map<String, dynamic> data) {
     return Row(
       children: [
-        _buildStatisticsCard(
-            "${data['trainees']} ${LocalizationService.translateFromGeneral('trainee')}",
-            LocalizationService.translateFromGeneral('trainees'),
-            context,
-            Icons.person_outline),
+        StatisticsCard(
+            cardSubTitle:
+                "${data['trainees']} ${LocalizationService.translateFromGeneral('trainee')}",
+            cardTitle: LocalizationService.translateFromGeneral('trainees'),
+            width: MediaQuery.of(context).size.width * 0.4,
+            height: 90,
+            icon: Icons.person_outline),
         const Spacer(), // Adjusted for consistent spacing
-        _buildStatisticsCard(
-            data['subscriptions'].toString() + "+%",
-            LocalizationService.translateFromGeneral('subscription'),
-            context,
-            Icons.percent_outlined),
+        StatisticsCard(
+            cardSubTitle: data['subscriptions'].toString() + "+%",
+            cardTitle: LocalizationService.translateFromGeneral('subscription'),
+            width: MediaQuery.of(context).size.width * 0.4,
+            height: 90,
+            icon: Icons.percent_outlined),
       ],
-    );
-  }
-
-  Widget _buildStatisticsCard(
-      String subTitle, String title, BuildContext context, IconData icon) {
-    return StatisticsCard(
-      cardSubTitle: subTitle,
-      cardTitle: title,
-      width: MediaQuery.of(context).size.width * 0.4,
-      height: 90,
-      icon: icon,
-    );
-  }
-
-  Widget _buildCardWidget({
-    required void Function() onTap,
-    required String subtitle,
-    required String imagePath,
-    required String description,
-  }) {
-    return CardWidget(
-      onTap: onTap,
-      subtitle: subtitle,
-      imagePath: imagePath,
-      description: description,
     );
   }
 }

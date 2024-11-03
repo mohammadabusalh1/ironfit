@@ -84,9 +84,9 @@ class MyApp extends StatelessWidget {
         prefs.getBool('hasSeenPreLoginScreen') ?? false;
 
     if (hasSeenPreLoginScreen) {
-      return Routes.coachDashboard; // Direct to the login screen
+      return Routes.singIn; // Direct to the login screen
     } else {
-      return Routes.coachDashboard; // Direct to the pre-login screen
+      return Routes.selectLanguage; // Direct to the pre-login screen
     }
   }
 

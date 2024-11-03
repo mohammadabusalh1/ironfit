@@ -37,6 +37,7 @@ class _LoginBodyState extends State<LoginBody> {
   @override
   void initState() {
     super.initState();
+    tokenService.checkTokenAndNavigateDashboard();
   }
 
   Future<void> signInWithGoogle() async {

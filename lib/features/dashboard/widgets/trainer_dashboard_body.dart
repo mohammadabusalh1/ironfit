@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
@@ -10,8 +9,6 @@ import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/exersiceCarousel.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
-import 'package:ironfit/core/routes/routes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 String trainerName = '';
 String trainerEmail = '';
@@ -125,7 +122,6 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
             return <String,
                 String>{}; // Return an empty map if the structure doesn't match
           }).toList();
-          print(exercises);
         });
       } else {
         print("Error: Expected a list of exercises but got something else.");

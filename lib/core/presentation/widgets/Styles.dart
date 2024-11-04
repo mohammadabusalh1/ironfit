@@ -9,13 +9,7 @@ class AppStyles {
       fontSize: fontSize,
       fontWeight: fontWeight,
       height: 1.6,
-      // shadows: [
-      //   Shadow(
-      //     color: Color(0xFF1B1B1B),
-      //     offset: Offset(4.0, 4.0),
-      //     blurRadius: 4.0,
-      //   ),
-      // ],
+      letterSpacing: 0.5,
     );
   }
 

@@ -24,6 +24,7 @@ final ThemeData customThemeData = ThemeData.dark().copyWith(
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
     fillColor: Palette.secondaryColor,
+    alignLabelWithHint: true,
     labelStyle: AppStyles.textCairo(14, Palette.gray, FontWeight.w500),
     enabledBorder: const OutlineInputBorder(
       borderSide: BorderSide(color: Colors.transparent),

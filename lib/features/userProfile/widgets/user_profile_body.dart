@@ -519,7 +519,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
               child: Text(
                 "${LocalizationService.translateFromGeneral('daysRemaining')} $numberOfDays ${LocalizationService.translateFromGeneral('days')}",
                 style: AppStyles.textCairo(
-                  20,
+                  14,
                   Palette.subTitleGrey,
                   FontWeight.w300,
                 ),

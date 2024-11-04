@@ -47,14 +47,14 @@ class CoachNavBar extends StatelessWidget {
       bool isSelected = navController.selectedIndex.value == index;
 
       return SizedBox(
-        width: isSelected ? Get.width * 0.29 : Get.width * 0.16,
+        width: isSelected ? Get.width * 0.33 : Get.width * 0.15,
         height: Get.height * 0.09,
         child: InkWell(
           onTap: () {
             navController.updateIndex(index);
           },
           child: Container(
-            width: isSelected ? Get.width * 0.29 : Get.width * 0.16,
+            width: isSelected ? Get.width * 0.33 : Get.width * 0.15,
             height: Get.height * 0.09,
             child: AnimatedContainer(
               duration: const Duration(
@@ -79,7 +79,7 @@ class CoachNavBar extends StatelessWidget {
                             color: isSelected
                                 ? Palette.black.withOpacity(0.7)
                                 : Palette.black.withOpacity(0.4),
-                            size: 24,
+                            size: 22,
                           ),
                           const SizedBox(width: 4),
                           // Fade effect for text.

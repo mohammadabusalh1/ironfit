@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -5,17 +7,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Button.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserEnterInfoBody extends StatefulWidget {
-  UserEnterInfoBody({Key? key}) : super(key: key);
+  Function registerUser;
+  UserEnterInfoBody({Key? key, required this.registerUser}) : super(key: key);
 
   @override
   _UserEnterInfoBodyState createState() => _UserEnterInfoBodyState();
@@ -23,10 +30,7 @@ class UserEnterInfoBody extends StatefulWidget {
 
 class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
   final _formKey = GlobalKey<FormState>();
-  String? _uploadedImageUrl;
   int stage = 1;
-  String userId = FirebaseAuth.instance.currentUser!.uid;
-
   // Controllers for the form fields
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
@@ -42,6 +46,8 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
   ];
 
   TokenService tokenService = TokenService();
+  CustomSnackbar customSnackbar = CustomSnackbar();
+  late File _selectedImage;
 
   @override
   void initState() {
@@ -62,6 +68,50 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
     }
   }
 
+  Future<bool> _checkIfUsernameExists(String username) async {
+    try {
+      // Example query to check if the username exists in Firestore
+      var snapshot = await FirebaseFirestore.instance
+          .collection('trainees')
+          .where('username', isEqualTo: username)
+          .get();
+
+      // If snapshot contains documents, username exists
+      return snapshot.docs.isNotEmpty;
+    } catch (e) {
+      customSnackbar.showFailureMessage(context);
+      return false;
+    }
+  }
+
+  Future<String> _uploadImage(String userId) async {
+    if (_selectedImage == null) {
+      return ''; // Exit early if no image is selected
+    }
+
+    try {
+      final storageRef =
+          FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
+
+      // Upload the image file
+      await storageRef.putFile(_selectedImage!);
+
+      // Show success message to the user
+      customSnackbar.showMessage(
+        context,
+        LocalizationService.translateFromGeneral('imageUploadSuccess'),
+      );
+
+      // Get the download URL for the uploaded image
+      final imageUrl = await storageRef.getDownloadURL();
+      return imageUrl;
+    } catch (e) {
+      // Handle any errors during upload or URL retrieval
+      customSnackbar.showFailureMessage(context);
+      return '';
+    }
+  }
+
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       try {
@@ -71,11 +121,8 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
           });
         } else if (stage == 2) {
           if (_selectedGender == null || _selectedGender!.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text(LocalizationService.translateFromGeneral(
-                      'SelectGender'))),
-            );
+            customSnackbar.showMessage(context,
+                LocalizationService.translateFromGeneral('selectGender'));
             return;
           }
           setState(() {
@@ -85,6 +132,21 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
           Get.dialog(const Center(child: CircularProgressIndicator()),
               barrierDismissible: false);
 
+// Check if username exists in the database
+          bool usernameExists =
+              await _checkIfUsernameExists(_usernameController.text);
+
+          if (usernameExists) {
+            Get.back();
+            customSnackbar.showMessage(
+                context,
+                LocalizationService.translateFromGeneral(
+                    'usernameExistsError'));
+            return; // Exit early if username exists
+          }
+          String userId = await widget.registerUser();
+          String uploadedImageUrl = await _uploadImage(userId);
+
           Map<String, dynamic> userData = {
             'username': _usernameController.text,
             'firstName': _firstNameController.text,
@@ -93,42 +155,36 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
             'age': int.parse(_ageController.text),
             'weight': double.parse(_weightController.text),
             'length': double.parse(_lengthController.text),
-            'profileImageUrl': _uploadedImageUrl, // Add the image URL
+            'profileImageUrl': uploadedImageUrl, // Add the image URL
           };
           await updateCoachInfo(userId, userData).then(
             (value) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text(LocalizationService.translateFromGeneral(
-                        'accountCreationSuccess'))),
-              );
+              customSnackbar.showMessage(
+                  context,
+                  LocalizationService.translateFromGeneral(
+                      'accountCreationSuccess'));
 
               Navigator.of(context).pop();
               Get.toNamed(Routes.trainerDashboard);
             },
-          ).catchError((error) {
+          ).catchError((error) async {
             print(error);
             Navigator.of(context).pop();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text(
-                      '${LocalizationService.translateFromGeneral('unexpectedError')} $error')),
-            );
+            customSnackbar.showMessage(context,
+                LocalizationService.translateFromGeneral('unexpectedError'));
           });
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  '${LocalizationService.translateFromGeneral('unexpectedError')} $e')),
-        );
+        print(e);
+        Navigator.of(context).pop();
+        customSnackbar.showMessage(context,
+            LocalizationService.translateFromGeneral('unexpectedError'));
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(LocalizationService.translateFromGeneral(
-                'invalidInformationMessage'))),
-      );
+      customSnackbar.showMessage(
+          context,
+          LocalizationService.translateFromGeneral(
+              'invalidInformationMessage'));
     }
   }
 
@@ -138,19 +194,19 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
+            child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildImageStack(),
               const SizedBox(height: 24),
               stage == 3
-                  ? ImagePickerComponent(
-                      userId: userId,
-                      onImageUploaded: (imageUrl) {
-                        setState(() {
-                          _uploadedImageUrl = imageUrl;
+                  ? ImagePickerComponent(onImageUploaded: (selectedImage) {
+                      setState(() {
+                          _selectedImage = selectedImage;
                         });
-                      })
+                    })
                   : Container(), // Add the image picker button here
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
@@ -177,7 +233,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                       child: Text(
                           LocalizationService.translateFromGeneral('account'),
                           style: AppStyles.textCairo(
-                            16,
+                            14,
                             Palette.mainAppColorWhite,
                             FontWeight.bold,
                           )),
@@ -241,7 +297,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                             true, // Make the dropdown take the full width
                         hint: Text(
                           LocalizationService.translateFromGeneral(
-                              'SelectGender'),
+                              'selectGender'),
 
                           style: AppStyles.textCairo(
                             14,
@@ -292,45 +348,48 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                       keyboardType: TextInputType.number,
                       icon: Icons.accessibility)
                   : Container(),
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
-                child: ElevatedButton.icon(
-                  onPressed: _submitForm,
-                  label: Text(
-                    LocalizationService.translateFromGeneral('next'),
-                    style: AppStyles.textCairo(
-                      16,
-                      Palette.mainAppColorWhite,
-                      FontWeight.w500,
-                    ),
-                  ),
-                  icon: const Icon(
-                    Icons.west,
-                    size: 20,
-                    color: Palette.white, // Icon color
-                  ),
-                  iconAlignment: IconAlignment.end,
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: const Color(0xFF1C1503),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 12),
-                    backgroundColor: const Color(0xFFFFBB02),
-                    textStyle: AppStyles.textCairo(
-                      14,
-                      Palette.mainAppColorWhite,
-                      FontWeight.bold,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                ),
-              ), // Adds extra space to ensure scrolling
+              const SizedBox(
+                  height: 24), // Adds extra space to ensure scrolling
             ],
           ),
-        ),
+        )),
         // The fixed login button at the bottom
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            BuildIconButton(
+              onPressed: _submitForm,
+              text: LocalizationService.translateFromGeneral('next'),
+              icon: Icons.east,
+              iconAlignment: IconAlignment.start,
+              width: Get.width * 0.42,
+              fontSize: 14,
+              textColor: Palette.black,
+              iconColor: Palette.black,
+            ),
+            const SizedBox(width: 12),
+            BuildIconButton(
+              onPressed: () {
+                if (stage == 1) {
+                  Get.back();
+                } else {
+                  setState(() {
+                    stage = stage == 3 ? 2 : 1;
+                  });
+                }
+              },
+              text: LocalizationService.translateFromGeneral('goBack'),
+              icon: Icons.west,
+              iconAlignment: IconAlignment.end,
+              width: Get.width * 0.42,
+              fontSize: 14,
+              textColor: Palette.black,
+              iconColor: Palette.black,
+            )
+          ],
+        ),
       ),
     );
   }

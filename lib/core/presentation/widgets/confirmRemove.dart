@@ -8,10 +8,12 @@ Future<bool> confirmCancel(context) async {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
+        backgroundColor: Palette.secondaryColor,
         alignment: Alignment.center,
         title: Text(
           LocalizationService.translateFromGeneral('cancelConfirmation'),
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.end,
+          style: AppStyles.textCairo(18, Palette.mainAppColorWhite, FontWeight.w500),
         ),
         content: Text(
           LocalizationService.translateFromGeneral('deletePlanConfirmation'),
@@ -23,7 +25,7 @@ Future<bool> confirmCancel(context) async {
               Navigator.of(context).pop(false); // User canceled
             },
             child: Text(LocalizationService.translateFromGeneral('cancel'),
-                style: AppStyles.textCairo(14, Palette.black, FontWeight.w500)),
+                style: AppStyles.textCairo(12, Palette.mainAppColorWhite, FontWeight.w500)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(

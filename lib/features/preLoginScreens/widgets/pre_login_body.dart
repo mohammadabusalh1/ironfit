@@ -141,7 +141,7 @@ class _PreLoginBodyState extends State<PreLoginBody>
                             text,
                             textAlign: TextAlign.center,
                             style: AppStyles.textCairo(
-                                18, Palette.white, FontWeight.bold),
+                                16, Palette.white, FontWeight.bold),
                           ),
                           const SizedBox(height: 28),
                           if (showNextButton)
@@ -156,6 +156,7 @@ class _PreLoginBodyState extends State<PreLoginBody>
                                     curve: Curves.ease,
                                   );
                                 },
+                                width: Get.width,
                               ),
                             ),
                           if (!showNextButton)

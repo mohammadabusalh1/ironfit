@@ -35,6 +35,8 @@ class _TraineesBodyState extends State<TraineesBody> {
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
 
+  String dir = LocalizationService.getDir();
+
   @override
   void initState() {
     super.initState();
@@ -49,22 +51,42 @@ class _TraineesBodyState extends State<TraineesBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        _buildHeader(),
-        const SizedBox(height: 12),
-        _buildActionButtons(),
-        const SizedBox(height: 12),
-        BuildTextField(
-          onChange: _filterTrainees,
-          label: LocalizationService.translateFromGeneral('search'),
+        Column(
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 12),
+            _buildActionButtons(),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: BuildTextField(
+                onChange: _filterTrainees,
+                label: LocalizationService.translateFromGeneral('search'),
+              ),
+            ),
+            if (_isLoading)
+              const SizedBox(height: 24), // Changed to conditional statement
+            if (_isLoading)
+              const Center(child: CircularProgressIndicator())
+            else
+              _buildTraineesList(),
+          ],
         ),
-        if (_isLoading)
-          const SizedBox(height: 24), // Changed to conditional statement
-        if (_isLoading)
-          const Center(child: CircularProgressIndicator())
-        else
-          _buildTraineesList(),
+        Positioned(
+          bottom: 24,
+          right: 12,
+          child: BuildIconButton(
+              onPressed: () => showAddTraineeDialog(context),
+              icon: Icons.add,
+              iconSize: 20,
+              backgroundColor: Palette.mainAppColor,
+              textColor: Palette.black,
+              width: 50,
+              height: 50,
+              iconColor: Palette.black),
+        ),
       ],
     );
   }
@@ -109,29 +131,34 @@ class _TraineesBodyState extends State<TraineesBody> {
       child: Row(
         children: [
           BuildIconButton(
-            onPressed: () => showAddTraineeDialog(context),
-            icon: Icons.add,
-            iconSize: 22,
-            backgroundColor: Palette.mainAppColor,
-            textColor: Palette.black,
+            fontSize: 12,
+            text: LocalizationService.translateFromGeneral('name'),
+            icon: isNameSortUp ? Icons.north_rounded : Icons.south_rounded,
+            onPressed: () {
+              _sortByName();
+            },
+            iconSize: 18,
+            width: Get.width * 0.415,
+            iconColor: Palette.mainAppColorNavy,
+            height: 50,
+            backgroundColor: Palette.mainAppColorWhite,
+            textColor: Palette.mainAppColorNavy,
           ),
           const SizedBox(width: 12),
           BuildIconButton(
-              text: LocalizationService.translateFromGeneral('name'),
-              icon: isNameSortUp ? Icons.north_rounded : Icons.south_rounded,
-              onPressed: () {
-                _sortByName();
-              },
-              iconSize: 15),
-          const SizedBox(width: 12),
-          BuildIconButton(
+            fontSize: 12,
             text: LocalizationService.translateFromGeneral('subscription'),
             icon: isSubscriptionSortUp ? Icons.add : Icons.minimize,
             onPressed: () {
               _sortBySubscription();
               toggleSubscriptionSort();
             },
-            iconSize: 15,
+            iconSize: 18,
+            width: Get.width * 0.415,
+            iconColor: Palette.mainAppColorNavy,
+            height: 50,
+            backgroundColor: Palette.mainAppColorWhite,
+            textColor: Palette.mainAppColorNavy,
           ),
         ],
       ),
@@ -370,21 +397,30 @@ class _TraineesBodyState extends State<TraineesBody> {
           child: SingleChildScrollView(
             child: AlertDialog(
               title: Text(
+                  textDirection:
+                      dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
                   LocalizationService.translateFromGeneral('addNewTrainee'),
                   style: AppStyles.textCairo(
                       24, Palette.mainAppColorWhite, FontWeight.bold)),
               content: Form(
                 key: _formKey, // Use the form key for validation
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: dir == 'rtl'
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  mainAxisAlignment: dir == 'rtl'
+                      ? MainAxisAlignment.end
+                      : MainAxisAlignment.start,
                   children: [
                     Text(
+                        textDirection: dir == 'rtl'
+                            ? TextDirection.rtl
+                            : TextDirection.ltr,
                         LocalizationService.translateFromGeneral(
                             'pleaseFillRequiredData'),
                         style: AppStyles.textCairo(
-                            14, Palette.mainAppColorWhite, FontWeight.w500)),
+                            14, Palette.gray, FontWeight.w500)),
                     const SizedBox(height: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -400,7 +436,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                               'usernameLabel'),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return '${LocalizationService.translateFromGeneral('create_account')} ${LocalizationService.translateFromGeneral('usernameLabel')}';
+                              return '${LocalizationService.translateFromGeneral('thisFieldRequired')}';
                             }
                             return null;
                           },
@@ -412,6 +448,9 @@ class _TraineesBodyState extends State<TraineesBody> {
                         const SizedBox(
                             height: 8), // Add spacing between field and note
                         Text(
+                          textDirection: dir == 'rtl'
+                              ? TextDirection.rtl
+                              : TextDirection.ltr,
                           LocalizationService.translateFromGeneral(
                               'addTraineeNote'),
                           style: AppStyles.textCairo(
@@ -506,7 +545,8 @@ class _TraineesBodyState extends State<TraineesBody> {
                 ),
               ),
               actions: [
-                ElevatedButton(
+                BuildIconButton(
+                  text: LocalizationService.translateFromGeneral('save'),
                   onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
                       // Show loading dialog
@@ -542,8 +582,8 @@ class _TraineesBodyState extends State<TraineesBody> {
                       if (traineeExists) {
                         customSnackbar.showMessage(
                             context,
-                            LocalizationService.translateFromPage(
-                                'title', 'snackbar_create_account'));
+                            LocalizationService.translateFromGeneral(
+                                'traineeExist'));
                       } else {
                         // Trainee does not exist: Create new trainee and subscription
                         final newTraineeRef = FirebaseFirestore.instance
@@ -560,6 +600,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                           'startDate': startDate,
                           'endDate': endDate,
                           'amountPaid': amountPaid,
+                          'totalAmountPaid': amountPaid,
                           'debts': debts,
                           'userId': newTraineeRef.id,
                         });
@@ -571,7 +612,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                         customSnackbar.showMessage(
                             context,
                             LocalizationService.translateFromPage(
-                                'snackbar_success', 'snackbar_create_account'));
+                                'message', 'snackbarSuccess'));
                         Navigator.of(context).pop();
                       }
 
@@ -583,9 +624,8 @@ class _TraineesBodyState extends State<TraineesBody> {
                       // Close loading dialog
                     }
                   },
-                  child: Text(
-                    LocalizationService.translateFromGeneral('save'),
-                  ),
+                  width: Get.width * 0.25,
+                  fontSize: 14,
                 ),
                 TextButton(
                   onPressed: () {
@@ -596,7 +636,9 @@ class _TraineesBodyState extends State<TraineesBody> {
                   ),
                 ),
               ],
-              actionsAlignment: MainAxisAlignment.start,
+              actionsAlignment: dir == 'rtl'
+                  ? MainAxisAlignment.start
+                  : MainAxisAlignment.end,
             ),
           ),
         );

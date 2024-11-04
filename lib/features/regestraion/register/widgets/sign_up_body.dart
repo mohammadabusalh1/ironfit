@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,9 +14,11 @@ import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/coachEnteInfo/screens/coach_ente_info_screen.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildHeaderImages.dart';
 import 'package:ironfit/features/regestraion/login/widgets/buildWelcomeText.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:ironfit/features/userEnteInfo/screens/user_ente_info_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpBody extends StatefulWidget {
@@ -38,6 +42,7 @@ class _SignUpBodyState extends State<SignUpBody> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
+  String dir = LocalizationService.getDir();
 
   @override
   void initState() {
@@ -123,9 +128,50 @@ class _SignUpBodyState extends State<SignUpBody> {
   Future<void> _registerUser() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
-        Get.dialog(Center(child: CircularProgressIndicator()),
+        Get.dialog(const Center(child: CircularProgressIndicator()),
             barrierDismissible: false);
+        await _auth.createUserWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+        );
 
+        // Save data based on the user type (coach/trainee)
+        if (isCoach) {
+          User? user = _auth.currentUser;
+          if (user != null) {
+            await user.delete();
+          }
+          Navigator.of(context).pop();
+          Get.to(Directionality(
+              textDirection:
+                  dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+              child: CoachEnterInfoScreen(
+                registerCoach: _registerUserInGoogle,
+              )));
+        } else {
+          User? user = _auth.currentUser;
+          if (user != null) {
+            await user.delete();
+          }
+          Navigator.of(context).pop();
+           Get.to(Directionality(
+              textDirection:
+                  dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+              child: UserEnterInfoScreen(
+                registerUser: _registerUserInGoogle,
+              )));
+        }
+      } catch (e) {
+        Navigator.of(context).pop();
+        customSnackbar.showMessage(
+            context, LocalizationService.translateFromGeneral('accountExist'));
+      }
+    }
+  }
+
+  Future<String> _registerUserInGoogle() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      try {
         UserCredential userCredential =
             await _auth.createUserWithEmailAndPassword(
           email: emailController.text.trim(),
@@ -135,25 +181,23 @@ class _SignUpBodyState extends State<SignUpBody> {
         if (userCredential.user != null) {
           SharedPreferences prefs = await preferencesService.getPreferences();
           prefs.setString('token', userCredential.user!.uid);
-          // Save data based on the user type (coach/trainee)
           if (isCoach) {
             prefs.setBool('isCoach', true);
-            String userId = await saveCoachData();
-            if (userId.isEmpty) {
-              return;
-            }
-            Get.toNamed(Routes.coachEnterInfo);
+            await saveCoachData();
+            return userCredential.user!.uid;
           } else {
             prefs.setBool('isCoach', false);
             await saveTraineeData();
-            Get.toNamed(Routes.userEnterInfo);
+            return userCredential.user!.uid;
           }
         }
       } catch (e) {
-        Navigator.pop(context);
-        customSnackbar.showFailureMessage(context);
+        customSnackbar.showMessage(
+            context, LocalizationService.translateFromGeneral('accountExist'));
+        return '';
       }
     }
+    return '';
   }
 
   Future<void> signUpWithGoogle() async {
@@ -299,9 +343,11 @@ class _SignUpBodyState extends State<SignUpBody> {
                         },
                         backgroundColor: Palette.mainAppColor,
                         textColor: Palette.white,
+                        width: Get.width,
                       ),
                       const SizedBox(height: 8),
                       BuildIconButton(
+                        width: Get.width,
                         text: LocalizationService.translateFromGeneral(
                             'sign_in_with_google'),
                         onPressed: () async {

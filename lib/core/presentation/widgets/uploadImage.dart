@@ -1,17 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
 class ImagePickerComponent extends StatefulWidget {
-  final String userId;
-  final void Function(String imageUrl)? onImageUploaded;
+  final void Function(File selectedImage)? onImageUploaded;
 
   const ImagePickerComponent({
     Key? key,
-    required this.userId,
     this.onImageUploaded,
   }) : super(key: key);
 
@@ -22,94 +20,29 @@ class ImagePickerComponent extends StatefulWidget {
 class _ImagePickerComponentState extends State<ImagePickerComponent> {
   final ImagePicker _picker = ImagePicker();
   File? _selectedImage;
-  String? _uploadedImageUrl;
+  CustomSnackbar customSnackbar = CustomSnackbar();
 
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
-        _uploadImage();
       });
+
+      if (widget.onImageUploaded != null) {
+        widget.onImageUploaded!(_selectedImage!);
+      }
     }
   }
 
   void _removeImage() async {
-    if (_uploadedImageUrl != null) {
-      try {
-        // Create a reference to the file to delete
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('profile_images/${widget.userId}.jpg');
-
-        // Delete the file
-        await storageRef.delete();
-
-        setState(() {
-          _uploadedImageUrl = null; // Clear the uploaded image URL
-          _selectedImage = null; // Clear the selected image if necessary
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(LocalizationService.translateFromGeneral(
-                'imageRemovedSuccess')),
-          ),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(LocalizationService.translateFromGeneral(
-                  'imageRemoveError'))),
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content:
-              Text(LocalizationService.translateFromGeneral('noImageToRemove')),
-        ),
-      );
-    }
-  }
-
-  Future<void> _uploadImage() async {
-    if (_selectedImage != null) {
-      try {
-        Get.dialog(Center(child: CircularProgressIndicator()),
-            barrierDismissible: false);
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('profile_images/${widget.userId}.jpg');
-        await storageRef.putFile(_selectedImage!).then(
-          (snapshot) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text(LocalizationService.translateFromGeneral(
-                      'imageUploadSuccess'))),
-            );
-          },
-        );
-        final imageUrl = await storageRef.getDownloadURL();
-
-        setState(() {
-          _uploadedImageUrl = imageUrl;
-        });
-
-        // Call the callback if provided
-        if (widget.onImageUploaded != null) {
-          widget.onImageUploaded!(imageUrl);
-        }
-
-        Get.back();
-      } catch (e) {
-        Get.back();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  LocalizationService.translateFromGeneral('unexpectedError'))),
-        );
-      }
+    try {
+      setState(() {
+        _selectedImage = null; // Clear the uploaded image URL
+      });
+    } catch (e) {
+      customSnackbar.showMessage(context,
+          LocalizationService.translateFromGeneral('imageRemoveError'));
     }
   }
 
@@ -121,7 +54,7 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        margin: const EdgeInsets.symmetric(horizontal: 24),
+        margin: const EdgeInsets.symmetric(horizontal: 12),
         child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: MediaQuery.of(context).size.width * 0.1,
@@ -163,11 +96,11 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
                     )
                   : const CircleAvatar(
                       radius: 50,
-                      backgroundColor: Color(0xFFFFBB02),
+                      backgroundColor: Palette.mainAppColor,
                       child: Icon(
                         Icons.person,
                         size: 50,
-                        color: Colors.black,
+                        color: Palette.black,
                       ),
                     ),
               const SizedBox(height: 16),
@@ -175,7 +108,7 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
                 onPressed: _pickImage,
                 icon: const Icon(
                   Icons.upload,
-                  color: Colors.white,
+                  color: Palette.mainAppColorWhite,
                 ),
                 label: Text(
                   LocalizationService.translateFromGeneral('chooseImage'),

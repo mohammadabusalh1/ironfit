@@ -224,6 +224,7 @@ class _LoginBodyState extends State<LoginBody> {
                       },
                       backgroundColor: Palette.mainAppColor,
                       textColor: Palette.white,
+                      width: Get.width,
                     ),
                     const SizedBox(height: 8),
                     BuildIconButton(
@@ -244,9 +245,10 @@ class _LoginBodyState extends State<LoginBody> {
                         width: 24,
                         height: 24,
                       ),
+                      width: Get.width,
                     ),
                     const SizedBox(height: 24),
-                    const LoginTextWidget(),
+                    _builSignUpText(context),
                   ],
                 ),
               ),
@@ -374,68 +376,24 @@ class _LoginBodyState extends State<LoginBody> {
   }
 }
 
-class LoginTextWidget extends StatefulWidget {
-  const LoginTextWidget({Key? key}) : super(key: key);
-
-  @override
-  _LoginTextWidgetState createState() => _LoginTextWidgetState();
-}
-
-class _LoginTextWidgetState extends State<LoginTextWidget>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Initialize the AnimationController and the Fade Animation
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    );
-
-    _fadeAnimation = Tween(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeIn,
+Widget _builSignUpText(BuildContext context) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Text(
+        LocalizationService.translateFromGeneral('no_account'),
+        style:
+            AppStyles.textCairo(14, Palette.mainAppColorWhite, FontWeight.w500),
       ),
-    );
-
-    // Start the animation
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose(); // Clean up the controller
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            LocalizationService.translateFromGeneral('no_account') + " ",
-            style: AppStyles.textCairo(
-                14, Palette.mainAppColorWhite, FontWeight.w500),
-          ),
-          const SizedBox(width: 4),
-          InkWell(
-            onTap: () => Get.toNamed(Routes.singUp), // Use your desired route
-            child: Text(
-              LocalizationService.translateFromGeneral('create_account'),
-              style: AppStyles.textCairo(
-                  14, Palette.mainAppColor, FontWeight.w500),
-            ),
-          ),
-        ],
+      TextButton(
+        onPressed: () {
+          Get.toNamed(Routes.singUp);
+        },
+        child: Text(
+          LocalizationService.translateFromGeneral('create_account'),
+          style: AppStyles.textCairo(14, Palette.mainAppColor, FontWeight.w500),
+        ),
       ),
-    );
-  }
+    ],
+  );
 }

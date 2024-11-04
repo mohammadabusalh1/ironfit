@@ -15,6 +15,7 @@ import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/theme.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 
 class TraineeBody extends StatefulWidget {
   final String username;
@@ -43,6 +44,7 @@ class _TraineeBodyState extends State<TraineeBody> {
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
+  String dir = LocalizationService.getDir();
 
   @override
   void initState() {
@@ -91,7 +93,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                   ? user.get('profileImageUrl')
                   : Assets.notFound;
               debts = subscriptions.docs[0]['debts'].toString();
-              amountPaid = subscriptions.docs[0]['amountPaid'];
+              amountPaid = subscriptions.docs[0]['amountPaid'].toString();
               subscriptionId = subscriptions.docs.first.id;
               _numberOfDaysUserHave =
                   DateTime.parse(endDateStr).difference(DateTime.now()).inDays;
@@ -241,16 +243,16 @@ class _TraineeBodyState extends State<TraineeBody> {
           return;
         }
 
-        final paln = await _firestore
+        final plan = await _firestore
             .collection('coaches')
             .doc(userDoc['coachId'])
             .collection('plans')
             .doc(userDoc['planId'])
             .get();
 
-        if (paln.exists) {
+        if (plan.exists) {
           setState(() {
-            planName = paln.data()!['name'];
+            planName = plan.data()!['name'];
           });
         }
       } else {
@@ -436,83 +438,89 @@ class _TraineeBodyState extends State<TraineeBody> {
       context: context,
       builder: (BuildContext context) {
         return Theme(
-          data: customThemeData,
-          child: SingleChildScrollView(
-            child: AlertDialog(
-              title: Row(
-                children: [
-                  Text(LocalizationService.translateFromGeneral('addPlan'),
-                      style: AppStyles.textCairo(
-                          22, Palette.mainAppColorWhite, FontWeight.bold)),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: () {
-                      Get.toNamed(Routes.myPlans);
-                    },
-                    icon: const Icon(Icons.add),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Palette.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              content: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                      LocalizationService.translateFromGeneral(
-                          'pleaseFillRequiredData'),
-                      style: AppStyles.textCairo(
-                          22, Palette.mainAppColorWhite, FontWeight.w500)),
-                  const SizedBox(height: 16),
-                  DropdownButtonFormField<String>(
-                    dropdownColor: Palette.secondaryColor,
-                    decoration: InputDecoration(
-                      labelText: LocalizationService.translateFromGeneral(
-                          'yourPlans'), // Label for the dropdown
-                      border: const OutlineInputBorder(),
-                    ),
-                    value: selectedValue, // Selected value from dropdown
-                    items:
-                        _plans.map<DropdownMenuItem<String>>((dynamic value) {
-                      return DropdownMenuItem<String>(
-                        value:
-                            value['id'] as String, // Casting dynamic to String
-                        child: Align(
-                          alignment: AlignmentDirectional
-                              .centerEnd, // Align to the right
-                          child: Text(
-                            value['name'],
-                            style: AppStyles.textCairo(
-                                14, Palette.mainAppColorWhite, FontWeight.w500),
+            data: customThemeData,
+            child: SingleChildScrollView(
+              child: Directionality(
+                textDirection:
+                    dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                child: AlertDialog(
+                  title: Row(
+                    children: [
+                      Text(LocalizationService.translateFromGeneral('addPlan'),
+                          style: AppStyles.textCairo(
+                              18, Palette.mainAppColorWhite, FontWeight.bold)),
+                      const Spacer(),
+                      IconButton(
+                        onPressed: () {
+                          Get.toNamed(Routes.myPlans);
+                        },
+                        icon: const Icon(
+                          Icons.add,
+                          color: Palette.mainAppColorNavy,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Palette.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                      );
-                    }).toList(),
+                      ),
+                    ],
+                  ),
+                  content: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                          LocalizationService.translateFromGeneral(
+                              'pleaseFillRequiredData'),
+                          style: AppStyles.textCairo(
+                              16, Palette.mainAppColorWhite, FontWeight.w500)),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        dropdownColor: Palette.secondaryColor,
+                        decoration: InputDecoration(
+                          labelText: LocalizationService.translateFromGeneral(
+                              'yourPlans'), // Label for the dropdown
+                          border: const OutlineInputBorder(),
+                        ),
+                        value: selectedValue, // Selected value from dropdown
+                        items: _plans
+                            .map<DropdownMenuItem<String>>((dynamic value) {
+                          return DropdownMenuItem<String>(
+                            value: value['id']
+                                as String, // Casting dynamic to String
+                            child: Align(
+                              alignment: AlignmentDirectional
+                                  .centerEnd, // Align to the right
+                              child: Text(
+                                value['name'],
+                                style: AppStyles.textCairo(12,
+                                    Palette.mainAppColorWhite, FontWeight.w500),
+                              ),
+                            ),
+                          );
+                        }).toList(),
 
-                    onChanged: _updatePlan,
+                        onChanged: _updatePlan,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                  child: Text(
-                    LocalizationService.translateFromGeneral('cancel'),
-                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text(
+                        LocalizationService.translateFromGeneral('cancel'),
+                      ),
+                    ),
+                  ],
+                  actionsAlignment: MainAxisAlignment.start,
                 ),
-              ],
-              actionsAlignment: MainAxisAlignment.start,
-            ),
-          ),
-        );
+              ),
+            ));
       },
     );
   }
@@ -523,77 +531,92 @@ class _TraineeBodyState extends State<TraineeBody> {
       context: context,
       builder: (BuildContext context) {
         return Theme(
-          data: customThemeData,
-          child: SingleChildScrollView(
-            child: AlertDialog(
-              title: Text(
-                  LocalizationService.translateFromGeneral('modifyDebts'),
-                  style: AppStyles.textCairo(
-                      22, Palette.mainAppColorWhite, FontWeight.bold)),
-              content: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                      LocalizationService.translateFromGeneral(
-                          'addIncrementOrDecrementNegative'),
+            data: customThemeData,
+            child: Directionality(
+              textDirection:
+                  dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+              child: SingleChildScrollView(
+                child: AlertDialog(
+                  title: Text(
+                      LocalizationService.translateFromGeneral('modifyDebts'),
                       style: AppStyles.textCairo(
-                          14, Palette.mainAppColorWhite, FontWeight.w500)),
-                  const SizedBox(height: 16),
-                  TextField(
-                    keyboardType: TextInputType.number,
-                    onChanged: (updateValue) {
-                      selectedValue = updateValue;
-                    },
-                    decoration: InputDecoration(
-                      labelText:
-                          LocalizationService.translateFromGeneral('amount'),
-                      border: OutlineInputBorder(),
-                    ),
+                          22, Palette.mainAppColorWhite, FontWeight.bold)),
+                  content: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                          LocalizationService.translateFromGeneral(
+                              'addIncrementOrDecrementNegative'),
+                          style: AppStyles.textCairo(
+                              14, Palette.mainAppColorWhite, FontWeight.w500)),
+                      const SizedBox(height: 16),
+                      TextField(
+                        keyboardType: TextInputType.number,
+                        onChanged: (updateValue) {
+                          selectedValue = updateValue;
+                        },
+                        decoration: InputDecoration(
+                          labelText: LocalizationService.translateFromGeneral(
+                              'amount'),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                  actions: [
+                    BuildIconButton(
+                      onPressed: () {
+                        if (selectedValue != null) {
+                          _updateDebt(selectedValue, subscriptionId);
+                        }
+                      },
+                      text: LocalizationService.translateFromGeneral('save'),
+                      width: 90,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text(
+                          LocalizationService.translateFromGeneral('cancel')),
+                    ),
+                  ],
+                  actionsAlignment: MainAxisAlignment.start,
+                ),
               ),
-              actions: [
-                BuildIconButton(
-                  onPressed: () {
-                    if (selectedValue != null) {
-                      _updateDebt(selectedValue, subscriptionId);
-                    }
-                  },
-                  text: LocalizationService.translateFromGeneral('save'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                  child:
-                      Text(LocalizationService.translateFromGeneral('cancel')),
-                ),
-              ],
-              actionsAlignment: MainAxisAlignment.start,
-            ),
-          ),
-        );
+            ));
       },
     );
   }
 
-  Future<void> _updateSubscription(stratDate, endDate, id) async {
+  Future<void> _updateSubscription(
+      startDate, endDate, amountPaid, debts, id) async {
     try {
       Get.dialog(const Center(child: CircularProgressIndicator()),
           barrierDismissible: false);
 
       // Fetch the plan document from the 'coaches' collection
-      DocumentReference<Map<String, dynamic>> subscription = await _firestore
+      DocumentReference<Map<String, dynamic>> subscription = _firestore
           .collection('coaches')
           .doc(_auth.currentUser?.uid)
           .collection('subscriptions')
           .doc(id);
 
+      DocumentSnapshot<Map<String, dynamic>> subscriptionData =
+          await subscription.get();
+
       // Check if the plan exists
       // Update the document with the plan data
-      await subscription.update({'startDate': stratDate, 'endDate': endDate});
+      await subscription.update({
+        'startDate': startDate,
+        'endDate': endDate,
+        'amountPaid': int.parse(subscriptionData.data()!['amountPaid']) +
+            int.parse(amountPaid),
+        'debts':
+            int.parse(subscriptionData.data()!['debts']) + int.parse(debts),
+      });
 
       // Show success message
       customSnackbar.showMessage(
@@ -632,106 +655,144 @@ class _TraineeBodyState extends State<TraineeBody> {
   void showEditSubscriptionDialog(BuildContext context) {
     final TextEditingController startDateController = TextEditingController();
     final TextEditingController endDateController = TextEditingController();
+    final TextEditingController amountPaidController = TextEditingController();
+    final TextEditingController debtsController = TextEditingController();
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Theme(
-          data: customThemeData,
-          child: SingleChildScrollView(
-            child: AlertDialog(
-              title: Text(
-                  LocalizationService.translateFromGeneral('addNewTrainee'),
-                  style: AppStyles.textCairo(
-                      24, Palette.mainAppColorWhite, FontWeight.bold)),
-              content: Form(
-                key: _formKey, // Use the form key for validation
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                        LocalizationService.translateFromGeneral(
-                            'pleaseFillRequiredData'),
-                        style: AppStyles.textCairo(
-                            14, Palette.mainAppColorWhite, FontWeight.w500)),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: startDateController,
-                      decoration: InputDecoration(
-                          labelText: LocalizationService.translateFromGeneral(
+            data: customThemeData,
+            child: SingleChildScrollView(
+              child: Directionality(
+                textDirection:
+                    dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                child: AlertDialog(
+                  title: Text(
+                      LocalizationService.translateFromGeneral('addNewTrainee'),
+                      style: AppStyles.textCairo(
+                          24, Palette.mainAppColorWhite, FontWeight.bold)),
+                  content: Form(
+                    key: _formKey, // Use the form key for validation
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                            LocalizationService.translateFromGeneral(
+                                'pleaseFillRequiredData'),
+                            style: AppStyles.textCairo(14,
+                                Palette.mainAppColorWhite, FontWeight.w500)),
+                        const SizedBox(height: 16),
+                        BuildTextField(
+                          controller: startDateController,
+                          label: LocalizationService.translateFromGeneral(
                               'startDate'),
-                          border: const OutlineInputBorder()),
-                      readOnly: true,
-                      onTap: () {
-                        _selectDate(context, startDateController);
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return LocalizationService.translateFromGeneral(
-                              'enterStartDate');
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: endDateController,
-                      decoration: InputDecoration(
-                          labelText: LocalizationService.translateFromGeneral(
+                          onTap: () {
+                            _selectDate(context, startDateController);
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return LocalizationService.translateFromGeneral(
+                                  'enterStartDate');
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        BuildTextField(
+                          controller: endDateController,
+                          label: LocalizationService.translateFromGeneral(
                               'endDate'),
-                          border: const OutlineInputBorder()),
-                      readOnly: true,
-                      onTap: () {
-                        _selectDate(context, endDateController);
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return LocalizationService.translateFromGeneral(
-                              'enterEndDate');
-                        }
-                        if (startDateController.text.isNotEmpty &&
-                            endDateController.text.isNotEmpty) {
-                          // Compare the dates
-                          DateTime startDate =
-                              DateTime.parse(startDateController.text);
-                          DateTime endDate =
-                              DateTime.parse(endDateController.text);
+                          onTap: () {
+                            _selectDate(context, endDateController);
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return LocalizationService.translateFromGeneral(
+                                  'enterEndDate');
+                            }
+                            if (startDateController.text.isNotEmpty &&
+                                endDateController.text.isNotEmpty) {
+                              // Compare the dates
+                              DateTime startDate =
+                                  DateTime.parse(startDateController.text);
+                              DateTime endDate =
+                                  DateTime.parse(endDateController.text);
 
-                          if (startDate.isAfter(endDate)) {
-                            return LocalizationService.translateFromGeneral(
-                                'startDateCannotBeAfterEndDate');
-                          }
+                              if (startDate.isAfter(endDate)) {
+                                return LocalizationService.translateFromGeneral(
+                                    'startDateCannotBeAfterEndDate');
+                              }
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        BuildTextField(
+                          onChange: (value) {
+                            amountPaidController.text = value;
+                          },
+                          controller: amountPaidController,
+                          keyboardType: TextInputType.number,
+                          label: LocalizationService.translateFromGeneral(
+                              'amountPaid'),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return LocalizationService.translateFromGeneral(
+                                  'validation_amount_paid');
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        BuildTextField(
+                          onChange: (value) {
+                            debtsController.text = value;
+                          },
+                          controller: debtsController,
+                          keyboardType: TextInputType.number,
+                          label:
+                              LocalizationService.translateFromGeneral('debts'),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return LocalizationService.translateFromGeneral(
+                                  'validation_debt');
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    BuildIconButton(
+                      text: LocalizationService.translateFromGeneral('save'),
+                      onPressed: () async {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          _updateSubscription(
+                              startDateController.text,
+                              endDateController.text,
+                              amountPaidController.text,
+                              debtsController.text,
+                              subscriptionId);
                         }
-                        return null;
                       },
+                      width: 90,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text(
+                          LocalizationService.translateFromGeneral('cancel')),
                     ),
                   ],
+                  actionsAlignment: MainAxisAlignment.start,
                 ),
               ),
-              actions: [
-                BuildIconButton(
-                  text: LocalizationService.translateFromGeneral('save'),
-                  onPressed: () async {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      _updateSubscription(startDateController.text,
-                          endDateController.text, subscriptionId);
-                    }
-                  },
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                  child:
-                      Text(LocalizationService.translateFromGeneral('cancel')),
-                ),
-              ],
-              actionsAlignment: MainAxisAlignment.start,
-            ),
-          ),
-        );
+            ));
       },
     );
   }
@@ -816,6 +877,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                     },
                     backgroundColor: Palette.redDelete,
                     textColor: Palette.white,
+                    fontSize: 12,
                   ),
                 ),
                 const SizedBox(width: 12), // Spacing between buttons
@@ -825,9 +887,10 @@ class _TraineeBodyState extends State<TraineeBody> {
                     onPressed: () {
                       showAddPlanDialog(context);
                     },
-                    text: LocalizationService.translateFromGeneral(
-                        'renewSubscription'),
+                    text:
+                        LocalizationService.translateFromGeneral('add_program'),
                     backgroundColor: Palette.mainAppColor,
+                    fontSize: 12,
                   ),
                 ),
               ],
@@ -843,6 +906,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                 Expanded(
                   flex: 1,
                   child: BuildIconButton(
+                    fontSize: 12,
                     onPressed: () {
                       showEditSubscriptionDialog(context);
                     },
@@ -903,11 +967,11 @@ class _TraineeBodyState extends State<TraineeBody> {
                 context,
                 debts,
                 () {},
-                Icons.add_card,
+                Icons.keyboard_arrow_left,
                 Palette.mainAppColor,
                 LocalizationService.translateFromGeneral('debts'), () {
               showEditDebt(context);
-            }),
+            },),
           ),
           const SizedBox(height: 40),
         ],

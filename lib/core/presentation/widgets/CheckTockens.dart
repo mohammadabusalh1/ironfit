@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
@@ -25,7 +26,10 @@ class TokenService {
     SharedPreferences prefs = await preferencesService.getPreferences();
     String? token = prefs.getString('token');
 
-    if (token == null) {
+    User? user = FirebaseAuth.instance.currentUser;
+    print(user);
+
+    if (token == null || user == null) {
       Get.toNamed(Routes.singIn); // Navigate to coach dashboard
     }
   }

@@ -208,12 +208,14 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                             },
                             iconSize: 20,
                             icon: Icons.add,
+                            iconColor: Palette.black,
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           flex: 1,
                           child: BuildIconButton(
+                            fontSize: 12,
                             onPressed: () {
                               toggleDateSort();
                             },
@@ -224,7 +226,8 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                             text: LocalizationService.translateFromGeneral(
                                 'date'),
                             backgroundColor: Palette.mainAppColorWhite,
-                            textColor: Palette.black,
+                            textColor: Palette.mainAppColorNavy,
+                            iconColor: Palette.mainAppColorNavy,
                           ),
                         ), // Space between buttons
                       ],

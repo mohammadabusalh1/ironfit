@@ -101,7 +101,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                   fixedSize: const Size(50, 50),
                   backgroundColor: Palette.greenActive,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -126,7 +126,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                   fixedSize: const Size(50, 50),
                   backgroundColor: Palette.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -281,6 +281,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                 Navigator.pop(context);
               }
             },
+            width: 90,
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -388,6 +389,8 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                 text: LocalizationService.translateFromGeneral('addExercise'),
                 onPressed: () => _addExerciseToDay(day),
                 backgroundColor: Palette.mainAppColor,
+                width: 130,
+                fontSize: 12,
               ),
             ),
           ],
@@ -481,6 +484,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                   Navigator.pop(context);
                 }
               },
+              width: 90,
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -515,8 +519,9 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   void _editTrainingDay(BuildContext context, TrainingDay day, int index) {
     showDialog(
       context: context,
-      builder: (context) =>
-          _buildEditDayDialog(context, initialDay: day, index: index),
+      builder: (context) => Directionality(
+          textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+          child: _buildEditDayDialog(context, initialDay: day, index: index)),
     );
   }
 

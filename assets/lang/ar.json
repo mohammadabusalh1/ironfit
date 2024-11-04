@@ -121,7 +121,7 @@
   "noTitle": "لا يوجد عنوان",
   "noDescription": "لا يوجد وصف",
   "cancelConfirmation": "تأكيد الإلغاء",
-  "confirm": "confirm",
+  "confirm": "تأكيد",
   "deletePlanConfirmation": "هل أنت متأكد أنك تريد حذف الخطة؟",
   "userNotLoggedInOrPlanIdMissing": "المستخدم غير مسجل دخول أو رقم الخطة مفقود",
   "planDeletedSuccessfully": "تم حذف الخطة بنجاح",
@@ -236,5 +236,8 @@
   "traineeNotFound": "لم يتم العثور على المتدرب",
   "modifyDebts": "تعديل الديون",
   "addIncrementOrDecrementNegative": "أضف مقدار الزيادة أو الخصم بالسالب",
-  "amount": "المقدار"
+  "amount": "المقدار",
+  "goBack": "للخلف",
+  "personalInfoSection": "المعلومات الشخصية",
+  "traineeExist": "المتدرب موجود بالفعل"
 }

@@ -239,6 +239,7 @@
   "traineeNotFound": "Trainee not found",
   "modifyDebts": "Modify debts",
   "addIncrementOrDecrementNegative": "Add increment or decrement with a negative value",
-  "amount": "Amount"
-
+  "amount": "Amount",
+  "goBack": "Back",
+  "traineeExist": "Trainee already exist"
 }

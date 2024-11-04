@@ -66,7 +66,7 @@ class _SelectLanguageBodyState extends State<SelectLanguageBody>
                   ),
                 ),
                 Positioned(
-                  bottom: Get.height * 0.02,
+                  bottom: 0,
                   right: 2,
                   left: 2,
                   child: Container(
@@ -78,14 +78,14 @@ class _SelectLanguageBodyState extends State<SelectLanguageBody>
                           LocalizationService.translateFromPage(
                               'title', 'selectLang'),
                           style: AppStyles.textCairo(
-                              24, Palette.white, FontWeight.bold),
+                              20, Palette.white, FontWeight.bold),
                         ),
                         Text(
                           textAlign: TextAlign.center,
                           LocalizationService.translateFromPage(
                               'description', 'selectLang'),
                           style: AppStyles.textCairo(
-                              14, Palette.mainAppColorWhite, FontWeight.normal),
+                              12, Palette.mainAppColorWhite, FontWeight.normal),
                         ),
                         SizedBox(
                             height: MediaQuery.of(context).size.height * 0.04),
@@ -102,11 +102,11 @@ class _SelectLanguageBodyState extends State<SelectLanguageBody>
                           backgroundColor: Palette.mainAppColor,
                           textColor: Palette.white,
                           icon: Icons.language_outlined,
+                          width: Get.width,
                         ),
                         SizedBox(height: 12),
                         BuildIconButton(
-                          text: LocalizationService.translateFromPage(
-                              'English', 'selectLang'),
+                          text: 'English',
                           onPressed: () {
                             LocalizationService.load('en');
                             prefsManager.setLanguage('en').then(
@@ -116,7 +116,9 @@ class _SelectLanguageBodyState extends State<SelectLanguageBody>
                           },
                           backgroundColor: Palette.mainAppColorWhite,
                           textColor: Palette.mainAppColorNavy,
+                          iconColor: Palette.mainAppColorNavy,
                           icon: Icons.language_outlined,
+                          width: Get.width,
                         ),
                       ],
                     ),

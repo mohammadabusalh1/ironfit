@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
@@ -14,7 +17,8 @@ import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 
 class CoachEnterInfoBody extends StatefulWidget {
-  CoachEnterInfoBody({Key? key}) : super(key: key);
+  final Function registerCoach;
+  CoachEnterInfoBody({Key? key, required this.registerCoach}) : super(key: key);
 
   @override
   _CoachEnterInfoBodyState createState() => _CoachEnterInfoBodyState();
@@ -28,10 +32,8 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
   final TextEditingController _experienceController = TextEditingController();
   final TextEditingController _usernameController =
       TextEditingController(); // Added username controller
-
-  String? _uploadedImageUrl;
   int stage = 1;
-  String coachId = FirebaseAuth.instance.currentUser!.uid;
+  late File _selectedImage;
 
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
@@ -40,7 +42,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
   @override
   void initState() {
     super.initState();
-    tokenService.checkTokenAndNavigateSingIn();
+    tokenService.checkTokenAndNavigateDashboard();
   }
 
   Future<void> updateCoachInfo(
@@ -57,6 +59,34 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
     }
   }
 
+  Future<String> _uploadImage(String userId) async {
+    if (_selectedImage == null) {
+      return ''; // Exit early if no image is selected
+    }
+
+    try {
+      final storageRef =
+          FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
+
+      // Upload the image file
+      await storageRef.putFile(_selectedImage!);
+
+      // Show success message to the user
+      customSnackbar.showMessage(
+        context,
+        LocalizationService.translateFromGeneral('imageUploadSuccess'),
+      );
+
+      // Get the download URL for the uploaded image
+      final imageUrl = await storageRef.getDownloadURL();
+      return imageUrl;
+    } catch (e) {
+      // Handle any errors during upload or URL retrieval
+      customSnackbar.showFailureMessage(context);
+      return '';
+    }
+  }
+
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       try {
@@ -64,48 +94,51 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
           setState(() {
             stage = 2;
           });
-        } else {
-          Get.dialog(const Center(child: CircularProgressIndicator()),
-              barrierDismissible: false);
-          String username = _usernameController.text;
-          String firstName = _firstNameController.text;
-          String lastName = _lastNameController.text;
-          String age = _ageController.text;
-          String experience = _experienceController.text;
-
-          // Check if username exists in the database
-          bool usernameExists = await _checkIfUsernameExists(username);
-
-          if (usernameExists) {
-            customSnackbar.showDoesNotExistMessage(context);
-            return;
-          }
-
-          Map<String, dynamic> coachData = {
-            'firstName': firstName,
-            'lastName': lastName,
-            'age': int.parse(age),
-            'experience': int.parse(experience),
-            'profileImageUrl': _uploadedImageUrl,
-            'username': username,
-          };
-
-          await updateCoachInfo(coachId, coachData).then(
-            (value) {
-              customSnackbar.showSuccessMessage(context);
-              Get.toNamed(Routes.coachDashboard)?.then(
-                (value) => Get.back(),
-              );
-            },
-          );
+          return; // Exit early if stage transitioned
         }
-        // Navigate to the next page or perform any other action
-      } on FirebaseException {
+
+        Get.dialog(const Center(child: CircularProgressIndicator()),
+            barrierDismissible: false);
+
+        String username = _usernameController.text;
+        String firstName = _firstNameController.text;
+        String lastName = _lastNameController.text;
+        String age = _ageController.text;
+        String experience = _experienceController.text;
+
+        // Check if username exists in the database
+        bool usernameExists = await _checkIfUsernameExists(username);
+
+        if (usernameExists) {
+          Get.back();
+          customSnackbar.showMessage(context,
+              LocalizationService.translateFromGeneral('usernameExistsError'));
+          return; // Exit early if username exists
+        }
+
+        String coachId = await widget.registerCoach();
+        String uploadedImageUrl = await _uploadImage(coachId);
+
+        Map<String, dynamic> coachData = {
+          'firstName': firstName,
+          'lastName': lastName,
+          'age': int.tryParse(age) ?? 0, // Safely parse integer or default to 0
+          'experience': int.tryParse(experience) ??
+              0, // Safely parse integer or default to 0
+          'profileImageUrl': uploadedImageUrl,
+          'username': username,
+        };
+
+        await updateCoachInfo(coachId, coachData);
+        customSnackbar.showSuccessMessage(context);
+
+        // Navigate to the coach dashboard after success
+        Get.toNamed(Routes.coachDashboard)?.then((value) => Get.back());
+      } on FirebaseException catch (e) {
         Get.back();
         customSnackbar.showFailureMessage(context);
-      } on FormatException {
+      } on FormatException catch (_) {
         Get.back();
-        // Handle invalid number format (e.g., age or experience)
         customSnackbar.showInvalidFormatMessage(context);
       } catch (e) {
         Get.back();
@@ -154,13 +187,11 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 _buildImageStack(),
                 stage == 2 ? const SizedBox(height: 24) : Container(),
                 stage == 2
-                    ? ImagePickerComponent(
-                        userId: coachId,
-                        onImageUploaded: (imageUrl) {
-                          setState(() {
-                            _uploadedImageUrl = imageUrl;
-                          });
-                        })
+                    ? ImagePickerComponent(onImageUploaded: (selectedImage) {
+                        setState(() {
+                          _selectedImage = selectedImage;
+                        });
+                      })
                     : Container(),
                 const SizedBox(height: 12),
                 stage == 1
@@ -289,11 +320,34 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(20),
-        child: BuildIconButton(
-          onPressed: _submitForm,
-          text: LocalizationService.translateFromGeneral('next'),
-          icon: Icons.west,
-          iconAlignment: IconAlignment.end,
+        child: Row(
+          children: [
+            BuildIconButton(
+              onPressed: _submitForm,
+              text: LocalizationService.translateFromGeneral('next'),
+              icon: Icons.east,
+              iconAlignment: IconAlignment.start,
+              width: Get.width * 0.42,
+              fontSize: 14,
+              textColor: Palette.black,
+              iconColor: Palette.black,
+            ),
+            const SizedBox(width: 12),
+            BuildIconButton(
+              onPressed: () {
+                setState(() {
+                  stage = 1;
+                });
+              },
+              text: LocalizationService.translateFromGeneral('goBack'),
+              icon: Icons.west,
+              iconAlignment: IconAlignment.end,
+              width: Get.width * 0.42,
+              fontSize: 14,
+              textColor: Palette.black,
+              iconColor: Palette.black,
+            )
+          ],
         ),
       ),
     );
@@ -317,13 +371,6 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
         height: 200,
         fit: BoxFit.cover,
       ),
-    );
-  }
-
-  OutlineInputBorder _buildInputBorder(Color borderColor) {
-    return OutlineInputBorder(
-      borderSide: BorderSide(color: borderColor, width: 1),
-      borderRadius: BorderRadius.circular(10),
     );
   }
 }

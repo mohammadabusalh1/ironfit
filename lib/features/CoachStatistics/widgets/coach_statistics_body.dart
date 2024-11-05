@@ -76,16 +76,15 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
         }
       }).toList();
 
-      // Safely handle potential parsing errors
-      int income = 0;
-      try {
-        income = subscriptionsList
-            .map((subscription) => int.parse(subscription['amountPaid'] ?? '0'))
-            .reduce((a, b) => a + b);
-      } catch (e) {
-        print("Error calculating income: $e");
-        income = 0; // Default to 0 if parsing fails
-      }
+      print(subscriptionsList
+          .map((subscription) => subscription['amountPaid'] ?? 0));
+
+      int income = subscriptionsList
+          .where((subscription) =>
+              DateTime.parse(subscription['startDate']).month >=
+                  DateTime.now().month)
+          .map((subscription) => subscription['amountPaid'] ?? 0)
+          .reduce((a, b) => int.parse(a.toString()) + int.parse(b.toString()));
 
       return {
         'trainees': subscriptionsList.length,

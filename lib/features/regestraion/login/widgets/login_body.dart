@@ -28,7 +28,6 @@ class _LoginBodyState extends State<LoginBody> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool passwordVisibility = false;
-  bool isCoach = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
@@ -82,7 +81,6 @@ class _LoginBodyState extends State<LoginBody> {
       if (coacheDoc.exists) {
         SharedPreferences prefs = await preferencesService.getPreferences();
         prefs.setString('token', userCredential.user!.uid);
-        prefs.setBool('isCoach', true);
         Get.toNamed(Routes.coachDashboard)?.then(
           (value) {
             Navigator.pop(context);
@@ -91,7 +89,6 @@ class _LoginBodyState extends State<LoginBody> {
       } else if (userDoc.exists) {
         SharedPreferences prefs = await preferencesService.getPreferences();
         prefs.setString('token', userCredential.user!.uid);
-        prefs.setBool('isCoach', false);
         Get.toNamed(Routes.trainerDashboard)?.then(
           (value) {
             Navigator.pop(context);
@@ -100,15 +97,14 @@ class _LoginBodyState extends State<LoginBody> {
       } else if (userCredential.user != null) {
         SharedPreferences prefs = await preferencesService.getPreferences();
         prefs.setString('token', userCredential.user!.uid);
+        bool isCoach = prefs.getBool('isCoach') ?? false;
         if (isCoach) {
-          prefs.setBool('isCoach', true);
           Get.toNamed(Routes.coachEnterInfo)?.then(
             (value) {
               Navigator.pop(context);
             },
           );
         } else {
-          prefs.setBool('isCoach', false);
           Get.toNamed(Routes.userEnterInfo)?.then(
             (value) {
               Navigator.pop(context);
@@ -140,11 +136,13 @@ class _LoginBodyState extends State<LoginBody> {
         // Step 1: Sign in the user with FirebaseAuth
         UserCredential userCredential = await FirebaseAuth.instance
             .signInWithEmailAndPassword(
-                email: emailController.text, password: passwordController.text);
+                email: emailController.text.trim(), password: passwordController.text);
 
         // Step 2: Get the current user from FirebaseAuth
         User? user = userCredential.user;
 
+        SharedPreferences prefs = await preferencesService.getPreferences();
+        bool isCoach = prefs.getBool('isCoach') ?? false;
         // Step 5: Navigate based on userType
         if (isCoach) {
           // Step 3: Fetch user data from Firestore
@@ -159,7 +157,6 @@ class _LoginBodyState extends State<LoginBody> {
                   await preferencesService.getPreferences();
               prefs.setString('coachId', user.uid);
               prefs.setString('token', userSnapshot.id);
-              prefs.setBool('isCoach', true);
               // Navigate to coach dashboard
               Get.toNamed(Routes.coachDashboard);
             } else {
@@ -178,7 +175,6 @@ class _LoginBodyState extends State<LoginBody> {
               SharedPreferences prefs =
                   await preferencesService.getPreferences();
               prefs.setString('token', userSnapshot.id);
-              prefs.setBool('isCoach', false);
               Get.toNamed(Routes.trainerDashboard);
             } else {
               throw Exception(LocalizationService.translateFromGeneral(
@@ -188,7 +184,7 @@ class _LoginBodyState extends State<LoginBody> {
         }
       } catch (e) {
         Get.back();
-        customSnackbar.showMessage(context, 'loginFailed');
+        customSnackbar.showMessage(context, e.toString());
       }
     }
   }
@@ -203,8 +199,8 @@ class _LoginBodyState extends State<LoginBody> {
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
+              SizedBox(height: Get.height * 0.12),
               AnimatedScreen(),
-              const SizedBox(height: 24),
               Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(
@@ -215,9 +211,10 @@ class _LoginBodyState extends State<LoginBody> {
                     const SizedBox(height: 12),
                     _buildPasswordTextField(context),
                     const SizedBox(height: 24),
-                    _buildCoachSwitch(context),
-                    const SizedBox(height: 24),
+                    // _buildCoachSwitch(context),
+                    // const SizedBox(height: 24),
                     BuildIconButton(
+                      height: 50,
                       text: LocalizationService.translateFromGeneral('login'),
                       onPressed: () {
                         _login();
@@ -228,6 +225,7 @@ class _LoginBodyState extends State<LoginBody> {
                     ),
                     const SizedBox(height: 8),
                     BuildIconButton(
+                      height: 50,
                       text: LocalizationService.translateFromGeneral(
                           'sign_in_with_google'),
                       onPressed: () async {
@@ -247,12 +245,34 @@ class _LoginBodyState extends State<LoginBody> {
                       ),
                       width: Get.width,
                     ),
-                    const SizedBox(height: 24),
-                    _builSignUpText(context),
+                    TextButton(
+                      onPressed: () {
+                        Get.toNamed(Routes.singIn);
+                      },
+                      child: Text(
+                        LocalizationService.translateFromGeneral(
+                            'areYouForgetPassword'),
+                        style: AppStyles.textCairo(
+                            14, Palette.mainAppColorWhite, FontWeight.w500),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: TextButton(
+          onPressed: () {
+            Get.toNamed(Routes.singUp);
+          },
+          child: Text(
+            LocalizationService.translateFromGeneral('create_account'),
+            style:
+                AppStyles.textCairo(14, Palette.mainAppColor, FontWeight.w500),
           ),
         ),
       ),
@@ -275,7 +295,7 @@ class _LoginBodyState extends State<LoginBody> {
           borderRadius: BorderRadius.circular(10),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(10),
         ),
         prefixIcon: const Padding(
           padding: EdgeInsets.all(10.0), // Adjust padding if needed
@@ -316,7 +336,7 @@ class _LoginBodyState extends State<LoginBody> {
         enabledBorder: OutlineInputBorder(
           borderSide:
               const BorderSide(color: Palette.mainAppColorBorder, width: 1),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(10),
         ),
         suffixIcon: InkWell(
           onTap: () => setState(() {
@@ -351,49 +371,4 @@ class _LoginBodyState extends State<LoginBody> {
       },
     );
   }
-
-  Widget _buildCoachSwitch(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          LocalizationService.translateFromGeneral('are_you_a_trainer'),
-          style: AppStyles.textCairo(
-              16, Palette.mainAppColorWhite, FontWeight.normal),
-        ),
-        Switch.adaptive(
-          value: isCoach,
-          onChanged: (newValue) {
-            setState(() {
-              isCoach = newValue;
-            });
-          },
-          activeColor: const Color(0xFFFFBB02),
-          inactiveTrackColor: Palette.gray,
-        ),
-      ],
-    );
-  }
-}
-
-Widget _builSignUpText(BuildContext context) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Text(
-        LocalizationService.translateFromGeneral('no_account'),
-        style:
-            AppStyles.textCairo(14, Palette.mainAppColorWhite, FontWeight.w500),
-      ),
-      TextButton(
-        onPressed: () {
-          Get.toNamed(Routes.singUp);
-        },
-        child: Text(
-          LocalizationService.translateFromGeneral('create_account'),
-          style: AppStyles.textCairo(14, Palette.mainAppColor, FontWeight.w500),
-        ),
-      ),
-    ],
-  );
 }

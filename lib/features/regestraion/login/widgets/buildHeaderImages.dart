@@ -47,45 +47,17 @@ class _AnimatedScreenState extends State<AnimatedScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _buildHeaderImages(),
-        // Add other UI components here, like buttons, icons, etc.
-      ],
-    );
-  }
-
-  Widget _buildHeaderImages() {
-    return Stack(
-      children: [
-        // Fade animation for the header image
-        FadeTransition(
-          opacity: _imageFadeAnimation,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              Assets.singUpImage,
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.27,
-              fit: BoxFit.cover,
-            ),
-          ),
+    return FadeTransition(
+      opacity: _imageFadeAnimation,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.asset(
+          Assets.ironFitLogo,
+          width: 300.0,
+          height: 120.0,
+          fit: BoxFit.cover,
         ),
-        Center(
-          // Scale and fade animation for the logo
-          child: ScaleTransition(
-            scale: _logoScaleAnimation,
-            child: ClipRRect(
-              child: Image.asset(
-                Assets.ironFitLogo,
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height * 0.27,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

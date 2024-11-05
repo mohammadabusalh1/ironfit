@@ -96,6 +96,7 @@
   "ageDistribution": "توزيع الأعمار",
   "noDataForAgeDistribution": "لا توجد بيانات لتوزيع الأعمار",
   "trainee": "متدرب",
+  "coach": "مدرب",
   "noData": "لا توجد بيانات",
   "planName": "إسم الخطة",
   "planDescription": "وصف الخطة",
@@ -239,5 +240,7 @@
   "amount": "المقدار",
   "goBack": "للخلف",
   "personalInfoSection": "المعلومات الشخصية",
-  "traineeExist": "المتدرب موجود بالفعل"
+  "traineeExist": "المتدرب موجود بالفعل",
+  "areYouForgetPassword": "هل نسيت كلمة المرور؟",
+  "areYouCoach": "هل أنت مدرب؟"
 }

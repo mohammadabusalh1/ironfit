@@ -1,5 +1,6 @@
 class Assets {
   static const String myGymImage = 'assets/images/gym.jpg';
+  static const String preLoginVideo = 'assets/images/preLoginVideo.gif';
   static const String myTrainerImage = 'assets/images/trainer.jpg';
   static const String singUpImage = 'assets/images/signOne.jpeg';
   static const String ironFit = 'assets/images/ironFit.jpg';
@@ -16,7 +17,8 @@ class Assets {
   static const String myGymPageImage = 'assets/images/myGymImage.png';
   static const String placeholder = 'assets/images/placeholder.svg';
   static const String googleLogo = 'assets/images/google-logo.png';
-  static const String selectLangBackground = 'assets/images/selectLangBackground.png';
+  static const String selectLangBackground =
+      'assets/images/selectLangBackground.png';
   static const String notFound =
       'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
 }

@@ -38,6 +38,7 @@
   "logout": "Logout",
   "noName": "No name available",
   "trainee": "Trainee",
+  "coach": "Coach",
   "newTrainees": "New trainees",
   "incomeThisMonth": "Income this month",
   "ageDistribution": "Age distribution",
@@ -241,5 +242,7 @@
   "addIncrementOrDecrementNegative": "Add increment or decrement with a negative value",
   "amount": "Amount",
   "goBack": "Back",
-  "traineeExist": "Trainee already exist"
+  "traineeExist": "Trainee already exist",
+  "areYouForgetPassword": "Are you forget password?",
+  "areYouCoach": "Are you a coach?"
 }

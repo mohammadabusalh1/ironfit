@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Button.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
-import 'package:ironfit/core/presentation/widgets/preferences_manager.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SelectEnterBody extends StatefulWidget {
   const SelectEnterBody({super.key});
@@ -19,9 +20,11 @@ class SelectEnterBody extends StatefulWidget {
 class _SelectEnterBodyState extends State<SelectEnterBody>
     with SingleTickerProviderStateMixin {
   final TokenService tokenService = TokenService();
-  final SharedPreferencesManager prefsManager = SharedPreferencesManager();
+  PreferencesService preferencesService = PreferencesService();
   late AnimationController _controller;
   late Animation<double> _opacityAnimation;
+
+  int stage = 1;
 
   @override
   void initState() {
@@ -73,13 +76,24 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                     padding: const EdgeInsets.all(24),
                     child: Column(
                       children: [
-                        Text(
-                          textAlign: TextAlign.center,
-                          LocalizationService.translateFromPage(
-                              'title', 'selectEnter'),
-                          style: AppStyles.textCairo(
-                              24, Palette.white, FontWeight.bold),
-                        ),
+                        stage == 1
+                            ? Text(
+                                textAlign: TextAlign.center,
+                                LocalizationService.translateFromGeneral(
+                                    'areYouCoach'),
+                                style: AppStyles.textCairo(
+                                    24, Palette.white, FontWeight.bold),
+                              )
+                            : Container(),
+                        stage == 2
+                            ? Text(
+                                textAlign: TextAlign.center,
+                                LocalizationService.translateFromPage(
+                                    'title', 'selectEnter'),
+                                style: AppStyles.textCairo(
+                                    24, Palette.white, FontWeight.bold),
+                              )
+                            : Container(),
                         Text(
                           textAlign: TextAlign.center,
                           LocalizationService.translateFromPage(
@@ -89,32 +103,77 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                         ),
                         SizedBox(
                             height: MediaQuery.of(context).size.height * 0.04),
-                        BuildIconButton(
-                          text:
-                              LocalizationService.translateFromGeneral('login'),
-                          onPressed: () {
-                            Get.toNamed(Routes.singIn);
-                          },
-                          backgroundColor: Palette.mainAppColor,
-                          textColor: Palette.white,
-                          icon: Icons.login_outlined,
-                          iconSize: 20,
-                          width: Get.width,
-                        ),
+                        stage == 2
+                            ? BuildIconButton(
+                                text: LocalizationService.translateFromGeneral(
+                                    'login'),
+                                onPressed: () {
+                                  Get.toNamed(Routes.singIn);
+                                },
+                                backgroundColor: Palette.mainAppColor,
+                                textColor: Palette.white,
+                                icon: Icons.login_outlined,
+                                iconSize: 20,
+                                width: Get.width,
+                              )
+                            : Container(),
                         SizedBox(height: 12),
-                        BuildIconButton(
-                          text: LocalizationService.translateFromGeneral(
-                              'create_account'),
-                          onPressed: () {
-                            Get.toNamed(Routes.singUp);
-                          },
-                          backgroundColor: Palette.mainAppColorWhite,
-                          textColor: Palette.mainAppColorNavy,
-                          iconColor: Palette.mainAppColorNavy,
-                          icon: Icons.person_add_alt_1_outlined,
-                          iconSize: 20,
-                          width: Get.width,
-                        ),
+                        stage == 2
+                            ? BuildIconButton(
+                                text: LocalizationService.translateFromGeneral(
+                                    'create_account'),
+                                onPressed: () {
+                                  Get.toNamed(Routes.singUp);
+                                },
+                                backgroundColor: Palette.mainAppColorWhite,
+                                textColor: Palette.mainAppColorNavy,
+                                iconColor: Palette.mainAppColorNavy,
+                                icon: Icons.person_add_alt_1_outlined,
+                                iconSize: 20,
+                                width: Get.width,
+                              )
+                            : Container(),
+                        stage == 1
+                            ? BuildIconButton(
+                                text: LocalizationService.translateFromGeneral(
+                                    'coach'),
+                                onPressed: () async {
+                                  SharedPreferences prefs =
+                                      await preferencesService.getPreferences();
+                                  setState(() {
+                                    prefs.setBool('isCoach', true);
+                                    stage = 2;
+                                  });
+                                },
+                                backgroundColor: Palette.mainAppColor,
+                                textColor: Palette.mainAppColorWhite,
+                                iconColor: Palette.mainAppColorWhite,
+                                icon: Icons.fitness_center,
+                                iconSize: 20,
+                                width: Get.width,
+                              )
+                            : Container(),
+                        SizedBox(height: 12),
+                        stage == 1
+                            ? BuildIconButton(
+                                text: LocalizationService.translateFromGeneral(
+                                    'trainee'),
+                                onPressed: () async {
+                                  SharedPreferences prefs =
+                                      await preferencesService.getPreferences();
+                                  setState(() {
+                                    prefs.setBool('isCoach', false);
+                                    stage = 2;
+                                  });
+                                },
+                                backgroundColor: Palette.mainAppColorWhite,
+                                textColor: Palette.mainAppColorNavy,
+                                iconColor: Palette.mainAppColorNavy,
+                                icon: Icons.directions_run_outlined,
+                                iconSize: 20,
+                                width: Get.width,
+                              )
+                            : Container(),
                       ],
                     ),
                   ),

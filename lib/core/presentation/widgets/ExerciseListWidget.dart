@@ -122,7 +122,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                 hint: Text(LocalizationService.translateFromGeneral('bodyPart'),
                     style: AppStyles.textCairo(
                         14, Palette.white, FontWeight.w500)),
-                value: fileNameSelected,
+                // value: fileNameSelected,
                 onChanged: (newValue) {
                   setState(() {
                     fileNameSelected = newValue!;

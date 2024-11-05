@@ -7,6 +7,7 @@ import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Button.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:ironfit/core/presentation/widgets/confirmRemove.dart';
 import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
@@ -41,45 +42,14 @@ class _MyPlansBodyState extends State<MyPlansBody> {
 
   Future<void> deletePlan(BuildContext context, String planId) async {
     try {
-      // Show a confirmation dialog before deletion
-      bool confirmCancel = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            alignment: Alignment.center,
-            title: Text(
-              LocalizationService.translateFromGeneral('cancelConfirmation'),
-              textAlign: TextAlign.center,
-            ),
-            content: Text(
-              LocalizationService.translateFromGeneral(
-                  'deletePlanConfirmation'),
-              textAlign: TextAlign.end,
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(false); // User canceled
-                },
-                child: Text(LocalizationService.translateFromGeneral('cancel'),
-                    style: AppStyles.textCairo(
-                        14, Palette.black, FontWeight.w500)),
-              ),
-              BuildIconButton(
-                text: LocalizationService.translateFromGeneral(
-                    'cancelConfirmation'),
-                backgroundColor: Palette.redDelete,
-                onPressed: () {
-                  Navigator.of(context).pop(true); // User confirmed
-                },
-              ),
-            ],
-          );
-        },
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
       );
 
+      bool confirm = await confirmCancel(context);
       // If the user cancels, return early
-      if (!confirmCancel) {
+      if (!confirm) {
         return;
       }
 
@@ -106,6 +76,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
       // Notify the user of success
       customSnackbar.showMessage(context,
           LocalizationService.translateFromGeneral('planDeletedSuccessfully'));
+      Navigator.pop(context);
     } on FirebaseException catch (e) {
       // Handle Firebase-specific errors
       print('Firebase error: $e');

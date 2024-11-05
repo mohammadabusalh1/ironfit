@@ -136,7 +136,9 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                   color: Palette.mainAppColor,
                   size: 24,
                 ),
-                onPressed: () => _addTrainingDay(context),
+                onPressed: () {
+                  _addTrainingDay(context);
+                },
               ),
             ),
           ),
@@ -482,6 +484,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                         .add(TrainingDay(day: selectedDay!, exercises: []));
                   });
                   Navigator.pop(context);
+                  FocusScope.of(context).unfocus();
                 }
               },
               width: 90,
@@ -528,6 +531,10 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   void _savePlan() async {
     if (_validatePlan()) {
       try {
+        Get.dialog(
+          const Center(child: CircularProgressIndicator()),
+          barrierDismissible: false,
+        );
         final User? user = _auth.currentUser;
 
         final planQuery = await _firestore
@@ -571,6 +578,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
               .doc(user.uid)
               .collection('plans')
               .add(planData);
+          Navigator.pop(context);
           Get.toNamed(Routes.myPlans);
           customSnackbar.showSuccessMessage(context);
         } else {

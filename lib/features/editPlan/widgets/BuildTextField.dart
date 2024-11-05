@@ -21,7 +21,7 @@ Widget BuildTextField(
     textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
     child: TextFormField(
       textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-      onTap: () => onTap!() ?? () {},
+      onTap: onTap ?? () {},
       inputFormatters: inputFormatters,
       controller: controller,
       onChanged: (value) => onChange!(value) ?? {},

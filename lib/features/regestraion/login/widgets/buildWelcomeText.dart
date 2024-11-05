@@ -21,7 +21,7 @@ class _AnimatedWelcomeText extends State<WelcomeText>
     // Typewriter Effect for Text (Custom typewriter behavior)
     _textTypewriterController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 2),
+      duration: Duration(seconds: 3),
     );
 
     _textFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(

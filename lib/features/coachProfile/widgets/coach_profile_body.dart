@@ -585,7 +585,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
       await FirebaseAuth.instance.signOut();
       SharedPreferences prefs = await preferencesService.getPreferences();
       prefs.clear();
-      Get.toNamed(Routes.singIn);
+      Get.toNamed(Routes.selectEnter);
     } catch (e) {
       customSnackbar.showMessage(
           context, LocalizationService.translateFromGeneral('logoutError'));

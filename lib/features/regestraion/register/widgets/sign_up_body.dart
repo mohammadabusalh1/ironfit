@@ -35,7 +35,6 @@ class _SignUpBodyState extends State<SignUpBody> {
       GlobalKey<FormState>(); // Form Key for Validation
 
   bool passwordVisibility = false;
-  bool isCoach = false;
   PreferencesService preferencesService = PreferencesService();
 
   // Firebase Auth instance
@@ -135,6 +134,8 @@ class _SignUpBodyState extends State<SignUpBody> {
           password: passwordController.text.trim(),
         );
 
+        SharedPreferences prefs = await preferencesService.getPreferences();
+        bool isCoach = prefs.getBool('isCoach') ?? false;
         // Save data based on the user type (coach/trainee)
         if (isCoach) {
           User? user = _auth.currentUser;
@@ -154,7 +155,7 @@ class _SignUpBodyState extends State<SignUpBody> {
             await user.delete();
           }
           Navigator.of(context).pop();
-           Get.to(Directionality(
+          Get.to(Directionality(
               textDirection:
                   dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
               child: UserEnterInfoScreen(
@@ -181,12 +182,11 @@ class _SignUpBodyState extends State<SignUpBody> {
         if (userCredential.user != null) {
           SharedPreferences prefs = await preferencesService.getPreferences();
           prefs.setString('token', userCredential.user!.uid);
+          bool isCoach = prefs.getBool('isCoach') ?? false;
           if (isCoach) {
-            prefs.setBool('isCoach', true);
             await saveCoachData();
             return userCredential.user!.uid;
           } else {
-            prefs.setBool('isCoach', false);
             await saveTraineeData();
             return userCredential.user!.uid;
           }
@@ -244,22 +244,21 @@ class _SignUpBodyState extends State<SignUpBody> {
       SharedPreferences prefs = await preferencesService.getPreferences();
       prefs.setString('token', userCredential.user!.uid);
       if (coacheDoc.docs.isNotEmpty) {
-        prefs.setBool('isCoach', true);
         Get.toNamed(Routes.coachDashboard)?.then(
           (value) {
             Navigator.pop(context);
           },
         );
       } else if (userDoc.docs.isNotEmpty) {
-        prefs.setBool('isCoach', false);
         Get.toNamed(Routes.trainerDashboard)?.then(
           (value) {
             Navigator.pop(context);
           },
         );
       } else if (userCredential.user != null) {
+        SharedPreferences prefs = await preferencesService.getPreferences();
+        bool isCoach = prefs.getBool('isCoach') ?? false;
         if (isCoach) {
-          prefs.setBool('isCoach', true);
           await saveCoachData();
           Get.toNamed(Routes.coachEnterInfo)?.then(
             (value) {
@@ -267,7 +266,6 @@ class _SignUpBodyState extends State<SignUpBody> {
             },
           );
         } else {
-          prefs.setBool('isCoach', false);
           await saveTraineeData();
           Get.toNamed(Routes.userEnterInfo)?.then(
             (value) {
@@ -321,8 +319,8 @@ class _SignUpBodyState extends State<SignUpBody> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                SizedBox(height: Get.height * 0.12),
                 AnimatedScreen(),
-                const SizedBox(height: 24),
                 Padding(
                   padding: const EdgeInsets.all(24),
                   child: Column(
@@ -333,8 +331,8 @@ class _SignUpBodyState extends State<SignUpBody> {
                       const SizedBox(height: 12),
                       _buildPasswordTextField(context),
                       const SizedBox(height: 24),
-                      _buildCoachSwitch(context),
-                      const SizedBox(height: 24),
+                      // _buildCoachSwitch(context),
+                      // const SizedBox(height: 24),
                       BuildIconButton(
                         text: LocalizationService.translateFromGeneral(
                             'create_account'),
@@ -344,12 +342,14 @@ class _SignUpBodyState extends State<SignUpBody> {
                         backgroundColor: Palette.mainAppColor,
                         textColor: Palette.white,
                         width: Get.width,
+                        height: 50,
                       ),
                       const SizedBox(height: 8),
                       BuildIconButton(
-                        width: Get.width,
+                        height: 50,
                         text: LocalizationService.translateFromGeneral(
                             'sign_in_with_google'),
+                        width: Get.width,
                         onPressed: () async {
                           try {
                             await signUpWithGoogle();
@@ -388,14 +388,36 @@ class _SignUpBodyState extends State<SignUpBody> {
                           height: 24,
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      _buildLoginText(context),
+                      TextButton(
+                        onPressed: () {
+                          Get.toNamed(Routes.singIn);
+                        },
+                        child: Text(
+                          LocalizationService.translateFromGeneral(
+                              'areYouForgetPassword'),
+                          style: AppStyles.textCairo(
+                              14, Palette.mainAppColorWhite, FontWeight.w500),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
           )),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.all(24),
+        child: TextButton(
+          onPressed: () {
+            Get.toNamed(Routes.singIn);
+          },
+          child: Text(
+            LocalizationService.translateFromGeneral('login'),
+            style:
+                AppStyles.textCairo(14, Palette.mainAppColor, FontWeight.w500),
+          ),
+        ),
+      ),
     );
   }
 
@@ -412,10 +434,10 @@ class _SignUpBodyState extends State<SignUpBody> {
         enabledBorder: OutlineInputBorder(
           borderSide:
               const BorderSide(color: Palette.mainAppColorBorder, width: 1),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(10),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(10),
         ),
         prefixIcon: const Padding(
           padding: EdgeInsets.all(10.0), // Adjust padding if needed
@@ -446,7 +468,7 @@ class _SignUpBodyState extends State<SignUpBody> {
         enabledBorder: OutlineInputBorder(
           borderSide:
               const BorderSide(color: Palette.mainAppColorBorder, width: 1),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(10),
         ),
         suffixIcon: InkWell(
           onTap: () {
@@ -477,48 +499,4 @@ class _SignUpBodyState extends State<SignUpBody> {
     );
   }
 
-  Widget _buildCoachSwitch(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          LocalizationService.translateFromGeneral('are_you_a_trainer'),
-          style: AppStyles.textCairo(
-              16, Palette.mainAppColorWhite, FontWeight.normal),
-        ),
-        Switch.adaptive(
-          value: isCoach,
-          onChanged: (newValue) {
-            setState(() {
-              isCoach = newValue;
-            });
-          },
-          activeColor: const Color(0xFFFFBB02),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLoginText(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          LocalizationService.translateFromGeneral('already_have_account'),
-          style: AppStyles.textCairo(
-              14, Palette.mainAppColorWhite, FontWeight.w500),
-        ),
-        TextButton(
-          onPressed: () {
-            Get.toNamed(Routes.singIn);
-          },
-          child: Text(
-            LocalizationService.translateFromGeneral('login'),
-            style:
-                AppStyles.textCairo(14, Palette.mainAppColor, FontWeight.w500),
-          ),
-        ),
-      ],
-    );
-  }
 }

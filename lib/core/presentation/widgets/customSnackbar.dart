@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
 class CustomSnackbar {
@@ -16,6 +18,16 @@ class CustomSnackbar {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
+  }
+
+  void showMessageAbove(context, String message) {
+    Get.snackbar('', message,
+        backgroundColor: Palette.secondaryColor,
+        colorText: Palette.mainAppColorWhite,
+        messageText: Text(
+          message,
+          textAlign: TextAlign.center,
+        ));
   }
 
   void showFailureMessage(context) {

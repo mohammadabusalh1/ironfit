@@ -72,6 +72,7 @@ class _TraineesBodyState extends State<TraineesBody> {
               const Center(child: CircularProgressIndicator())
             else
               _buildTraineesList(),
+            const SizedBox(height: 24),
           ],
         ),
         Positioned(
@@ -580,7 +581,7 @@ class _TraineesBodyState extends State<TraineesBody> {
 
                       // Trainee exists: Update existing trainee with new subscription details
                       if (traineeExists) {
-                        customSnackbar.showMessage(
+                        customSnackbar.showMessageAbove(
                             context,
                             LocalizationService.translateFromGeneral(
                                 'traineeExist'));

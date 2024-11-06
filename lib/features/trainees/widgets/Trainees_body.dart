@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
+import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Button.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
@@ -16,6 +17,8 @@ import 'package:ironfit/features/Trainee/screens/trainee_screen.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 
 class TraineesBody extends StatefulWidget {
+  const TraineesBody({super.key});
+
   @override
   _TraineesBodyState createState() => _TraineesBodyState();
 }
@@ -24,7 +27,7 @@ class _TraineesBodyState extends State<TraineesBody> {
   List<Map<String, dynamic>> trainees = [];
   List<Map<String, dynamic>> filtteredTrainees = [];
   int _itemCount = 10;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
 
   bool isNameSortUp = true;
@@ -241,7 +244,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.network(imagePath,
+                    child: Image.network(imagePath.isEmpty ? Assets.notFound : imagePath,
                         width: 40, height: 40, fit: BoxFit.cover),
                   ),
                   const SizedBox(width: 12),
@@ -437,7 +440,8 @@ class _TraineesBodyState extends State<TraineesBody> {
                               'usernameLabel'),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return '${LocalizationService.translateFromGeneral('thisFieldRequired')}';
+                              return LocalizationService.translateFromGeneral(
+                                  'thisFieldRequired');
                             }
                             return null;
                           },
@@ -589,7 +593,8 @@ class _TraineesBodyState extends State<TraineesBody> {
                         // Trainee does not exist: Create new trainee and subscription
                         final newTraineeRef = FirebaseFirestore.instance
                             .collection('trainees')
-                            .doc();
+                            .doc(username);
+
                         batch.set(newTraineeRef, {
                           'username': username,
                           'age': '0',
@@ -603,26 +608,24 @@ class _TraineesBodyState extends State<TraineesBody> {
                           'amountPaid': amountPaid,
                           'totalAmountPaid': amountPaid,
                           'debts': debts,
-                          'userId': newTraineeRef.id,
+                          'userId': username,
                         });
                         batch.update(newTraineeRef, {
                           'coachId': coach?.uid,
                           'subscriptionId': subscriptionDocRef.id,
                         });
 
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
                         customSnackbar.showMessage(
                             context,
                             LocalizationService.translateFromPage(
                                 'message', 'snackbarSuccess'));
-                        Navigator.of(context).pop();
                       }
 
                       // Commit batch write
                       await batch.commit();
                       await fetchTrainees();
-                      Navigator.of(context).pop();
-
-                      // Close loading dialog
                     }
                   },
                   width: Get.width * 0.25,

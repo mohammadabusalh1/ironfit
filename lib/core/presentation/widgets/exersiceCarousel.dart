@@ -9,7 +9,7 @@ class ExerciseCarousel extends StatelessWidget {
   final List<Map<String, String>> exercises;
 
   // Constructor to accept the list of exercises
-  ExerciseCarousel({required this.exercises});
+  const ExerciseCarousel({super.key, required this.exercises});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class ExerciseCarousel extends StatelessWidget {
       );
     }
 
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: 200,
       child: CarouselSlider(

@@ -117,7 +117,7 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                                 width: Get.width,
                               )
                             : Container(),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         stage == 2
                             ? BuildIconButton(
                                 text: LocalizationService.translateFromGeneral(
@@ -153,7 +153,7 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                                 width: Get.width,
                               )
                             : Container(),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         stage == 1
                             ? BuildIconButton(
                                 text: LocalizationService.translateFromGeneral(

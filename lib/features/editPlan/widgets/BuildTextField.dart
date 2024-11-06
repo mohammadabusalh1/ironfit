@@ -24,7 +24,7 @@ Widget BuildTextField(
       onTap: onTap ?? () {},
       inputFormatters: inputFormatters,
       controller: controller,
-      onChanged: (value) => onChange!(value) ?? {},
+      onChanged: onChange ?? (value) {},
       keyboardType: keyboardType ?? TextInputType.text,
       style: const TextStyle(color: Palette.white, fontSize: 14),
       decoration: InputDecoration(

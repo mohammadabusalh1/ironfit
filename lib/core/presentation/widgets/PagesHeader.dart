@@ -32,7 +32,7 @@ class DashboardHeader extends StatelessWidget {
   Widget _buildBackgroundImage(BuildContext context) {
     return AnimatedOpacity(
       opacity: 1.0, // Fade in effect
-      duration: Duration(seconds: 2),
+      duration: const Duration(seconds: 2),
       child: ClipRRect(
         child: Image.asset(
           backgroundImage,
@@ -55,7 +55,7 @@ class DashboardHeader extends StatelessWidget {
           _buildTrainerImage(context),
           const SizedBox(width: 16),
           TrainerInfo(trainerName: trainerName, trainerEmail: trainerEmail),
-          Spacer(),
+          const Spacer(),
           _buildNotificationButton(),
         ],
       ),
@@ -66,7 +66,7 @@ class DashboardHeader extends StatelessWidget {
   Widget _buildTrainerImage(BuildContext context) {
     return AnimatedScale(
       scale: 1.1, // Scale animation on hover/tap
-      duration: Duration(seconds: 1),
+      duration: const Duration(seconds: 1),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(50),
         child: Image.network(trainerImage,
@@ -89,10 +89,10 @@ class DashboardHeader extends StatelessWidget {
           onPressed: () {
             // Handle notification button action
           },
-          icon: AnimatedRotation(
+          icon: const AnimatedRotation(
             turns: 1,
             duration: Duration(seconds: 1),
-            child: const Icon(
+            child: Icon(
               Icons.notifications,
               color: Colors.white,
               size: 24,
@@ -130,12 +130,12 @@ class TrainerInfo extends StatelessWidget {
   Widget _buildTrainerName(BuildContext context) {
     return AnimatedOpacity(
         opacity: 1.0,
-        duration: Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
         child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.5,
           child: Text(
             trainerName.length > 12
-                ? '...' + trainerName.substring(0, 12)
+                ? '...${trainerName.substring(0, 12)}'
                 : trainerName,
             style: AppStyles.textCairo(
               16,
@@ -152,7 +152,7 @@ class TrainerInfo extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.5,
       child: Text(
         trainerEmail.length > 20
-            ? '...' + trainerEmail.substring(0, 20)
+            ? '...${trainerEmail.substring(0, 20)}'
             : trainerEmail,
         style: AppStyles.textCairo(
           12,
@@ -174,10 +174,10 @@ class LogoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedScale(
       scale: 1.2, // Scale effect
-      duration: Duration(seconds: 1),
+      duration: const Duration(seconds: 1),
       child: AnimatedOpacity(
         opacity: 1.0, // Fade in effect
-        duration: Duration(seconds: 1),
+        duration: const Duration(seconds: 1),
         child: Image.asset(
           logoPath,
           width: 100,
@@ -204,7 +204,7 @@ class DashboardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: Listenable.merge([
-        AlwaysStoppedAnimation(1)
+        const AlwaysStoppedAnimation(1)
       ]), // This can be replaced with actual animation logic
       builder: (context, child) {
         return Transform(

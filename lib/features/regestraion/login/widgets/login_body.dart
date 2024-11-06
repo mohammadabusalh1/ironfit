@@ -41,7 +41,7 @@ class _LoginBodyState extends State<LoginBody> {
 
   Future<void> signInWithGoogle() async {
     try {
-      Get.dialog(Center(child: CircularProgressIndicator()),
+      Get.dialog(const Center(child: CircularProgressIndicator()),
           barrierDismissible: false);
       // Attempt to sign in with Google
       GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -130,7 +130,7 @@ class _LoginBodyState extends State<LoginBody> {
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       try {
-        Get.dialog(Center(child: CircularProgressIndicator()),
+        Get.dialog(const Center(child: CircularProgressIndicator()),
             barrierDismissible: false);
 
         // Step 1: Sign in the user with FirebaseAuth
@@ -264,7 +264,7 @@ class _LoginBodyState extends State<LoginBody> {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         child: TextButton(
           onPressed: () {
             Get.toNamed(Routes.singUp);

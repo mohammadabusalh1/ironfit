@@ -22,16 +22,16 @@ class CoachCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap, // Trigger the onTap callback when tapped.
-      child: Card(
+      child: const Card(
         color: Palette.mainAppColor, // Background color of the card.
-        margin: const EdgeInsets.symmetric(
+        margin: EdgeInsets.symmetric(
             vertical: 8.0, horizontal: 16.0), // Card margin.
         elevation: 4.0, // Shadow elevation of the card.
         child: Padding(
-          padding: const EdgeInsets.all(16.0), // Padding inside the card.
+          padding: EdgeInsets.all(16.0), // Padding inside the card.
           child: Row(
             children: [
-              const SizedBox(
+              SizedBox(
                   width: 16.0), // Space on the left side of the content.
               Expanded(
                 child: Column(

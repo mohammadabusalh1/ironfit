@@ -185,11 +185,10 @@ class _SignUpBodyState extends State<SignUpBody> {
           bool isCoach = prefs.getBool('isCoach') ?? false;
           if (isCoach) {
             await saveCoachData();
-            return userCredential.user!.uid;
           } else {
             await saveTraineeData();
-            return userCredential.user!.uid;
           }
+          return userCredential.user!.uid;
         }
       } catch (e) {
         customSnackbar.showMessage(
@@ -202,7 +201,7 @@ class _SignUpBodyState extends State<SignUpBody> {
 
   Future<void> signUpWithGoogle() async {
     try {
-      Get.dialog(Center(child: CircularProgressIndicator()),
+      Get.dialog(const Center(child: CircularProgressIndicator()),
           barrierDismissible: false);
       // Attempt to sign in with Google
       GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -406,7 +405,7 @@ class _SignUpBodyState extends State<SignUpBody> {
             ),
           )),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         child: TextButton(
           onPressed: () {
             Get.toNamed(Routes.singIn);
@@ -498,5 +497,4 @@ class _SignUpBodyState extends State<SignUpBody> {
       validator: _validatePassword,
     );
   }
-
 }

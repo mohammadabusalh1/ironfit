@@ -42,7 +42,6 @@ Widget BuildIconButton({
         )
       : ElevatedButton(
           onPressed: onPressed ?? () {},
-          child: Opacity(opacity: 0.9, child: Text(text ?? '')),
           style: ElevatedButton.styleFrom(
             backgroundColor: backgroundColor,
             foregroundColor: textColor,
@@ -52,6 +51,7 @@ Widget BuildIconButton({
             fixedSize: Size(width, height),
             textStyle: AppStyles.textCairoButton(fontSize),
           ),
+          child: Opacity(opacity: 0.9, child: Text(text ?? '')),
         );
 }
 

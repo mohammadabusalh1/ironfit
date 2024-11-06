@@ -7,12 +7,12 @@ class SearchableDropdown extends StatefulWidget {
   final String labelText;
 
   const SearchableDropdown({
-    Key? key,
+    super.key,
     required this.items,
     required this.value,
     required this.onChanged,
     required this.labelText,
-  }) : super(key: key);
+  });
 
   @override
   _SearchableDropdownState createState() => _SearchableDropdownState();
@@ -49,7 +49,7 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
             labelText: "Search ${widget.labelText}",
             labelStyle: const TextStyle(color: Colors.white),
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white70),
+              borderSide: const BorderSide(color: Colors.white70),
               borderRadius: BorderRadius.circular(12),
             ),
             suffixIcon: IconButton(
@@ -76,7 +76,7 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
             labelText: widget.labelText,
             labelStyle: const TextStyle(color: Colors.white),
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white70),
+              borderSide: const BorderSide(color: Colors.white70),
               borderRadius: BorderRadius.circular(12),
             ),
           ),

@@ -90,7 +90,7 @@ class GymTicket extends StatelessWidget {
 
   // Build the text content
   Widget _buildTextContent() {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [],

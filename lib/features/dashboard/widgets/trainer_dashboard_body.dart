@@ -17,7 +17,7 @@ String trainerImage =
 bool isDataLoaded = false;
 
 class TrainerDashboardBody extends StatefulWidget {
-  TrainerDashboardBody({super.key});
+  const TrainerDashboardBody({super.key});
 
   @override
   _TrainerDashboardBodyState createState() => _TrainerDashboardBodyState();
@@ -144,7 +144,7 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
         children: [
           DashboardHeader(
             backgroundImage: Assets.dashboardBackground,
-            trainerImage: trainerImage,
+            trainerImage: trainerImage.isEmpty ? Assets.notFound : trainerImage,
             trainerName: trainerName,
             trainerEmail: trainerEmail,
           ),

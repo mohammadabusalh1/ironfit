@@ -34,7 +34,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
     await Firebase.initializeApp(
-        options: FirebaseOptions(
+        options: const FirebaseOptions(
             apiKey: "AIzaSyD7c0gMFuZhSkiYZWcZxX6_EuUsrYicLPQ",
             authDomain: "ironfit-edef8.firebaseapp.com",
             projectId: "ironfit-edef8",
@@ -147,13 +147,13 @@ class MyApp extends StatelessWidget {
                   page: () => Directionality(
                       textDirection:
                           dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: SelectEnterScreen())),
+                      child: const SelectEnterScreen())),
               GetPage(
                   name: Routes.selectLanguage,
                   page: () => Directionality(
                       textDirection:
                           dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: SelectLanguageScreen())),
+                      child: const SelectLanguageScreen())),
               GetPage(
                   name: Routes.coachDashboard,
                   page: () => Directionality(
@@ -183,13 +183,13 @@ class MyApp extends StatelessWidget {
                   page: () => Directionality(
                       textDirection:
                           dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: SignUpScreen())), // Sign-up page
+                      child: const SignUpScreen())), // Sign-up page
               GetPage(
                   name: Routes.singIn,
                   page: () => Directionality(
                       textDirection:
                           dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: LoginScreen())), // Login page
+                      child: const LoginScreen())), // Login page
               GetPage(
                   name: Routes.trainees,
                   page: () => Directionality(

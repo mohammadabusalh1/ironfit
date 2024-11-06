@@ -104,7 +104,7 @@ class _SelectLanguageBodyState extends State<SelectLanguageBody>
                           icon: Icons.language_outlined,
                           width: Get.width,
                         ),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         BuildIconButton(
                           text: 'English',
                           onPressed: () {

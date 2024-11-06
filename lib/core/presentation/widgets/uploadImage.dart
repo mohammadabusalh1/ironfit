@@ -9,9 +9,9 @@ class ImagePickerComponent extends StatefulWidget {
   final void Function(File selectedImage)? onImageUploaded;
 
   const ImagePickerComponent({
-    Key? key,
+    super.key,
     this.onImageUploaded,
-  }) : super(key: key);
+  });
 
   @override
   _ImagePickerComponentState createState() => _ImagePickerComponentState();
@@ -66,7 +66,7 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
             children: [
               Text(
                 LocalizationService.translateFromGeneral('addProfilePicture'),
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF454038),
@@ -112,7 +112,7 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
                 ),
                 label: Text(
                   LocalizationService.translateFromGeneral('chooseImage'),
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: const TextStyle(fontSize: 16, color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
                   padding:
@@ -135,7 +135,7 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
                   ),
                   child: Text(
                     LocalizationService.translateFromGeneral('removeImage'),
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
                 const SizedBox(height: 16),

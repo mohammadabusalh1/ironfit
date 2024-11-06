@@ -39,19 +39,19 @@ Widget buildCarouselItem(Map<String, String> item, {double? padding}) {
 
 Widget buildText(String text, bool isTitle) {
   return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 0),
+    padding: const EdgeInsets.symmetric(horizontal: 0),
     child: Align(
       alignment: AlignmentDirectional.topEnd,
       child: Text(
         textAlign: TextAlign.end,
-        text.length > 17 ? '...' + text.substring(0, 17) : text,
+        text.length > 17 ? '...${text.substring(0, 17)}' : text,
         style: TextStyle(
           color: isTitle ? Palette.white : Colors.grey,
           fontSize: isTitle ? 14 : 12,
           fontWeight: isTitle ? FontWeight.bold : FontWeight.normal,
           shadows: isTitle
               ? [
-                  Shadow(
+                  const Shadow(
                     color: Colors.black,
                     offset: Offset(2, 2),
                     blurRadius: 2,

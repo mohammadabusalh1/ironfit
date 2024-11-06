@@ -21,7 +21,7 @@ String trainerImage =
 bool isDataLoaded = false;
 
 class UserProfileBody extends StatefulWidget {
-  const UserProfileBody({Key? key}) : super(key: key);
+  const UserProfileBody({super.key});
 
   @override
   _UserProfileBodyState createState() => _UserProfileBodyState();
@@ -144,7 +144,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
   }
 
   void showEditInfoDialog(BuildContext context) {
-    final _formKey = GlobalKey<FormState>(); // Form validation key
+    final formKey = GlobalKey<FormState>(); // Form validation key
     final TextEditingController firstNameController = TextEditingController();
     final TextEditingController lastNameController = TextEditingController();
     final TextEditingController ageController = TextEditingController();
@@ -164,7 +164,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                     22, Palette.mainAppColorWhite, FontWeight.bold),
               ),
               content: Form(
-                key: _formKey,
+                key: formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -243,9 +243,9 @@ class _UserProfileBodyState extends State<UserProfileBody> {
               actions: [
                 ElevatedButton(
                   onPressed: () async {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      final FirebaseAuth _auth = FirebaseAuth.instance;
-                      String? userId = _auth.currentUser?.uid;
+                    if (formKey.currentState?.validate() ?? false) {
+                      final FirebaseAuth auth = FirebaseAuth.instance;
+                      String? userId = auth.currentUser?.uid;
                       try {
                         if (userId != null) {
                           await FirebaseFirestore.instance
@@ -292,7 +292,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
   }
 
   void showEditPasswordDialog(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     final TextEditingController oldPasswordController = TextEditingController();
     final TextEditingController newPasswordController = TextEditingController();
     final TextEditingController confirmPasswordController =
@@ -311,7 +311,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                     22, Palette.mainAppColorWhite, FontWeight.bold),
               ),
               content: Form(
-                key: _formKey,
+                key: formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -370,7 +370,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
               actions: [
                 ElevatedButton(
                   onPressed: () async {
-                    if (_formKey.currentState?.validate() ?? false) {
+                    if (formKey.currentState?.validate() ?? false) {
                       try {
                         User? user = FirebaseAuth.instance.currentUser;
                         if (user != null) {
@@ -493,7 +493,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(50), // Match the borderRadius
               child: Image.network(
-                trainerImage,
+                trainerImage.isEmpty ? Assets.notFound : trainerImage,
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,

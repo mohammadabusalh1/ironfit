@@ -244,5 +244,6 @@
   "goBack": "Back",
   "traineeExist": "Trainee already exist",
   "areYouForgetPassword": "Are you forget password?",
-  "areYouCoach": "Are you a coach?"
+  "areYouCoach": "Are you a coach?",
+  "invalidPassword": "Please check your password"
 }

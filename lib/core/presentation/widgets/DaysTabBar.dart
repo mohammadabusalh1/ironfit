@@ -6,7 +6,7 @@ import 'package:ironfit/features/createPlan/widgets/create_plan_body.dart';
 
 class CustomTabBarWidget extends StatefulWidget {
   final plan;
-  const CustomTabBarWidget({Key? key, required this.plan}) : super(key: key);
+  const CustomTabBarWidget({super.key, required this.plan});
   @override
   _CustomTabBarWidgetState createState() => _CustomTabBarWidgetState();
 }
@@ -50,11 +50,11 @@ class _CustomTabBarWidgetState extends State<CustomTabBarWidget>
       isScrollable: true, // Allow horizontal scrolling
       labelColor: Colors.white, // Replace with your theme color
       unselectedLabelColor: Colors.grey, // Replace with your theme color
-      labelStyle: TextStyle(
+      labelStyle: const TextStyle(
         fontFamily: 'Inter Tight',
         letterSpacing: 0.0,
       ),
-      unselectedLabelStyle: TextStyle(
+      unselectedLabelStyle: const TextStyle(
         fontFamily: 'Inter Tight',
         letterSpacing: 0.0,
       ),
@@ -65,12 +65,12 @@ class _CustomTabBarWidgetState extends State<CustomTabBarWidget>
       },
       tabs: [
         Tab(text: LocalizationService.translateFromGeneral('monday')),
-        Tab(text: LocalizationService.translateFromGeneral('sunday')),
         Tab(text: LocalizationService.translateFromGeneral('tuesday')),
         Tab(text: LocalizationService.translateFromGeneral('wednesday')),
         Tab(text: LocalizationService.translateFromGeneral('thursday')),
         Tab(text: LocalizationService.translateFromGeneral('friday')),
         Tab(text: LocalizationService.translateFromGeneral('saturday')),
+        Tab(text: LocalizationService.translateFromGeneral('sunday')),
       ],
     );
   }
@@ -132,24 +132,26 @@ class _CustomTabBarWidgetState extends State<CustomTabBarWidget>
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           Center(
-            child: Text(content, style: TextStyle(color: Palette.white)),
+            child: Text(content, style: const TextStyle(color: Palette.white)),
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           ...exercises.map((exercise) {
             return Column(
               children: [
                 ExrciseCard(
                   image: exercise.image,
                   title: exercise.name,
-                  subtitle1: "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
-                  subtitle2: "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
+                  subtitle1:
+                      "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
+                  subtitle2:
+                      "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
               ],
             );
-          }).toList(), // Spread operator to flatten the list
+          }), // Spread operator to flatten the list
         ],
       ),
     );

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
-import 'package:ironfit/core/presentation/widgets/hederImage.dart';
-import 'package:ironfit/core/routes/routes.dart';
 
 class MyGymsBody extends StatefulWidget {
   const MyGymsBody({super.key});

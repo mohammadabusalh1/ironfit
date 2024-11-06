@@ -152,7 +152,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       width: double.infinity,
       child: Stack(
         children: [
-          HeaderImage(),
+          const HeaderImage(),
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 50, 24, 50),
             child: Row(
@@ -339,7 +339,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                       const Icon(Icons.edit, color: Palette.mainAppColorOrange),
                   iconSize: 20,
                 ),
-                Spacer(),
+                const Spacer(),
                 IconButton(
                   style: IconButton.styleFrom(
                     backgroundColor: Palette.mainAppColorWhite,
@@ -370,7 +370,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                               "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
                           image: exercise.image,
                         ),
-                        Spacer(),
+                        const Spacer(),
                         IconButton(
                           onPressed: () => _removeExercise(day, exercise),
                           icon: const Icon(Icons.delete, color: Colors.red),
@@ -551,40 +551,36 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
           return; // Exit the method if the plan exists
         }
 
-        if (user != null) {
-          final planData = {
-            'name': planName,
-            'description': planDescription,
-            'createdAt': FieldValue.serverTimestamp(),
-            // ignore: prefer_for_elements_to_map_fromiterable
-            'trainingDays': Map.fromIterable(trainingDays,
-                key: (day) =>
-                    day.day.contains('-') ? day.day.split('-')[1] : day.day,
-                value: (day) {
-                  return day.exercises.map((exercise) {
-                    return {
-                      'name': exercise.name, // Exercise name
-                      'repetitions':
-                          exercise.repetitions, // Number of repetitions
-                      'rounds': exercise.rounds, // Number of rounds
-                      'image': exercise.image // Image for the exercise
-                    };
-                  }).toList(); // Convert the exercises to a list
-                }),
-          };
+        final planData = {
+          'name': planName,
+          'description': planDescription,
+          'createdAt': FieldValue.serverTimestamp(),
+          // ignore: prefer_for_elements_to_map_fromiterable
+          'trainingDays': Map.fromIterable(trainingDays,
+              key: (day) =>
+                  day.day.contains('-') ? day.day.split('-')[1] : day.day,
+              value: (day) {
+                return day.exercises.map((exercise) {
+                  return {
+                    'name': exercise.name, // Exercise name
+                    'repetitions':
+                        exercise.repetitions, // Number of repetitions
+                    'rounds': exercise.rounds, // Number of rounds
+                    'image': exercise.image // Image for the exercise
+                  };
+                }).toList(); // Convert the exercises to a list
+              }),
+        };
 
-          await _firestore
-              .collection('coaches')
-              .doc(user.uid)
-              .collection('plans')
-              .add(planData);
-          Navigator.pop(context);
-          Get.toNamed(Routes.myPlans);
-          customSnackbar.showSuccessMessage(context);
-        } else {
-          customSnackbar.showFailureMessage(context);
-        }
-      } catch (e) {
+        await _firestore
+            .collection('coaches')
+            .doc(user.uid)
+            .collection('plans')
+            .add(planData);
+        Navigator.pop(context);
+        Get.toNamed(Routes.myPlans);
+        customSnackbar.showSuccessMessage(context);
+            } catch (e) {
         print(e);
         customSnackbar.showFailureMessage(context);
       }
@@ -627,7 +623,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   }
 
   void _addExerciseToDay(TrainingDay day) {
-    Future<void> _addExercise(Exercise exercise) async {
+    Future<void> addExercise(Exercise exercise) async {
       setState(() {
         day.exercises.add(exercise);
       });
@@ -637,7 +633,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
     showDialog(
       context: context,
       builder: (context) => ExerciseDialog(
-        addExercise: _addExercise,
+        addExercise: addExercise,
       ),
     );
   }
@@ -668,8 +664,8 @@ class Exercise {
     return Exercise(
       name: map['name'] ?? map['Exercise_Name'] as String,
       image: map['image'] ?? map['Exercise_Image'] as String,
-      rounds: map['rounds'] ?? 0 as int,
-      repetitions: map['repetitions'] ?? 0 as int,
+      rounds: map['rounds'] ?? 0,
+      repetitions: map['repetitions'] ?? 0,
     );
   }
 }

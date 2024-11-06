@@ -18,7 +18,7 @@ import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 
 class CoachEnterInfoBody extends StatefulWidget {
   final Function registerCoach;
-  CoachEnterInfoBody({Key? key, required this.registerCoach}) : super(key: key);
+  const CoachEnterInfoBody({super.key, required this.registerCoach});
 
   @override
   _CoachEnterInfoBodyState createState() => _CoachEnterInfoBodyState();
@@ -60,16 +60,12 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
   }
 
   Future<String> _uploadImage(String userId) async {
-    if (_selectedImage == null) {
-      return ''; // Exit early if no image is selected
-    }
-
     try {
       final storageRef =
           FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
 
       // Upload the image file
-      await storageRef.putFile(_selectedImage!);
+      await storageRef.putFile(_selectedImage);
 
       // Show success message to the user
       customSnackbar.showMessage(
@@ -95,46 +91,49 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
             stage = 2;
           });
           return; // Exit early if stage transitioned
+        } else {
+          Get.dialog(const Center(child: CircularProgressIndicator()),
+              barrierDismissible: false);
+
+          String username = _usernameController.text;
+          String firstName = _firstNameController.text;
+          String lastName = _lastNameController.text;
+          String age = _ageController.text;
+          String experience = _experienceController.text;
+
+          // Check if username exists in the database
+          bool usernameExists = await _checkIfUsernameExists(username);
+
+          if (usernameExists) {
+            Get.back();
+            customSnackbar.showMessage(
+                context,
+                LocalizationService.translateFromGeneral(
+                    'usernameExistsError'));
+            return; // Exit early if username exists
+          }
+
+          String coachId = await widget.registerCoach();
+          String uploadedImageUrl = await _uploadImage(coachId);
+
+          Map<String, dynamic> coachData = {
+            'firstName': firstName,
+            'lastName': lastName,
+            'age':
+                int.tryParse(age) ?? 0, // Safely parse integer or default to 0
+            'experience': int.tryParse(experience) ??
+                0, // Safely parse integer or default to 0
+            'profileImageUrl': uploadedImageUrl,
+            'username': username,
+          };
+
+          await updateCoachInfo(coachId, coachData);
+          customSnackbar.showSuccessMessage(context);
+
+          // Navigate to the coach dashboard after success
+          Get.toNamed(Routes.coachDashboard)?.then((value) => Get.back());
         }
-
-        Get.dialog(const Center(child: CircularProgressIndicator()),
-            barrierDismissible: false);
-
-        String username = _usernameController.text;
-        String firstName = _firstNameController.text;
-        String lastName = _lastNameController.text;
-        String age = _ageController.text;
-        String experience = _experienceController.text;
-
-        // Check if username exists in the database
-        bool usernameExists = await _checkIfUsernameExists(username);
-
-        if (usernameExists) {
-          Get.back();
-          customSnackbar.showMessage(context,
-              LocalizationService.translateFromGeneral('usernameExistsError'));
-          return; // Exit early if username exists
-        }
-
-        String coachId = await widget.registerCoach();
-        String uploadedImageUrl = await _uploadImage(coachId);
-
-        Map<String, dynamic> coachData = {
-          'firstName': firstName,
-          'lastName': lastName,
-          'age': int.tryParse(age) ?? 0, // Safely parse integer or default to 0
-          'experience': int.tryParse(experience) ??
-              0, // Safely parse integer or default to 0
-          'profileImageUrl': uploadedImageUrl,
-          'username': username,
-        };
-
-        await updateCoachInfo(coachId, coachData);
-        customSnackbar.showSuccessMessage(context);
-
-        // Navigate to the coach dashboard after success
-        Get.toNamed(Routes.coachDashboard)?.then((value) => Get.back());
-      } on FirebaseException catch (e) {
+      } on FirebaseException {
         Get.back();
         customSnackbar.showFailureMessage(context);
       } on FormatException catch (_) {

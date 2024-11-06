@@ -126,7 +126,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                   child: Column(
                     children: [
                       BuildTextField(
-                        controller: new TextEditingController(text: planName),
+                        controller: TextEditingController(text: planName),
                         onChange: (value) => setState(() => planName = value),
                         label: LocalizationService.translateFromGeneral(
                             'planName'),
@@ -134,7 +134,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                       const SizedBox(height: 16),
                       BuildTextField(
                         controller:
-                            new TextEditingController(text: planDescription),
+                            TextEditingController(text: planDescription),
                         onChange: (value) =>
                             setState(() => planDescription = value),
                         label: LocalizationService.translateFromGeneral(
@@ -283,7 +283,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                       const Icon(Icons.edit, color: Palette.mainAppColorOrange),
                   iconSize: 20,
                 ),
-                Spacer(),
+                const Spacer(),
                 IconButton(
                   style: IconButton.styleFrom(
                     backgroundColor: Palette.mainAppColorWhite,
@@ -468,7 +468,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
   }
 
   void _addExerciseToDay(TrainingDay day) {
-    Future<void> _addExercise(Exercise exercise) async {
+    Future<void> addExercise(Exercise exercise) async {
       setState(() {
         day.exercises.add(exercise);
       });
@@ -478,7 +478,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
     showDialog(
       context: context,
       builder: (context) => ExerciseDialog(
-        addExercise: _addExercise,
+        addExercise: addExercise,
       ),
     );
   }
@@ -595,7 +595,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
 
   Future<void> _savePlan() async {
     try {
-      Get.dialog(Center(child: CircularProgressIndicator()),
+      Get.dialog(const Center(child: CircularProgressIndicator()),
           barrierDismissible: false);
       final user = _auth.currentUser;
       if (user != null) {

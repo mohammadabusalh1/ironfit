@@ -4,6 +4,8 @@ import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
 class WelcomeText extends StatefulWidget {
+  const WelcomeText({super.key});
+
   @override
   _AnimatedWelcomeText createState() => _AnimatedWelcomeText();
 }
@@ -21,7 +23,7 @@ class _AnimatedWelcomeText extends State<WelcomeText>
     // Typewriter Effect for Text (Custom typewriter behavior)
     _textTypewriterController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 3),
+      duration: const Duration(seconds: 3),
     );
 
     _textFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(

@@ -7,7 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Button.dart';
@@ -18,11 +17,10 @@ import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UserEnterInfoBody extends StatefulWidget {
   Function registerUser;
-  UserEnterInfoBody({Key? key, required this.registerUser}) : super(key: key);
+  UserEnterInfoBody({super.key, required this.registerUser});
 
   @override
   _UserEnterInfoBodyState createState() => _UserEnterInfoBodyState();
@@ -55,16 +53,16 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
     tokenService.checkTokenAndNavigateDashboard();
   }
 
-  Future<void> updateCoachInfo(String userId, Map<String, dynamic> data) async {
+  Future<void> updateUserInfo(String userId, Map<String, dynamic> data) async {
     try {
       await FirebaseFirestore.instance
           .collection('trainees')
           .doc(userId)
           .update(data);
     } on FirebaseException catch (e) {
-      throw e;
+      rethrow;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -85,29 +83,17 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
   }
 
   Future<String> _uploadImage(String userId) async {
-    if (_selectedImage == null) {
-      return ''; // Exit early if no image is selected
-    }
-
     try {
       final storageRef =
           FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
 
       // Upload the image file
-      await storageRef.putFile(_selectedImage!);
-
-      // Show success message to the user
-      customSnackbar.showMessage(
-        context,
-        LocalizationService.translateFromGeneral('imageUploadSuccess'),
-      );
+      await storageRef.putFile(_selectedImage);
 
       // Get the download URL for the uploaded image
       final imageUrl = await storageRef.getDownloadURL();
       return imageUrl;
     } catch (e) {
-      // Handle any errors during upload or URL retrieval
-      customSnackbar.showFailureMessage(context);
       return '';
     }
   }
@@ -132,47 +118,98 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
           Get.dialog(const Center(child: CircularProgressIndicator()),
               barrierDismissible: false);
 
-// Check if username exists in the database
           bool usernameExists =
               await _checkIfUsernameExists(_usernameController.text);
 
           if (usernameExists) {
-            Get.back();
-            customSnackbar.showMessage(
-                context,
-                LocalizationService.translateFromGeneral(
-                    'usernameExistsError'));
-            return; // Exit early if username exists
-          }
-          String userId = await widget.registerUser();
-          String uploadedImageUrl = await _uploadImage(userId);
+            // fetch user
+            var snapshot = await FirebaseFirestore.instance
+                .collection('trainees')
+                .where('username', isEqualTo: _usernameController.text)
+                .get();
 
-          Map<String, dynamic> userData = {
-            'username': _usernameController.text,
-            'firstName': _firstNameController.text,
-            'lastName': _lastNameController.text,
-            'gender': _selectedGender,
-            'age': int.parse(_ageController.text),
-            'weight': double.parse(_weightController.text),
-            'length': double.parse(_lengthController.text),
-            'profileImageUrl': uploadedImageUrl, // Add the image URL
-          };
-          await updateCoachInfo(userId, userData).then(
-            (value) {
+            if (snapshot.docs.first.data().containsKey('email') ?? false) {
+              Navigator.of(context).pop();
+              setState(() {
+                stage = 1;
+              });
               customSnackbar.showMessage(
                   context,
                   LocalizationService.translateFromGeneral(
-                      'accountCreationSuccess'));
+                      'usernameExistsError'));
+              return;
+            }
 
+            final userId = await widget.registerUser();
+            String uploadedImageUrl = await _uploadImage(userId);
+
+            Map<String, dynamic> userData = {
+              'username': _usernameController.text,
+              'firstName': _firstNameController.text,
+              'lastName': _lastNameController.text,
+              'gender': _selectedGender,
+              'age': int.parse(_ageController.text),
+              'weight': double.parse(_weightController.text),
+              'length': double.parse(_lengthController.text),
+              'profileImageUrl': uploadedImageUrl,
+              'coachId': snapshot.docs.first['coachId'],
+              'subscriptionId': snapshot.docs.first['subscriptionId'],
+            };
+
+            await FirebaseFirestore.instance
+                .collection('coaches')
+                .doc(snapshot.docs.first['coachId'])
+                .collection('subscriptions')
+                .doc(snapshot.docs.first['subscriptionId'])
+                .update({'userId': userId});
+
+            await updateUserInfo(userId, userData).then(
+              (value) {
+                customSnackbar.showMessage(
+                    context,
+                    LocalizationService.translateFromGeneral(
+                        'accountCreationSuccess'));
+
+                Navigator.of(context).pop();
+                Get.toNamed(Routes.trainerDashboard);
+              },
+            ).catchError((error) async {
+              print(error);
               Navigator.of(context).pop();
-              Get.toNamed(Routes.trainerDashboard);
-            },
-          ).catchError((error) async {
-            print(error);
-            Navigator.of(context).pop();
-            customSnackbar.showMessage(context,
-                LocalizationService.translateFromGeneral('unexpectedError'));
-          });
+              customSnackbar.showMessage(context,
+                  LocalizationService.translateFromGeneral('unexpectedError'));
+            });
+            snapshot.docs.first.reference.delete();
+          } else {
+            final userId = await widget.registerUser();
+            String uploadedImageUrl = await _uploadImage(userId);
+            Map<String, dynamic> userData = {
+              'username': _usernameController.text,
+              'firstName': _firstNameController.text,
+              'lastName': _lastNameController.text,
+              'gender': _selectedGender,
+              'age': int.parse(_ageController.text),
+              'weight': double.parse(_weightController.text),
+              'length': double.parse(_lengthController.text),
+              'profileImageUrl': uploadedImageUrl,
+            };
+
+            await updateUserInfo(userId, userData).then(
+              (value) {
+                customSnackbar.showMessage(
+                    context,
+                    LocalizationService.translateFromGeneral(
+                        'accountCreationSuccess'));
+
+                Navigator.of(context).pop();
+                Get.toNamed(Routes.trainerDashboard);
+              },
+            ).catchError((error) async {
+              print(error);
+              customSnackbar.showMessage(context,
+                  LocalizationService.translateFromGeneral('unexpectedError'));
+            });
+          }
         }
       } catch (e) {
         print(e);
@@ -204,14 +241,14 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
               stage == 3
                   ? ImagePickerComponent(onImageUploaded: (selectedImage) {
                       setState(() {
-                          _selectedImage = selectedImage;
-                        });
+                        _selectedImage = selectedImage;
+                      });
                     })
                   : Container(), // Add the image picker button here
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
                   ? Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Align(
                         alignment: AlignmentDirectional.center,
                         child: Text(
@@ -229,7 +266,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
                   ? Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Text(
                           LocalizationService.translateFromGeneral('account'),
                           style: AppStyles.textCairo(
@@ -269,7 +306,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
                   ? Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Text(
                           LocalizationService.translateFromGeneral(
                               'personalInfoSection'),
@@ -284,45 +321,49 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
               stage == 2
                   ? Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: DropdownButton<String>(
-                        dropdownColor:
-                            Palette.secondaryColor, // Dropdown background color
-                        style: AppStyles.textCairo(
-                          14,
-                          Palette.gray,
-                          FontWeight.w500,
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          canvasColor: Palette.secondaryColor,
                         ),
-                        value: _selectedGender,
-                        isExpanded:
-                            true, // Make the dropdown take the full width
-                        hint: Text(
-                          LocalizationService.translateFromGeneral(
-                              'selectGender'),
-
+                        child: DropdownButton<String>(
+                          dropdownColor: Palette
+                              .secondaryColor, // Dropdown background color
                           style: AppStyles.textCairo(
                             14,
                             Palette.gray,
                             FontWeight.w500,
-                          ), // Hint style
+                          ),
+                          value: _selectedGender,
+                          isExpanded:
+                              true, // Make the dropdown take the full width
+                          hint: Text(
+                            LocalizationService.translateFromGeneral(
+                                'selectGender'),
+
+                            style: AppStyles.textCairo(
+                              14,
+                              Palette.gray,
+                              FontWeight.w500,
+                            ), // Hint style
+                          ),
+                          items: _genders.map((String gender) {
+                            return DropdownMenuItem<String>(
+                              alignment: Alignment.centerRight,
+                              value: gender,
+                              child: Text(
+                                gender,
+                                textAlign: TextAlign.right,
+                              ), // Display gender
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _selectedGender =
+                                  newValue; // Update selected gender
+                            });
+                          },
                         ),
-                        items: _genders.map((String gender) {
-                          return DropdownMenuItem<String>(
-                            alignment: Alignment.centerRight,
-                            value: gender,
-                            child: Text(
-                              gender,
-                              textAlign: TextAlign.right,
-                            ), // Display gender
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedGender =
-                                newValue; // Update selected gender
-                          });
-                        },
-                      ),
-                    )
+                      ))
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2

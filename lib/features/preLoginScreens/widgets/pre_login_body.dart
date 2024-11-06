@@ -37,8 +37,8 @@ class _PreLoginBodyState extends State<PreLoginBody>
     );
 
     _positionAnimation = Tween<Offset>(
-      begin: Offset(0, 1), // Start from bottom
-      end: Offset(0, 0), // End at original position
+      begin: const Offset(0, 1), // Start from bottom
+      end: const Offset(0, 0), // End at original position
     ).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOut,
@@ -129,7 +129,7 @@ class _PreLoginBodyState extends State<PreLoginBody>
                 ),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(18, 0, 18, 0),
+                padding: const EdgeInsets.fromLTRB(18, 0, 18, 0),
                 child: SlideTransition(
                     position: _positionAnimation,
                     child: FadeTransition(

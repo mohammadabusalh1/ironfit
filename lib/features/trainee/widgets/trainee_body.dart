@@ -171,13 +171,7 @@ class _TraineeBodyState extends State<TraineeBody> {
 
         if (subscriptionDoc.docs.isNotEmpty) {
           // Delete the subscription document
-          await _firestore
-              .collection('coaches')
-              .doc(coachId)
-              .collection('subscriptions')
-              .doc(subscriptionDoc.docs[0].id)
-              .delete()
-              .then((value) {
+          await subscriptionDoc.docs[0].reference.delete().then((v) {
             Get.back();
           });
 
@@ -186,7 +180,6 @@ class _TraineeBodyState extends State<TraineeBody> {
               context,
               LocalizationService.translateFromGeneral(
                   'subscriptionCancelled'));
-
           widget.fetchTrainees();
         } else {
           // No subscription found for the user
@@ -310,15 +303,14 @@ class _TraineeBodyState extends State<TraineeBody> {
         return;
       }
 
-      // Update Firestore document to remove planId and coachId
-      await _firestore
-          .collection('trainees')
-          .doc(querySnapshot.docs.first.id)
-          .update({'planId': null, 'coachId': null});
-
-      // Show success message if update is successful
-      customSnackbar.showMessage(context,
-          LocalizationService.translateFromGeneral('subscriptionCancelled'));
+      if (!querySnapshot.docs.first.data().containsKey('email')) {
+        await querySnapshot.docs.first.reference.delete();
+      } else {
+        await _firestore
+            .collection('trainees')
+            .doc(querySnapshot.docs.first.id)
+            .update({'planId': null, 'coachId': null});
+      }
     } catch (e) {
       // Handle specific exceptions if needed (e.g., FirebaseException)
       print('Error removing plan: $e');
@@ -400,7 +392,7 @@ class _TraineeBodyState extends State<TraineeBody> {
           barrierDismissible: false);
 
       // Fetch the plan document from the 'coaches' collection
-      DocumentReference<Map<String, dynamic>> subscription = await _firestore
+      DocumentReference<Map<String, dynamic>> subscription = _firestore
           .collection('coaches')
           .doc(_auth.currentUser?.uid)
           .collection('subscriptions')
@@ -560,7 +552,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                         decoration: InputDecoration(
                           labelText: LocalizationService.translateFromGeneral(
                               'amount'),
-                          border: OutlineInputBorder(),
+                          border: const OutlineInputBorder(),
                         ),
                       ),
                     ],
@@ -825,7 +817,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: Image.network(
-                                imageURL,
+                                imageURL.isEmpty ? Assets.notFound : imageURL,
                                 width: 100,
                                 height: 100,
                                 fit: BoxFit.cover,
@@ -847,7 +839,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                           Align(
                             alignment: const AlignmentDirectional(0, 0),
                             child: Text(
-                              '${LocalizationService.translateFromGeneral('daysRemaining')} ${_numberOfDaysUserHave} ${LocalizationService.translateFromGeneral('days')}',
+                              '${LocalizationService.translateFromGeneral('daysRemaining')} $_numberOfDaysUserHave ${LocalizationService.translateFromGeneral('days')}',
                               style: AppStyles.textCairo(
                                   12, Palette.gray, FontWeight.w500),
                             ),
@@ -920,7 +912,7 @@ class _TraineeBodyState extends State<TraineeBody> {
           ),
           const SizedBox(height: 16),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Text(LocalizationService.translateFromGeneral('addedPlan'),
                 textAlign: TextAlign.right,
                 textDirection: TextDirection.rtl,
@@ -941,7 +933,7 @@ class _TraineeBodyState extends State<TraineeBody> {
               )),
           const SizedBox(height: 16),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Text(
                 LocalizationService.translateFromGeneral(
                     'financialTransactions'),
@@ -964,14 +956,16 @@ class _TraineeBodyState extends State<TraineeBody> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: _buildCard(
-                context,
-                debts,
-                () {},
-                Icons.keyboard_arrow_left,
-                Palette.mainAppColor,
-                LocalizationService.translateFromGeneral('debts'), () {
-              showEditDebt(context);
-            },),
+              context,
+              debts,
+              () {},
+              Icons.keyboard_arrow_left,
+              Palette.mainAppColor,
+              LocalizationService.translateFromGeneral('debts'),
+              () {
+                showEditDebt(context);
+              },
+            ),
           ),
           const SizedBox(height: 40),
         ],

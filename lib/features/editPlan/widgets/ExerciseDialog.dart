@@ -10,8 +10,7 @@ class ExerciseDialog extends StatefulWidget {
   final Function addExercise;
 
   const ExerciseDialog(
-      {Key? key, required this.addExercise})
-      : super(key: key);
+      {super.key, required this.addExercise});
 
   @override
   _ExerciseDialogState createState() => _ExerciseDialogState();
@@ -49,7 +48,7 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
         child: AlertDialog(
           title:
                Text(LocalizationService.translateFromGeneral(
-                  'addExercise'), style: TextStyle(color: Palette.white)),
+                  'addExercise'), style: const TextStyle(color: Palette.white)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -77,13 +76,13 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                   },
                   child:  Text(LocalizationService.translateFromGeneral(
                   'selectExercise'),
-                      style: TextStyle(color: Palette.black)),
+                      style: const TextStyle(color: Palette.black)),
                 ),
                 const SizedBox(height: 16),
                 // Display the selected exercise name
                 if (selectedExerciseName.isNotEmpty)
                   Text(
-                    '$selectedExerciseName',
+                    selectedExerciseName,
                     style: const TextStyle(color: Palette.white),
                   ),
                 const SizedBox(height: 16),
@@ -122,12 +121,12 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                 }
               },
               child: Text(LocalizationService.translateFromGeneral('save'),
-                  style: TextStyle(color: Palette.black)),
+                  style: const TextStyle(color: Palette.black)),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(LocalizationService.translateFromGeneral('cancel'),
-                  style: TextStyle(color: Palette.white)),
+                  style: const TextStyle(color: Palette.white)),
             ),
           ],
           actionsAlignment: MainAxisAlignment.start,
@@ -164,7 +163,7 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
           title: Text(
               LocalizationService.translateFromGeneral(
                   'selectExercise'),
-              style: TextStyle(color: Palette.white, fontSize: 20)),
+              style: const TextStyle(color: Palette.white, fontSize: 20)),
           content: StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
             return SingleChildScrollView(
@@ -177,7 +176,7 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(LocalizationService.translateFromGeneral('cancel'),
-                  style: TextStyle(color: Palette.white)),
+                  style: const TextStyle(color: Palette.white)),
             ),
           ],
           actionsAlignment: MainAxisAlignment.start,

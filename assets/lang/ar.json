@@ -19,7 +19,7 @@
   "accountCreationSuccess": "تم إنشاء الحساب بنجاح.",
   "databaseConnectionError": "خطأ في الاتصال بقاعدة البيانات.",
   "invalidFormatError": "تنسيق غير صالح: يرجى إضافة البيانات بالشكل الصحيح.",
-  "unexpectedError": "حدث خطأ غير متوقع:",
+  "unexpectedError": "حدث خطأ غير متوقع",
   "invalidInformationMessage": "المعلومات غير صالحة.",
   "completeInfoPrompt": "أكمل معلوماتك من فضلك",
   "account": "الحساب",
@@ -242,5 +242,6 @@
   "personalInfoSection": "المعلومات الشخصية",
   "traineeExist": "المتدرب موجود بالفعل",
   "areYouForgetPassword": "هل نسيت كلمة المرور؟",
-  "areYouCoach": "هل أنت مدرب؟"
+  "areYouCoach": "هل أنت مدرب؟",
+  "invalidPassword": "يرجى التأكد من كلمة المرور"
 }

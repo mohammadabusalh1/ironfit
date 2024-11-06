@@ -9,14 +9,14 @@ import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
 class ExercisesScreen extends StatefulWidget {
   final String fileName;
-  ExercisesScreen({required this.fileName});
+  const ExercisesScreen({super.key, required this.fileName});
 
   @override
   _ExercisesScreenState createState() => _ExercisesScreenState();
 }
 
 class _ExercisesScreenState extends State<ExercisesScreen> {
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   int _itemCount = 10;
   List<dynamic> _filteredExercises = [];
   List<dynamic> exercises = [];
@@ -28,7 +28,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
   Future<void> load(fileName) async {
     String jsonString =
-        await rootBundle.loadString('assets/exresices/${fileName}.json');
+        await rootBundle.loadString('assets/exresices/$fileName.json');
     List<dynamic> jsonMap = json.decode(jsonString);
     setState(() {
       _filteredExercises = exercises = jsonMap;
@@ -188,7 +188,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                     .toList(),
               ),
             ),
-            stage == 1 ? SizedBox(height: 8) : Container(),
+            stage == 1 ? const SizedBox(height: 8) : Container(),
             stage == 1
                 ? Container(
                     margin: const EdgeInsets.all(8),
@@ -232,20 +232,20 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                     ),
                   )
                 : Container(),
-            stage == 1 ? SizedBox(height: 8) : Container(),
+            stage == 1 ? const SizedBox(height: 8) : Container(),
             stage == 1
                 ? TextField(
                     decoration: InputDecoration(
                       hintText: LocalizationService.translateFromGeneral(
                           'searchPrompt'),
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: const Icon(Icons.search),
                       hintStyle: AppStyles.textCairo(
                           14, Palette.gray, FontWeight.w500),
                     ),
                     onChanged: _searchExercises,
                   )
                 : Container(),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Container(
               height: high,
               padding: const EdgeInsets.only(bottom: 200),

@@ -53,7 +53,7 @@ class CoachNavBar extends StatelessWidget {
           onTap: () {
             navController.updateIndex(index);
           },
-          child: Container(
+          child: SizedBox(
             width: isSelected ? Get.width * 0.33 : Get.width * 0.15,
             height: Get.height * 0.09,
             child: AnimatedContainer(

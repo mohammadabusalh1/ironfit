@@ -86,7 +86,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
       // Handle other types of errors
       print('Unexpected error: $e');
       customSnackbar.showMessage(context,
-          '${LocalizationService.translateFromGeneral('unexpectedErrorDeletingPlan')}');
+          LocalizationService.translateFromGeneral('unexpectedErrorDeletingPlan'));
     }
   }
 
@@ -136,10 +136,10 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                     width: double.infinity,
                     child: Stack(
                       children: [
-                        HeaderImage(),
+                        const HeaderImage(),
                         Container(
                           height: MediaQuery.of(context).size.height * 0.2,
-                          padding: EdgeInsets.symmetric(horizontal: 24),
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -206,7 +206,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                   ),
                   const SizedBox(height: 24),
                   isLoading
-                      ? Center(
+                      ? const Center(
                           child: CircularProgressIndicator(), // Show loader
                         )
                       : Padding(

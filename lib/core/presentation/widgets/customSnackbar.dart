@@ -31,11 +31,14 @@ class CustomSnackbar {
   }
 
   void showFailureMessage(context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content: Text(LocalizationService.translateFromPage(
-              'message', failurePageName))),
-    );
+    Get.snackbar(
+        '', LocalizationService.translateFromPage('message', failurePageName),
+        backgroundColor: Palette.secondaryColor,
+        colorText: Palette.mainAppColorWhite,
+        messageText: Text(
+          LocalizationService.translateFromPage('message', failurePageName),
+          textAlign: TextAlign.center,
+        ));
   }
 
   void showDoesNotExistMessage(context) {

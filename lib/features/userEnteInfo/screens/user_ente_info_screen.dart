@@ -3,8 +3,7 @@ import 'package:ironfit/features/userEnteInfo/widgets/user_enter_info_body.dart'
 
 class UserEnterInfoScreen extends StatelessWidget {
   Function registerUser;
-  UserEnterInfoScreen({Key? key, required this.registerUser})
-      : super(key: key);
+  UserEnterInfoScreen({super.key, required this.registerUser});
 
   @override
   Widget build(BuildContext context) {

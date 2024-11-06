@@ -14,7 +14,7 @@ class ExrciseCard extends StatefulWidget {
   final double spaceBetweenItems;
 
   const ExrciseCard({
-    Key? key,
+    super.key,
     required this.image,
     required this.title,
     required this.subtitle1,
@@ -22,7 +22,7 @@ class ExrciseCard extends StatefulWidget {
     this.withIconButton = true,
     this.padding = 24,
     this.spaceBetweenItems = 24,
-  }) : super(key: key);
+  });
 
   @override
   _ExrciseCardState createState() => _ExrciseCardState();
@@ -91,7 +91,7 @@ class _ExrciseCardState extends State<ExrciseCard> {
         children: [
           Text(
             widget.title.length > 16
-                ? '...' + widget.title.substring(0, 16)
+                ? '...${widget.title.substring(0, 16)}'
                 : widget.title,
             style: AppStyles.textCairo(
               12,
@@ -99,7 +99,7 @@ class _ExrciseCardState extends State<ExrciseCard> {
               FontWeight.bold,
             ),
           ), // Space between text and icon row
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           buildIconRow(context),
         ],
       ),
@@ -111,7 +111,7 @@ class _ExrciseCardState extends State<ExrciseCard> {
     return Column(
       children: [
         buildIconText(context, Icons.access_time_filled, widget.subtitle1),
-        SizedBox(height: 4), // Space between the two icon-text pairs
+        const SizedBox(height: 4), // Space between the two icon-text pairs
         buildIconText(context, Icons.electric_bolt_sharp, widget.subtitle2),
       ],
     );
@@ -126,7 +126,7 @@ class _ExrciseCardState extends State<ExrciseCard> {
           color: Palette.primaryColor,
           size: 16,
         ),
-        SizedBox(width: 4), // Space between icon and text
+        const SizedBox(width: 4), // Space between icon and text
         Text(
           text,
           style: AppStyles.textCairo(
@@ -147,7 +147,7 @@ class _ExrciseCardState extends State<ExrciseCard> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
       icon: Icon(
         Icons.done_all,

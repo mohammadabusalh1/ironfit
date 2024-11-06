@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
+import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Button.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
@@ -27,7 +28,7 @@ String email = '';
 bool isDataLoaded = false;
 
 class CoachProfileBody extends StatefulWidget {
-  const CoachProfileBody({Key? key}) : super(key: key);
+  const CoachProfileBody({super.key});
 
   @override
   _CoachProfileBodyState createState() => _CoachProfileBodyState();
@@ -55,11 +56,11 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   }
 
   Future<void> changeUserImage() async {
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
 
     // Pick an image from the gallery
     final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
+        await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
@@ -118,6 +119,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
 
   Future<void> fetchUserName() async {
     try {
+      tokenService.checkTokenAndNavigateSingIn();
       // Get user data from Firestore
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('coaches')
@@ -147,15 +149,19 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   }
 
   void showEditInfoDialog(BuildContext context) {
-    final _formKey = GlobalKey<FormState>(); // Form validation key
+    final formKey = GlobalKey<FormState>(); // Form validation key
     final TextEditingController firstNameController = TextEditingController();
     final TextEditingController lastNameController = TextEditingController();
     final TextEditingController ageController = TextEditingController();
     final TextEditingController experienceController = TextEditingController();
 
     Future<void> updateInfo() async {
-      if (_formKey.currentState?.validate() ?? false) {
+      if (formKey.currentState?.validate() ?? false) {
         try {
+          Get.dialog(
+            const Center(child: CircularProgressIndicator()),
+            barrierDismissible: false,
+          );
           // Prepare update data based on controller values
           Map<String, dynamic> updateData = {};
 
@@ -184,13 +190,15 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                 .then((_) {
               fetchUserName();
               Navigator.of(context).pop();
+              Navigator.of(context).pop();
             });
           } else {
             // Handle case where no fields were updated
-            customSnackbar.showMessage(context,
+            customSnackbar.showMessageAbove(context,
                 LocalizationService.translateFromGeneral('NoFieldsToUpdate'));
           }
         } catch (e) {
+          Navigator.of(context).pop();
           customSnackbar.showFailureMessage(context);
         }
       }
@@ -201,126 +209,12 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
       builder: (BuildContext context) {
         return Theme(
           data: customThemeData,
-          child: SingleChildScrollView(
-            child: AlertDialog(
-              title: Text(
-                LocalizationService.translateFromGeneral('editInfo'),
-                style: AppStyles.textCairo(
-                  22,
-                  Palette.mainAppColorWhite,
-                  FontWeight.bold,
-                ),
-              ),
-              content: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    BuildTextField(
-                      onChange: (firstName) {
-                        firstNameController.text = firstName;
-                      },
-                      label: LocalizationService.translateFromGeneral(
-                          'firstNameLabel'),
-                      controller: firstNameController,
-                      icon: Icons.person_2_outlined,
-                    ),
-                    const SizedBox(height: 16),
-                    BuildTextField(
-                      onChange: (lastName) {
-                        lastNameController.text = lastName;
-                      },
-                      label: LocalizationService.translateFromGeneral(
-                          'lastNameLabel'),
-                      controller: lastNameController,
-                    ),
-                    const SizedBox(height: 16),
-                    BuildTextField(
-                      onChange: (age) {
-                        ageController.text = age;
-                      },
-                      label: LocalizationService.translateFromGeneral('age'),
-                      controller: ageController,
-                      keyboardType: TextInputType.number,
-                    ),
-                    const SizedBox(height: 16),
-                    BuildTextField(
-                      onChange: (experience) {
-                        experienceController.text = experience;
-                      },
-                      controller: experienceController,
-                      keyboardType: TextInputType.number,
-                      label: LocalizationService.translateFromGeneral(
-                          'experience'),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                BuildIconButton(
-                  onPressed: updateInfo,
-                  text: LocalizationService.translateFromGeneral('save'),
-                  width: 100,
-                  fontSize: 12,
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                  child:
-                      Text(LocalizationService.translateFromGeneral('cancel')),
-                ),
-              ],
-              actionsAlignment: MainAxisAlignment.start,
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void showEditPasswordDialog(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
-    final TextEditingController oldPasswordController = TextEditingController();
-    final TextEditingController newPasswordController = TextEditingController();
-    final TextEditingController confirmPasswordController =
-        TextEditingController();
-
-    Future<void> editPassword() async {
-      if (_formKey.currentState?.validate() ?? false) {
-        try {
-          User? user = FirebaseAuth.instance.currentUser;
-          if (user != null) {
-            // Re-authenticate user to change password
-            final AuthCredential credential = EmailAuthProvider.credential(
-              email: user.email!,
-              password: oldPasswordController.text,
-            );
-            await user.reauthenticateWithCredential(credential);
-
-            // Update password
-            await user.updatePassword(newPasswordController.text);
-
-            Navigator.of(context).pop(); // Close the dialog
-          }
-        } catch (e) {
-          customSnackbar.showMessage(context,
-              '${LocalizationService.translateFromGeneral('unexpectedError')} ${e.toString()}');
-        }
-      }
-    }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Theme(
-          data: customThemeData,
-          child: SingleChildScrollView(
-            child: Directionality(
-              textDirection: TextDirection.rtl,
+          child: Directionality(
+            textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+            child: SingleChildScrollView(
               child: AlertDialog(
                 title: Text(
-                  LocalizationService.translateFromGeneral('changePassword'),
+                  LocalizationService.translateFromGeneral('editInfo'),
                   style: AppStyles.textCairo(
                     22,
                     Palette.mainAppColorWhite,
@@ -328,73 +222,56 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                   ),
                 ),
                 content: Form(
-                  key: _formKey,
+                  key: formKey,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                          LocalizationService.translateFromGeneral(
-                              'pleaseFillRequiredData'),
-                          style: AppStyles.textCairo(
-                            14,
-                            Palette.mainAppColorWhite,
-                            FontWeight.w500,
-                          )),
-                      const SizedBox(height: 16),
                       BuildTextField(
-                        onChange: (value) => oldPasswordController.text = value,
-                        controller: oldPasswordController,
-                        label: LocalizationService.translateFromGeneral(
-                            'oldPassword'),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return LocalizationService.translateFromGeneral(
-                                'oldPasswordError');
-                          }
-                          return null;
+                        onChange: (firstName) {
+                          firstNameController.text = firstName;
                         },
+                        label: LocalizationService.translateFromGeneral(
+                            'firstNameLabel'),
+                        controller: firstNameController,
+                        icon: Icons.person_2_outlined,
                       ),
                       const SizedBox(height: 16),
                       BuildTextField(
-                        onChange: (value) => newPasswordController.text = value,
-                        controller: newPasswordController,
-                        label: LocalizationService.translateFromGeneral(
-                            'newPassword'),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return LocalizationService.translateFromGeneral(
-                                'newPasswordError');
-                          }
-                          if (value.length < 6) {
-                            return LocalizationService.translateFromGeneral(
-                                'newPasswordError2');
-                          }
-                          return null;
+                        onChange: (lastName) {
+                          lastNameController.text = lastName;
                         },
+                        label: LocalizationService.translateFromGeneral(
+                            'lastNameLabel'),
+                        controller: lastNameController,
+                        icon: Icons.person_2_outlined,
                       ),
                       const SizedBox(height: 16),
                       BuildTextField(
-                        onChange: (value) =>
-                            confirmPasswordController.text = value,
-                        controller: confirmPasswordController,
-                        label: LocalizationService.translateFromGeneral(
-                            'confirmPassword'),
-                        validator: (value) {
-                          if (value != newPasswordController.text) {
-                            return LocalizationService.translateFromGeneral(
-                                'passwordsDontMatch');
-                          }
-                          return null;
+                        onChange: (age) {
+                          ageController.text = age;
                         },
+                        label: LocalizationService.translateFromGeneral('age'),
+                        controller: ageController,
+                        keyboardType: TextInputType.number,
+                        icon: Icons.cake_outlined,
+                      ),
+                      const SizedBox(height: 16),
+                      BuildTextField(
+                        onChange: (experience) {
+                          experienceController.text = experience;
+                        },
+                        controller: experienceController,
+                        keyboardType: TextInputType.number,
+                        label: LocalizationService.translateFromGeneral(
+                            'experience'),
+                        icon: Icons.work_outline_outlined,
                       ),
                     ],
                   ),
                 ),
                 actions: [
                   BuildIconButton(
-                    onPressed: editPassword,
+                    onPressed: updateInfo,
                     text: LocalizationService.translateFromGeneral('save'),
                     width: 100,
                     fontSize: 12,
@@ -416,59 +293,224 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
     );
   }
 
+  void showEditPasswordDialog(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final TextEditingController oldPasswordController = TextEditingController();
+    final TextEditingController newPasswordController = TextEditingController();
+    final TextEditingController confirmPasswordController =
+        TextEditingController();
+
+    Future<void> editPassword() async {
+      if (formKey.currentState?.validate() ?? false) {
+        try {
+          Get.dialog(
+            const Center(child: CircularProgressIndicator()),
+            barrierDismissible: false,
+          );
+
+          if (newPasswordController.text != confirmPasswordController.text) {
+            customSnackbar.showMessageAbove(context,
+                LocalizationService.translateFromGeneral('passwordsDontMatch'));
+            return;
+          }
+
+          User? user = FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            // Re-authenticate user to change password
+            final AuthCredential credential = EmailAuthProvider.credential(
+              email: user.email!,
+              password: oldPasswordController.text,
+            );
+            await user.reauthenticateWithCredential(credential);
+
+            // Update password
+            await user.updatePassword(newPasswordController.text).then(
+              (value) {
+                Navigator.of(context).pop();
+                customSnackbar.showMessageAbove(
+                    context,
+                    LocalizationService.translateFromGeneral(
+                        'passwordChangeSuccess'));
+              },
+            );
+            Navigator.of(context).pop();
+          }
+        } catch (e) {
+          Navigator.of(context).pop();
+          customSnackbar.showMessageAbove(context,
+              LocalizationService.translateFromGeneral('invalidPassword'));
+        }
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Theme(
+            data: customThemeData,
+            child: Directionality(
+              textDirection:
+                  dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+              child: SingleChildScrollView(
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: AlertDialog(
+                    title: Text(
+                      LocalizationService.translateFromGeneral(
+                          'changePassword'),
+                      style: AppStyles.textCairo(
+                        22,
+                        Palette.mainAppColorWhite,
+                        FontWeight.bold,
+                      ),
+                    ),
+                    content: Form(
+                      key: formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                              LocalizationService.translateFromGeneral(
+                                  'pleaseFillRequiredData'),
+                              style: AppStyles.textCairo(
+                                14,
+                                Palette.mainAppColorWhite,
+                                FontWeight.w500,
+                              )),
+                          const SizedBox(height: 16),
+                          BuildTextField(
+                            onChange: (value) =>
+                                oldPasswordController.text = value,
+                            controller: oldPasswordController,
+                            label: LocalizationService.translateFromGeneral(
+                                'oldPassword'),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return LocalizationService.translateFromGeneral(
+                                    'oldPasswordError');
+                              }
+                              return null;
+                            },
+                            icon: Icons.password,
+                          ),
+                          const SizedBox(height: 16),
+                          BuildTextField(
+                            onChange: (value) =>
+                                newPasswordController.text = value,
+                            controller: newPasswordController,
+                            label: LocalizationService.translateFromGeneral(
+                                'newPassword'),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return LocalizationService.translateFromGeneral(
+                                    'newPasswordError');
+                              }
+                              if (value.length < 6) {
+                                return LocalizationService.translateFromGeneral(
+                                    'newPasswordError2');
+                              }
+                              return null;
+                            },
+                            icon: Icons.lock_open,
+                          ),
+                          const SizedBox(height: 16),
+                          BuildTextField(
+                            onChange: (value) =>
+                                confirmPasswordController.text = value,
+                            controller: confirmPasswordController,
+                            label: LocalizationService.translateFromGeneral(
+                                'confirmPassword'),
+                            validator: (value) {
+                              if (value != newPasswordController.text) {
+                                return LocalizationService.translateFromGeneral(
+                                    'passwordsDontMatch');
+                              }
+                              return null;
+                            },
+                            icon: Icons.check_circle_outline,
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      BuildIconButton(
+                        onPressed: editPassword,
+                        text: LocalizationService.translateFromGeneral('save'),
+                        width: 100,
+                        fontSize: 12,
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: Text(
+                            LocalizationService.translateFromGeneral('cancel')),
+                      ),
+                    ],
+                    actionsAlignment: MainAxisAlignment.start,
+                  ),
+                ),
+              ),
+            ));
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Palette.black,
-        body: Column(
-          children: [
-            Stack(
-              children: [
-                const HeaderImage(),
-                _buildProfileContent(context),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildButtonCard(
-                            context,
-                            LocalizationService.translateFromGeneral(
-                                'personalInformation'),
-                            Icons.person, () {
-                          showEditInfoDialog(context);
-                        }, Icons.arrow_forward_ios_outlined),
-                        _buildButtonCard(
-                            context,
-                            LocalizationService.translateFromGeneral(
-                                'changePassword'),
-                            Icons.vpn_key, () {
-                          showEditPasswordDialog(context);
-                        }, Icons.arrow_forward_ios_outlined),
-                        _buildButtonCard(
-                            context,
-                            LocalizationService.translateFromGeneral('gyms'),
-                            Icons.location_on, () {
-                          Get.toNamed(Routes.myGyms);
-                        }, Icons.arrow_forward_ios_outlined),
-                        _buildButtonCard(
-                            context,
-                            LocalizationService.translateFromGeneral('logout'),
-                            Icons.logout_outlined, () {
-                          _logout();
-                        }, Icons.arrow_forward_ios_outlined),
-                      ],
-                    ),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              const HeaderImage(),
+              _buildProfileContent(context),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.3,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildButtonCard(
+                          context,
+                          LocalizationService.translateFromGeneral(
+                              'personalInformation'),
+                          Icons.person, () {
+                        showEditInfoDialog(context);
+                      }, Icons.arrow_forward_ios_outlined),
+                      _buildButtonCard(
+                          context,
+                          LocalizationService.translateFromGeneral(
+                              'changePassword'),
+                          Icons.vpn_key, () {
+                        showEditPasswordDialog(context);
+                      }, Icons.arrow_forward_ios_outlined),
+                      _buildButtonCard(
+                          context,
+                          LocalizationService.translateFromGeneral('gyms'),
+                          Icons.location_on, () {
+                        Get.toNamed(Routes.myGyms);
+                      }, Icons.arrow_forward_ios_outlined),
+                      _buildButtonCard(
+                          context,
+                          LocalizationService.translateFromGeneral('logout'),
+                          Icons.logout_outlined, () {
+                        _logout();
+                      }, Icons.arrow_forward_ios_outlined),
+                    ],
                   ),
-                )),
-          ],
-        ));
+                ),
+              )),
+        ],
+      ),
+    );
   }
 
   Widget _buildProfileContent(BuildContext context) {
@@ -494,7 +536,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                 child: imageUrl.isEmpty
                     ? const CircularProgressIndicator() // Show loading indicator if image is empty
                     : Image.network(
-                        imageUrl,
+                        imageUrl.isEmpty ? Assets.notFound : imageUrl,
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 
 class HeaderImage extends StatelessWidget {
-  const HeaderImage({Key? key}) : super(key: key);
+  const HeaderImage({super.key});
 
   @override
   Widget build(BuildContext context) {

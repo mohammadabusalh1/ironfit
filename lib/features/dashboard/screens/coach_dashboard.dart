@@ -13,7 +13,7 @@ class CoachDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CoachDashboardBody(),
+      body: const CoachDashboardBody(),
       bottomNavigationBar: CoachNavBar(),
     );
   }

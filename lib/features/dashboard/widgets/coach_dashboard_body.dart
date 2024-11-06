@@ -23,7 +23,7 @@ Map<String, dynamic> data = {
 };
 
 class CoachDashboardBody extends StatefulWidget {
-  const CoachDashboardBody({Key? key}) : super(key: key);
+  const CoachDashboardBody({super.key});
 
   @override
   CoachDashboardState createState() => CoachDashboardState();
@@ -65,7 +65,7 @@ class CoachDashboardState extends State<CoachDashboardBody> {
 
       DateTime thisMonthDate =
           DateTime.now().subtract(Duration(days: DateTime.now().day - 1));
-      DateTime previousMonthDate = thisMonthDate.subtract(Duration(days: 30));
+      DateTime previousMonthDate = thisMonthDate.subtract(const Duration(days: 30));
 
       List<QueryDocumentSnapshot<Map<String, dynamic>>> currentMonthFillter =
           snapshot.docs.where((element) {
@@ -149,7 +149,7 @@ class CoachDashboardState extends State<CoachDashboardBody> {
       children: [
         DashboardHeader(
           backgroundImage: Assets.dashboardBackground, // Background image path
-          trainerImage: imageUrl, // Trainer image path
+          trainerImage: imageUrl.isEmpty ? Assets.notFound : imageUrl, // Trainer image path
           trainerName: fullName, // Trainer's name
           trainerEmail: email, // Trainer's email
         ),
@@ -199,7 +199,7 @@ class CoachDashboardState extends State<CoachDashboardBody> {
             icon: Icons.person_outline),
         const Spacer(), // Adjusted for consistent spacing
         StatisticsCard(
-            cardSubTitle: data['subscriptions'].toString() + "+%",
+            cardSubTitle: "${data['subscriptions']}+%",
             cardTitle: LocalizationService.translateFromGeneral('subscription'),
             width: MediaQuery.of(context).size.width * 0.4,
             height: 90,

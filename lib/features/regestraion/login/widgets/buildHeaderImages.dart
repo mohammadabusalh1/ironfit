@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 
 class AnimatedScreen extends StatefulWidget {
+  const AnimatedScreen({super.key});
+
   @override
   _AnimatedScreenState createState() => _AnimatedScreenState();
 }
@@ -20,7 +22,7 @@ class _AnimatedScreenState extends State<AnimatedScreen>
 
     // Initialize the logo animation controller
     _logoAnimationController =
-        AnimationController(vsync: this, duration: Duration(seconds: 2));
+        AnimationController(vsync: this, duration: const Duration(seconds: 2));
     _logoScaleAnimation =
         Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
       parent: _logoAnimationController,
@@ -31,7 +33,7 @@ class _AnimatedScreenState extends State<AnimatedScreen>
 
     // Initialize the fade animation for header image
     _imageFadeController =
-        AnimationController(vsync: this, duration: Duration(seconds: 2));
+        AnimationController(vsync: this, duration: const Duration(seconds: 2));
     _imageFadeAnimation =
         Tween<double>(begin: 0.0, end: 1.0).animate(_imageFadeController);
 

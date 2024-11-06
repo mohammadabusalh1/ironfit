@@ -34,14 +34,14 @@ class MyGymBody extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('تعديل المعلومات'),
-          content: Text('قم بتنفيذ نموذج التعديل هنا.'),
+          title: const Text('تعديل المعلومات'),
+          content: const Text('قم بتنفيذ نموذج التعديل هنا.'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('إغلاق'),
+              child: const Text('إغلاق'),
             ),
           ],
         );
@@ -136,7 +136,7 @@ class MyGymBody extends StatelessWidget {
   Widget _buildBackgroundImage() {
     return Container(
       height: 200,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/your_background_image.jpg'), // Replace with your image
           fit: BoxFit.cover,
@@ -155,9 +155,9 @@ class MyGymBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          SizedBox(height: 8),
-          Text(subtitle, style: TextStyle(fontSize: 16)),
+          Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Text(subtitle, style: const TextStyle(fontSize: 16)),
         ],
       ),
     );

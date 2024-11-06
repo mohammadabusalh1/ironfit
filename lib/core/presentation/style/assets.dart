@@ -20,5 +20,5 @@ class Assets {
   static const String selectLangBackground =
       'assets/images/selectLangBackground.png';
   static const String notFound =
-      'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+      'https://firebasestorage.googleapis.com/v0/b/ironfit-edef8.appspot.com/o/2149706981.jpg?alt=media&token=43c6b6e1-e22d-42dc-b1dd-f573a5013b18';
 }

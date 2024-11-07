@@ -197,6 +197,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                   return _buildTraineeCard(
                     context,
                     trainee['fullName'] ??
+                        trainee['username'] ??
                         LocalizationService.translateFromGeneral(
                             'unknown'), // Default name if fullName is null
                     trainee['endDate'] != null &&
@@ -213,7 +214,9 @@ class _TraineesBodyState extends State<TraineesBody> {
                     trainee['profileImageUrl'] ??
                         'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg', // Default image if profileImageUrl is null
                     () => Get.to(Directionality(
-                        textDirection: TextDirection.rtl,
+                        textDirection: dir == 'rtl'
+                            ? TextDirection.rtl
+                            : TextDirection.ltr,
                         child: TraineeScreen(
                           username: trainee['username'] ??
                               LocalizationService.translateFromGeneral(
@@ -244,8 +247,11 @@ class _TraineesBodyState extends State<TraineesBody> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.network(imagePath.isEmpty ? Assets.notFound : imagePath,
-                        width: 40, height: 40, fit: BoxFit.cover),
+                    child: Image.network(
+                        imagePath.isEmpty ? Assets.notFound : imagePath,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover),
                   ),
                   const SizedBox(width: 12),
                   Column(
@@ -282,8 +288,12 @@ class _TraineesBodyState extends State<TraineesBody> {
   void _sortByName() {
     setState(() {
       filtteredTrainees.sort((a, b) => isNameSortUp
-          ? a['fullName'].compareTo(b['fullName'])
-          : b['fullName'].compareTo(a['fullName']));
+          ? a.containsKey('fullName')
+              ? a['fullName'].compareTo(b['fullName'])
+              : a['username'].compareTo(b['username'])
+          : b.containsKey('fullName')
+              ? b['fullName'].compareTo(a['fullName'])
+              : b['username'].compareTo(a['username']));
       isNameSortUp = !isNameSortUp;
     });
   }
@@ -316,9 +326,9 @@ class _TraineesBodyState extends State<TraineesBody> {
 
       // Fetch the coach's subscription data
       var subscriptions = await FirebaseFirestore.instance
-          .collection('coaches')
-          .doc(coach?.uid)
           .collection('subscriptions')
+          .where('coachId', isEqualTo: coach!.uid)
+          .where('isActive', isEqualTo: true)
           .get();
 
       // Ensure there is data to process
@@ -326,32 +336,10 @@ class _TraineesBodyState extends State<TraineesBody> {
         throw Exception("No trainees found for coach.");
       }
 
-      // Fetch user IDs from the subscription documents
-      final userIds = subscriptions.docs.map((doc) => doc['userId']).toList();
-
-      final traineeDocs = await FirebaseFirestore.instance
-          .collection('trainees')
-          .where(FieldPath.documentId, whereIn: userIds)
-          .get();
       // Safely update the state
       setState(() {
-        trainees = filtteredTrainees = subscriptions.docs.map((doc) {
-          // Find the corresponding trainee data
-          final user = traineeDocs.docs.firstWhere(
-            (traineeDoc) => traineeDoc.id == doc['userId'],
-          );
-
-          return {
-            ...doc.data(),
-            'fullName': user.data().containsKey('firstName')
-                ? '${user.data()['firstName'] ?? ''} ${user.data()['lastName'] ?? ''}'
-                : user.data()['username'],
-            'age': user.data()[
-                'age'], // Assuming 'age' field exists in trainee documents
-            'profileImageUrl': user.data()[
-                'profileImageUrl'], // Assuming 'profileImageUrl' field exists
-          };
-        }).toList();
+        filtteredTrainees =
+            trainees = subscriptions.docs.map((doc) => doc.data()).toList();
       });
     } catch (e) {
       // Handle errors here (e.g., log to console or display a message)
@@ -566,39 +554,57 @@ class _TraineesBodyState extends State<TraineesBody> {
                       String amountPaid = amountPaidController.text.trim();
                       String debts = debtsController.text.trim();
 
-                      // Fetch the trainee from Firestore
-                      var traineeDoc = await FirebaseFirestore.instance
-                          .collection('trainees')
+                      final batch = FirebaseFirestore.instance.batch();
+
+                      var userSubscribed = await FirebaseFirestore.instance
+                          .collection('subscriptions')
                           .where('username', isEqualTo: username)
+                          .where('coachId', isEqualTo: coach?.uid)
+                          .where('isActive', isEqualTo: true)
                           .limit(1)
                           .get();
 
-                      final traineeExists = traineeDoc.docs.isNotEmpty;
-
-                      final batch = FirebaseFirestore.instance.batch();
-
-                      // Define coach and trainee collections
-                      final coachDocRef = FirebaseFirestore.instance
-                          .collection('coaches')
-                          .doc(coach?.uid)
-                          .collection('subscriptions');
+                      var userSubscribedNotActive = await FirebaseFirestore
+                          .instance
+                          .collection('subscriptions')
+                          .where('username', isEqualTo: username)
+                          .where('coachId', isEqualTo: coach?.uid)
+                          .where('isActive', isEqualTo: false)
+                          .limit(1)
+                          .get();
 
                       // Trainee exists: Update existing trainee with new subscription details
-                      if (traineeExists) {
-                        customSnackbar.showMessageAbove(
+                      if (userSubscribed.docs.isNotEmpty) {
+                        if (userSubscribed.docs.first.exists) {
+                          customSnackbar.showMessageAbove(
                             context,
                             LocalizationService.translateFromGeneral(
-                                'traineeExist'));
-                      } else {
-                        // Trainee does not exist: Create new trainee and subscription
-                        final newTraineeRef = FirebaseFirestore.instance
-                            .collection('trainees')
-                            .doc(username);
+                                'traineeExist'),
+                          );
+                        }
+                        Navigator.of(context).pop();
+                      } else if (userSubscribedNotActive.docs.isNotEmpty) {
+                        if (userSubscribedNotActive.docs.first.exists) {
+                          userSubscribedNotActive.docs.first.reference.update({
+                            'isActive': true,
+                            'startDate': startDate,
+                            'endDate': endDate,
+                            'amountPaid': amountPaid,
+                            'totalAmountPaid': amountPaid,
+                            'debts': debts,
+                          });
 
-                        batch.set(newTraineeRef, {
-                          'username': username,
-                          'age': '0',
-                        });
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                          customSnackbar.showMessage(
+                              context,
+                              LocalizationService.translateFromPage(
+                                  'message', 'snackbarSuccess'));
+                        }
+                      } else {
+                        // Define coach and trainee collections
+                        final coachDocRef = FirebaseFirestore.instance
+                            .collection('subscriptions');
 
                         final subscriptionDocRef = coachDocRef.doc();
                         batch.set(subscriptionDocRef, {
@@ -609,10 +615,8 @@ class _TraineesBodyState extends State<TraineesBody> {
                           'totalAmountPaid': amountPaid,
                           'debts': debts,
                           'userId': username,
-                        });
-                        batch.update(newTraineeRef, {
                           'coachId': coach?.uid,
-                          'subscriptionId': subscriptionDocRef.id,
+                          "isActive": true,
                         });
 
                         Navigator.of(context).pop();
@@ -656,7 +660,9 @@ class _TraineesBodyState extends State<TraineesBody> {
         fetchTrainees(); // Reset list if search is empty
       } else {
         filtteredTrainees = trainees.where((trainee) {
-          final name = trainee['fullName'].toLowerCase();
+          final name = trainee.containsKey('fullName')
+              ? trainee['fullName'].toLowerCase()
+              : trainee['username'].toLowerCase();
           return name.contains(searchTerm.toLowerCase());
         }).toList();
       }

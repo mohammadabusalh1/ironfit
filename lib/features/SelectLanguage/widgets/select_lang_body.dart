@@ -53,7 +53,7 @@ class _SelectLanguageBodyState extends State<SelectLanguageBody>
         children: [
           SizedBox(
             width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.96,
+            height: MediaQuery.of(context).size.height,
             child: Stack(
               children: [
                 ClipRRect(
@@ -95,8 +95,8 @@ class _SelectLanguageBodyState extends State<SelectLanguageBody>
                           onPressed: () {
                             LocalizationService.load('ar');
                             prefsManager.setLanguage('ar').then(
-                                  (value) =>
-                                      Get.toNamed(Routes.preLoginScreens),
+                                  (value) => Navigator.pushNamed(
+                                      context, Routes.preLoginScreens),
                                 );
                           },
                           backgroundColor: Palette.mainAppColor,
@@ -110,8 +110,8 @@ class _SelectLanguageBodyState extends State<SelectLanguageBody>
                           onPressed: () {
                             LocalizationService.load('en');
                             prefsManager.setLanguage('en').then(
-                                  (value) =>
-                                      Get.toNamed(Routes.preLoginScreens),
+                                  (value) => Navigator.pushNamed(
+                                      context, Routes.preLoginScreens),
                                 );
                           },
                           backgroundColor: Palette.mainAppColorWhite,

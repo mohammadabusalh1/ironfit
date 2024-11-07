@@ -32,13 +32,13 @@ class _PreLoginBodyState extends State<PreLoginBody>
     tokenService.checkTokenAndNavigateDashboard();
     _initializePreferences();
     _controller = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 1),
       vsync: this,
     );
 
     _positionAnimation = Tween<Offset>(
-      begin: const Offset(0, 1), // Start from bottom
-      end: const Offset(0, 0), // End at original position
+      begin: const Offset(0, 1),
+      end: const Offset(0, 0),
     ).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOut,
@@ -157,6 +157,8 @@ class _PreLoginBodyState extends State<PreLoginBody>
                                   );
                                 },
                                 width: Get.width,
+                                height: 45,
+                                fontSize: 14,
                               ),
                             ),
                           if (!showNextButton)
@@ -179,6 +181,8 @@ class _PreLoginBodyState extends State<PreLoginBody>
                                         0.85,
                                     backgroundColor: Palette.mainAppColorWhite,
                                     textColor: Palette.black,
+                                    height: 45,
+                                    fontSize: 14,
                                   ),
                                 ],
                               ),

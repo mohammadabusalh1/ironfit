@@ -51,6 +51,7 @@ flutter:
   # Declare assets for coach photos and icons if applicable
   assets:
     - assets/images/gym.jpg
+    - assets/images/enterPageImage.jpg
     - assets/images/trainer.jpg
     - assets/images/signOne.jpeg
     - assets/images/IronFit.png

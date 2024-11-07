@@ -56,13 +56,13 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
         children: [
           SizedBox(
             width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.96,
+            height: MediaQuery.of(context).size.height,
             child: Stack(
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.asset(
-                    Assets.selectLangBackground,
+                    Assets.enterPageImage,
                     width: double.infinity,
                     height: MediaQuery.of(context).size.height,
                     fit: BoxFit.cover,
@@ -102,7 +102,7 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                               14, Palette.mainAppColorWhite, FontWeight.normal),
                         ),
                         SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.04),
+                            height: MediaQuery.of(context).size.height * 0.02),
                         stage == 2
                             ? BuildIconButton(
                                 text: LocalizationService.translateFromGeneral(
@@ -112,12 +112,12 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                                 },
                                 backgroundColor: Palette.mainAppColor,
                                 textColor: Palette.white,
-                                icon: Icons.login_outlined,
+                                icon: Icons.person_2_outlined,
                                 iconSize: 20,
                                 width: Get.width,
                               )
                             : Container(),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
                         stage == 2
                             ? BuildIconButton(
                                 text: LocalizationService.translateFromGeneral(
@@ -153,7 +153,7 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                                 width: Get.width,
                               )
                             : Container(),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
                         stage == 1
                             ? BuildIconButton(
                                 text: LocalizationService.translateFromGeneral(

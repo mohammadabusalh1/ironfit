@@ -136,7 +136,8 @@ class _LoginBodyState extends State<LoginBody> {
         // Step 1: Sign in the user with FirebaseAuth
         UserCredential userCredential = await FirebaseAuth.instance
             .signInWithEmailAndPassword(
-                email: emailController.text.trim(), password: passwordController.text);
+                email: emailController.text.trim(),
+                password: passwordController.text);
 
         // Step 2: Get the current user from FirebaseAuth
         User? user = userCredential.user;
@@ -247,7 +248,7 @@ class _LoginBodyState extends State<LoginBody> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Get.toNamed(Routes.singIn);
+                        // Get.toNamed(Routes.singIn);
                       },
                       child: Text(
                         LocalizationService.translateFromGeneral(
@@ -259,20 +260,20 @@ class _LoginBodyState extends State<LoginBody> {
                   ],
                 ),
               ),
+              SizedBox(height: Get.height * 0.08),
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Get.toNamed(Routes.singUp);
+                  },
+                  child: Text(
+                    LocalizationService.translateFromGeneral('create_account'),
+                    style: AppStyles.textCairo(
+                        14, Palette.mainAppColor, FontWeight.w500),
+                  ),
+                ),
+              ),
             ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        child: TextButton(
-          onPressed: () {
-            Get.toNamed(Routes.singUp);
-          },
-          child: Text(
-            LocalizationService.translateFromGeneral('create_account'),
-            style:
-                AppStyles.textCairo(14, Palette.mainAppColor, FontWeight.w500),
           ),
         ),
       ),

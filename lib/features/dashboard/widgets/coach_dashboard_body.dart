@@ -55,27 +55,25 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   Future<void> fetchStatisticsData() async {
     try {
       // Fetch statistics data from Firebase for the current month
-      CollectionReference<Map<String, dynamic>> subscriptions =
-          FirebaseFirestore.instance
-              .collection('coaches')
-              .doc(coachId)
-              .collection('subscriptions');
-
-      QuerySnapshot<Map<String, dynamic>> snapshot = await subscriptions.get();
+      QuerySnapshot<Map<String, dynamic>> subscriptions =
+          await FirebaseFirestore.instance
+              .collection('subscriptions')
+              .where('coachId', isEqualTo: coachId)
+              .where('isActive', isEqualTo: true).get();
 
       DateTime thisMonthDate =
           DateTime.now().subtract(Duration(days: DateTime.now().day - 1));
       DateTime previousMonthDate = thisMonthDate.subtract(const Duration(days: 30));
 
       List<QueryDocumentSnapshot<Map<String, dynamic>>> currentMonthFillter =
-          snapshot.docs.where((element) {
+          subscriptions.docs.where((element) {
         DateTime startDate = DateTime.parse(element.data()['startDate']);
         bool isInthisMonth = startDate.month == thisMonthDate.month;
         return isInthisMonth;
       }).toList();
 
       List<QueryDocumentSnapshot<Map<String, dynamic>>> previousMonthFillter =
-          snapshot.docs.where((element) {
+          subscriptions.docs.where((element) {
         DateTime startDate = DateTime.parse(element.data()['startDate']);
         bool isInPreMonth = startDate.month == previousMonthDate.month;
         return isInPreMonth;
@@ -87,7 +85,7 @@ class CoachDashboardState extends State<CoachDashboardBody> {
       if (previousMonthTrainees == 0 && currentMonthTrainees > 0) {
         setState(() {
           data = {
-            'trainees': snapshot.size,
+            'trainees': subscriptions.size,
             'subscriptions': 100,
           };
         });
@@ -105,7 +103,7 @@ class CoachDashboardState extends State<CoachDashboardBody> {
       // Return the result with percentage difference
       setState(() {
         data = {
-          'trainees': snapshot.size,
+          'trainees': subscriptions.size,
           'subscriptions': percentageDifference,
         };
       });

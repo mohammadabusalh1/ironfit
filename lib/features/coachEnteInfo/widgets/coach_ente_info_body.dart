@@ -67,18 +67,10 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
       // Upload the image file
       await storageRef.putFile(_selectedImage);
 
-      // Show success message to the user
-      customSnackbar.showMessage(
-        context,
-        LocalizationService.translateFromGeneral('imageUploadSuccess'),
-      );
-
       // Get the download URL for the uploaded image
       final imageUrl = await storageRef.getDownloadURL();
       return imageUrl;
     } catch (e) {
-      // Handle any errors during upload or URL retrieval
-      customSnackbar.showFailureMessage(context);
       return '';
     }
   }

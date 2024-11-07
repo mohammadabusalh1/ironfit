@@ -39,7 +39,6 @@ class _TraineeBodyState extends State<TraineeBody> {
   late int _numberOfDaysUserHave;
   late String debts;
   late String amountPaid;
-  late String subscriptionId;
 
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
@@ -57,7 +56,6 @@ class _TraineeBodyState extends State<TraineeBody> {
     amountPaid = LocalizationService.translateFromGeneral('noData');
     userName = LocalizationService.translateFromGeneral('noData');
     imageURL = Assets.notFound;
-    subscriptionId = LocalizationService.translateFromGeneral('noData');
     fetchPlans();
     fetchNumberOfDays();
     fetchUserPlan();
@@ -67,8 +65,6 @@ class _TraineeBodyState extends State<TraineeBody> {
     try {
       // Fetch the user's subscription document
       final subscriptions = await _firestore
-          .collection('coaches')
-          .doc(_auth.currentUser?.uid)
           .collection('subscriptions')
           .where('username', isEqualTo: widget.username)
           .get();
@@ -88,13 +84,12 @@ class _TraineeBodyState extends State<TraineeBody> {
             setState(() {
               userName = user.data()?.containsKey('firstName') ?? false
                   ? user.get('firstName') + ' ' + user.get('lastName')
-                  : user.get('username');
+                  : widget.username;
               imageURL = user.data()?.containsKey('profileImageUrl') ?? false
                   ? user.get('profileImageUrl')
                   : Assets.notFound;
               debts = subscriptions.docs[0]['debts'].toString();
               amountPaid = subscriptions.docs[0]['amountPaid'].toString();
-              subscriptionId = subscriptions.docs.first.id;
               _numberOfDaysUserHave =
                   DateTime.parse(endDateStr).difference(DateTime.now()).inDays;
             });
@@ -152,9 +147,6 @@ class _TraineeBodyState extends State<TraineeBody> {
             LocalizationService.translateFromGeneral(
                 'cancelSubscriptionIsStarted'));
 
-        // Call removePlan function
-        await cleanSubscription();
-
         // Fetch current user ID
         String? coachId = _auth.currentUser?.uid;
         if (coachId == null) {
@@ -163,16 +155,20 @@ class _TraineeBodyState extends State<TraineeBody> {
 
         // Retrieve the user's subscription data
         final subscriptionDoc = await _firestore
-            .collection('coaches')
-            .doc(coachId)
             .collection('subscriptions')
             .where('username', isEqualTo: username)
             .get();
 
         if (subscriptionDoc.docs.isNotEmpty) {
           // Delete the subscription document
-          await subscriptionDoc.docs[0].reference.delete().then((v) {
-            Get.back();
+          await _firestore
+              .collection('subscriptions')
+              .where('username', isEqualTo: username)
+              .get()
+              .then((v) {
+            v.docs.first.reference.update({'isActive': false, 'plan': null});
+            widget.fetchTrainees();
+            Navigator.pushNamed(context, Routes.trainees);
           });
 
           // Show a success message
@@ -213,39 +209,22 @@ class _TraineeBodyState extends State<TraineeBody> {
 
   Future<void> fetchUserPlan() async {
     try {
-      final user = await _firestore
-          .collection('trainees')
+      final subscription = await _firestore
+          .collection('subscriptions')
           .where('username', isEqualTo: widget.username)
           .get();
 
-      if (user.docs.isNotEmpty) {
+      if (subscription.docs.isNotEmpty) {
         // Get the document snapshot
-        var userDoc = user.docs[0].data();
+        var userDoc = subscription.docs[0].data();
 
-        if (userDoc['coachId'] == null) {
+        if (userDoc['plan'] == null) {
           setState(() {
             planName = 'لا يوجد خطة!';
           });
-          return;
-        }
-
-        if (userDoc['planId'] == null) {
+        } else {
           setState(() {
-            planName = 'لا يوجد خطة!';
-          });
-          return;
-        }
-
-        final plan = await _firestore
-            .collection('coaches')
-            .doc(userDoc['coachId'])
-            .collection('plans')
-            .doc(userDoc['planId'])
-            .get();
-
-        if (plan.exists) {
-          setState(() {
-            planName = plan.data()!['name'];
+            planName = userDoc['plan'];
           });
         }
       } else {
@@ -268,7 +247,22 @@ class _TraineeBodyState extends State<TraineeBody> {
         return; // If user cancels, exit the method
       }
 
-      await cleanSubscription();
+      var querySnapshot = await _firestore
+          .collection('subscriptions')
+          .where('username', isEqualTo: widget.username)
+          .where('isActive', isEqualTo: true)
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        customSnackbar.showMessage(context,
+            LocalizationService.translateFromGeneral('noSubscriptionWithName'));
+        return; // Exit the method if no matching documents are found
+      }
+
+      var docRef = querySnapshot.docs.first.reference;
+      await docRef.update({
+        'plan': null,
+      });
 
       // Fetch updated data
       await fetchUserPlan();
@@ -287,47 +281,15 @@ class _TraineeBodyState extends State<TraineeBody> {
     }
   }
 
-  Future<void> cleanSubscription() async {
-    try {
-      // Fetch the user based on the username
-      var querySnapshot = await _firestore
-          .collection('trainees')
-          .where('username', isEqualTo: widget.username)
-          .get();
-
-      // Check if any documents are found
-      if (querySnapshot.docs.isEmpty) {
-        // If no user is found, notify the user
-        customSnackbar.showMessage(context,
-            LocalizationService.translateFromGeneral('noSubscriptionWithName'));
-        return;
-      }
-
-      if (!querySnapshot.docs.first.data().containsKey('email')) {
-        await querySnapshot.docs.first.reference.delete();
-      } else {
-        await _firestore
-            .collection('trainees')
-            .doc(querySnapshot.docs.first.id)
-            .update({'planId': null, 'coachId': null});
-      }
-    } catch (e) {
-      // Handle specific exceptions if needed (e.g., FirebaseException)
-      print('Error removing plan: $e');
-      // Show error message to user
-      customSnackbar.showMessage(
-          context, LocalizationService.translateFromGeneral('unexpectedError'));
-    }
-  }
-
   Future<void> _updatePlan(newValue) async {
     try {
       Get.dialog(const Center(child: CircularProgressIndicator()),
           barrierDismissible: false);
       // Get the query snapshot
       var querySnapshot = await _firestore
-          .collection('trainees')
+          .collection('subscriptions')
           .where('username', isEqualTo: widget.username)
+          .where('isActive', isEqualTo: true)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -346,8 +308,7 @@ class _TraineeBodyState extends State<TraineeBody> {
         if (plans.exists && plans.data() != null) {
           // Update the document with the plan data
           await docRef.update({
-            'planId': newValue,
-            'coachId': _auth.currentUser?.uid,
+            'plan': plans.data()!['name'],
           });
 
           // Show success message
@@ -386,21 +347,20 @@ class _TraineeBodyState extends State<TraineeBody> {
     }
   }
 
-  Future<void> _updateDebt(newValue, id) async {
+  Future<void> _updateDebt(newValue) async {
     try {
       Get.dialog(const Center(child: CircularProgressIndicator()),
           barrierDismissible: false);
 
       // Fetch the plan document from the 'coaches' collection
-      DocumentReference<Map<String, dynamic>> subscription = _firestore
-          .collection('coaches')
-          .doc(_auth.currentUser?.uid)
+      QuerySnapshot<Map<String, dynamic>> subscription = await _firestore
           .collection('subscriptions')
-          .doc(id);
+          .where('username', isEqualTo: widget.username)
+          .get();
 
       // Check if the plan exists
       // Update the document with the plan data
-      await subscription.update({
+      await subscription.docs.first.reference.update({
         'debts': '${int.parse(debts) + int.parse(newValue)}',
       });
 
@@ -561,11 +521,12 @@ class _TraineeBodyState extends State<TraineeBody> {
                     BuildIconButton(
                       onPressed: () {
                         if (selectedValue != null) {
-                          _updateDebt(selectedValue, subscriptionId);
+                          _updateDebt(selectedValue);
                         }
                       },
                       text: LocalizationService.translateFromGeneral('save'),
                       width: 90,
+                      fontSize: 14,
                     ),
                     TextButton(
                       onPressed: () {
@@ -584,30 +545,33 @@ class _TraineeBodyState extends State<TraineeBody> {
   }
 
   Future<void> _updateSubscription(
-      startDate, endDate, amountPaid, debts, id) async {
+      startDate, endDate, amountPaid, debts) async {
     try {
       Get.dialog(const Center(child: CircularProgressIndicator()),
           barrierDismissible: false);
 
       // Fetch the plan document from the 'coaches' collection
-      DocumentReference<Map<String, dynamic>> subscription = _firestore
-          .collection('coaches')
-          .doc(_auth.currentUser?.uid)
+      QuerySnapshot<Map<String, dynamic>> subscription = await _firestore
           .collection('subscriptions')
-          .doc(id);
+          .where('username', isEqualTo: widget.username)
+          .where('isActive', isEqualTo: true)
+          .get();
 
-      DocumentSnapshot<Map<String, dynamic>> subscriptionData =
-          await subscription.get();
+      if (subscription.docs.isEmpty) {
+        throw Exception("No subscription found for coach.");
+      }
 
       // Check if the plan exists
       // Update the document with the plan data
-      await subscription.update({
+      await subscription.docs.first.reference.update({
         'startDate': startDate,
         'endDate': endDate,
-        'amountPaid': int.parse(subscriptionData.data()!['amountPaid']) +
-            int.parse(amountPaid),
-        'debts':
-            int.parse(subscriptionData.data()!['debts']) + int.parse(debts),
+        'amountPaid': int.parse(amountPaid.toString()),
+        'totalAmountPaid':
+            int.parse(subscription.docs.first.data()['amountPaid'].toString()) +
+                int.parse(amountPaid.toString()),
+        'debts': int.parse(subscription.docs.first.data()['debts'].toString()) +
+            int.parse(debts.toString()),
       });
 
       // Show success message
@@ -767,8 +731,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                               startDateController.text,
                               endDateController.text,
                               amountPaidController.text,
-                              debtsController.text,
-                              subscriptionId);
+                              debtsController.text);
                         }
                       },
                       width: 90,

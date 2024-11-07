@@ -43,9 +43,9 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
       // Fetch data from Firestore
       QuerySnapshot<Map<String, dynamic>> subscriptionsSnapshot =
           await FirebaseFirestore.instance
-              .collection('coaches')
-              .doc(coachId)
               .collection('subscriptions')
+              .where('coachId', isEqualTo: coachId)
+              .where('isActive', isEqualTo: true)
               .get();
 
       // Handle empty snapshots
@@ -73,16 +73,13 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
         }
       }).toList();
 
-      print(subscriptionsList
-          .map((subscription) => subscription['amountPaid'] ?? 0));
-
       int income = subscriptionsList
           .where((subscription) =>
               DateTime.parse(subscription['startDate']).month >=
-                  DateTime.now().month)
-          .map((subscription) => subscription['amountPaid'] ?? 0)
+              DateTime.now().month)
+          .map((subscription) =>
+              int.parse(subscription['amountPaid'].toString()) ?? 0)
           .reduce((a, b) => int.parse(a.toString()) + int.parse(b.toString()));
-
       return {
         'trainees': subscriptionsList.length,
         'new_trainees': newTrainees.length,
@@ -114,23 +111,21 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
       }
 
       // Get the subscriptions collection for the coach
-      CollectionReference<Map<String, dynamic>> subscriptions =
-          FirebaseFirestore.instance
-              .collection('coaches')
-              .doc(userId)
-              .collection('subscriptions');
-
-      // Fetch data from Firestore
-      QuerySnapshot<Map<String, dynamic>> snapshot = await subscriptions.get();
+      QuerySnapshot<Map<String, dynamic>> subscriptions =
+          await FirebaseFirestore.instance
+              .collection('subscriptions')
+              .where('coachId', isEqualTo: userId)
+              .where('isActive', isEqualTo: true)
+              .get();
 
       // If no data, log and return default values
-      if (snapshot.docs.isEmpty) {
+      if (subscriptions.docs.isEmpty) {
         print("No subscriptions found for coach with ID: $userId");
         return _defaultAgeDistribution();
       }
 
       // Get userIds directly from the snapshot docs
-      final userIds = snapshot.docs.map((doc) => doc['userId']).toList();
+      final userIds = subscriptions.docs.map((doc) => doc['userId']).toList();
 
       // Batch fetch trainee documents
       final traineeDocs = await FirebaseFirestore.instance
@@ -148,6 +143,10 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
 
       // Calculate age distribution
       for (var trainee in traineeDocs.docs) {
+        if (!trainee.data().containsKey('age')) {
+          continue;
+        }
+
         final ageString = trainee['age']?.toString();
 
         if (ageString == null || ageString.isEmpty) {

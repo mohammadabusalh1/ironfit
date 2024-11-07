@@ -389,7 +389,7 @@ class _SignUpBodyState extends State<SignUpBody> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Get.toNamed(Routes.singIn);
+                          // Get.toNamed(Routes.singIn);
                         },
                         child: Text(
                           LocalizationService.translateFromGeneral(
@@ -401,22 +401,23 @@ class _SignUpBodyState extends State<SignUpBody> {
                     ],
                   ),
                 ),
+                SizedBox(height: Get.height * 0.08),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, Routes.singIn);
+                    },
+                    child: Text(
+                      LocalizationService.translateFromGeneral(
+                          'login'),
+                      style: AppStyles.textCairo(
+                          14, Palette.mainAppColor, FontWeight.w500),
+                    ),
+                  ),
+                ),
               ],
             ),
           )),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: TextButton(
-          onPressed: () {
-            Get.toNamed(Routes.singIn);
-          },
-          child: Text(
-            LocalizationService.translateFromGeneral('login'),
-            style:
-                AppStyles.textCairo(14, Palette.mainAppColor, FontWeight.w500),
-          ),
-        ),
-      ),
     );
   }
 

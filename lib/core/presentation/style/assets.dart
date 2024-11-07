@@ -1,5 +1,6 @@
 class Assets {
   static const String myGymImage = 'assets/images/gym.jpg';
+  static const String enterPageImage = 'assets/images/enterPageImage.jpg';
   static const String preLoginVideo = 'assets/images/preLoginVideo.gif';
   static const String myTrainerImage = 'assets/images/trainer.jpg';
   static const String singUpImage = 'assets/images/signOne.jpeg';

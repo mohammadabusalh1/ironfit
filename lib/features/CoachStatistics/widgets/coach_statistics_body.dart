@@ -37,7 +37,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
     super.initState();
     tokenService.checkTokenAndNavigateSingIn();
     bannerAd = BannerAd(
-        adUnitId: 'ca-app-pub-2914276526243261/9874590860',
+        adUnitId: 'ca-app-pub-2914276526243261/3474933542',
         size: AdSize.banner,
         request: const AdRequest(),
         listener: BannerAdListener(onAdLoaded: (ad) {
@@ -238,12 +238,12 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
           if (snapshot.hasData) {
             var data = snapshot.data!; // Access the fetched data
 
-            return Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: SingleChildScrollView(
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
                     child: Column(
                       children: [
                         SizedBox(
@@ -375,13 +375,14 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                                             'noDataForAgeDistribution')));
                               },
                             ),
+                            const SizedBox(height: 32),
                           ],
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             );
           } else {
             return Center(

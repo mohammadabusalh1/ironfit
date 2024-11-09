@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
@@ -44,6 +45,18 @@ class _TraineesBodyState extends State<TraineesBody> {
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateSingIn();
+    bannerAd = BannerAd(
+        adUnitId: 'ca-app-pub-2914276526243261/1778708496',
+        size: AdSize.banner,
+        request: const AdRequest(),
+        listener: BannerAdListener(onAdLoaded: (ad) {
+          setState(() {
+            isBannerAdLoaded = true;
+          });
+        }, onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        }));
+    bannerAd.load();
     _scrollController.addListener(_scrollListener);
     fetchTrainees();
   }
@@ -52,6 +65,9 @@ class _TraineesBodyState extends State<TraineesBody> {
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
 
+  late BannerAd bannerAd;
+  bool isBannerAdLoaded = false;
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -59,6 +75,14 @@ class _TraineesBodyState extends State<TraineesBody> {
         Column(
           children: [
             _buildHeader(),
+            const SizedBox(height: 12),
+            isBannerAdLoaded
+                ? SizedBox(
+                    child: AdWidget(ad: bannerAd),
+                    height: bannerAd.size.height.toDouble(),
+                    width: bannerAd.size.width.toDouble(),
+                  )
+                : const SizedBox(),
             const SizedBox(height: 12),
             _buildActionButtons(),
             const SizedBox(height: 12),
@@ -355,6 +379,7 @@ class _TraineesBodyState extends State<TraineesBody> {
   void dispose() {
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
+    bannerAd.dispose();
     super.dispose();
   }
 

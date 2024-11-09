@@ -52,7 +52,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
     super.initState();
     tokenService.checkTokenAndNavigateSingIn();
     bannerAd = BannerAd(
-        adUnitId: 'ca-app-pub-2914276526243261/9874590860',
+        adUnitId: 'ca-app-pub-2914276526243261/3277263040',
         size: AdSize.banner,
         request: const AdRequest(),
         listener: BannerAdListener(onAdLoaded: (ad) {

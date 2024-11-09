@@ -41,7 +41,7 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
     super.initState();
     tokenService.checkTokenAndNavigateSingIn();
     bannerAd = BannerAd(
-        adUnitId: 'ca-app-pub-2914276526243261/9874590860',
+        adUnitId: 'ca-app-pub-2914276526243261/1838418242',
         size: AdSize.banner,
         request: const AdRequest(),
         listener: BannerAdListener(onAdLoaded: (ad) {

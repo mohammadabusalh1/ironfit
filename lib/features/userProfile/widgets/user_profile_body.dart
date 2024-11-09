@@ -64,34 +64,24 @@ class _UserProfileBodyState extends State<UserProfileBody> {
 
       Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
 
-      // Check if 'coachId' and 'subscriptionId' fields exist before accessing them
-      String? coachId = userData?['coachId'];
-      String? subscriptionId = userData?['subscriptionId'];
+      var subscription= await FirebaseFirestore.instance
+          .collection('subscriptions')
+          .where('userId', isEqualTo: userId)
+          .get();
 
-      if (coachId != null && subscriptionId != null) {
-        DocumentSnapshot subscriptionDoc = await FirebaseFirestore.instance
-            .collection('coaches')
-            .doc(coachId)
-            .collection('subscriptions')
-            .doc(subscriptionId)
-            .get();
+      DocumentSnapshot subscriptionDoc = subscription.docs.first;
 
-        // Check if the subscription document exists
-        if (!subscriptionDoc.exists) {
-          throw Exception('Subscription document does not exist');
-        }
-
-        setState(() {
-          numberOfDays = DateTime.parse(subscriptionDoc['endDate'])
-              .difference(DateTime.now())
-              .inDays
-              .toString();
-        });
-      } else {
-        setState(() {
-          numberOfDays = '0';
-        });
+      // Check if the subscription document exists
+      if (!subscriptionDoc.exists) {
+        throw Exception('Subscription document does not exist');
       }
+
+      setState(() {
+        numberOfDays = DateTime.parse(subscriptionDoc['endDate'])
+            .difference(DateTime.now())
+            .inDays
+            .toString();
+      });
     } catch (error) {
       // Handle errors appropriately
       print('Error fetching user days: $error');
@@ -337,6 +327,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                                 Palette.mainAppColorWhite, FontWeight.w500)),
                         const SizedBox(height: 16),
                         BuildTextField(
+                          obscureText: true,
                           controller: oldPasswordController,
                           label: LocalizationService.translateFromGeneral(
                               'oldPassword'),
@@ -350,6 +341,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         ),
                         const SizedBox(height: 16),
                         BuildTextField(
+                          obscureText: true,
                           controller: newPasswordController,
                           label: LocalizationService.translateFromGeneral(
                               'newPassword'),
@@ -368,6 +360,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         ),
                         const SizedBox(height: 16),
                         BuildTextField(
+                          obscureText: true,
                           controller: confirmPasswordController,
                           label: LocalizationService.translateFromGeneral(
                               'confirmPassword'),

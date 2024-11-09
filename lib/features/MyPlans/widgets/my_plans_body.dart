@@ -63,13 +63,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
       }
 
       // Try to delete the plan from Firestore
-      await _firestore
-          .collection('coaches')
-          .doc(_auth.currentUser?.uid)
-          .collection('plans')
-          .doc(planId)
-          .delete()
-          .then(
+      await _firestore.collection('plans').doc(planId).delete().then(
             (value) => getPlans(),
           );
 
@@ -85,8 +79,10 @@ class _MyPlansBodyState extends State<MyPlansBody> {
     } catch (e) {
       // Handle other types of errors
       print('Unexpected error: $e');
-      customSnackbar.showMessage(context,
-          LocalizationService.translateFromGeneral('unexpectedErrorDeletingPlan'));
+      customSnackbar.showMessage(
+          context,
+          LocalizationService.translateFromGeneral(
+              'unexpectedErrorDeletingPlan'));
     }
   }
 
@@ -98,17 +94,23 @@ class _MyPlansBodyState extends State<MyPlansBody> {
         throw StateError('User not authenticated');
       }
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
-          .collection('coaches')
-          .doc(user.uid)
           .collection('plans')
-          .orderBy('createdAt', descending: !isDateSortUp)
+          .where('coachId', isEqualTo: user.uid)
           .get();
       // Firestore query for sorted plans based on subscriptionDate
       setState(() {
         plans = querySnapshot.docs;
+        plans.sort((a, b) {
+          return isDateSortUp
+              ? a['createdAt'].compareTo(b['createdAt'])
+              : b['createdAt'].compareTo(a['createdAt']);
+        });
         isLoading = false;
       });
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       // Log the error and return an error stream
       print('Error fetching plans: $e');
     }
@@ -117,7 +119,11 @@ class _MyPlansBodyState extends State<MyPlansBody> {
   void toggleDateSort() {
     setState(() {
       isDateSortUp = !isDateSortUp;
-      getPlans();
+      plans.sort((a, b) {
+        return isDateSortUp
+            ? a['createdAt'].compareTo(b['createdAt'])
+            : b['createdAt'].compareTo(a['createdAt']);
+      });
     });
   }
 
@@ -209,48 +215,54 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                       ? const Center(
                           child: CircularProgressIndicator(), // Show loader
                         )
-                      : Padding(
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              24, 0, 24, 0),
-                          child: ListView(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            children: plans.map((DocumentSnapshot document) {
-                              // 5. Check that the document data is not null.
-                              Map<String, dynamic>? data =
-                                  document.data() as Map<String, dynamic>?;
-
-                              if (data == null) {
-                                return const Text(
-                                    'Error: Invalid plan data'); // Handle null data.
-                              }
-
-                              // 6. Fallbacks for null fields.
-                              String title = data['name'] ??
+                      : plans.isEmpty
+                          ? Center(
+                              child: Text(
                                   LocalizationService.translateFromGeneral(
-                                      'noTitle'); // Provide default values if null.
-                              String description = data['description'] ??
-                                  LocalizationService.translateFromGeneral(
-                                      'noDescription'); // Provide default values if null.
+                                      'noPlans')))
+                          : Padding(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  24, 0, 24, 0),
+                              child: ListView(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                children:
+                                    plans.map((DocumentSnapshot document) {
+                                  // 5. Check that the document data is not null.
+                                  Map<String, dynamic>? data =
+                                      document.data() as Map<String, dynamic>?;
 
-                              return CustomCard(
-                                onPressedEdit: () {
-                                  Get.to(Directionality(
-                                      textDirection: TextDirection.rtl,
-                                      child:
-                                          EditPlanScreen(planId: document.id)));
-                                },
-                                title: title, // Use non-nullable strings.
-                                description:
-                                    description, // Use non-nullable strings.
-                                icon: Icons.arrow_back,
-                                onPressed: () {
-                                  deletePlan(context, document.id);
-                                },
-                              );
-                            }).toList(),
-                          ),
-                        ),
+                                  if (data == null) {
+                                    return const Text(
+                                        'Error: Invalid plan data'); // Handle null data.
+                                  }
+
+                                  // 6. Fallbacks for null fields.
+                                  String title = data['name'] ??
+                                      LocalizationService.translateFromGeneral(
+                                          'noTitle'); // Provide default values if null.
+                                  String description = data['description'] ??
+                                      LocalizationService.translateFromGeneral(
+                                          'noDescription'); // Provide default values if null.
+
+                                  return CustomCard(
+                                    onPressedEdit: () {
+                                      Get.to(Directionality(
+                                          textDirection: TextDirection.rtl,
+                                          child: EditPlanScreen(
+                                              planId: document.id)));
+                                    },
+                                    title: title, // Use non-nullable strings.
+                                    description:
+                                        description, // Use non-nullable strings.
+                                    icon: Icons.arrow_back,
+                                    onPressed: () {
+                                      deletePlan(context, document.id);
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                            ),
                   const SizedBox(height: 24),
                 ],
               ),

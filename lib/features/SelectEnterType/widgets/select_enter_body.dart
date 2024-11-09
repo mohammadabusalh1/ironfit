@@ -111,10 +111,12 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                                   Get.toNamed(Routes.singIn);
                                 },
                                 backgroundColor: Palette.mainAppColor,
-                                textColor: Palette.white,
+                                textColor: Palette.black,
                                 icon: Icons.person_2_outlined,
-                                iconSize: 20,
+                                iconColor: Palette.black,
+                                iconSize: 18,
                                 width: Get.width,
+                                fontSize: 14,
                               )
                             : Container(),
                         const SizedBox(height: 8),
@@ -129,8 +131,9 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                                 textColor: Palette.mainAppColorNavy,
                                 iconColor: Palette.mainAppColorNavy,
                                 icon: Icons.person_add_alt_1_outlined,
-                                iconSize: 20,
+                                iconSize: 18,
                                 width: Get.width,
+                                fontSize: 14,
                               )
                             : Container(),
                         stage == 1
@@ -146,11 +149,12 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                                   });
                                 },
                                 backgroundColor: Palette.mainAppColor,
-                                textColor: Palette.mainAppColorWhite,
-                                iconColor: Palette.mainAppColorWhite,
+                                textColor: Palette.black,
+                                iconColor: Palette.black,
                                 icon: Icons.fitness_center,
-                                iconSize: 20,
+                                iconSize: 18,
                                 width: Get.width,
+                                fontSize: 16,
                               )
                             : Container(),
                         const SizedBox(height: 8),
@@ -170,8 +174,9 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                                 textColor: Palette.mainAppColorNavy,
                                 iconColor: Palette.mainAppColorNavy,
                                 icon: Icons.directions_run_outlined,
-                                iconSize: 20,
+                                iconSize: 18,
                                 width: Get.width,
+                                fontSize: 16,
                               )
                             : Container(),
                       ],

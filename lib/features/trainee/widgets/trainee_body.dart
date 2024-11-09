@@ -117,9 +117,8 @@ class _TraineeBodyState extends State<TraineeBody> {
   Future<void> fetchPlans() async {
     try {
       final plans = await _firestore
-          .collection('coaches')
-          .doc(_auth.currentUser?.uid)
           .collection('plans')
+          .where('coachId', isEqualTo: _auth.currentUser?.uid)
           .get();
 
       setState(() {
@@ -281,7 +280,7 @@ class _TraineeBodyState extends State<TraineeBody> {
     }
   }
 
-  Future<void> _updatePlan(newValue) async {
+  Future<void> _updatePlan(id) async {
     try {
       Get.dialog(const Center(child: CircularProgressIndicator()),
           barrierDismissible: false);
@@ -297,12 +296,8 @@ class _TraineeBodyState extends State<TraineeBody> {
         var docRef = querySnapshot.docs.first.reference;
 
         // Fetch the plan document from the 'coaches' collection
-        DocumentSnapshot<Map<String, dynamic>> plans = await _firestore
-            .collection('coaches')
-            .doc(_auth.currentUser?.uid)
-            .collection('plans')
-            .doc(newValue)
-            .get();
+        DocumentSnapshot<Map<String, dynamic>> plans =
+            await _firestore.collection('plans').doc(id).get();
 
         // Check if the plan exists
         if (plans.exists && plans.data() != null) {

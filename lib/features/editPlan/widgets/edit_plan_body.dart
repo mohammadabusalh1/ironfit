@@ -599,12 +599,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
           barrierDismissible: false);
       final user = _auth.currentUser;
       if (user != null) {
-        await _firestore
-            .collection('coaches')
-            .doc(user.uid)
-            .collection('plans')
-            .doc(widget.planId)
-            .update({
+        await _firestore.collection('plans').doc(widget.planId).update({
           'name': planName,
           'description': planDescription,
           'trainingDays': {

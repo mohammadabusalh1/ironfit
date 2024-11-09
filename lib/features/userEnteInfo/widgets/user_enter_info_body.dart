@@ -122,67 +122,28 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
               await _checkIfUsernameExists(_usernameController.text);
 
           if (usernameExists) {
-            // fetch user
-            var snapshot = await FirebaseFirestore.instance
-                .collection('trainees')
-                .where('username', isEqualTo: _usernameController.text)
-                .get();
-
-            if (snapshot.docs.first.data().containsKey('email') ?? false) {
-              Navigator.of(context).pop();
-              setState(() {
-                stage = 1;
-              });
-              customSnackbar.showMessage(
-                  context,
-                  LocalizationService.translateFromGeneral(
-                      'usernameExistsError'));
-              return;
-            }
-
-            final userId = await widget.registerUser();
-            String uploadedImageUrl = await _uploadImage(userId);
-
-            Map<String, dynamic> userData = {
-              'username': _usernameController.text,
-              'firstName': _firstNameController.text,
-              'lastName': _lastNameController.text,
-              'gender': _selectedGender,
-              'age': int.parse(_ageController.text),
-              'weight': double.parse(_weightController.text),
-              'length': double.parse(_lengthController.text),
-              'profileImageUrl': uploadedImageUrl,
-              'coachId': snapshot.docs.first['coachId'],
-              'subscriptionId': snapshot.docs.first['subscriptionId'],
-            };
-
-            await FirebaseFirestore.instance
-                .collection('coaches')
-                .doc(snapshot.docs.first['coachId'])
-                .collection('subscriptions')
-                .doc(snapshot.docs.first['subscriptionId'])
-                .update({'userId': userId});
-
-            await updateUserInfo(userId, userData).then(
-              (value) {
-                customSnackbar.showMessage(
-                    context,
-                    LocalizationService.translateFromGeneral(
-                        'accountCreationSuccess'));
-
-                Navigator.of(context).pop();
-                Get.toNamed(Routes.trainerDashboard);
-              },
-            ).catchError((error) async {
-              print(error);
-              Navigator.of(context).pop();
-              customSnackbar.showMessage(context,
-                  LocalizationService.translateFromGeneral('unexpectedError'));
+            Navigator.of(context).pop();
+            setState(() {
+              stage = 1;
             });
-            snapshot.docs.first.reference.delete();
+            customSnackbar.showMessage(
+                context,
+                LocalizationService.translateFromGeneral(
+                    'usernameExistsError'));
+            return;
           } else {
             final userId = await widget.registerUser();
             String uploadedImageUrl = await _uploadImage(userId);
+
+            var snapshot = await FirebaseFirestore.instance
+                .collection('subscriptions')
+                .where('username', isEqualTo: _usernameController.text)
+                .get();
+
+            if (snapshot.docs.isNotEmpty) {
+              await snapshot.docs.first.reference.update({'userId': userId});
+            }
+
             Map<String, dynamic> userData = {
               'username': _usernameController.text,
               'firstName': _firstNameController.text,
@@ -192,6 +153,8 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
               'weight': double.parse(_weightController.text),
               'length': double.parse(_lengthController.text),
               'profileImageUrl': uploadedImageUrl,
+              'subscriptionId':
+                  snapshot.docs.isNotEmpty ? snapshot.docs.first.id : '',
             };
 
             await updateUserInfo(userId, userData).then(

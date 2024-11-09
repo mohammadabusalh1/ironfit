@@ -10,6 +10,8 @@ import 'package:ironfit/core/presentation/widgets/DaysTabBar.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
+import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
+
 class UserMyPlanBody extends StatefulWidget {
   const UserMyPlanBody({super.key});
 
@@ -38,22 +40,30 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
     try {
       User? user = _auth.currentUser; // Fetch current user
       if (user != null) {
-        DocumentSnapshot userDoc =
-            await _firestore.collection('trainees').doc(user.uid).get();
+        QuerySnapshot<Map<String, dynamic>> subscription = await _firestore
+            .collection('subscriptions')
+            .where('userId', isEqualTo: user.uid)
+            .where('isActive', isEqualTo: true)
+            .limit(1)
+            .get();
 
-        String planId = userDoc['planId'] ?? '';
-        String coachId = userDoc['coachId'] ?? '';
+        if (subscription.docs.isEmpty) {
+          return; // Exit the method if no matching documents are found
+        }
 
-        DocumentSnapshot PalnDoc = await _firestore
-            .collection('coaches')
-            .doc(coachId)
+        String planName = subscription.docs.first.data()['plan'] ?? '';
+
+        QuerySnapshot<Map<String, dynamic>> planDoc = await _firestore
             .collection('plans')
-            .doc(planId)
+            .where('coachId',
+                isEqualTo: subscription.docs.first.data()['coachId'])
+            .where('name', isEqualTo: planName)
+            .limit(1)
             .get();
 
         // Fetch user details and exercises
         setState(() {
-          plan = PalnDoc.data() as Map<String, dynamic>? ?? {};
+          plan = planDoc.docs.first.data() as Map<String, dynamic>? ?? {};
         });
       }
     } catch (e) {
@@ -69,47 +79,44 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
         width: double.infinity,
         child: Column(
           children: [
-            SizedBox(
-              width: double.infinity,
-              child: Stack(
-                children: [
-                  const Align(
-                    alignment: AlignmentDirectional(0, -1),
-                    child: HeaderImage(),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(
-                        24,
-                        MediaQuery.of(context).size.height * 0.08,
-                        24,
-                        MediaQuery.of(context).size.height * 0.08),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Opacity(
-                          opacity: 0.9,
-                          child: Text(
-                            LocalizationService.translateFromGeneral('my_plan'),
-                            style: AppStyles.textCairo(
-                              20,
-                              Palette.mainAppColorWhite,
-                              FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        ReturnBackButton(),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _buildHeader(context),
             CustomTabBarWidget(plan: plan),
           ],
         ),
       ),
     );
   }
+}
+
+Widget _buildHeader(context) {
+  return Directionality(
+    textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+    child: SizedBox(
+      width: double.infinity,
+      child: Stack(
+        children: [
+          const HeaderImage(),
+          Container(
+            height: MediaQuery.of(context).size.height * 0.22,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ReturnBackButton(),
+                const SizedBox(width: 12),
+                Opacity(
+                  opacity: 0.8,
+                  child: Text(
+                    LocalizationService.translateFromGeneral('my_plan'),
+                    style: AppStyles.textCairo(
+                        20, Palette.mainAppColorWhite, FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

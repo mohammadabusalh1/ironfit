@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
@@ -25,7 +26,6 @@ String? fullName;
 String imageUrl =
     'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
 String email = '';
-bool isDataLoaded = false;
 
 class CoachProfileBody extends StatefulWidget {
   const CoachProfileBody({super.key});
@@ -38,21 +38,43 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   final CoachProfileController controller = Get.find();
   bool isLoading = true;
   String coachId = FirebaseAuth.instance.currentUser!.uid;
+  bool isDataLoaded = false;
 
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
 
+  late BannerAd bannerAd;
+  bool isBannerAdLoaded = false;
+
   @override
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateSingIn();
+    bannerAd = BannerAd(
+        adUnitId: 'ca-app-pub-2914276526243261/9874590860',
+        size: AdSize.banner,
+        request: const AdRequest(),
+        listener: BannerAdListener(onAdLoaded: (ad) {
+          setState(() {
+            isBannerAdLoaded = true;
+          });
+        }, onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        }));
+    bannerAd.load();
     if (!isDataLoaded) {
       fetchUserName();
       setState(() {
         isDataLoaded = true;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    bannerAd.dispose();
+    super.dispose();
   }
 
   Future<void> changeUserImage() async {
@@ -352,105 +374,104 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
               textDirection:
                   dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
               child: SingleChildScrollView(
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: AlertDialog(
-                    title: Text(
-                      LocalizationService.translateFromGeneral(
-                          'changePassword'),
-                      style: AppStyles.textCairo(
-                        22,
-                        Palette.mainAppColorWhite,
-                        FontWeight.bold,
-                      ),
+                child: AlertDialog(
+                  title: Text(
+                    LocalizationService.translateFromGeneral('changePassword'),
+                    style: AppStyles.textCairo(
+                      22,
+                      Palette.mainAppColorWhite,
+                      FontWeight.bold,
                     ),
-                    content: Form(
-                      key: formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                              LocalizationService.translateFromGeneral(
-                                  'pleaseFillRequiredData'),
-                              style: AppStyles.textCairo(
-                                14,
-                                Palette.mainAppColorWhite,
-                                FontWeight.w500,
-                              )),
-                          const SizedBox(height: 16),
-                          BuildTextField(
-                            onChange: (value) =>
-                                oldPasswordController.text = value,
-                            controller: oldPasswordController,
-                            label: LocalizationService.translateFromGeneral(
-                                'oldPassword'),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return LocalizationService.translateFromGeneral(
-                                    'oldPasswordError');
-                              }
-                              return null;
-                            },
-                            icon: Icons.password,
-                          ),
-                          const SizedBox(height: 16),
-                          BuildTextField(
-                            onChange: (value) =>
-                                newPasswordController.text = value,
-                            controller: newPasswordController,
-                            label: LocalizationService.translateFromGeneral(
-                                'newPassword'),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return LocalizationService.translateFromGeneral(
-                                    'newPasswordError');
-                              }
-                              if (value.length < 6) {
-                                return LocalizationService.translateFromGeneral(
-                                    'newPasswordError2');
-                              }
-                              return null;
-                            },
-                            icon: Icons.lock_open,
-                          ),
-                          const SizedBox(height: 16),
-                          BuildTextField(
-                            onChange: (value) =>
-                                confirmPasswordController.text = value,
-                            controller: confirmPasswordController,
-                            label: LocalizationService.translateFromGeneral(
-                                'confirmPassword'),
-                            validator: (value) {
-                              if (value != newPasswordController.text) {
-                                return LocalizationService.translateFromGeneral(
-                                    'passwordsDontMatch');
-                              }
-                              return null;
-                            },
-                            icon: Icons.check_circle_outline,
-                          ),
-                        ],
-                      ),
-                    ),
-                    actions: [
-                      BuildIconButton(
-                        onPressed: editPassword,
-                        text: LocalizationService.translateFromGeneral('save'),
-                        width: 100,
-                        fontSize: 12,
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
-                        },
-                        child: Text(
-                            LocalizationService.translateFromGeneral('cancel')),
-                      ),
-                    ],
-                    actionsAlignment: MainAxisAlignment.start,
                   ),
+                  content: Form(
+                    key: formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                            LocalizationService.translateFromGeneral(
+                                'pleaseFillRequiredData'),
+                            style: AppStyles.textCairo(
+                              14,
+                              Palette.mainAppColorWhite,
+                              FontWeight.w500,
+                            )),
+                        const SizedBox(height: 16),
+                        BuildTextField(
+                          obscureText: true,
+                          onChange: (value) =>
+                              oldPasswordController.text = value,
+                          controller: oldPasswordController,
+                          label: LocalizationService.translateFromGeneral(
+                              'oldPassword'),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return LocalizationService.translateFromGeneral(
+                                  'oldPasswordError');
+                            }
+                            return null;
+                          },
+                          icon: Icons.password,
+                        ),
+                        const SizedBox(height: 16),
+                        BuildTextField(
+                          obscureText: true,
+                          onChange: (value) =>
+                              newPasswordController.text = value,
+                          controller: newPasswordController,
+                          label: LocalizationService.translateFromGeneral(
+                              'newPassword'),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return LocalizationService.translateFromGeneral(
+                                  'newPasswordError');
+                            }
+                            if (value.length < 6) {
+                              return LocalizationService.translateFromGeneral(
+                                  'newPasswordError2');
+                            }
+                            return null;
+                          },
+                          icon: Icons.lock_open,
+                        ),
+                        const SizedBox(height: 16),
+                        BuildTextField(
+                          obscureText: true,
+                          onChange: (value) =>
+                              confirmPasswordController.text = value,
+                          controller: confirmPasswordController,
+                          label: LocalizationService.translateFromGeneral(
+                              'confirmPassword'),
+                          validator: (value) {
+                            if (value != newPasswordController.text) {
+                              return LocalizationService.translateFromGeneral(
+                                  'passwordsDontMatch');
+                            }
+                            return null;
+                          },
+                          icon: Icons.check_circle_outline,
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    BuildIconButton(
+                      onPressed: editPassword,
+                      text: LocalizationService.translateFromGeneral('save'),
+                      width: 100,
+                      fontSize: 12,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text(
+                          LocalizationService.translateFromGeneral('cancel')),
+                    ),
+                  ],
+                  actionsAlignment: MainAxisAlignment.start,
                 ),
               ),
             ));
@@ -478,6 +499,14 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      isBannerAdLoaded
+                          ? SizedBox(
+                              child: AdWidget(ad: bannerAd),
+                              height: bannerAd.size.height.toDouble(),
+                              width: bannerAd.size.width.toDouble(),
+                            )
+                          : const SizedBox(),
+                      const SizedBox(height: 12),
                       _buildButtonCard(
                           context,
                           LocalizationService.translateFromGeneral(

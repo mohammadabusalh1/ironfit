@@ -9,6 +9,7 @@ import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Button.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
+import 'package:ironfit/core/presentation/widgets/ForgotPasswordDialog.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
@@ -32,6 +33,8 @@ class _LoginBodyState extends State<LoginBody> {
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
+
+  String dir = LocalizationService.getDir();
 
   @override
   void initState() {
@@ -248,7 +251,12 @@ class _LoginBodyState extends State<LoginBody> {
                     ),
                     TextButton(
                       onPressed: () {
-                        // Get.toNamed(Routes.singIn);
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return ForgotPasswordDialog();
+                          },
+                        );
                       },
                       child: Text(
                         LocalizationService.translateFromGeneral(
@@ -257,20 +265,20 @@ class _LoginBodyState extends State<LoginBody> {
                             14, Palette.mainAppColorWhite, FontWeight.w500),
                       ),
                     ),
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Get.toNamed(Routes.singUp);
+                        },
+                        child: Text(
+                          LocalizationService.translateFromGeneral(
+                              'create_account'),
+                          style: AppStyles.textCairo(
+                              14, Palette.mainAppColor, FontWeight.w500),
+                        ),
+                      ),
+                    ),
                   ],
-                ),
-              ),
-              SizedBox(height: Get.height * 0.08),
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    Get.toNamed(Routes.singUp);
-                  },
-                  child: Text(
-                    LocalizationService.translateFromGeneral('create_account'),
-                    style: AppStyles.textCairo(
-                        14, Palette.mainAppColor, FontWeight.w500),
-                  ),
                 ),
               ),
             ],
@@ -306,6 +314,7 @@ class _LoginBodyState extends State<LoginBody> {
             size: 20,
           ),
         ),
+        errorStyle: TextStyle(fontSize: 12.0),
       ),
       style:
           AppStyles.textCairo(14, Palette.mainAppColorWhite, FontWeight.w500),
@@ -328,6 +337,7 @@ class _LoginBodyState extends State<LoginBody> {
       controller: passwordController,
       obscureText: !passwordVisibility,
       decoration: InputDecoration(
+        errorStyle: TextStyle(fontSize: 12.0),
         labelText: LocalizationService.translateFromGeneral('password'),
         hintText: '**',
         hintStyle: AppStyles.textCairo(14, Palette.gray, FontWeight.w500),

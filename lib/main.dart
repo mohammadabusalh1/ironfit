@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:ironfit/core/presentation/controllers/coach_nav_bar_controller.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
@@ -20,6 +21,7 @@ import 'package:ironfit/features/createPlan/screens/create_plan_screen.dart';
 import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
 import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
 import 'package:ironfit/features/dashboard/screens/trainer_dashboard.dart';
+import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:ironfit/features/myGyms/screens/my_gyms_screen.dart';
 import 'package:ironfit/features/my_gym/screens/my_gym_screen.dart';
 import 'package:ironfit/features/preLoginScreens/screens/pre_login_screen.dart';
@@ -32,6 +34,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
   if (kIsWeb) {
     await Firebase.initializeApp(
         options: const FirebaseOptions(
@@ -116,142 +119,171 @@ class MyApp extends StatelessWidget {
 
         // Once the app knows where to start, it shows the correct screen (route).
         if (snapshot.hasData) {
-          return GetMaterialApp(
-            title: 'IronFit',
-            debugShowCheckedModeBanner:
-                false, // Hides the debug banner in the corner
-            theme: ThemeData(
-              textTheme: TextTheme(
-                bodyLarge: AppStyles.textCairo(
-                    16, Palette.mainAppColorWhite, FontWeight.w500),
-                bodyMedium: AppStyles.textCairo(
-                    14, Palette.mainAppColorWhite, FontWeight.w500),
-                headlineLarge: AppStyles.textCairo(
-                    24, Palette.mainAppColorWhite, FontWeight.w500),
+          return Directionality(
+            textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+            child: GetMaterialApp(
+              title: 'IronFit',
+              debugShowCheckedModeBanner:
+                  false, // Hides the debug banner in the corner
+              theme: ThemeData(
+                textTheme: const TextTheme(
+                  bodyLarge: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white),
+                  bodyMedium: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white),
+                  bodySmall: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white),
+                ),
+                primaryColor: Colors.blue, // Replace with your main color theme
+                scaffoldBackgroundColor: Colors.black, // Background color
+                floatingActionButtonTheme: const FloatingActionButtonThemeData(
+                  backgroundColor: Colors.black, // Button background color
+                ),
+                appBarTheme: const AppBarTheme(
+                  backgroundColor:
+                      Colors.blue, // Replace with your main app color
+                  titleTextStyle: TextStyle(color: Colors.black, fontSize: 20),
+                  iconTheme: IconThemeData(color: Colors.black),
+                ),
               ),
-              primaryColor: Palette.mainAppColor, // Main color theme
-              scaffoldBackgroundColor: Palette.black, // Background color
-              floatingActionButtonTheme: const FloatingActionButtonThemeData(
-                backgroundColor: Palette.black, // Button background color
-              ),
-              appBarTheme: const AppBarTheme(
-                backgroundColor: Palette.mainAppColor,
-                titleTextStyle: TextStyle(color: Palette.black, fontSize: 20),
-                iconTheme: IconThemeData(color: Palette.black),
-              ),
-            ),
-            initialRoute: snapshot.data,
-            getPages: [
-              GetPage(
+              initialRoute: snapshot.data,
+              getPages: [
+                GetPage(
                   name: Routes.selectEnter,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: const SelectEnterScreen())),
-              GetPage(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: const SelectEnterScreen(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.selectLanguage,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: const SelectLanguageScreen())),
-              GetPage(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: const SelectLanguageScreen(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.coachDashboard,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: CoachDashboard())),
-              GetPage(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: CoachDashboard(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.trainerDashboard,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: TrainerDashboard())),
-              GetPage(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: TrainerDashboard(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.myGym,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: MyGymScreen())),
-              GetPage(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: MyGymScreen(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.coachProfile,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: CoachProfileScreen())), // Coach's profile
-              GetPage(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: CoachProfileScreen(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.singUp,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: const SignUpScreen())), // Sign-up page
-              GetPage(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: const SignUpScreen(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.singIn,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: const LoginScreen())), // Login page
-              GetPage(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: const LoginScreen(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.trainees,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child:
-                          const TraineesScreen())), // Trainees screen// Trainees by age group
-              GetPage(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: const TraineesScreen(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.myPlans,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child:
-                          const MyPlansScreen())), // My plans, // Plan screen// Coach info // User stats
-              GetPage(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: const MyPlansScreen(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.userMyPlan,
-                  page: () => const UserMyPlanScreen()), // User's own plan
-              GetPage(
+                  page: () => Directionality(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: const UserMyPlanScreen(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.preLoginScreens,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child:
-                          const PreLoginScreen())), // Pre-login screens// Plan exercises
-              GetPage(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: const PreLoginScreen(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.createPlan,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child:
-                          const CreatePlanScreen())), // Create a new plan // Trainee screen
-              GetPage(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: const CreatePlanScreen(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.myGyms,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: const MyGymsScreen())), // My gyms screen
-              GetPage(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: const MyGymsScreen(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.coachStatistics,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: const CoachStatisticsScreen())),
-              GetPage(
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: const CoachStatisticsScreen(),
+                  ),
+                ),
+                GetPage(
                   name: Routes.userProfile,
                   page: () => Directionality(
-                      textDirection:
-                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-                      child: UserProfileScreen())),
-              // GetPage(
-              //     name: Routes.coachEnterInfo,
-              //     page: () => Directionality(
-              //         textDirection:
-              //             dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-              //         child: CoachEnterInfoScreen())),
-              // GetPage(
-              //     name: Routes.userEnterInfo,
-              //     page: () => Directionality(
-              //         textDirection:
-              //             dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-              //         child: UserEnterInfoScreen())),
-            ],
+                    textDirection:
+                        dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                    child: UserProfileScreen(),
+                  ),
+                ),
+              ],
+            ),
           );
         } else {
           // If something goes wrong while loading, show an error message.

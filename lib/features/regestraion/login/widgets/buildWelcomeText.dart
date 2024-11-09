@@ -47,7 +47,7 @@ class _AnimatedWelcomeText extends State<WelcomeText>
       opacity: _textFadeAnimation,
       child: Text(
         textAlign: TextAlign.center,
-        LocalizationService.translateFromGeneral('welcome_message'),
+        LocalizationService.translateFromGeneral('welcome_message').toUpperCase(),
         style: AppStyles.textCairo(
             16, Palette.mainAppColorWhite, FontWeight.w700),
       ),

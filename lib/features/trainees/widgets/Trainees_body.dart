@@ -559,7 +559,6 @@ class _TraineesBodyState extends State<TraineesBody> {
                       var userSubscribed = await FirebaseFirestore.instance
                           .collection('subscriptions')
                           .where('username', isEqualTo: username)
-                          .where('coachId', isEqualTo: coach?.uid)
                           .where('isActive', isEqualTo: true)
                           .limit(1)
                           .get();

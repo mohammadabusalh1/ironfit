@@ -1,6 +1,9 @@
+import 'dart:ffi';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
@@ -12,7 +15,6 @@ import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controlle
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-bool isDataLoaded = false;
 String fullName = LocalizationService.translateFromGeneral('noData');
 String email = LocalizationService.translateFromGeneral('noData');
 String imageUrl =
@@ -37,11 +39,30 @@ class CoachDashboardState extends State<CoachDashboardBody> {
 
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
+  bool isDataLoaded = false;
+
+  late BannerAd bannerAd;
+  bool isBannerAdLoaded = false;
+
+  // late InterstitialAd interstitialAd;
+  // bool isInterstitialAdLoaded = false;
 
   @override
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateSingIn();
+    bannerAd = BannerAd(
+        adUnitId: 'ca-app-pub-2914276526243261/9874590860',
+        size: AdSize.banner,
+        request: const AdRequest(),
+        listener: BannerAdListener(onAdLoaded: (ad) {
+          setState(() {
+            isBannerAdLoaded = true;
+          });
+        }, onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        }));
+    bannerAd.load();
     fetchStatisticsData();
     if (!isDataLoaded) {
       fetchUserName();
@@ -49,6 +70,12 @@ class CoachDashboardState extends State<CoachDashboardBody> {
         isDataLoaded = true;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    bannerAd.dispose();
+    super.dispose();
   }
 
   // Future to fetch data from Firestore
@@ -59,11 +86,13 @@ class CoachDashboardState extends State<CoachDashboardBody> {
           await FirebaseFirestore.instance
               .collection('subscriptions')
               .where('coachId', isEqualTo: coachId)
-              .where('isActive', isEqualTo: true).get();
+              .where('isActive', isEqualTo: true)
+              .get();
 
       DateTime thisMonthDate =
           DateTime.now().subtract(Duration(days: DateTime.now().day - 1));
-      DateTime previousMonthDate = thisMonthDate.subtract(const Duration(days: 30));
+      DateTime previousMonthDate =
+          thisMonthDate.subtract(const Duration(days: 30));
 
       List<QueryDocumentSnapshot<Map<String, dynamic>>> currentMonthFillter =
           subscriptions.docs.where((element) {
@@ -147,19 +176,29 @@ class CoachDashboardState extends State<CoachDashboardBody> {
       children: [
         DashboardHeader(
           backgroundImage: Assets.dashboardBackground, // Background image path
-          trainerImage: imageUrl.isEmpty ? Assets.notFound : imageUrl, // Trainer image path
+          trainerImage: imageUrl.isEmpty
+              ? Assets.notFound
+              : imageUrl, // Trainer image path
           trainerName: fullName, // Trainer's name
           trainerEmail: email, // Trainer's email
         ),
         const SizedBox(height: 24),
         Container(
-          height: MediaQuery.of(context).size.height * 0.63,
+          height: MediaQuery.of(context).size.height * 0.67,
           margin: const EdgeInsets.symmetric(horizontal: 24),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 _buildStatisticsRow(context, data),
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
+                isBannerAdLoaded
+                    ? SizedBox(
+                        child: AdWidget(ad: bannerAd),
+                        height: bannerAd.size.height.toDouble(),
+                        width: bannerAd.size.width.toDouble(),
+                      )
+                    : const SizedBox(),
+                const SizedBox(height: 12),
                 CardWidget(
                   onTap: () => Get.toNamed(Routes.myGyms),
                   subtitle: LocalizationService.translateFromGeneral('myGyms'),

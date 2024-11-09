@@ -57,7 +57,6 @@ class _PreLoginBodyState extends State<PreLoginBody>
   }
 
   Future<void> _initializePreferences() async {
-    print(await prefsManager.getLanguage());
     String languageCode =
         await prefsManager.getLanguage() ?? 'en'; // Default to 'en'
     LocalizationService.load(languageCode);
@@ -71,6 +70,7 @@ class _PreLoginBodyState extends State<PreLoginBody>
         Expanded(
           child: SizedBox(
             width: double.infinity,
+            height: Get.height,
             child: Stack(
               children: [
                 PageView(
@@ -116,7 +116,7 @@ class _PreLoginBodyState extends State<PreLoginBody>
       children: [
         SizedBox(
           width: double.infinity,
-          height: MediaQuery.of(context).size.height * 0.96,
+          height: MediaQuery.of(context).size.height,
           child: Stack(
             children: [
               ClipRRect(
@@ -159,6 +159,10 @@ class _PreLoginBodyState extends State<PreLoginBody>
                                 width: Get.width,
                                 height: 45,
                                 fontSize: 14,
+                                textColor: Palette.black,
+                                icon: Icons.arrow_forward,
+                                iconSize: 16,
+                                iconColor: Palette.black,
                               ),
                             ),
                           if (!showNextButton)
@@ -187,6 +191,7 @@ class _PreLoginBodyState extends State<PreLoginBody>
                                 ],
                               ),
                             ),
+                          const SizedBox(height: 24),
                         ],
                       ),
                     )),

@@ -240,8 +240,13 @@
   "amount": "المقدار",
   "goBack": "للخلف",
   "personalInfoSection": "المعلومات الشخصية",
-  "traineeExist": "المتدرب موجود بالفعل",
+  "traineeExist": "المتدرب موجود بالفعل أو مشترك مع شخص أخر، يرجى أختيار اسم مختلف",
   "areYouForgetPassword": "هل نسيت كلمة المرور؟",
   "areYouCoach": "هل أنت مدرب؟",
-  "invalidPassword": "يرجى التأكد من كلمة المرور"
+  "invalidPassword": "يرجى التأكد من كلمة المرور",
+  "noPlans": "لا يوجد خطط",
+  "resetEmailSentMessage": "تم إرسال بريد إعادة تعيين كلمة المرور عبر الإيميل",
+  "resetEmailFailedMessage": "فشل في إرسال بريد إعادة تعيين كلمة المرور.",
+  "forgotPasswordMessage": "نسيت كلمة المرور",
+  "reset": "اعادة تعيين"
 }

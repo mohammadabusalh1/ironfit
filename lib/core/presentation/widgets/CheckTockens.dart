@@ -27,7 +27,6 @@ class TokenService {
     String? token = prefs.getString('token');
 
     User? user = FirebaseAuth.instance.currentUser;
-    print(user);
 
     if (token == null || user == null) {
       Get.toNamed(Routes.singIn); // Navigate to coach dashboard

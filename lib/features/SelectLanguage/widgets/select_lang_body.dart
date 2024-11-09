@@ -100,9 +100,11 @@ class _SelectLanguageBodyState extends State<SelectLanguageBody>
                                 );
                           },
                           backgroundColor: Palette.mainAppColor,
-                          textColor: Palette.white,
+                          textColor: Palette.black,
+                          iconColor: Palette.black,
                           icon: Icons.language_outlined,
                           width: Get.width,
+                          fontSize: 14,
                         ),
                         const SizedBox(height: 12),
                         BuildIconButton(
@@ -119,6 +121,7 @@ class _SelectLanguageBodyState extends State<SelectLanguageBody>
                           iconColor: Palette.mainAppColorNavy,
                           icon: Icons.language_outlined,
                           width: Get.width,
+                          fontSize: 14,
                         ),
                       ],
                     ),

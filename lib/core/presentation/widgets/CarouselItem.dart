@@ -4,7 +4,6 @@ import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 
 Widget buildCarouselItem(Map<String, String> item, {double? padding}) {
-
   // Ensure that the keys exist before accessing them
   String image = item['image'] ?? item['gifUrl'] ?? Assets.notFound;
   String title = item['name'] ?? item['Exercise_Name'] ?? 'No Name';
@@ -14,10 +13,19 @@ Widget buildCarouselItem(Map<String, String> item, {double? padding}) {
       ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: Image.network(
-          image.isEmpty ? Assets.notFound : image, // Changed to network to load from URL, replace with asset if needed
+          image.isEmpty
+              ? Assets.notFound
+              : image, // Changed to network to load from URL, replace with asset if needed
           width: double.infinity,
           height: MediaQuery.of(Get.context!).size.height * 0.3,
           fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            // Show a fallback image or placeholder widget
+            return Placeholder(
+              fallbackWidth: 200,
+              fallbackHeight: 200,
+            );
+          },
         ),
       ),
       Align(

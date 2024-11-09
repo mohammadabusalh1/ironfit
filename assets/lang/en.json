@@ -242,8 +242,13 @@
   "addIncrementOrDecrementNegative": "Add increment or decrement with a negative value",
   "amount": "Amount",
   "goBack": "Back",
-  "traineeExist": "Trainee already exist",
+  "traineeExist": "Trainee already exist or trainee subscribe with other person, please choose another trainee",
   "areYouForgetPassword": "Are you forget password?",
   "areYouCoach": "Are you a coach?",
-  "invalidPassword": "Please check your password"
+  "invalidPassword": "Please check your password",
+  "noPlans": "No plans",
+  "resetEmailSentMessage": "Password reset email sent throw email!",
+  "resetEmailFailedMessage": "Failed to send password reset email",
+  "forgotPasswordMessage": "Forgot Password",
+  "reset": "Reset"
 }

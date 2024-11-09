@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 
 Widget BuildIconButton({
   String? text,
@@ -68,9 +69,11 @@ Widget ReturnBackButton() {
       padding: const EdgeInsets.symmetric(horizontal: 8),
       elevation: 0,
     ),
-    child: const Icon(
-      Icons.arrow_left,
-      color: Color(0xFFFFBB02),
+    child: Icon(
+      dir == 'rtl'
+          ? Icons.arrow_right
+          : Icons.arrow_left,
+      color: Palette.mainAppColor,
       size: 24,
     ),
   );

@@ -15,11 +15,13 @@ Widget BuildTextField(
     String? hint,
     IconData? icon,
     String? Function(String?)? validator,
-    List<TextInputFormatter>? inputFormatters // Add validator function
+    List<TextInputFormatter>? inputFormatters,
+    bool obscureText = false, // Add validator function
     }) {
   return Directionality(
     textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
     child: TextFormField(
+      obscureText: obscureText,
       textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
       onTap: onTap ?? () {},
       inputFormatters: inputFormatters,

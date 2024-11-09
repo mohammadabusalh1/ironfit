@@ -538,49 +538,45 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
         final User? user = _auth.currentUser;
 
         final planQuery = await _firestore
-            .collection('coaches')
-            .doc(user!.uid)
             .collection('plans')
             .where('name', isEqualTo: planName)
+            .where('coachId', isEqualTo: user?.uid)
             .get();
 
         // If the plan already exists, show an error message
         if (planQuery.docs.isNotEmpty) {
           customSnackbar.showMessage(context,
               LocalizationService.translateFromGeneral('planNameExists'));
-          return; // Exit the method if the plan exists
+        } else {
+          final planData = {
+            'name': planName,
+            'description': planDescription,
+            'coachId': user?.uid,
+            'createdAt': FieldValue.serverTimestamp(),
+            // ignore: prefer_for_elements_to_map_fromiterable
+            'trainingDays': Map.fromIterable(trainingDays,
+                key: (day) =>
+                    day.day.contains('-') ? day.day.split('-')[1] : day.day,
+                value: (day) {
+                  return day.exercises.map((exercise) {
+                    return {
+                      'name': exercise.name, // Exercise name
+                      'repetitions':
+                          exercise.repetitions, // Number of repetitions
+                      'rounds': exercise.rounds, // Number of rounds
+                      'image': exercise.image // Image for the exercise
+                    };
+                  }).toList(); // Convert the exercises to a list
+                }),
+          };
+
+          await _firestore.collection('plans').add(planData);
+
+          Navigator.pop(context);
+          Get.toNamed(Routes.myPlans);
+          customSnackbar.showSuccessMessage(context);
         }
-
-        final planData = {
-          'name': planName,
-          'description': planDescription,
-          'createdAt': FieldValue.serverTimestamp(),
-          // ignore: prefer_for_elements_to_map_fromiterable
-          'trainingDays': Map.fromIterable(trainingDays,
-              key: (day) =>
-                  day.day.contains('-') ? day.day.split('-')[1] : day.day,
-              value: (day) {
-                return day.exercises.map((exercise) {
-                  return {
-                    'name': exercise.name, // Exercise name
-                    'repetitions':
-                        exercise.repetitions, // Number of repetitions
-                    'rounds': exercise.rounds, // Number of rounds
-                    'image': exercise.image // Image for the exercise
-                  };
-                }).toList(); // Convert the exercises to a list
-              }),
-        };
-
-        await _firestore
-            .collection('coaches')
-            .doc(user.uid)
-            .collection('plans')
-            .add(planData);
-        Navigator.pop(context);
-        Get.toNamed(Routes.myPlans);
-        customSnackbar.showSuccessMessage(context);
-            } catch (e) {
+      } catch (e) {
         print(e);
         customSnackbar.showFailureMessage(context);
       }

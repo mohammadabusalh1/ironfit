@@ -387,32 +387,20 @@ class _SignUpBodyState extends State<SignUpBody> {
                           height: 24,
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          // Get.toNamed(Routes.singIn);
-                        },
-                        child: Text(
-                          LocalizationService.translateFromGeneral(
-                              'areYouForgetPassword'),
-                          style: AppStyles.textCairo(
-                              14, Palette.mainAppColorWhite, FontWeight.w500),
+                      const SizedBox(height: 24),
+                      Center(
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, Routes.singIn);
+                          },
+                          child: Text(
+                            LocalizationService.translateFromGeneral('login'),
+                            style: AppStyles.textCairo(
+                                14, Palette.mainAppColor, FontWeight.w500),
+                          ),
                         ),
                       ),
                     ],
-                  ),
-                ),
-                SizedBox(height: Get.height * 0.08),
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, Routes.singIn);
-                    },
-                    child: Text(
-                      LocalizationService.translateFromGeneral(
-                          'login'),
-                      style: AppStyles.textCairo(
-                          14, Palette.mainAppColor, FontWeight.w500),
-                    ),
                   ),
                 ),
               ],
@@ -425,6 +413,7 @@ class _SignUpBodyState extends State<SignUpBody> {
     return TextFormField(
       controller: emailController,
       decoration: InputDecoration(
+        errorStyle: TextStyle(fontSize: 12.0),
         labelText: LocalizationService.translateFromGeneral('email'),
         hintText: 'abc@gmail.com',
         hintStyle: AppStyles.textCairo(14, Palette.gray, FontWeight.w500),
@@ -459,6 +448,7 @@ class _SignUpBodyState extends State<SignUpBody> {
       controller: passwordController,
       obscureText: !passwordVisibility,
       decoration: InputDecoration(
+        errorStyle: TextStyle(fontSize: 12.0),
         labelText: LocalizationService.translateFromGeneral('password'),
         hintText: '**',
         hintStyle: AppStyles.textCairo(14, Palette.gray, FontWeight.w500),

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
@@ -14,7 +15,6 @@ String trainerName = '';
 String trainerEmail = '';
 String trainerImage =
     'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
-bool isDataLoaded = false;
 
 class TrainerDashboardBody extends StatefulWidget {
   const TrainerDashboardBody({super.key});
@@ -31,11 +31,27 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
 
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
+  bool isDataLoaded = false;
+
+  late BannerAd bannerAd;
+  bool isBannerAdLoaded = false;
 
   @override
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateSingIn();
+    bannerAd = BannerAd(
+        adUnitId: 'ca-app-pub-2914276526243261/9874590860',
+        size: AdSize.banner,
+        request: const AdRequest(),
+        listener: BannerAdListener(onAdLoaded: (ad) {
+          setState(() {
+            isBannerAdLoaded = true;
+          });
+        }, onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        }));
+    bannerAd.load();
     _fetchTrainerData();
     if (!isDataLoaded) {
       _fetchTrainerNameAndImage();
@@ -43,6 +59,12 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
         isDataLoaded = true;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    bannerAd.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchTrainerNameAndImage() async {
@@ -90,25 +112,29 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
       }
 
       // Fetch user document from Firestore
-      DocumentSnapshot userDoc =
-          await _firestore.collection('trainees').doc(user.uid).get();
+      QuerySnapshot<Map<String, dynamic>> subDoc = await _firestore
+          .collection('subscriptions')
+          .where('isActive', isEqualTo: true)
+          .where(
+            'userId',
+            isEqualTo: user.uid,
+          )
+          .get();
       // Get the current day of the week
       DateTime now = DateTime.now();
       List<String> weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
-      String planId = userDoc['planId'] ?? '';
-      String coachId = userDoc['coachId'] ?? '';
-
-      DocumentSnapshot PalnDoc = await _firestore
-          .collection('coaches')
-          .doc(coachId)
+      QuerySnapshot<Map<String, dynamic>> paln = await _firestore
           .collection('plans')
-          .doc(planId)
+          .where('name', isEqualTo: subDoc.docs.first['plan'])
+          .where('coachId', isEqualTo: subDoc.docs.first['coachId'])
           .get();
+
+      Map<String, dynamic> palnDoc = paln.docs.first.data();
 
       // Safely fetch today's exercises
       var dynamicExercises =
-          PalnDoc['trainingDays'][weekdays[now.weekday - 1]] ?? [];
+          palnDoc['trainingDays'][weekdays[now.weekday - 1]] ?? [];
 
       // Check if dynamicExercises is a List before processing it
       if (dynamicExercises is List) {
@@ -154,7 +180,15 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
               child: Column(
                 children: [
                   _buildDashboardImage(context),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 12),
+                  isBannerAdLoaded
+                      ? SizedBox(
+                          child: AdWidget(ad: bannerAd),
+                          height: bannerAd.size.height.toDouble(),
+                          width: bannerAd.size.width.toDouble(),
+                        )
+                      : const SizedBox(),
+                  const SizedBox(height: 12),
                   _buildTodayExercisesButton(),
                   const SizedBox(height: 24),
                   ExerciseCarousel(

@@ -165,7 +165,6 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Palette.black,
       body: Column(
         children: [
           DashboardHeader(

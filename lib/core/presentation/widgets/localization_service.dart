@@ -24,8 +24,10 @@ class LocalizationService {
   static String getDir() {
     if (lang == 'ar') {
       return 'rtl';
-    } else {
+    } else if (lang == 'en') {
       return 'ltr';
+    } else {
+      return 'rtl';
     }
   }
 }

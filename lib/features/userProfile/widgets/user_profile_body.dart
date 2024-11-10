@@ -437,7 +437,6 @@ class _UserProfileBodyState extends State<UserProfileBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Palette.black,
         body: Column(
           children: [
             Stack(

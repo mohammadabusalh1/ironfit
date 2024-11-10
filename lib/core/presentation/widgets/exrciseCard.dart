@@ -123,7 +123,7 @@ class _ExrciseCardState extends State<ExrciseCard> {
       children: [
         Icon(
           icon,
-          color: Palette.primaryColor,
+          color: Palette.mainAppColor,
           size: 16,
         ),
         const SizedBox(width: 4), // Space between icon and text

@@ -57,24 +57,24 @@ Widget BuildIconButton({
 }
 
 Widget ReturnBackButton() {
-  return ElevatedButton(
-    onPressed: () {
-      Get.back();
-    },
-    style: ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFF1C1503),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      elevation: 0,
-    ),
-    child: Icon(
-      dir == 'rtl'
-          ? Icons.arrow_right
-          : Icons.arrow_left,
-      color: Palette.mainAppColor,
-      size: 24,
-    ),
-  );
+  return Directionality(
+      textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+      child: ElevatedButton(
+        onPressed: () {
+          Get.back();
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF1C1503),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          elevation: 0,
+        ),
+        child: Icon(
+          dir == 'rtl' ? Icons.arrow_left : Icons.arrow_right,
+          color: Palette.mainAppColor,
+          size: 24,
+        ),
+      ));
 }

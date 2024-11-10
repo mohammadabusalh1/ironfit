@@ -62,8 +62,6 @@ class _EditPlanBodyState extends State<EditPlanBody> {
       }
 
       final planDoc = await _firestore
-          .collection('coaches')
-          .doc(user.uid)
           .collection('plans')
           .doc(widget.planId)
           .get();

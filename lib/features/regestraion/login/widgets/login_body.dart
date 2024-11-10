@@ -35,11 +35,20 @@ class _LoginBodyState extends State<LoginBody> {
   CustomSnackbar customSnackbar = CustomSnackbar();
 
   String dir = LocalizationService.getDir();
+  late bool type = false;
 
   @override
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateDashboard();
+    checkType();
+  }
+
+  Future<void> checkType() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    setState(() {
+      type = prefs.getBool('isCoach') ?? false;
+    });
   }
 
   Future<void> signInWithGoogle() async {
@@ -165,7 +174,7 @@ class _LoginBodyState extends State<LoginBody> {
               Get.toNamed(Routes.coachDashboard);
             } else {
               throw Exception(LocalizationService.translateFromGeneral(
-                  'userNotLoggedInOrPlanIdMissing'));
+                  'checkInfo'));
             }
           }
         } else if (!isCoach) {
@@ -182,7 +191,7 @@ class _LoginBodyState extends State<LoginBody> {
               Get.toNamed(Routes.trainerDashboard);
             } else {
               throw Exception(LocalizationService.translateFromGeneral(
-                  'userNotLoggedInOrPlanIdMissing'));
+                  'checkInfo'));
             }
           }
         }
@@ -195,95 +204,129 @@ class _LoginBodyState extends State<LoginBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              SizedBox(height: Get.height * 0.12),
-              AnimatedScreen(),
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    WelcomeText(),
-                    const SizedBox(height: 24),
-                    _buildEmailTextField(context),
-                    const SizedBox(height: 12),
-                    _buildPasswordTextField(context),
-                    const SizedBox(height: 24),
-                    // _buildCoachSwitch(context),
-                    // const SizedBox(height: 24),
-                    BuildIconButton(
-                      height: 50,
-                      text: LocalizationService.translateFromGeneral('login'),
-                      onPressed: () {
-                        _login();
-                      },
-                      backgroundColor: Palette.mainAppColor,
-                      textColor: Palette.white,
-                      width: Get.width,
-                    ),
-                    const SizedBox(height: 8),
-                    BuildIconButton(
-                      height: 50,
-                      text: LocalizationService.translateFromGeneral(
-                          'sign_in_with_google'),
-                      onPressed: () async {
-                        try {
-                          await signInWithGoogle();
-                        } catch (e) {
-                          customSnackbar.showFailureMessage(context);
-                        }
-                      },
-                      backgroundColor: Palette.mainAppColorWhite,
-                      textColor: Palette.mainAppColorNavy,
-                      icon: Icons.login,
-                      imageIcon: Image.asset(
-                        Assets.googleLogo,
-                        width: 24,
-                        height: 24,
-                      ),
-                      width: Get.width,
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return ForgotPasswordDialog();
+    return SizedBox(
+      height: Get.height,
+      child: Stack(
+        children: [
+          Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  SizedBox(height: Get.height * 0.12),
+                  AnimatedScreen(),
+                  Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        WelcomeText(),
+                        const SizedBox(height: 24),
+                        _buildEmailTextField(context),
+                        const SizedBox(height: 12),
+                        _buildPasswordTextField(context),
+                        const SizedBox(height: 24),
+                        // _buildCoachSwitch(context),
+                        // const SizedBox(height: 24),
+                        BuildIconButton(
+                          height: 50,
+                          text:
+                              LocalizationService.translateFromGeneral('login'),
+                          onPressed: () {
+                            _login();
                           },
-                        );
-                      },
-                      child: Text(
-                        LocalizationService.translateFromGeneral(
-                            'areYouForgetPassword'),
-                        style: AppStyles.textCairo(
-                            14, Palette.mainAppColorWhite, FontWeight.w500),
-                      ),
-                    ),
-                    Center(
-                      child: TextButton(
-                        onPressed: () {
-                          Get.toNamed(Routes.singUp);
-                        },
-                        child: Text(
-                          LocalizationService.translateFromGeneral(
-                              'create_account'),
-                          style: AppStyles.textCairo(
-                              14, Palette.mainAppColor, FontWeight.w500),
+                          backgroundColor: Palette.mainAppColor,
+                          textColor: Palette.white,
+                          width: Get.width,
                         ),
-                      ),
+                        const SizedBox(height: 8),
+                        BuildIconButton(
+                          height: 50,
+                          text: LocalizationService.translateFromGeneral(
+                              'sign_in_with_google'),
+                          onPressed: () async {
+                            try {
+                              await signInWithGoogle();
+                            } catch (e) {
+                              customSnackbar.showFailureMessage(context);
+                            }
+                          },
+                          backgroundColor: Palette.mainAppColorWhite,
+                          textColor: Palette.mainAppColorNavy,
+                          icon: Icons.login,
+                          imageIcon: Image.asset(
+                            Assets.googleLogo,
+                            width: 24,
+                            height: 24,
+                          ),
+                          width: Get.width,
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return ForgotPasswordDialog();
+                              },
+                            );
+                          },
+                          child: Text(
+                            LocalizationService.translateFromGeneral(
+                                'areYouForgetPassword'),
+                            style: AppStyles.textCairo(
+                                14, Palette.mainAppColorWhite, FontWeight.w500),
+                          ),
+                        ),
+                        Center(
+                          child: TextButton(
+                            onPressed: () {
+                              Get.toNamed(Routes.singUp);
+                            },
+                            child: Text(
+                              LocalizationService.translateFromGeneral(
+                                  'create_account'),
+                              style: AppStyles.textCairo(
+                                  14, Palette.mainAppColor, FontWeight.w500),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            top: 40,
+            right: 20,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                  backgroundColor: type == true
+                      ? Palette.mainAppColorOrange
+                      : Palette.mainAppColorWhite),
+              onPressed: () async {
+                SharedPreferences prefs =
+                    await preferencesService.getPreferences();
+                prefs.setBool('isCoach', !prefs.getBool('isCoach')!);
+                setState(() {
+                  type = !type;
+                });
+              },
+              child: Text(
+                type == true
+                    ? LocalizationService.translateFromGeneral('iAmTrainee')
+                    : LocalizationService.translateFromGeneral('iAmCoach'),
+                style: AppStyles.textCairo(
+                    14,
+                    type == true
+                        ? Palette.mainAppColorWhite
+                        : Palette.mainAppColorNavy,
+                    FontWeight.w600),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

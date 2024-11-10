@@ -360,10 +360,40 @@ class _TraineesBodyState extends State<TraineesBody> {
         throw Exception("No trainees found for coach.");
       }
 
+      // Fetch user IDs from the subscription documents
+      final userIds = subscriptions.docs.map((doc) => doc['userId']).toList();
+
+      final traineeDocs = await FirebaseFirestore.instance
+          .collection('trainees')
+          .where(FieldPath.documentId, whereIn: userIds)
+          .get();
+
       // Safely update the state
       setState(() {
-        filtteredTrainees =
-            trainees = subscriptions.docs.map((doc) => doc.data()).toList();
+        trainees = filtteredTrainees = subscriptions.docs.map((doc) {
+          try {
+            // Find the corresponding trainee data
+            final user = traineeDocs.docs.firstWhere(
+              (traineeDoc) => traineeDoc.id == doc['userId'],
+            );
+
+            return {
+              ...doc.data(),
+              'fullName': user.data().containsKey('firstName')
+                  ? '${user.data()['firstName'] ?? ''} ${user.data()['lastName'] ?? ''}'
+                  : user.data()['username'],
+              'age': user.data()[
+                  'age'], // Assuming 'age' field exists in trainee documents
+              'profileImageUrl': user.data()[
+                  'profileImageUrl'], // Assuming 'profileImageUrl' field exists
+            };
+          } catch (e) {
+            // Handle specific errors or log them
+            print('Error processing document: $e');
+            // Return a default value or handle the error case
+            return doc.data(); // or null or a default map with error info
+          }
+        }).toList();
       });
     } catch (e) {
       // Handle errors here (e.g., log to console or display a message)

@@ -250,5 +250,8 @@
   "resetEmailSentMessage": "Password reset email sent throw email!",
   "resetEmailFailedMessage": "Failed to send password reset email",
   "forgotPasswordMessage": "Forgot Password",
-  "reset": "Reset"
+  "reset": "Reset",
+  "iAmTrainee": "convert to trainee",
+  "iAmCoach": "convert to coach",
+  "checkInfo": "Check your info"
 }

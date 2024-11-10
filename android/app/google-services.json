@@ -7,6 +7,35 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:252100398371:android:825063cf1fec6a529cd096",
+        "android_client_info": {
+          "package_name": "com.abusalh.ironfit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "252100398371-5n1eiqd8c240003e7v9igujf05vbmpku.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGuN_Alp1xNtyhvSUPl62bey9fyLKwzdA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "252100398371-5n1eiqd8c240003e7v9igujf05vbmpku.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:252100398371:android:a1d52754a2ae30659cd096",
         "android_client_info": {
           "package_name": "com.example.ironfit"

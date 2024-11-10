@@ -325,7 +325,7 @@ class CustomCard extends StatelessWidget {
       onTap: onPressedEdit,
       child: Card(
         clipBehavior: Clip.antiAliasWithSaveLayer,
-        color: const Color(0x38454038),
+        color: Palette.secondaryColor,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),

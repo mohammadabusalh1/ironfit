@@ -248,5 +248,8 @@
   "resetEmailSentMessage": "تم إرسال بريد إعادة تعيين كلمة المرور عبر الإيميل",
   "resetEmailFailedMessage": "فشل في إرسال بريد إعادة تعيين كلمة المرور.",
   "forgotPasswordMessage": "نسيت كلمة المرور",
-  "reset": "اعادة تعيين"
+  "reset": "اعادة تعيين",
+  "iAmTrainee": "تحويل لمتدرب",
+  "iAmCoach": "تحويل لمدرب",
+  "checkInfo": "تحقق من المعلومات المدخلة"
 }

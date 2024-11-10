@@ -40,9 +40,8 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
   bool isDataLoaded = false;
-
-  late BannerAd bannerAd;
   bool isBannerAdLoaded = false;
+  late BannerAd bannerAd;
 
   // late InterstitialAd interstitialAd;
   // bool isInterstitialAdLoaded = false;
@@ -50,7 +49,6 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   @override
   void initState() {
     super.initState();
-    tokenService.checkTokenAndNavigateSingIn();
     bannerAd = BannerAd(
         adUnitId: 'ca-app-pub-2914276526243261/9874590860',
         size: AdSize.banner,
@@ -63,6 +61,7 @@ class CoachDashboardState extends State<CoachDashboardBody> {
           ad.dispose();
         }));
     bannerAd.load();
+    tokenService.checkTokenAndNavigateSingIn();
     fetchStatisticsData();
     if (!isDataLoaded) {
       fetchUserName();

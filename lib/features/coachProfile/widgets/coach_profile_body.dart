@@ -486,56 +486,46 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
         children: [
           Stack(
             children: [
-              const HeaderImage(),
+              HeaderImage(
+                high: MediaQuery.of(context).size.height * 0.45,
+              ),
               _buildProfileContent(context),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
           Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.3,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      isBannerAdLoaded
-                          ? SizedBox(
-                              child: AdWidget(ad: bannerAd),
-                              height: bannerAd.size.height.toDouble(),
-                              width: bannerAd.size.width.toDouble(),
-                            )
-                          : const SizedBox(),
-                      const SizedBox(height: 12),
-                      _buildButtonCard(
-                          context,
-                          LocalizationService.translateFromGeneral(
-                              'personalInformation'),
-                          Icons.person, () {
-                        showEditInfoDialog(context);
-                      }, Icons.arrow_forward_ios_outlined),
-                      _buildButtonCard(
-                          context,
-                          LocalizationService.translateFromGeneral(
-                              'changePassword'),
-                          Icons.vpn_key, () {
-                        showEditPasswordDialog(context);
-                      }, Icons.arrow_forward_ios_outlined),
-                      _buildButtonCard(
-                          context,
-                          LocalizationService.translateFromGeneral('gyms'),
-                          Icons.location_on, () {
-                        Get.toNamed(Routes.myGyms);
-                      }, Icons.arrow_forward_ios_outlined),
-                      _buildButtonCard(
-                          context,
-                          LocalizationService.translateFromGeneral('logout'),
-                          Icons.logout_outlined, () {
-                        _logout();
-                      }, Icons.arrow_forward_ios_outlined),
-                    ],
-                  ),
-                ),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  isBannerAdLoaded
+                      ? SizedBox(
+                          child: AdWidget(ad: bannerAd),
+                          height: bannerAd.size.height.toDouble(),
+                          width: bannerAd.size.width.toDouble(),
+                        )
+                      : const SizedBox(),
+                  const SizedBox(height: 12),
+                  _buildButtonCard(
+                      context,
+                      LocalizationService.translateFromGeneral(
+                          'personalInformation'),
+                      Icons.person_2, () {
+                    showEditInfoDialog(context);
+                  }, Icons.arrow_forward_ios_outlined),
+                  _buildButtonCard(
+                      context,
+                      LocalizationService.translateFromGeneral(
+                          'changePassword'),
+                      Icons.password_outlined, () {
+                    showEditPasswordDialog(context);
+                  }, Icons.arrow_forward_ios_outlined),
+                  _buildButtonCard(
+                      context,
+                      LocalizationService.translateFromGeneral('gyms'),
+                      Icons.location_on, () {
+                    Get.toNamed(Routes.myGyms);
+                  }, Icons.arrow_forward_ios),
+                ],
               )),
         ],
       ),
@@ -546,103 +536,98 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
     return Align(
       child: Column(
         children: [
-          SizedBox(height: MediaQuery.of(Get.context!).size.height * 0.12),
-          Container(
-            width: 104, // Add extra width to accommodate the border
-            height: 104, // Add extra height to accommodate the border
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Palette.black, // Replace with your desired border color
-                width: 4.0, // Border width
-              ),
-              borderRadius:
-                  BorderRadius.circular(50), // Same as ClipRRect borderRadius
-            ),
-            child: InkWell(
-              onTap: changeUserImage,
-              child: ClipRRect(
+          SizedBox(height: MediaQuery.of(Get.context!).size.height * 0.07),
+          InkWell(
+            onTap: changeUserImage,
+            child: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
                 child: imageUrl.isEmpty
                     ? const CircularProgressIndicator() // Show loading indicator if image is empty
-                    : Image.network(
-                        imageUrl.isEmpty ? Assets.notFound : imageUrl,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) {
-                            return child;
-                          } else {
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        (loadingProgress.expectedTotalBytes ??
-                                            1)
-                                    : null,
-                              ),
-                            );
-                          }
-                        },
-                      ),
-              ),
-            ),
+                    : SizedBox(
+                        width: 88,
+                        height: 88,
+                        child: Image.network(
+                          fit: BoxFit.cover,
+                          imageUrl.isEmpty ? Assets.notFound : imageUrl,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            } else {
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          (loadingProgress.expectedTotalBytes ??
+                                              1)
+                                      : null,
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      )),
           ),
-
-          const SizedBox(height: 10),
-          // Use FutureBuilder to display the fetched user name
+          const SizedBox(height: 12),
           Text(
-            fullName ??
-                LocalizationService.translateFromGeneral(
-                    'noName'), // If no name, display a default message
+            fullName ?? LocalizationService.translateFromGeneral('noName'),
             style: AppStyles.textCairo(
-              20,
+              22,
               Palette.mainAppColorWhite,
-              FontWeight.w600,
+              FontWeight.bold,
             ),
           ),
           Text(
             email, // If no name, display a default message
             style: AppStyles.textCairo(
-              14,
+              12,
               Palette.subTitleGrey,
               FontWeight.w100,
             ),
           ),
+          const SizedBox(height: 12),
+          BuildIconButton(
+            backgroundColor: Palette.mainAppColorWhite,
+            textColor: Palette.redDelete,
+            fontSize: 12,
+            text: LocalizationService.translateFromGeneral('logout'),
+            onPressed: () {
+              _logout();
+            },
+          )
         ],
       ),
     );
   }
 
   Widget _buildButtonCard(BuildContext context, String tilte, IconData icon,
-      VoidCallback onClick, IconData leftIcon) {
+      VoidCallback onClick, IconData? leftIcon) {
     return InkWell(
       onTap: onClick,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Icon(
               icon,
-              color: Palette.white,
-              size: 32,
+              color: Palette.mainAppColorWhite,
+              size: 26,
             ),
-            const SizedBox(width: 24), // Space between icon and text
+            const SizedBox(width: 12), // Space between icon and text
             Text(
               tilte,
               style: AppStyles.textCairo(
                 14,
                 Palette.mainAppColorWhite,
-                FontWeight.w500,
+                FontWeight.normal,
               ),
             ),
             const Spacer(), // Space between text and trailing icon
             Icon(
               leftIcon,
-              color: Colors.grey, // Replace with the theme color if needed
+              color: Palette.gray, // Replace with the theme color if needed
               size: 16,
             ),
           ],
@@ -655,7 +640,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
     try {
       await FirebaseAuth.instance.signOut();
       SharedPreferences prefs = await preferencesService.getPreferences();
-      
+
       prefs.remove('userId');
       prefs.remove('token');
       prefs.remove('isCoach');

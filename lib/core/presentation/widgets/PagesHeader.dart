@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:flutter/animation.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
@@ -62,9 +63,9 @@ class DashboardHeader extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(50),
         child: Image.network(
-          trainerImage,
-          width: 50,
-          height: 50,
+          trainerImage ?? Assets.notFound,
+          width: 55,
+          height: 55,
           fit: BoxFit.cover,
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) {

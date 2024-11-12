@@ -2,63 +2,55 @@ import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:flutter/animation.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:lottie/lottie.dart';
 
 class DashboardHeader extends StatelessWidget {
-  final String backgroundImage; // Background image path.
   final String trainerImage; // Trainer image path.
-  final String trainerName; // Trainer's name.
-  final String trainerEmail; // Trainer's email.
 
   const DashboardHeader({
     super.key,
-    required this.backgroundImage,
     required this.trainerImage,
-    required this.trainerName,
-    required this.trainerEmail,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        _buildBackgroundImage(context),
-        _buildTrainerInfo(context),
-      ],
-    );
-  }
-
-  // Builds the background image widget with fade animation
-  Widget _buildBackgroundImage(BuildContext context) {
-    return AnimatedOpacity(
-      opacity: 1.0, // Fade in effect
-      duration: const Duration(seconds: 2),
-      child: ClipRRect(
-        child: Image.asset(
-          backgroundImage,
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height * 0.2,
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
+    return _buildTrainerInfo(context);
   }
 
   // Builds the trainer info and notification button
   Widget _buildTrainerInfo(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-          24, MediaQuery.of(context).size.height * 0.03, 24, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _buildTrainerImage(context),
-          const SizedBox(width: 16),
-          TrainerInfo(trainerName: trainerName, trainerEmail: trainerEmail),
-          const Spacer(),
-          _buildNotificationButton(),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildTrainerImage(context),
+        const Spacer(),
+        Container(
+          decoration: BoxDecoration(
+            color: Palette.mainAppColor,
+            borderRadius: BorderRadius.circular(25),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          child: Row(
+            children: [
+              Text('تواصل مع المتدربين',
+                  style:
+                      AppStyles.textCairo(12, Palette.white, FontWeight.bold)),
+              SizedBox(
+                width: 5,
+              ),
+              SizedBox(
+                width: 40,
+                height: 40,
+                child: Lottie.asset(
+                  'assets/jsonIcons/chat.json',
+                  width: 10,
+                  height: 10,
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -69,35 +61,25 @@ class DashboardHeader extends StatelessWidget {
       duration: const Duration(seconds: 1),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(50),
-        child: Image.network(trainerImage,
-            width: MediaQuery.of(context).size.width * 0.16,
-            height: MediaQuery.of(context).size.height * 0.08,
-            fit: BoxFit.cover),
-      ),
-    );
-  }
-
-  // Builds the notification button with rotation animation
-  Widget _buildNotificationButton() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        width: 40,
-        height: 40,
-        color: Palette.mainAppColor,
-        child: IconButton(
-          onPressed: () {
-            // Handle notification button action
+        child: Image.network(
+          trainerImage,
+          width: 50,
+          height: 50,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) {
+              return child;
+            } else {
+              return Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          (loadingProgress.expectedTotalBytes ?? 1)
+                      : null,
+                ),
+              );
+            }
           },
-          icon: const AnimatedRotation(
-            turns: 1,
-            duration: Duration(seconds: 1),
-            child: Icon(
-              Icons.notifications,
-              color: Colors.white,
-              size: 24,
-            ),
-          ),
         ),
       ),
     );

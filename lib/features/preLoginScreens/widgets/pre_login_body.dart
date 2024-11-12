@@ -8,6 +8,7 @@ import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/preferences_manager.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreLoginBody extends StatefulWidget {
@@ -71,33 +72,41 @@ class _PreLoginBodyState extends State<PreLoginBody>
           child: SizedBox(
             width: double.infinity,
             height: Get.height,
-            child: Stack(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (int page) {
+                setState(() {});
+              },
               children: [
-                PageView(
-                  controller: _pageController,
-                  onPageChanged: (int page) {
-                    setState(() {});
-                  },
-                  children: [
-                    _buildPage(
-                      imagePath: Assets.preLogin1,
-                      text: LocalizationService.translateFromPage(
-                          'page1', 'preLogin'),
-                      showNextButton: true,
-                    ),
-                    _buildPage(
-                      imagePath: Assets.preLogin2,
-                      text: LocalizationService.translateFromPage(
-                          'page2', 'preLogin'),
-                      showNextButton: true,
-                    ),
-                    _buildPage(
-                      imagePath: Assets.preLogin3,
-                      text: LocalizationService.translateFromPage(
-                          'page3', 'preLogin'),
-                      showNextButton: false,
-                    ),
-                  ],
+                _buildPage(
+                  imagePath: Assets.preLogin1,
+                  text: LocalizationService.translateFromPage(
+                      'page1Title', 'preLogin'),
+                  decription: LocalizationService.translateFromPage(
+                    'page1',
+                    'preLogin',
+                  ),
+                  showNextButton: true,
+                ),
+                _buildPage(
+                  imagePath: Assets.preLogin2,
+                  text: LocalizationService.translateFromPage(
+                      'page2Title', 'preLogin'),
+                  decription: LocalizationService.translateFromPage(
+                    'page2',
+                    'preLogin',
+                  ),
+                  showNextButton: true,
+                ),
+                _buildPage(
+                  imagePath: Assets.preLogin3,
+                  text: LocalizationService.translateFromPage(
+                    'page3Title',
+                    'preLogin',
+                  ),
+                  decription: LocalizationService.translateFromPage(
+                      'page3', 'preLogin'),
+                  showNextButton: false,
                 ),
               ],
             ),
@@ -110,7 +119,8 @@ class _PreLoginBodyState extends State<PreLoginBody>
   Widget _buildPage(
       {required String imagePath,
       required String text,
-      required bool showNextButton}) {
+      required bool showNextButton,
+      required String decription}) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -129,7 +139,7 @@ class _PreLoginBodyState extends State<PreLoginBody>
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(18, 0, 18, 0),
+                padding: const EdgeInsets.all(30),
                 child: SlideTransition(
                     position: _positionAnimation,
                     child: FadeTransition(
@@ -139,14 +149,25 @@ class _PreLoginBodyState extends State<PreLoginBody>
                         children: [
                           Text(
                             text,
-                            textAlign: TextAlign.center,
+                            textAlign: TextAlign.start,
                             style: AppStyles.textCairo(
-                                16, Palette.white, FontWeight.bold),
+                                20, Palette.white, FontWeight.bold),
                           ),
-                          const SizedBox(height: 28),
+                          const SizedBox(height: 12),
+                          Text(
+                            decription,
+                            textAlign: TextAlign.start,
+                            style: AppStyles.textCairo(
+                                12,
+                                Palette.mainAppColorWhite.withOpacity(0.8),
+                                FontWeight.normal),
+                          ),
+                          const SizedBox(height: 32),
                           if (showNextButton)
                             Align(
-                              alignment: Alignment.bottomCenter,
+                              alignment: dir == 'ltr'
+                                  ? Alignment.bottomLeft
+                                  : Alignment.bottomRight,
                               child: BuildIconButton(
                                 text: LocalizationService.translateFromGeneral(
                                     'next'),
@@ -156,39 +177,33 @@ class _PreLoginBodyState extends State<PreLoginBody>
                                     curve: Curves.ease,
                                   );
                                 },
-                                width: Get.width,
+                                width: Get.width * 0.4,
                                 height: 45,
                                 fontSize: 14,
-                                textColor: Palette.black,
-                                icon: Icons.arrow_forward,
-                                iconSize: 16,
-                                iconColor: Palette.black,
+                                textColor: Palette.subTitleBlack,
+                                borderRadius: 25,
                               ),
                             ),
                           if (!showNextButton)
                             Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  BuildIconButton(
-                                    text: LocalizationService
-                                        .translateFromGeneral('startNow'),
-                                    onPressed: () async {
-                                      SharedPreferences prefs =
-                                          await SharedPreferences.getInstance();
-                                      prefs.setBool(
-                                          'hasSeenPreLoginScreen', true);
-                                      Get.toNamed(Routes.selectEnter);
-                                    },
-                                    width: MediaQuery.of(context).size.width *
-                                        0.85,
-                                    backgroundColor: Palette.mainAppColorWhite,
-                                    textColor: Palette.black,
-                                    height: 45,
-                                    fontSize: 14,
-                                  ),
-                                ],
+                              alignment: dir == 'ltr'
+                                  ? Alignment.bottomLeft
+                                  : Alignment.bottomRight,
+                              child: BuildIconButton(
+                                text: LocalizationService.translateFromGeneral(
+                                    'startNow'),
+                                onPressed: () async {
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  prefs.setBool('hasSeenPreLoginScreen', true);
+                                  Get.toNamed(Routes.selectEnter);
+                                },
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                backgroundColor: Palette.mainAppColorWhite,
+                                textColor: Palette.black,
+                                height: 45,
+                                fontSize: 14,
+                                borderRadius: 25,
                               ),
                             ),
                           const SizedBox(height: 24),

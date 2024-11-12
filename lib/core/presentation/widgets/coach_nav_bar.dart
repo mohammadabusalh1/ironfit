@@ -69,7 +69,7 @@ class CoachNavBar extends StatelessWidget {
                         color: Palette.mainAppColorBack,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Row(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,

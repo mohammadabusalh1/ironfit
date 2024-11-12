@@ -32,4 +32,15 @@ class TokenService {
       Get.toNamed(Routes.singIn); // Navigate to coach dashboard
     }
   }
+
+  Future<void> isLanguageSelected() async {
+    SharedPreferences prefs = await preferencesService.getPreferences();
+    String? language = prefs.getString('languageCode');
+
+    if (language == null) {
+      Get.toNamed(Routes.selectLanguage);
+    } else {
+      Get.toNamed(Routes.preLoginScreens);
+    }
+  }
 }

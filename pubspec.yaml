@@ -35,6 +35,7 @@ dependencies:
   workmanager: ^0.5.2
   google_fonts: ^6.2.1
   google_mobile_ads: ^5.2.0
+  lottie: ^3.1.3
 
   # Add any other packages your project might need like HTTP for API calls
   # Example:
@@ -54,16 +55,13 @@ flutter:
     - assets/images/gym.jpg
     - assets/images/enterPageImage.jpg
     - assets/images/trainer.jpg
-    - assets/images/signOne.jpeg
     - assets/images/IronFit.png
     - assets/images/preLogin1.jpg
     - assets/images/preLogin2.png
     - assets/images/preLogin3.png
     - assets/images/header.png
     - assets/images/IronFitLogo2.png
-    - assets/images/dashboardBackground.jpg
     - assets/images/dashboardYellow.png
-    - assets/images/myGymImage.png
     - assets/images/placeholder.svg
     - assets/images/google-logo.png
     - assets/images/Welcome-to.png
@@ -81,6 +79,11 @@ flutter:
     - assets/exresices/upper arms_exercises.json
     - assets/exresices/upper legs_exercises.json
     - assets/exresices/waist_exercises.json
+    - assets/jsonIcons/chat.json
+    - assets/jsonIcons/hi.json
+    - assets/jsonIcons/leftArrow.json
+    - assets/jsonIcons/rightArrow.json
+    - assets/jsonIcons/add.json
 
   # Fonts can also be added if required for custom typography
   # fonts:

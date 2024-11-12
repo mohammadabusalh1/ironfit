@@ -108,14 +108,14 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                                 text: LocalizationService.translateFromGeneral(
                                     'login'),
                                 onPressed: () {
-                                  Get.toNamed(Routes.singIn);
+                                  Navigator.pushNamed(context, Routes.singIn);
                                 },
                                 backgroundColor: Palette.mainAppColor,
                                 textColor: Palette.black,
                                 icon: Icons.person_2_outlined,
                                 iconColor: Palette.black,
                                 iconSize: 18,
-                                width: Get.width,
+                                width: MediaQuery.of(context).size.width,
                                 fontSize: 14,
                               )
                             : Container(),
@@ -132,7 +132,7 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                                 iconColor: Palette.mainAppColorNavy,
                                 icon: Icons.person_add_alt_1_outlined,
                                 iconSize: 18,
-                                width: Get.width,
+                                width: MediaQuery.of(context).size.width,
                                 fontSize: 14,
                               )
                             : Container(),
@@ -153,7 +153,7 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                                 iconColor: Palette.black,
                                 icon: Icons.fitness_center,
                                 iconSize: 18,
-                                width: Get.width,
+                                width: MediaQuery.of(context).size.width,
                                 fontSize: 16,
                               )
                             : Container(),
@@ -175,7 +175,7 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
                                 iconColor: Palette.mainAppColorNavy,
                                 icon: Icons.directions_run_outlined,
                                 iconSize: 18,
-                                width: Get.width,
+                                width: MediaQuery.of(context).size.width,
                                 fontSize: 16,
                               )
                             : Container(),

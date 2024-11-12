@@ -655,7 +655,11 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
     try {
       await FirebaseAuth.instance.signOut();
       SharedPreferences prefs = await preferencesService.getPreferences();
-      prefs.clear();
+      
+      prefs.remove('userId');
+      prefs.remove('token');
+      prefs.remove('isCoach');
+      prefs.remove('isDataFetched');
       Get.toNamed(Routes.selectEnter);
     } catch (e) {
       customSnackbar.showMessage(

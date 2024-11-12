@@ -1,17 +1,20 @@
 {
   "preLogin": {
-    "page1": "Smooth registration for trainees and tracking exercises all in one platform.",
-    "page2": "The coach creates customized workout plans designed to meet each trainee's specific goals.",
-    "page3": "Start personalized training and track progress, making fitness management easier."
+    "page1Title": "Effortless Trainee Registration and Exercise Tracking Platform",
+    "page1": "Streamline the process of registering trainees and monitoring their exercise routines seamlessly within a single platform",
+    "page2Title": "Tailored Workout Plans for Your Goals",
+    "page2": "Craft personalized workout routines that cater to individual goals, ensuring effective progress and achievement",
+    "page3Title": "Follow your daily exercises customized by the trainer",
+    "page3": "Watch your daily workouts customized by the trainer and make daily progress and achieve your goals"
   },
   "selectLang": {
-    "title": "Select Your Language",
+    "title": "Choose Your Language",
     "description": "Please select your preferred language from the options below.",
     "English": "English",
     "Arabic": "Arabic"
   },
   "selectEnter": {
-    "title": "Welcome to IronFit",
+    "title": "Welcome to your IronFit App",
     "description": "We hope you have a great day! Please choose your preferred option below."
   },
   "signInRedirectMessage": "Redirecting to sign-in page...",
@@ -253,5 +256,6 @@
   "reset": "Reset",
   "iAmTrainee": "convert to trainee",
   "iAmCoach": "convert to coach",
-  "checkInfo": "Check your info"
+  "checkInfo": "Check your info",
+  "hi": "Hi"
 }

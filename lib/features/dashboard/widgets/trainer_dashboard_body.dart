@@ -168,10 +168,7 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
       body: Column(
         children: [
           DashboardHeader(
-            backgroundImage: Assets.dashboardBackground,
             trainerImage: trainerImage.isEmpty ? Assets.notFound : trainerImage,
-            trainerName: trainerName,
-            trainerEmail: trainerEmail,
           ),
           const SizedBox(height: 24),
           Expanded(

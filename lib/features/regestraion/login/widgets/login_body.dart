@@ -173,8 +173,8 @@ class _LoginBodyState extends State<LoginBody> {
               // Navigate to coach dashboard
               Get.toNamed(Routes.coachDashboard);
             } else {
-              throw Exception(LocalizationService.translateFromGeneral(
-                  'checkInfo'));
+              throw Exception(
+                  LocalizationService.translateFromGeneral('checkInfo'));
             }
           }
         } else if (!isCoach) {
@@ -190,8 +190,8 @@ class _LoginBodyState extends State<LoginBody> {
               prefs.setString('token', userSnapshot.id);
               Get.toNamed(Routes.trainerDashboard);
             } else {
-              throw Exception(LocalizationService.translateFromGeneral(
-                  'checkInfo'));
+              throw Exception(
+                  LocalizationService.translateFromGeneral('checkInfo'));
             }
           }
         }
@@ -205,7 +205,7 @@ class _LoginBodyState extends State<LoginBody> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: Get.height,
+      height: MediaQuery.of(context).size.height,
       child: Stack(
         children: [
           Form(
@@ -214,7 +214,7 @@ class _LoginBodyState extends State<LoginBody> {
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  SizedBox(height: Get.height * 0.12),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.12),
                   AnimatedScreen(),
                   Padding(
                     padding: const EdgeInsets.all(24),
@@ -237,7 +237,7 @@ class _LoginBodyState extends State<LoginBody> {
                           },
                           backgroundColor: Palette.mainAppColor,
                           textColor: Palette.white,
-                          width: Get.width,
+                          width: MediaQuery.of(context).size.width,
                         ),
                         const SizedBox(height: 8),
                         BuildIconButton(
@@ -259,7 +259,7 @@ class _LoginBodyState extends State<LoginBody> {
                             width: 24,
                             height: 24,
                           ),
-                          width: Get.width,
+                          width: MediaQuery.of(context).size.width,
                         ),
                         TextButton(
                           onPressed: () {
@@ -280,7 +280,7 @@ class _LoginBodyState extends State<LoginBody> {
                         Center(
                           child: TextButton(
                             onPressed: () {
-                              Get.toNamed(Routes.singUp);
+                              Navigator.pushNamed(context, Routes.singUp);
                             },
                             child: Text(
                               LocalizationService.translateFromGeneral(

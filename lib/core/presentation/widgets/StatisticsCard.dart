@@ -8,6 +8,9 @@ class StatisticsCard extends StatefulWidget {
   final double width;
   final double height;
   final IconData icon;
+  final Color backgroundColor;
+  final Color textColor;
+  final Color cardTextColor;
 
   const StatisticsCard({
     super.key,
@@ -16,6 +19,9 @@ class StatisticsCard extends StatefulWidget {
     required this.width,
     required this.height,
     required this.icon,
+    this.backgroundColor = Palette.secondaryColor,
+    this.textColor = Palette.mainAppColorWhite,
+    this.cardTextColor = Palette.mainAppColor
   });
 
   @override
@@ -38,19 +44,19 @@ class _StatisticsCardState extends State<StatisticsCard> {
         duration: const Duration(milliseconds: 300),
         width: widget.width,
         height: widget.height,
-        decoration: _buildBoxDecoration(),
+        decoration: _buildBoxDecoration(widget.backgroundColor),
         transform: _isHovered
             ? Matrix4.translationValues(0, -5, 0)
             : Matrix4.identity(),
-        child: _buildCardContent(widget.icon),
+        child: _buildCardContent(widget.icon, widget.textColor, widget.cardTextColor),
       ),
     );
   }
 
   // Builds the decoration for the card, including shadow and hover effect.
-  BoxDecoration _buildBoxDecoration() {
+  BoxDecoration _buildBoxDecoration(Color backgroundColor) {
     return BoxDecoration(
-      color: Palette.secondaryColor,
+      color: backgroundColor,
       borderRadius: BorderRadius.circular(15),
       boxShadow: [
         BoxShadow(
@@ -63,7 +69,7 @@ class _StatisticsCardState extends State<StatisticsCard> {
   }
 
   // Builds the content of the card.
-  Widget _buildCardContent(IconData icon) {
+  Widget _buildCardContent(IconData icon, Color textColor, Color cardTextColor) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: Column(
@@ -72,16 +78,16 @@ class _StatisticsCardState extends State<StatisticsCard> {
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: Palette.white.withOpacity(0.7)),
+              Icon(icon, size: 16, color: textColor),
               const SizedBox(width: 4),
-              _buildCardText(widget.cardTitle, 10, FontWeight.w800,
-                  Palette.white.withOpacity(0.7)),
+              _buildCardText(widget.cardTitle, 10, FontWeight.normal,
+                  textColor),
             ],
           ),
           const SizedBox(height: 12),
           Center(
             child: _buildCardText(
-                widget.cardSubTitle, 14, FontWeight.w600, Palette.mainAppColor),
+                widget.cardSubTitle, 14, FontWeight.bold, cardTextColor),
           )
         ],
       ),

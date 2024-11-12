@@ -19,6 +19,7 @@ Widget BuildIconButton({
   double iconSize = 16,
   Color? iconColor = Palette.white,
   double height = 45,
+  double borderRadius = 10.0,
 }) {
   return icon != null
       ? ElevatedButton.icon(
@@ -35,7 +36,7 @@ Widget BuildIconButton({
             backgroundColor: backgroundColor,
             foregroundColor: textColor,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(borderRadius),
             ),
             fixedSize: Size(width, height),
             textStyle: AppStyles.textCairoButton(fontSize),
@@ -47,7 +48,7 @@ Widget BuildIconButton({
             backgroundColor: backgroundColor,
             foregroundColor: textColor,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(borderRadius),
             ),
             fixedSize: Size(width, height),
             textStyle: AppStyles.textCairoButton(fontSize),
@@ -64,7 +65,7 @@ Widget ReturnBackButton() {
           Get.back();
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF1C1503),
+          backgroundColor: Palette.mainAppColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -73,7 +74,7 @@ Widget ReturnBackButton() {
         ),
         child: Icon(
           dir == 'rtl' ? Icons.arrow_left : Icons.arrow_right,
-          color: Palette.mainAppColor,
+          color: Palette.black,
           size: 24,
         ),
       ));

@@ -13,14 +13,14 @@ class HeaderImage extends StatelessWidget {
           Image.asset(
             Assets.header,
             width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.2,
-            fit: BoxFit.cover,
+            height: MediaQuery.of(context).size.height * 0.25,
+            fit: BoxFit.fill,
           ),
           Container(
             width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.2,
+            height: MediaQuery.of(context).size.height * 0.25,
             color:
-                Colors.black.withOpacity(0.5), // Black filter with 50% opacity
+                Colors.black.withOpacity(0.8), // Black filter with 50% opacity
           ),
         ],
       ),

@@ -318,7 +318,7 @@ class _SignUpBodyState extends State<SignUpBody> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: Get.height * 0.12),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.12),
                 AnimatedScreen(),
                 Padding(
                   padding: const EdgeInsets.all(24),
@@ -340,7 +340,7 @@ class _SignUpBodyState extends State<SignUpBody> {
                         },
                         backgroundColor: Palette.mainAppColor,
                         textColor: Palette.white,
-                        width: Get.width,
+                        width: MediaQuery.of(context).size.width,
                         height: 50,
                       ),
                       const SizedBox(height: 8),
@@ -348,7 +348,7 @@ class _SignUpBodyState extends State<SignUpBody> {
                         height: 50,
                         text: LocalizationService.translateFromGeneral(
                             'sign_in_with_google'),
-                        width: Get.width,
+                        width: MediaQuery.of(context).size.width,
                         onPressed: () async {
                           try {
                             await signUpWithGoogle();

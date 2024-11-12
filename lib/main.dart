@@ -6,9 +6,7 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:ironfit/core/presentation/controllers/coach_nav_bar_controller.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
-import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/NotificationService.dart';
-import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/CoachStatistics/screens/coach_statistics_screen.dart';
@@ -18,10 +16,8 @@ import 'package:ironfit/features/SelectLanguage/screens/select_lang_screen.dart'
 import 'package:ironfit/features/Trainees/screens/Trainees_screen.dart';
 import 'package:ironfit/features/UserMyPlan/screens/user_my_plan_screen.dart';
 import 'package:ironfit/features/createPlan/screens/create_plan_screen.dart';
-import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
 import 'package:ironfit/features/dashboard/screens/coach_dashboard.dart';
 import 'package:ironfit/features/dashboard/screens/trainer_dashboard.dart';
-import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:ironfit/features/myGyms/screens/my_gyms_screen.dart';
 import 'package:ironfit/features/my_gym/screens/my_gym_screen.dart';
 import 'package:ironfit/features/preLoginScreens/screens/pre_login_screen.dart';
@@ -56,6 +52,8 @@ void main() async {
 
   PreferencesService preferencesService = PreferencesService();
   SharedPreferences prefs = await preferencesService.getPreferences();
+  prefs.remove('isDataFetched');
+  // prefs.clear();
   FirebaseAuth user = FirebaseAuth.instance;
 
   if (user.currentUser != null) {
@@ -98,9 +96,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // This "Get" package helps manage app navigation and state.
     // Here, we're preparing controllers for navigation and other features.
-    Get.put(CoachNavController()); // Prepares the navigation bar controller
-    Get.lazyPut(
-        () => CoachDashboardController()); // Prepares the dashboard controller
+    Get.put(
+        CoachNavController()); // Prepares the navigation bar controller // Prepares the dashboard controller
     Get.lazyPut(
         () => CoachProfileController()); // Prepares the profile controller
 

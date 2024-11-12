@@ -16,6 +16,7 @@ import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/theme.dart';
 import 'package:ironfit/features/Trainee/screens/trainee_screen.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
+import 'package:lottie/lottie.dart';
 
 class TraineesBody extends StatefulWidget {
   const TraineesBody({super.key});
@@ -103,18 +104,20 @@ class _TraineesBodyState extends State<TraineesBody> {
           ],
         ),
         Positioned(
-          bottom: 24,
-          right: 12,
-          child: BuildIconButton(
-              onPressed: () => showAddTraineeDialog(context),
-              icon: Icons.add,
-              iconSize: 20,
-              backgroundColor: Palette.mainAppColor,
-              textColor: Palette.black,
-              width: 50,
-              height: 50,
-              iconColor: Palette.black),
-        ),
+            bottom: 24,
+            right: 12,
+            child: InkWell(
+              onTap: () => showAddTraineeDialog(context),
+              child: SizedBox(
+                width: 70,
+                height: 70,
+                child: Lottie.asset(
+                  'assets/jsonIcons/add.json',
+                  width: 25,
+                  height: 25,
+                ),
+              ),
+            )),
       ],
     );
   }
@@ -126,7 +129,7 @@ class _TraineesBodyState extends State<TraineesBody> {
         children: [
           const HeaderImage(),
           Container(
-            height: MediaQuery.of(context).size.height * 0.22,
+            height: MediaQuery.of(context).size.height * 0.25,
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -235,8 +238,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                                 'not_subscribed'))
                         : LocalizationService.translateFromGeneral(
                             'unknown'), // Default status if endDate is null or cannot be parsed
-                    trainee['profileImageUrl'] ??
-                        'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg', // Default image if profileImageUrl is null
+                    trainee['profileImageUrl'] ?? Assets.notFound, // Default image if profileImageUrl is null
                     () => Get.to(Directionality(
                         textDirection: dir == 'rtl'
                             ? TextDirection.rtl
@@ -301,7 +303,17 @@ class _TraineesBodyState extends State<TraineesBody> {
                   ),
                 ],
               ),
-              const Icon(Icons.arrow_forward, color: Palette.white, size: 24),
+              dir == 'rtl'
+                  ? Lottie.asset(
+                      'assets/jsonIcons/leftArrow.json',
+                      width: 25,
+                      height: 25,
+                    )
+                  : Lottie.asset(
+                      'assets/jsonIcons/rightArrow.json',
+                      width: 25,
+                      height: 25,
+                    ),
             ],
           ),
         ),
@@ -310,12 +322,13 @@ class _TraineesBodyState extends State<TraineesBody> {
   }
 
   void _sortByName() {
+    print(filtteredTrainees);
     setState(() {
       filtteredTrainees.sort((a, b) => isNameSortUp
-          ? a.containsKey('fullName')
+          ? a.containsKey('fullName') && b.containsKey('fullName')
               ? a['fullName'].compareTo(b['fullName'])
               : a['username'].compareTo(b['username'])
-          : b.containsKey('fullName')
+          : b.containsKey('fullName') && a.containsKey('fullName')
               ? b['fullName'].compareTo(a['fullName'])
               : b['username'].compareTo(a['username']));
       isNameSortUp = !isNameSortUp;
@@ -473,6 +486,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         BuildTextField(
+                          icon: Icons.person,
                           onChange: (value) {
                             setState(() {
                               usernameController.text = value;
@@ -508,6 +522,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                     ),
                     const SizedBox(height: 16),
                     BuildTextField(
+                      icon: Icons.date_range,
                       controller: startDateController,
                       label:
                           LocalizationService.translateFromGeneral('startDate'),
@@ -524,6 +539,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                     ),
                     const SizedBox(height: 16),
                     BuildTextField(
+                      icon: Icons.date_range,
                       onChange: (value) {
                         setState(() {
                           endDateController.text = value;
@@ -558,6 +574,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                     ),
                     const SizedBox(height: 16),
                     BuildTextField(
+                      icon: Icons.attach_money_outlined,
                       onChange: (value) {
                         amountPaidController.text = value;
                       },
@@ -575,6 +592,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                     ),
                     const SizedBox(height: 16),
                     BuildTextField(
+                      icon: Icons.money_off,
                       onChange: (value) {
                         debtsController.text = value;
                       },

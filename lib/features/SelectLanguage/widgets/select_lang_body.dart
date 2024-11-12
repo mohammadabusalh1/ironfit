@@ -27,6 +27,7 @@ class _SelectLanguageBodyState extends State<SelectLanguageBody>
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateDashboard();
+    tokenService.isLanguageSelected();
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -106,7 +107,7 @@ class _SelectLanguageBodyState extends State<SelectLanguageBody>
                           width: Get.width,
                           fontSize: 14,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
                         BuildIconButton(
                           text: 'English',
                           onPressed: () {

@@ -581,7 +581,9 @@ class _UserProfileBodyState extends State<UserProfileBody> {
     try {
       await FirebaseAuth.instance.signOut();
       SharedPreferences prefs = await preferencesService.getPreferences();
-      prefs.clear();
+      prefs.remove('userId');
+      prefs.remove('token');
+      prefs.remove('isCoach');
       Get.toNamed(Routes.selectEnter);
     } catch (e) {
       customSnackbar.showFailureMessage(context);

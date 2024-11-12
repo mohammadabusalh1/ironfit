@@ -1,74 +1,62 @@
-import 'dart:ffi';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
+import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
 import 'package:ironfit/core/presentation/widgets/PagesHeader.dart';
 import 'package:ironfit/core/presentation/widgets/StatisticsCard.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/features/dashboard/widgets/card_widget.dart';
-import 'package:ironfit/features/dashboard/controllers/coach_dashboard_controller.dart';
 import 'package:ironfit/core/routes/routes.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-String fullName = LocalizationService.translateFromGeneral('noData');
-String email = LocalizationService.translateFromGeneral('noData');
-String imageUrl =
-    'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
-Map<String, dynamic> data = {
+late String fullName = LocalizationService.translateFromGeneral('noData');
+late String email = LocalizationService.translateFromGeneral('noData');
+late String imageUrl = Assets.notFound;
+late Map<String, dynamic> data = {
   'trainees': '0',
   'subscriptions': '0',
 };
 
 class CoachDashboardBody extends StatefulWidget {
-  const CoachDashboardBody({super.key});
+  const CoachDashboardBody({Key? key}) : super(key: key);
 
   @override
   CoachDashboardState createState() => CoachDashboardState();
 }
 
 class CoachDashboardState extends State<CoachDashboardBody> {
-  final CoachDashboardController controller =
-      Get.put(CoachDashboardController());
-
-  String coachId = FirebaseAuth.instance.currentUser!.uid;
-
-  PreferencesService preferencesService = PreferencesService();
-  TokenService tokenService = TokenService();
-  bool isDataLoaded = false;
-  bool isBannerAdLoaded = false;
   late BannerAd bannerAd;
-
-  // late InterstitialAd interstitialAd;
-  // bool isInterstitialAdLoaded = false;
+  bool isBannerAdLoaded = false;
+  TokenService tokenService = TokenService();
 
   @override
   void initState() {
     super.initState();
+    fetchInitialData();
     bannerAd = BannerAd(
-        adUnitId: 'ca-app-pub-2914276526243261/9874590860',
-        size: AdSize.banner,
-        request: const AdRequest(),
-        listener: BannerAdListener(onAdLoaded: (ad) {
+      adUnitId: 'ca-app-pub-2914276526243261/9874590860',
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
           setState(() {
             isBannerAdLoaded = true;
           });
-        }, onAdFailedToLoad: (ad, error) {
+        },
+        onAdFailedToLoad: (ad, error) {
           ad.dispose();
-        }));
+        },
+      ),
+    );
     bannerAd.load();
     tokenService.checkTokenAndNavigateSingIn();
-    fetchStatisticsData();
-    if (!isDataLoaded) {
-      fetchUserName();
-      setState(() {
-        isDataLoaded = true;
-      });
-    }
   }
 
   @override
@@ -77,14 +65,13 @@ class CoachDashboardState extends State<CoachDashboardBody> {
     super.dispose();
   }
 
-  // Future to fetch data from Firestore
   Future<void> fetchStatisticsData() async {
     try {
-      // Fetch statistics data from Firebase for the current month
       QuerySnapshot<Map<String, dynamic>> subscriptions =
           await FirebaseFirestore.instance
               .collection('subscriptions')
-              .where('coachId', isEqualTo: coachId)
+              .where('coachId',
+                  isEqualTo: FirebaseAuth.instance.currentUser!.uid)
               .where('isActive', isEqualTo: true)
               .get();
 
@@ -96,15 +83,13 @@ class CoachDashboardState extends State<CoachDashboardBody> {
       List<QueryDocumentSnapshot<Map<String, dynamic>>> currentMonthFillter =
           subscriptions.docs.where((element) {
         DateTime startDate = DateTime.parse(element.data()['startDate']);
-        bool isInthisMonth = startDate.month == thisMonthDate.month;
-        return isInthisMonth;
+        return startDate.month == thisMonthDate.month;
       }).toList();
 
       List<QueryDocumentSnapshot<Map<String, dynamic>>> previousMonthFillter =
           subscriptions.docs.where((element) {
         DateTime startDate = DateTime.parse(element.data()['startDate']);
-        bool isInPreMonth = startDate.month == previousMonthDate.month;
-        return isInPreMonth;
+        return startDate.month == previousMonthDate.month;
       }).toList();
 
       int currentMonthTrainees = currentMonthFillter.length;
@@ -118,6 +103,7 @@ class CoachDashboardState extends State<CoachDashboardBody> {
           };
         });
       }
+
       double percentageDifference = previousMonthTrainees != 0
           ? ((currentMonthTrainees - previousMonthTrainees) /
                   previousMonthTrainees) *
@@ -126,9 +112,6 @@ class CoachDashboardState extends State<CoachDashboardBody> {
               ? 100
               : 0;
 
-      // Avoid division by zero
-
-      // Return the result with percentage difference
       setState(() {
         data = {
           'trainees': subscriptions.size,
@@ -140,53 +123,94 @@ class CoachDashboardState extends State<CoachDashboardBody> {
     }
   }
 
-  Future<void> fetchUserName() async {
+  Future<void> fetchInitialData() async {
     try {
-      // Get user data from Firestore
+      PreferencesService preferencesService = PreferencesService();
+      SharedPreferences prefs = await preferencesService.getPreferences();
+
+      if (prefs.getBool('isDataFetched') ?? false == true) {
+        return;
+      }
+
+      // Fetch user profile data
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('coaches')
-          .doc(coachId)
+          .doc(FirebaseAuth.instance.currentUser!.uid)
           .get();
 
       if (userDoc.exists) {
         String? firstName = userDoc['firstName'];
-        String? lastName = userDoc['lastName'];
 
         setState(() {
-          fullName = '$firstName $lastName';
+          fullName = '$firstName';
           email = userDoc['email'];
           imageUrl = userDoc['profileImageUrl'];
         });
+
+        prefs.setBool('isDataFetched', true);
       } else {
-        // Handle case where user data is not found
-        print("User data not found for coach ID: $coachId");
-        // Consider throwing an exception or returning an error status here
+        print(
+            "User data not found for coach ID: ${FirebaseAuth.instance.currentUser!.uid}");
       }
+
+      // Fetch statistics data
+      await fetchStatisticsData();
     } catch (e) {
-      // Handle any errors that occur during the Firestore operation
-      print("Error fetching user data: $e");
-      // Consider throwing an exception or returning an error status here
+      print("Error fetching initial data: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        DashboardHeader(
-          backgroundImage: Assets.dashboardBackground, // Background image path
-          trainerImage: imageUrl.isEmpty
-              ? Assets.notFound
-              : imageUrl, // Trainer image path
-          trainerName: fullName, // Trainer's name
-          trainerEmail: email, // Trainer's email
-        ),
-        const SizedBox(height: 24),
-        Container(
-          height: MediaQuery.of(context).size.height * 0.67,
-          margin: const EdgeInsets.symmetric(horizontal: 24),
-          child: SingleChildScrollView(
-            child: Column(
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          children: [
+            SizedBox(height: 48),
+            DashboardHeader(
+              trainerImage: imageUrl.isEmpty ? Assets.notFound : imageUrl,
+            ),
+            SizedBox(height: 24),
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Row(
+                children: [
+                  Text(
+                    textAlign: TextAlign.start,
+                    '${LocalizationService.translateFromGeneral('hi')} ${fullName}',
+                    style: AppStyles.textCairo(
+                      26,
+                      Palette.mainAppColorWhite.withOpacity(0.8),
+                      FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Lottie.asset(
+                      'assets/jsonIcons/hi.json',
+                      width: 10,
+                      height: 10,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              child: Text(
+                textAlign: TextAlign.start,
+                '${LocalizationService.translateFromPage('title', 'selectEnter')}',
+                style: AppStyles.textCairo(
+                  14,
+                  Palette.mainAppColorWhite.withOpacity(0.6),
+                  FontWeight.normal,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Column(
               children: [
                 _buildStatisticsRow(context, data),
                 const SizedBox(height: 12),
@@ -217,9 +241,9 @@ class CoachDashboardState extends State<CoachDashboardBody> {
                 const SizedBox(height: 40),
               ],
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -227,19 +251,24 @@ class CoachDashboardState extends State<CoachDashboardBody> {
     return Row(
       children: [
         StatisticsCard(
-            cardSubTitle:
-                "${data['trainees']} ${LocalizationService.translateFromGeneral('trainee')}",
-            cardTitle: LocalizationService.translateFromGeneral('trainees'),
-            width: MediaQuery.of(context).size.width * 0.4,
-            height: 90,
-            icon: Icons.person_outline),
-        const Spacer(), // Adjusted for consistent spacing
+          cardSubTitle:
+              "${data['trainees']} ${LocalizationService.translateFromGeneral('trainee')}",
+          cardTitle: LocalizationService.translateFromGeneral('trainees'),
+          width: MediaQuery.of(context).size.width * 0.4,
+          height: 90,
+          icon: Icons.person_outline,
+          backgroundColor: Palette.mainAppColorOrange,
+          textColor: Palette.mainAppColorWhite,
+          cardTextColor: Palette.mainAppColorWhite,
+        ),
+        const Spacer(),
         StatisticsCard(
-            cardSubTitle: "${data['subscriptions']}+%",
-            cardTitle: LocalizationService.translateFromGeneral('subscription'),
-            width: MediaQuery.of(context).size.width * 0.4,
-            height: 90,
-            icon: Icons.percent_outlined),
+          cardSubTitle: "${data['subscriptions']}+%",
+          cardTitle: LocalizationService.translateFromGeneral('subscription'),
+          width: MediaQuery.of(context).size.width * 0.4,
+          height: 90,
+          icon: Icons.percent_outlined,
+        ),
       ],
     );
   }

@@ -11,6 +11,7 @@ class StatisticsCard extends StatefulWidget {
   final Color backgroundColor;
   final Color textColor;
   final Color cardTextColor;
+  final Color iconColor;
 
   const StatisticsCard({
     super.key,
@@ -21,7 +22,8 @@ class StatisticsCard extends StatefulWidget {
     required this.icon,
     this.backgroundColor = Palette.secondaryColor,
     this.textColor = Palette.mainAppColorWhite,
-    this.cardTextColor = Palette.mainAppColor
+    this.cardTextColor = Palette.mainAppColor,
+    this.iconColor = Palette.mainAppColor,
   });
 
   @override
@@ -78,7 +80,7 @@ class _StatisticsCardState extends State<StatisticsCard> {
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: textColor),
+              Icon(icon, size: 16, color: widget.iconColor),
               const SizedBox(width: 4),
               _buildCardText(widget.cardTitle, 10, FontWeight.normal,
                   textColor),

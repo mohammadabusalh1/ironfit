@@ -487,14 +487,18 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
       child: Column(
         children: [
           Stack(
+            alignment: AlignmentDirectional.center,
             children: [
               HeaderImage(
+                headerImage: Assets.header2,
                 high: MediaQuery.of(context).size.height * 0.44,
+                borderRadius: 32,
+                width: MediaQuery.of(context).size.width * 0.99,
               ),
               _buildProfileContent(context),
             ],
           ),
-          SizedBox(height: 6),
+          SizedBox(height: 10),
           Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
@@ -574,7 +578,6 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
     return Align(
       child: Column(
         children: [
-          SizedBox(height: MediaQuery.of(Get.context!).size.height * 0.07),
           InkWell(
             onTap: changeUserImage,
             child: ClipRRect(

@@ -10,6 +10,8 @@ abstract class Palette {
   static const Color mainAppColorNavy = Color(0xff10375C);
   static const Color mainAppColorWhite = Color(0xffF4F6FF);
   static const Color mainAppColorBorder = Color(0x60FFBB02);
+  static const Color mainAppColoryellow2 = Color(0x60ffec99);
+  static const Color mainAppColoryellow4 = Color(0x60ffd43b);
   static const Color gray = Colors.grey;
   static const Color secondaryColor = Color(0xff454038);
   static const Color darkGray = Color(0xFF2E2E2E);

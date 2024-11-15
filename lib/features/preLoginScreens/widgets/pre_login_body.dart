@@ -8,7 +8,6 @@ import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/preferences_manager.dart';
 import 'package:ironfit/core/routes/routes.dart';
-import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreLoginBody extends StatefulWidget {
@@ -26,6 +25,7 @@ class _PreLoginBodyState extends State<PreLoginBody>
   late Animation<double> _opacityAnimation;
   final TokenService tokenService = TokenService();
   final SharedPreferencesManager prefsManager = SharedPreferencesManager();
+  String dir = LocalizationService.getDir();
 
   @override
   void initState() {
@@ -139,7 +139,7 @@ class _PreLoginBodyState extends State<PreLoginBody>
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(30),
+                padding: const EdgeInsets.fromLTRB(30, 0, 30, 12),
                 child: SlideTransition(
                     position: _positionAnimation,
                     child: FadeTransition(
@@ -151,7 +151,7 @@ class _PreLoginBodyState extends State<PreLoginBody>
                             text,
                             textAlign: TextAlign.start,
                             style: AppStyles.textCairo(
-                                20, Palette.white, FontWeight.bold),
+                                21, Palette.white, FontWeight.bold),
                           ),
                           const SizedBox(height: 12),
                           Text(
@@ -180,7 +180,7 @@ class _PreLoginBodyState extends State<PreLoginBody>
                                 width: Get.width * 0.4,
                                 height: 45,
                                 fontSize: 14,
-                                textColor: Palette.subTitleBlack,
+                                textColor: Palette.mainAppColorWhite,
                                 borderRadius: 25,
                               ),
                             ),

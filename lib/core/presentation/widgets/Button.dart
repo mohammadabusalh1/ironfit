@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
-import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 
 Widget BuildIconButton({
   String? text,
@@ -57,7 +56,7 @@ Widget BuildIconButton({
         );
 }
 
-Widget ReturnBackButton() {
+Widget ReturnBackButton(dir) {
   return Directionality(
       textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
       child: ElevatedButton(
@@ -73,7 +72,7 @@ Widget ReturnBackButton() {
           elevation: 0,
         ),
         child: Icon(
-          dir == 'rtl' ? Icons.arrow_left : Icons.arrow_right,
+          Icons.arrow_left,
           color: Palette.black,
           size: 24,
         ),

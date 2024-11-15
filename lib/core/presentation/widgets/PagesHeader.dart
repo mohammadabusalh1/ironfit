@@ -1,8 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:flutter/animation.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
+import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:lottie/lottie.dart';
 
 class DashboardHeader extends StatelessWidget {
@@ -33,7 +34,7 @@ class DashboardHeader extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           child: Row(
             children: [
-              Text('تواصل مع المتدربين',
+              Text(LocalizationService.translateFromGeneral('communicateWithTrainees'),
                   style:
                       AppStyles.textCairo(12, Palette.white, FontWeight.bold)),
               SizedBox(
@@ -62,25 +63,13 @@ class DashboardHeader extends StatelessWidget {
       duration: const Duration(seconds: 1),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(50),
-        child: Image.network(
-          trainerImage ?? Assets.notFound,
+        child: CachedNetworkImage(
+          imageUrl: trainerImage,
           width: 55,
           height: 55,
           fit: BoxFit.cover,
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) {
-              return child;
-            } else {
-              return Center(
-                child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          (loadingProgress.expectedTotalBytes ?? 1)
-                      : null,
-                ),
-              );
-            }
-          },
+          placeholder: (context, url) => CircularProgressIndicator(),
+          errorWidget: (context, url, error) => Icon(Icons.error),
         ),
       ),
     );

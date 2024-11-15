@@ -17,6 +17,7 @@ import 'package:ironfit/core/presentation/widgets/theme.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:ironfit/features/editPlan/widgets/ExerciseDialog.dart';
+import 'package:lottie/lottie.dart';
 
 class CreatePlanBody extends StatefulWidget {
   const CreatePlanBody({super.key});
@@ -41,6 +42,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   String repetitions = '';
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
+  String dir = LocalizationService.getDir();
 
   PreferencesService preferencesService = PreferencesService();
   @override
@@ -72,6 +74,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                         }),
                         label: LocalizationService.translateFromGeneral(
                             'planName'),
+                        icon: Icons.edit,
                       ),
                       const SizedBox(height: 16),
                       BuildTextField(
@@ -80,6 +83,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                             setState(() => planDescription = value),
                         label: LocalizationService.translateFromGeneral(
                             'planDescription'),
+                        icon: Icons.description,
                       ),
                       const SizedBox(height: 24),
                       _buildTrainingDaysList(),
@@ -94,14 +98,14 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
             right: 24, // Distance from the left side
 
             child: SizedBox(
-              width: 60,
-              height: 60,
+              width: 65,
+              height: 65,
               child: IconButton(
                 style: IconButton.styleFrom(
-                  fixedSize: const Size(50, 50),
+                  fixedSize: const Size(25, 25),
                   backgroundColor: Palette.greenActive,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(50),
                   ),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -118,27 +122,10 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
           Positioned(
             bottom: 92, // Distance from the bottom
             right: 24, // Distance from the left side
-            child: SizedBox(
-              width: 60,
-              height: 60,
-              child: IconButton(
-                style: IconButton.styleFrom(
-                  fixedSize: const Size(50, 50),
-                  backgroundColor: Palette.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                ),
-                icon: const Icon(
-                  Icons.add,
-                  color: Palette.mainAppColor,
-                  size: 24,
-                ),
-                onPressed: () {
-                  _addTrainingDay(context);
-                },
+            child: InkWell(
+              onTap: () => _addTrainingDay(context),
+              child: Lottie.asset(
+                'assets/jsonIcons/add150.json',
               ),
             ),
           ),
@@ -153,11 +140,12 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       child: Stack(
         children: [
           const HeaderImage(),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 50, 24, 50),
+          Container(
+            height: MediaQuery.of(context).size.height * 0.25,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Row(
               children: [
-                ReturnBackButton(),
+                ReturnBackButton(dir),
                 const SizedBox(width: 12),
                 Opacity(
                   opacity: 0.8,
@@ -172,7 +160,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                 ),
               ],
             ),
-          ),
+          )
         ],
       ),
     );
@@ -623,7 +611,6 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
       setState(() {
         day.exercises.add(exercise);
       });
-      Navigator.pop(context);
     }
 
     showDialog(

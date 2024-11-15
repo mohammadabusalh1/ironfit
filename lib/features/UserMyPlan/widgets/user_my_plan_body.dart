@@ -11,7 +11,6 @@ import 'package:ironfit/core/presentation/widgets/DaysTabBar.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
-import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 
 class UserMyPlanBody extends StatefulWidget {
   const UserMyPlanBody({super.key});
@@ -31,6 +30,7 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
 
   late BannerAd bannerAd;
   bool isBannerAdLoaded = false;
+  String dir = LocalizationService.getDir();
 
   @override
   void initState() {
@@ -120,6 +120,7 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
 }
 
 Widget _buildHeader(context) {
+  String dir = LocalizationService.getDir();
   return Directionality(
     textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
     child: SizedBox(
@@ -133,7 +134,7 @@ Widget _buildHeader(context) {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                ReturnBackButton(),
+                ReturnBackButton(dir),
                 const SizedBox(width: 12),
                 Opacity(
                   opacity: 0.8,

@@ -1,107 +1,100 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Button.dart';
 import 'package:ironfit/core/presentation/widgets/ExerciseListWidget.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
+import 'package:ironfit/core/presentation/widgets/theme.dart';
 import 'package:ironfit/features/createPlan/widgets/create_plan_body.dart';
 import 'package:ironfit/features/editPlan/widgets/buildTextField.dart';
 
 class ExerciseDialog extends StatefulWidget {
   final Function addExercise;
 
-  const ExerciseDialog(
-      {super.key, required this.addExercise});
+  const ExerciseDialog({super.key, required this.addExercise});
 
   @override
   _ExerciseDialogState createState() => _ExerciseDialogState();
 }
 
 class _ExerciseDialogState extends State<ExerciseDialog> {
-  String selectedExerciseName =
-      ''; // State variable to track selected exercise name
-  String selectedExerciseImage = '';
+  List<dynamic> selectedExercises = [];
   String rounds = '';
   String repetitions = '';
+  late String dir;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    dir = LocalizationService.getDir();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: Theme.of(context).copyWith(
-        dialogBackgroundColor: Colors.grey[900],
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
-          bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
-          headlineLarge: TextStyle(
-              color: Palette.white, fontWeight: FontWeight.bold, fontSize: 24),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Palette.mainAppColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-      ),
+      data: customThemeData,
       child: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
         child: AlertDialog(
-          title:
-               Text(LocalizationService.translateFromGeneral(
-                  'addExercise'), style: const TextStyle(color: Palette.white)),
+          title: Text(LocalizationService.translateFromGeneral('addExercise'),
+              style: const TextStyle(color: Palette.white)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
+                BuildIconButton(
+                    width: MediaQuery.of(context).size.width,
+                    fontSize: 12,
+                    text: LocalizationService.translateFromGeneral(
+                        'selectExercise'),
                     backgroundColor: Palette.mainAppColorWhite,
-                  ),
-                  onPressed: () async {
-                    // Open the ExercisesScreen dialog and wait for selected exercise
-                    final val = await showDialog(
-                        context: context,
-                        builder: (context) =>
-                            _buildTrainDialog());
+                    textColor: Palette.mainAppColorNavy,
+                    onPressed: () async {
+                      // Open the ExercisesScreen dialog and wait for selected exercise
+                      final val = await showDialog(
+                          context: context,
+                          builder: (context) => ExercisesScreen(
+                                fileName: 'back_exercises',
+                              ));
 
-                    // If an exercise is selected, update the state to reflect it
-                    if (val != null) {
-                      setState(() {
-                        selectedExerciseName = val['Exercise_Name'];
-                        selectedExerciseImage = val['Exercise_Image'];
-                      });
-                    }
-                  },
-                  child:  Text(LocalizationService.translateFromGeneral(
-                  'selectExercise'),
-                      style: const TextStyle(color: Palette.black)),
-                ),
-                const SizedBox(height: 16),
+                      // If an exercise is selected, update the state to reflect it
+                      if (val != null) {
+                        setState(() {
+                          selectedExercises = val;
+                        });
+                      }
+                    }),
                 // Display the selected exercise name
-                if (selectedExerciseName.isNotEmpty)
-                  Text(
-                    selectedExerciseName,
-                    style: const TextStyle(color: Palette.white),
+                if (selectedExercises.isNotEmpty)
+                  ...selectedExercises.map(
+                    (e) => Text(
+                      e['Exercise_Name'],
+                      style: AppStyles.textCairo(
+                          12, Palette.mainAppColorWhite, FontWeight.w500),
+                    ),
                   ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 BuildTextField(
                   onChange: (value) => setState(() {
                     rounds = value;
                   }),
-                  label: LocalizationService.translateFromGeneral(
-                  'rounds'),
+                  label: LocalizationService.translateFromGeneral('rounds'),
                   keyboardType: TextInputType.number,
+                  icon: Icons.refresh,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 BuildTextField(
                   onChange: (value) => setState(() {
                     repetitions = value;
                   }),
-                  label:  LocalizationService.translateFromGeneral(
-                  'repetitions'),
+                  label:
+                      LocalizationService.translateFromGeneral('repetitions'),
                   keyboardType: TextInputType.number,
+                  icon: Icons.loop,
                 ),
               ],
             ),
@@ -110,69 +103,22 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
             ElevatedButton(
               onPressed: () {
                 // If the exercise is selected, add it to the training day
-                if (selectedExerciseName.isNotEmpty) {
-                  Exercise exercise = Exercise(
-                    name: selectedExerciseName,
-                    image: selectedExerciseImage,
-                    rounds: int.parse(rounds),
-                    repetitions: int.parse(repetitions),
-                  );
-                  widget.addExercise(exercise);
+                if (selectedExercises.isNotEmpty) {
+                  selectedExercises.forEach((e) {
+                    Exercise exercise = Exercise(
+                      name: e['Exercise_Name'],
+                      image: e['Exercise_Image'],
+                      rounds: int.parse(rounds),
+                      repetitions: int.parse(repetitions),
+                    );
+                    widget.addExercise(exercise);
+                  });
+                  Navigator.pop(context);
                 }
               },
               child: Text(LocalizationService.translateFromGeneral('save'),
                   style: const TextStyle(color: Palette.black)),
             ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(LocalizationService.translateFromGeneral('cancel'),
-                  style: const TextStyle(color: Palette.white)),
-            ),
-          ],
-          actionsAlignment: MainAxisAlignment.start,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTrainDialog() {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        dialogBackgroundColor: Colors.grey[900],
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Palette.white, fontSize: 16),
-          bodyMedium: TextStyle(color: Palette.white, fontSize: 14),
-          headlineLarge: TextStyle(
-            color: Palette.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Palette.mainAppColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-      ),
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: AlertDialog(
-          title: Text(
-              LocalizationService.translateFromGeneral(
-                  'selectExercise'),
-              style: const TextStyle(color: Palette.white, fontSize: 20)),
-          content: StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-            return SingleChildScrollView(
-              child: ExercisesScreen(
-                fileName: 'back_exercises',
-              ),
-            );
-          }),
-          actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(LocalizationService.translateFromGeneral('cancel'),

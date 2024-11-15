@@ -36,6 +36,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
 
   late BannerAd bannerAd;
   bool isBannerAdLoaded = false;
+  late String dir;
 
   @override
   void initState() {
@@ -54,6 +55,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
         }));
     bannerAd.load();
     getPlans();
+    dir = LocalizationService.getDir();
   }
 
   void dispose() {
@@ -165,13 +167,13 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                       children: [
                         const HeaderImage(),
                         Container(
-                          height: MediaQuery.of(context).size.height * 0.2,
+                          height: MediaQuery.of(context).size.height * 0.25,
                           padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              ReturnBackButton(),
+                              ReturnBackButton(dir),
                               const SizedBox(width: 12),
                               Opacity(
                                 opacity: 0.8,
@@ -325,70 +327,60 @@ class CustomCard extends StatelessWidget {
       onTap: onPressedEdit,
       child: Card(
         clipBehavior: Clip.antiAliasWithSaveLayer,
-        color: Palette.secondaryColor,
+        color: Palette.mainAppColorWhite,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Stack(
           children: [
             Align(
               alignment: const AlignmentDirectional(0, 0),
               child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 8),
+                padding: const EdgeInsets.fromLTRB(4, 6, 16, 6),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
+                    Icon(Icons.directions_bike,
+                        color: Palette.mainAppColorNavy, size: 30),
+                    SizedBox(width: 16),
+                    Column(
                       mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Align(
-                          alignment: const AlignmentDirectional(0, 0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                title,
-                                style: AppStyles.textCairo(
-                                  14,
-                                  Palette.mainAppColor,
-                                  FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                description,
-                                style: AppStyles.textCairo(
-                                  10,
-                                  Palette.gray,
-                                  FontWeight.w400,
-                                ),
-                              ),
-                            ],
+                        Text(
+                          title.length > 25 ? '${title.substring(0, 25)}...' : title,
+                          style: AppStyles.textCairo(
+                            14,
+                            Palette.black,
+                            FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          description.length > 25 ? '${description.substring(0, 25)}...' : description,
+                          style: AppStyles.textCairo(
+                            10,
+                            Palette.secondaryColor,
+                            FontWeight.w400,
                           ),
                         ),
                       ],
                     ),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.remove_circle,
-                            color: Palette.redDelete,
-                            size: 24,
-                          ),
-                          onPressed: onPressed,
-                        ),
-                        const Icon(
-                          Icons.arrow_forward,
-                          color: Palette.mainAppColorWhite,
-                          size: 24,
-                        ),
-                      ],
+                    Spacer(),
+                    const Icon(
+                      Icons.edit_note,
+                      color: Palette.mainAppColorNavy,
+                      size: 32,
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.delete_forever,
+                        color: Palette.redDelete,
+                        size: 28,
+                      ),
+                      onPressed: onPressed,
                     ),
                   ],
                 ),

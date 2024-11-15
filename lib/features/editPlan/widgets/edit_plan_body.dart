@@ -38,18 +38,22 @@ class _EditPlanBodyState extends State<EditPlanBody> {
   String selectedExerciseImage = '';
   String rounds = '';
   String repetitions = '';
+  late TextEditingController planController = TextEditingController();
+  late TextEditingController descriptionController = TextEditingController();
 
   List<TrainingDay> trainingDays = [];
 
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
+  late String dir;
 
   @override
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateSingIn();
     _fetchPlanData();
+    dir = LocalizationService.getDir();
   }
 
   Future<void> _fetchPlanData() async {
@@ -61,10 +65,8 @@ class _EditPlanBodyState extends State<EditPlanBody> {
         return;
       }
 
-      final planDoc = await _firestore
-          .collection('plans')
-          .doc(widget.planId)
-          .get();
+      final planDoc =
+          await _firestore.collection('plans').doc(widget.planId).get();
 
       if (!planDoc.exists) {
         print('Plan document does not exist');
@@ -84,7 +86,10 @@ class _EditPlanBodyState extends State<EditPlanBody> {
           planData['description'] ?? 'No description available';
       setState(() {
         planName = fetchedPlanName;
+        planController = TextEditingController(text: fetchedPlanName);
         planDescription = fetchedPlanDescription;
+        descriptionController =
+            TextEditingController(text: fetchedPlanDescription);
         trainingDays = (planData['trainingDays'] as Map?)?.entries.map((e) {
               final day = e.key;
               final exercises = (e.value as List?)?.map((exercise) {
@@ -124,13 +129,17 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                   child: Column(
                     children: [
                       BuildTextField(
-                        controller: TextEditingController(text: planName),
-                        onChange: (value) => setState(() => planName = value),
+                        controller: planController,
+                        onChange: (value) => setState(() {
+                          planName = value;
+                        }),
                         label: LocalizationService.translateFromGeneral(
                             'planName'),
+                        icon: Icons.edit,
                       ),
                       const SizedBox(height: 16),
                       BuildTextField(
+                        icon: Icons.description,
                         controller:
                             TextEditingController(text: planDescription),
                         onChange: (value) =>
@@ -211,7 +220,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
             padding: const EdgeInsets.fromLTRB(24, 50, 24, 50),
             child: Row(
               children: [
-                ReturnBackButton(),
+                ReturnBackButton(dir),
                 const SizedBox(width: 12),
                 Opacity(
                   opacity: 0.8,

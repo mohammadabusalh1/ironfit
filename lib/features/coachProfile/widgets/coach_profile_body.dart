@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -20,11 +21,11 @@ import 'package:ironfit/core/presentation/widgets/theme.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
+import 'package:ironfit/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String? fullName;
-String imageUrl =
-    'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+String imageUrl = Assets.notFound;
 String email = '';
 
 class CoachProfileBody extends StatefulWidget {
@@ -46,6 +47,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
 
   late BannerAd bannerAd;
   bool isBannerAdLoaded = false;
+  String dir = LocalizationService.getDir();
 
   @override
   void initState() {
@@ -487,12 +489,12 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
           Stack(
             children: [
               HeaderImage(
-                high: MediaQuery.of(context).size.height * 0.45,
+                high: MediaQuery.of(context).size.height * 0.44,
               ),
               _buildProfileContent(context),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 6),
           Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
@@ -504,27 +506,63 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                           width: bannerAd.size.width.toDouble(),
                         )
                       : const SizedBox(),
-                  const SizedBox(height: 12),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: Text(
+                      textAlign: TextAlign.start,
+                      LocalizationService.translateFromGeneral('profile'),
+                      style: AppStyles.textCairo(
+                        20,
+                        Palette.mainAppColorWhite,
+                        FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8),
                   _buildButtonCard(
                       context,
                       LocalizationService.translateFromGeneral(
                           'personalInformation'),
                       Icons.person_2, () {
                     showEditInfoDialog(context);
-                  }, Icons.arrow_forward_ios_outlined),
+                  }, Icons.arrow_forward_ios_outlined,
+                      Palette.mainAppColorBack),
+                  _buildButtonCard(
+                      context,
+                      LocalizationService.translateFromGeneral(
+                          'communicateWithTrainees'),
+                      Icons.chat,
+                      () {},
+                      Icons.arrow_forward_ios_outlined,
+                      Palette.mainAppColorBack),
                   _buildButtonCard(
                       context,
                       LocalizationService.translateFromGeneral(
                           'changePassword'),
                       Icons.password_outlined, () {
                     showEditPasswordDialog(context);
-                  }, Icons.arrow_forward_ios_outlined),
+                  }, Icons.arrow_forward_ios_outlined,
+                      Palette.mainAppColorBack),
+                  SizedBox(height: 16),
                   _buildButtonCard(
                       context,
                       LocalizationService.translateFromGeneral('gyms'),
                       Icons.location_on, () {
                     Get.toNamed(Routes.myGyms);
-                  }, Icons.arrow_forward_ios),
+                  }, Icons.arrow_forward_ios, Palette.mainAppColorOrange),
+                  _buildButtonCard(
+                      context,
+                      dir == 'rtl'
+                          ? LocalizationService.translateFromPage(
+                              'Arabic', 'selectLang')
+                          : LocalizationService.translateFromPage(
+                              'English', 'selectLang'),
+                      Icons.translate, () {
+                    LocalizationService.load(
+                        LocalizationService.lang == 'en' ? 'ar' : 'en');
+                    RestartWidget.restartApp(context);
+                    Navigator.pushNamed(context, Routes.coachProfile);
+                  }, Icons.arrow_forward_ios, Palette.mainAppColorOrange),
                 ],
               )),
         ],
@@ -540,33 +578,18 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
           InkWell(
             onTap: changeUserImage,
             child: ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child: imageUrl.isEmpty
-                    ? const CircularProgressIndicator() // Show loading indicator if image is empty
-                    : SizedBox(
-                        width: 88,
-                        height: 88,
-                        child: Image.network(
-                          fit: BoxFit.cover,
-                          imageUrl.isEmpty ? Assets.notFound : imageUrl,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) {
-                              return child;
-                            } else {
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          (loadingProgress.expectedTotalBytes ??
-                                              1)
-                                      : null,
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      )),
+              borderRadius: BorderRadius.circular(50),
+              child: SizedBox(
+                child: CachedNetworkImage(
+                  width: 88,
+                  height: 88,
+                  fit: BoxFit.cover,
+                  imageUrl: imageUrl.isEmpty ? Assets.notFound : imageUrl,
+                  placeholder: (context, url) => CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                ),
+              ),
+            ),
           ),
           const SizedBox(height: 12),
           Text(
@@ -601,19 +624,26 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   }
 
   Widget _buildButtonCard(BuildContext context, String tilte, IconData icon,
-      VoidCallback onClick, IconData? leftIcon) {
+      VoidCallback onClick, IconData? leftIcon, Color? IconBackColor) {
     return InkWell(
       onTap: onClick,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Icon(
-              icon,
-              color: Palette.mainAppColorWhite,
-              size: 26,
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: IconBackColor ?? Palette.mainAppColorBack,
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Icon(
+                icon,
+                color: Palette.mainAppColorWhite,
+                size: 18,
+              ),
             ),
             const SizedBox(width: 12), // Space between icon and text
             Text(
@@ -627,8 +657,9 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
             const Spacer(), // Space between text and trailing icon
             Icon(
               leftIcon,
-              color: Palette.gray, // Replace with the theme color if needed
-              size: 16,
+              color: Palette.gray
+                  .withOpacity(0.8), // Replace with the theme color if needed
+              size: 14,
             ),
           ],
         ),
@@ -644,7 +675,6 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
       prefs.remove('userId');
       prefs.remove('token');
       prefs.remove('isCoach');
-      prefs.remove('isDataFetched');
       Get.toNamed(Routes.selectEnter);
     } catch (e) {
       customSnackbar.showMessage(

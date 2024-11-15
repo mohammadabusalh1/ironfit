@@ -134,7 +134,7 @@ class _TraineesBodyState extends State<TraineesBody> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                ReturnBackButton(),
+                ReturnBackButton(dir),
                 const SizedBox(width: 12),
                 _buildHeaderTitle(),
               ],

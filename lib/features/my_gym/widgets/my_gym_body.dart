@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class MyGymBody extends StatelessWidget {
   const MyGymBody({super.key});
@@ -51,7 +50,11 @@ class MyGymBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      child: Center(
+        child: Text('No Data Available, Coming Soon'),
+      ),
+    );
 
     // FutureBuilder<String?>(
     //   future: _fetchCoachId(), // Fetch the coach ID

@@ -14,7 +14,7 @@
     "Arabic": "اللغة العربية"
   },
   "selectEnter": {
-    "title": "مرحباً بك في تطبيقك IronFit",
+    "title": "مرحباً بك في IronFit",
     "description": "يسعدنا وجودك معنا! اختر الخيار الذي يناسبك ودعنا نبدأ."
   },
   "signInRedirectMessage": "إعادة توجيه إلى صفحة تسجيل الدخول...",
@@ -195,7 +195,7 @@
   "accountCreationError": "فشل انشاء الحساب",
   "accountExist": "الحساب موجود بالفعل",
   "selectExerciseBodyPart": "يرجى أختيار المنطقة في الجسم",
-  "selectExercise": "يرجى أختيار التمارين",
+  "selectExercise": "إختيار التمارين",
   "imageRemovedSuccess": "تمت إزالة الصورة بنجاح",
   "imageRemoveError": "حدث خطأ أثناء إزالة الصورة",
   "noImageToRemove": "لا توجد صورة لإزالتها",
@@ -255,5 +255,6 @@
   "iAmTrainee": "تحويل لمتدرب",
   "iAmCoach": "تحويل لمدرب",
   "checkInfo": "تحقق من المعلومات المدخلة",
-  "hi": "مرحبا"
+  "hi": "مرحبا",
+  "communicateWithTrainees": "تواصل مع المتدربين"
 }

@@ -31,6 +31,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
 
   late BannerAd bannerAd;
   bool isBannerAdLoaded = false;
+  late String dir;
 
   @override
   void initState() {
@@ -49,8 +50,8 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
         }));
     bannerAd.load();
     statistics = fetchStatistics();
-    ageDistributionData =
-        fetchAgeDistributionData(); // Initialize statistics fetch
+    ageDistributionData = fetchAgeDistributionData();
+    dir = LocalizationService.getDir();
   }
 
   @override
@@ -251,14 +252,14 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                           child: Stack(
                             children: [
                               const HeaderImage(),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(24, 50, 24, 50),
+                              Container(
+                                height: MediaQuery.of(context).size.height * 0.25,
+                                padding: const EdgeInsets.symmetric(horizontal: 24),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    ReturnBackButton(),
+                                    ReturnBackButton(dir),
                                     const SizedBox(width: 12),
                                     Opacity(
                                       opacity: 0.8,
@@ -273,7 +274,7 @@ class _CoachStatisticsBodyState extends State<CoachStatisticsBody> {
                                     ),
                                   ],
                                 ),
-                              ),
+                              )
                             ],
                           ),
                         ),

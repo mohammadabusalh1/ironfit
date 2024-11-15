@@ -6,18 +6,18 @@ import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
 String dir = LocalizationService.getDir();
 
-Widget BuildTextField(
-    {Function(String)? onChange,
-    Function()? onTap,
-    required String label,
-    TextInputType? keyboardType,
-    TextEditingController? controller,
-    String? hint,
-    IconData? icon,
-    String? Function(String?)? validator,
-    List<TextInputFormatter>? inputFormatters,
-    bool obscureText = false, // Add validator function
-    }) {
+Widget BuildTextField({
+  Function(String)? onChange,
+  Function()? onTap,
+  required String label,
+  TextInputType? keyboardType,
+  TextEditingController? controller,
+  String? hint,
+  IconData? icon,
+  String? Function(String?)? validator,
+  List<TextInputFormatter>? inputFormatters,
+  bool obscureText = false, // Add validator function
+}) {
   return Directionality(
     textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
     child: TextFormField(
@@ -30,28 +30,27 @@ Widget BuildTextField(
       keyboardType: keyboardType ?? TextInputType.text,
       style: const TextStyle(color: Palette.white, fontSize: 14),
       decoration: InputDecoration(
-        filled: true,
-        fillColor: Palette.secondaryColor,
         prefixIcon: icon == null
             ? null
             : Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Icon(
                   icon,
-                  color: Palette.gray,
+                  color: Palette.mainAppColor,
                   size: 20,
                 ),
               ),
         hintText: hint,
-        hintStyle: const TextStyle(color: Palette.gray, fontSize: 14),
+        hintStyle:
+            const TextStyle(color: Palette.mainAppColorWhite, fontSize: 10),
         labelText: label,
         labelStyle:
-            AppStyles.textCairo(14, Palette.subTitleGrey, FontWeight.bold),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
+            AppStyles.textCairo(11, Palette.mainAppColorWhite.withOpacity(0.9), FontWeight.bold),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
             width: 1,
-            color: Palette.mainAppColor,
+            color: Palette.mainAppColor.withOpacity(0.4),
           ),
         ),
       ),

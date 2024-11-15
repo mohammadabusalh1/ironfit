@@ -45,7 +45,7 @@ class CardWidget extends StatelessWidget {
           ),
           // Text Content
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -55,19 +55,18 @@ class CardWidget extends StatelessWidget {
                   textAlign: TextAlign.start,
                   subtitle,
                   style: AppStyles.textCairo(
-                    16,
+                    18,
                     Palette.mainAppColorWhite,
                     FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 4),
                 Text(
                   textAlign: TextAlign.start,
                   description,
                   style: AppStyles.textCairo(
                     12,
-                    Palette.subTitleGrey,
-                    FontWeight.w400,
+                    Palette.white.withOpacity(0.7),
+                    FontWeight.normal,
                   ),
                 ),
                 const SizedBox(height: 24),

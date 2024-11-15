@@ -16,7 +16,7 @@ abstract class Palette {
   static const Color lightGrey = Color(0xffEFF4F6);
   static const Color white = Color(0xffffffff);
   static const Color black = Color(0xff343a40);
-  static const Color blackBack = Color.fromARGB(255, 16, 16, 16);
+  static const Color blackBack = Color.fromARGB(255, 24, 24, 24);
   static const Color darkBackground = Color(0xff101828);
   static const Color baseLight = Color(0xffD0D5DD);
   static const Color borderGrey = Color(0xffe2e5ea);

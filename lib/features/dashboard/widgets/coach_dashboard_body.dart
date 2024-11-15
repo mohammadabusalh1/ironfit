@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
@@ -14,15 +13,8 @@ import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/features/dashboard/widgets/card_widget.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:lottie/lottie.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-late String fullName = LocalizationService.translateFromGeneral('noData');
-late String email = LocalizationService.translateFromGeneral('noData');
-late String imageUrl = Assets.notFound;
-late Map<String, dynamic> data = {
-  'trainees': '0',
-  'subscriptions': '0',
-};
+String imageUrl = Assets.notFound;
 
 class CoachDashboardBody extends StatefulWidget {
   const CoachDashboardBody({Key? key}) : super(key: key);
@@ -35,6 +27,12 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   late BannerAd bannerAd;
   bool isBannerAdLoaded = false;
   TokenService tokenService = TokenService();
+  late String fullName = LocalizationService.translateFromGeneral('noData');
+  late String email = LocalizationService.translateFromGeneral('noData');
+  late Map<String, dynamic> data = {
+    'trainees': '0',
+    'subscriptions': '0',
+  };
 
   @override
   void initState() {
@@ -63,6 +61,31 @@ class CoachDashboardState extends State<CoachDashboardBody> {
   void dispose() {
     bannerAd.dispose();
     super.dispose();
+  }
+
+  Future<void> fetchInitialData() async {
+    try {
+      // Fetch user profile data
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('coaches')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+
+      if (userDoc.exists) {
+        String? firstName = userDoc['firstName'];
+
+        setState(() {
+          fullName = '$firstName';
+          email = userDoc['email'];
+          imageUrl = userDoc['profileImageUrl'];
+        });
+      } else {
+        print(
+            "User data not found for coach ID: ${FirebaseAuth.instance.currentUser!.uid}");
+      }
+    } catch (e) {
+      print("Error fetching initial data: $e");
+    }
   }
 
   Future<void> fetchStatisticsData() async {
@@ -120,43 +143,6 @@ class CoachDashboardState extends State<CoachDashboardBody> {
       });
     } catch (e) {
       print('Error fetching data: $e');
-    }
-  }
-
-  Future<void> fetchInitialData() async {
-    try {
-      PreferencesService preferencesService = PreferencesService();
-      SharedPreferences prefs = await preferencesService.getPreferences();
-
-      if (prefs.getBool('isDataFetched') ?? false == true) {
-        return;
-      }
-
-      // Fetch user profile data
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('coaches')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .get();
-
-      if (userDoc.exists) {
-        String? firstName = userDoc['firstName'];
-
-        setState(() {
-          fullName = '$firstName';
-          email = userDoc['email'];
-          imageUrl = userDoc['profileImageUrl'];
-        });
-
-        prefs.setBool('isDataFetched', true);
-      } else {
-        print(
-            "User data not found for coach ID: ${FirebaseAuth.instance.currentUser!.uid}");
-      }
-
-      // Fetch statistics data
-      await fetchStatisticsData();
-    } catch (e) {
-      print("Error fetching initial data: $e");
     }
   }
 

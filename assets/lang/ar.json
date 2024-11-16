@@ -126,7 +126,7 @@
   "noDescription": "لا يوجد وصف",
   "cancelConfirmation": "تأكيد الإلغاء",
   "confirm": "تأكيد",
-  "deletePlanConfirmation": "هل أنت متأكد أنك تريد حذف الخطة؟",
+  "deletePlanConfirmation": "هل أنت متأكد أنك تريد الحذف؟",
   "userNotLoggedInOrPlanIdMissing": "المستخدم غير مسجل دخول أو رقم الخطة مفقود",
   "planDeletedSuccessfully": "تم حذف الخطة بنجاح",
   "firebaseErrorDeletingPlan": "حدث خطأ أثناء حذف الخطة، حاول مرة أخرى",

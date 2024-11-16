@@ -65,6 +65,7 @@ class CoachDashboardState extends State<CoachDashboardBody> {
 
   Future<void> fetchInitialData() async {
     try {
+      await fetchStatisticsData();
       // Fetch user profile data
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('coaches')

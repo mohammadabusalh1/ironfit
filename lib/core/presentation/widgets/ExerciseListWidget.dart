@@ -128,15 +128,15 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                   children: [
                     Container(
                       width: double.infinity,
-                      child: DropdownButton<String>(
-                        dropdownColor: Colors.grey[800],
+                      child: DropdownButtonFormField<String>(
+                        dropdownColor: Palette.secondaryColor,
                         value: fileNameSelected,
-                        hint: Text(
-                            LocalizationService.translateFromGeneral(
-                                'bodyPart'),
-                            style: AppStyles.textCairo(
-                                14, Palette.white, FontWeight.w500)),
-                        // value: fileNameSelected,
+                        decoration: InputDecoration(
+                          hintText: LocalizationService.translateFromGeneral(
+                              'bodyPart'),
+                          hintStyle: AppStyles.textCairo(
+                              14, Palette.white, FontWeight.w500),
+                        ),
                         onChanged: (newValue) {
                           setState(() {
                             fileNameSelected = newValue!;
@@ -146,62 +146,64 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                         items: [
                           {
                             'value': 'back_exercises',
-                            'label':
-                                LocalizationService.translateFromGeneral('back')
+                            'label': LocalizationService.translateFromGeneral(
+                                'back'),
                           },
                           {
                             'value': 'cardio_exercises',
                             'label': LocalizationService.translateFromGeneral(
-                                'cardio')
+                                'cardio'),
                           },
                           {
                             'value': 'chest_exercises',
                             'label': LocalizationService.translateFromGeneral(
-                                'chest')
+                                'chest'),
                           },
                           {
                             'value': 'lower arms_exercises',
                             'label': LocalizationService.translateFromGeneral(
-                                'lowerArms')
+                                'lowerArms'),
                           },
                           {
                             'value': 'lower legs_exercises',
                             'label': LocalizationService.translateFromGeneral(
-                                'lowerLegs')
+                                'lowerLegs'),
                           },
                           {
                             'value': 'neck_exercises',
-                            'label':
-                                LocalizationService.translateFromGeneral('neck')
+                            'label': LocalizationService.translateFromGeneral(
+                                'neck'),
                           },
                           {
                             'value': 'shoulders_exercises',
                             'label': LocalizationService.translateFromGeneral(
-                                'shoulders')
+                                'shoulders'),
                           },
                           {
                             'value': 'upper arms_exercises',
                             'label': LocalizationService.translateFromGeneral(
-                                'upperArms')
+                                'upperArms'),
                           },
                           {
                             'value': 'upper legs_exercises',
                             'label': LocalizationService.translateFromGeneral(
-                                'upperLegs')
+                                'upperLegs'),
                           },
                           {
                             'value': 'waist_exercises',
                             'label': LocalizationService.translateFromGeneral(
-                                'waist')
+                                'waist'),
                           },
                         ]
-                            .map((day) => DropdownMenuItem(
-                                  value: '${day['value']}',
+                            .map((day) => DropdownMenuItem<String>(
+                                  value: day['value']!,
                                   child: Align(
                                     alignment: AlignmentDirectional.centerEnd,
-                                    child: Text(day['label']!,
-                                        style: AppStyles.textCairo(14,
-                                            Palette.white, FontWeight.w500)),
+                                    child: Text(
+                                      day['label']!,
+                                      style: AppStyles.textCairo(
+                                          14, Palette.white, FontWeight.w500),
+                                    ),
                                   ),
                                 ))
                             .toList(),
@@ -210,10 +212,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                     stage == 1 ? const SizedBox(height: 8) : Container(),
                     stage == 1
                         ? Container(
-                            margin: const EdgeInsets.all(8),
                             width: double.infinity,
-                            child: DropdownButton<String>(
-                              dropdownColor: Colors.grey[800],
+                            child: DropdownButtonFormField<String>(
+                              dropdownColor: Palette.secondaryColor,
                               hint: Text(
                                   LocalizationService.translateFromGeneral(
                                       'bodyPart'),
@@ -291,7 +292,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                                                 e['Exercise_Name'] ==
                                                 _filteredExercises[index]
                                                     ['name'])
-                                            ? () {}
+                                            ? selectedExercises.removeWhere(
+                                                (e) =>
+                                                    e['Exercise_Name'] ==
+                                                    _filteredExercises[index]
+                                                        ['name'])
                                             : selectedExercises.add({
                                                 'Exercise_Name':
                                                     _filteredExercises[index]
@@ -301,6 +306,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                                                         ['gifUrl'],
                                               });
                                       });
+
+                                      print(selectedExercises);
                                     },
                                     child: buildCarouselItem(
                                       _filteredExercises[index]

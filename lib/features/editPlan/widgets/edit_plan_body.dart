@@ -18,6 +18,7 @@ import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/createPlan/widgets/create_plan_body.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:ironfit/features/editPlan/widgets/ExerciseDialog.dart';
+import 'package:lottie/lottie.dart';
 
 class EditPlanBody extends StatefulWidget {
   const EditPlanBody({super.key, required this.planId});
@@ -140,8 +141,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                       const SizedBox(height: 16),
                       BuildTextField(
                         icon: Icons.description,
-                        controller:
-                            TextEditingController(text: planDescription),
+                        controller: descriptionController,
                         onChange: (value) =>
                             setState(() => planDescription = value),
                         label: LocalizationService.translateFromGeneral(
@@ -157,25 +157,10 @@ class _EditPlanBodyState extends State<EditPlanBody> {
           Positioned(
             bottom: 92, // Distance from the bottom
             right: 24, // Distance from the left side
-            child: SizedBox(
-              width: 60,
-              height: 60,
-              child: IconButton(
-                style: IconButton.styleFrom(
-                  fixedSize: const Size(50, 50),
-                  backgroundColor: Palette.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                ),
-                icon: const Icon(
-                  Icons.add,
-                  color: Palette.mainAppColor,
-                  size: 24,
-                ),
-                onPressed: () => _addTrainingDay(),
+            child: InkWell(
+              onTap: () => _addTrainingDay(),
+              child: Lottie.asset(
+                'assets/jsonIcons/add150.json',
               ),
             ),
           ),
@@ -216,8 +201,9 @@ class _EditPlanBodyState extends State<EditPlanBody> {
       child: Stack(
         children: [
           const HeaderImage(),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 50, 24, 50),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            height: MediaQuery.of(context).size.height * 0.25,
             child: Row(
               children: [
                 ReturnBackButton(dir),
@@ -253,49 +239,67 @@ class _EditPlanBodyState extends State<EditPlanBody> {
   Widget _buildTrainingDayCard(TrainingDay day, int index) {
     String dayName = day.day.contains('-') ? day.day.split('-')[1] : day.day;
     return Card(
-      color: Palette.secondaryColor,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+              color: Palette.mainAppColorWhite.withOpacity(0.4),
+              style: BorderStyle.solid,
+              width: 2)),
+      color: Palette.mainAppColoryellow2,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  dayName == 'sun'
-                      ? LocalizationService.translateFromGeneral('sunday')
-                      : dayName == 'mon'
-                          ? LocalizationService.translateFromGeneral('monday')
-                          : dayName == 'tue'
-                              ? LocalizationService.translateFromGeneral(
-                                  'tuesday')
-                              : dayName == 'wed'
-                                  ? LocalizationService.translateFromGeneral(
-                                      'wednesday')
-                                  : dayName == 'thu'
-                                      ? LocalizationService
-                                          .translateFromGeneral('thursday')
-                                      : dayName == 'fri'
-                                          ? LocalizationService
-                                              .translateFromGeneral('friday')
-                                          : LocalizationService
-                                              .translateFromGeneral('saturday'),
-                  style:
-                      AppStyles.textCairo(18, Palette.white, FontWeight.bold),
-                ),
-                IconButton(
-                  onPressed: () =>
-                      _editTrainingDay(context, day, index), // Edit button,
-                  icon:
-                      const Icon(Icons.edit, color: Palette.mainAppColorOrange),
-                  iconSize: 20,
+                InkWell(
+                  onTap: () => _editTrainingDay(context, day, index),
+                  child: Row(
+                    children: [
+                      Text(
+                        dayName == 'sun'
+                            ? LocalizationService.translateFromGeneral('sunday')
+                            : dayName == 'mon'
+                                ? LocalizationService.translateFromGeneral(
+                                    'monday')
+                                : dayName == 'tue'
+                                    ? LocalizationService.translateFromGeneral(
+                                        'tuesday')
+                                    : dayName == 'wed'
+                                        ? LocalizationService
+                                            .translateFromGeneral('wednesday')
+                                        : dayName == 'thu'
+                                            ? LocalizationService
+                                                .translateFromGeneral(
+                                                    'thursday')
+                                            : dayName == 'fri'
+                                                ? LocalizationService
+                                                    .translateFromGeneral(
+                                                        'friday')
+                                                : LocalizationService
+                                                    .translateFromGeneral(
+                                                        'saturday'),
+                        style: AppStyles.textCairo(
+                            18, Palette.white, FontWeight.bold),
+                      ),
+                      IconButton(
+                        onPressed: () => _editTrainingDay(context, day, index),
+                        icon: const Icon(Icons.edit_note,
+                            color: Palette.mainAppColorWhite),
+                        iconSize: 30,
+                      ),
+                    ],
+                  ),
                 ),
                 const Spacer(),
                 IconButton(
                   style: IconButton.styleFrom(
                     backgroundColor: Palette.mainAppColorWhite,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                   onPressed: () => _removeTrainingDay(index),
@@ -310,23 +314,25 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                   children: [
                     Row(
                       children: [
-                        Expanded(
-                          child: ExrciseCard(
-                            spaceBetweenItems: 5,
-                            padding: 0,
-                            withIconButton: false,
-                            title: exercise.name,
-                            subtitle1:
-                                "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
-                            subtitle2:
-                                "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
-                            image: exercise.image,
-                          ),
+                        ExrciseCard(
+                          spaceBetweenItems: 10,
+                          padding: 0,
+                          withIconButton: false,
+                          title: exercise.name,
+                          subtitle1:
+                              "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
+                          subtitle2:
+                              "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
+                          image: exercise.image,
                         ),
+                        const Spacer(),
                         IconButton(
                           onPressed: () => _removeExercise(day, exercise),
-                          icon: const Icon(Icons.delete,
-                              color: Palette.redDelete),
+                          icon: const Icon(
+                            Icons.delete_forever,
+                            color: Colors.red,
+                            size: 30,
+                          ),
                         ),
                       ],
                     ),
@@ -340,18 +346,14 @@ class _EditPlanBodyState extends State<EditPlanBody> {
             const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerLeft,
-              child: ElevatedButton(
+              child: BuildIconButton(
+                text: LocalizationService.translateFromGeneral('addExercise'),
                 onPressed: () => _addExerciseToDay(day),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Palette.mainAppColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                    LocalizationService.translateFromGeneral('addExercise'),
-                    style: AppStyles.textCairo(
-                        14, Palette.black, FontWeight.w500)),
+                backgroundColor: Palette.mainAppColorWhite,
+                width: 130,
+                fontSize: 12,
+                textColor: Palette.mainAppColorNavy,
+                height: 40,
               ),
             ),
           ],

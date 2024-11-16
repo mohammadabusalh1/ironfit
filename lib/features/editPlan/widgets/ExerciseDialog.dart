@@ -69,6 +69,7 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                       }
                     }),
                 // Display the selected exercise name
+                const SizedBox(height: 12),
                 if (selectedExercises.isNotEmpty)
                   ...selectedExercises.map(
                     (e) => Text(

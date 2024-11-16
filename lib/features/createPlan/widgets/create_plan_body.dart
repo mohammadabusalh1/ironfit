@@ -288,7 +288,13 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   Widget _buildTrainingDayCard(TrainingDay day, int index) {
     String dayName = day.day.contains('-') ? day.day.split('-')[1] : day.day;
     return Card(
-      color: Palette.secondaryColor,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+              color: Palette.mainAppColorWhite.withOpacity(0.4),
+              style: BorderStyle.solid,
+              width: 2)),
+      color: Palette.mainAppColoryellow2,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -298,41 +304,51 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  dayName == 'sun'
-                      ? LocalizationService.translateFromGeneral('sunday')
-                      : dayName == 'mon'
-                          ? LocalizationService.translateFromGeneral('monday')
-                          : dayName == 'tue'
-                              ? LocalizationService.translateFromGeneral(
-                                  'tuesday')
-                              : dayName == 'wed'
-                                  ? LocalizationService.translateFromGeneral(
-                                      'wednesday')
-                                  : dayName == 'thu'
-                                      ? LocalizationService
-                                          .translateFromGeneral('thursday')
-                                      : dayName == 'fri'
-                                          ? LocalizationService
-                                              .translateFromGeneral('friday')
-                                          : LocalizationService
-                                              .translateFromGeneral('saturday'),
-                  style:
-                      AppStyles.textCairo(18, Palette.white, FontWeight.bold),
-                ),
-                IconButton(
-                  onPressed: () =>
-                      _editTrainingDay(context, day, index), // Edit button,
-                  icon:
-                      const Icon(Icons.edit, color: Palette.mainAppColorOrange),
-                  iconSize: 20,
+                InkWell(
+                  onTap: () => _editTrainingDay(context, day, index),
+                  child: Row(
+                    children: [
+                      Text(
+                        dayName == 'sun'
+                            ? LocalizationService.translateFromGeneral('sunday')
+                            : dayName == 'mon'
+                                ? LocalizationService.translateFromGeneral(
+                                    'monday')
+                                : dayName == 'tue'
+                                    ? LocalizationService.translateFromGeneral(
+                                        'tuesday')
+                                    : dayName == 'wed'
+                                        ? LocalizationService
+                                            .translateFromGeneral('wednesday')
+                                        : dayName == 'thu'
+                                            ? LocalizationService
+                                                .translateFromGeneral(
+                                                    'thursday')
+                                            : dayName == 'fri'
+                                                ? LocalizationService
+                                                    .translateFromGeneral(
+                                                        'friday')
+                                                : LocalizationService
+                                                    .translateFromGeneral(
+                                                        'saturday'),
+                        style: AppStyles.textCairo(
+                            18, Palette.white, FontWeight.bold),
+                      ),
+                      IconButton(
+                        onPressed: () => _editTrainingDay(context, day, index),
+                        icon: const Icon(Icons.edit_note,
+                            color: Palette.mainAppColorWhite),
+                        iconSize: 30,
+                      ),
+                    ],
+                  ),
                 ),
                 const Spacer(),
                 IconButton(
                   style: IconButton.styleFrom(
                     backgroundColor: Palette.mainAppColorWhite,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                   onPressed: () => _removeTrainingDay(index),
@@ -348,7 +364,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                     Row(
                       children: [
                         ExrciseCard(
-                          spaceBetweenItems: 5,
+                          spaceBetweenItems: 10,
                           padding: 0,
                           withIconButton: false,
                           title: exercise.name,
@@ -361,7 +377,11 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                         const Spacer(),
                         IconButton(
                           onPressed: () => _removeExercise(day, exercise),
-                          icon: const Icon(Icons.delete, color: Colors.red),
+                          icon: const Icon(
+                            Icons.delete_forever,
+                            color: Colors.red,
+                            size: 30,
+                          ),
                         ),
                       ],
                     ),
@@ -378,9 +398,11 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
               child: BuildIconButton(
                 text: LocalizationService.translateFromGeneral('addExercise'),
                 onPressed: () => _addExerciseToDay(day),
-                backgroundColor: Palette.mainAppColor,
+                backgroundColor: Palette.mainAppColorWhite,
                 width: 130,
                 fontSize: 12,
+                textColor: Palette.mainAppColorNavy,
+                height: 40,
               ),
             ),
           ],

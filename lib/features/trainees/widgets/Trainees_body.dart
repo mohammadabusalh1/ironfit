@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -71,54 +72,57 @@ class _TraineesBodyState extends State<TraineesBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Column(
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 12),
-            isBannerAdLoaded
-                ? SizedBox(
-                    child: AdWidget(ad: bannerAd),
-                    height: bannerAd.size.height.toDouble(),
-                    width: bannerAd.size.width.toDouble(),
-                  )
-                : const SizedBox(),
-            const SizedBox(height: 12),
-            _buildActionButtons(),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: BuildTextField(
-                onChange: _filterTrainees,
-                label: LocalizationService.translateFromGeneral('search'),
-              ),
-            ),
-            if (_isLoading)
-              const SizedBox(height: 24), // Changed to conditional statement
-            if (_isLoading)
-              const Center(child: CircularProgressIndicator())
-            else
-              _buildTraineesList(),
-            const SizedBox(height: 24),
-          ],
-        ),
-        Positioned(
-            bottom: 24,
-            right: 12,
-            child: InkWell(
-              onTap: () => showAddTraineeDialog(context),
-              child: SizedBox(
-                width: 70,
-                height: 70,
-                child: Lottie.asset(
-                  'assets/jsonIcons/add.json',
-                  width: 25,
-                  height: 25,
+    return SafeArea(
+      top: true,
+      child: Stack(
+        children: [
+          Column(
+            children: [
+              _buildHeader(),
+              const SizedBox(height: 12),
+              isBannerAdLoaded
+                  ? SizedBox(
+                      child: AdWidget(ad: bannerAd),
+                      height: bannerAd.size.height.toDouble(),
+                      width: bannerAd.size.width.toDouble(),
+                    )
+                  : const SizedBox(),
+              const SizedBox(height: 12),
+              _buildActionButtons(),
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: BuildTextField(
+                  onChange: _filterTrainees,
+                  label: LocalizationService.translateFromGeneral('search'),
                 ),
               ),
-            )),
-      ],
+              if (_isLoading)
+                const SizedBox(height: 24), // Changed to conditional statement
+              if (_isLoading)
+                const Center(child: CircularProgressIndicator())
+              else
+                _buildTraineesList(),
+              const SizedBox(height: 24),
+            ],
+          ),
+          Positioned(
+              bottom: 24,
+              right: 12,
+              child: InkWell(
+                onTap: () => showAddTraineeDialog(context),
+                child: SizedBox(
+                  width: 70,
+                  height: 70,
+                  child: Lottie.asset(
+                    'assets/jsonIcons/add.json',
+                    width: 25,
+                    height: 25,
+                  ),
+                ),
+              )),
+        ],
+      ),
     );
   }
 
@@ -213,42 +217,58 @@ class _TraineesBodyState extends State<TraineesBody> {
               )
             : ListView.builder(
                 controller: _scrollController,
-                itemCount: _itemCount < filtteredTrainees.length
-                    ? _itemCount
-                    : filtteredTrainees.length,
+                itemCount: (_itemCount < filtteredTrainees.length)
+                    ? (_itemCount ~/ 2) + 1
+                    : (filtteredTrainees.length ~/ 2) + 1,
                 itemBuilder: (context, index) {
-                  var trainee = filtteredTrainees[index];
-                  if (index >= filtteredTrainees.length) {
+                  int startIndex = index * 2;
+                  int endIndex = startIndex + 2;
+                  if (startIndex >= filtteredTrainees.length) {
                     return const SizedBox.shrink();
                   }
-                  return _buildTraineeCard(
-                    context,
-                    trainee['fullName'] ??
-                        trainee['username'] ??
-                        LocalizationService.translateFromGeneral(
-                            'unknown'), // Default name if fullName is null
-                    trainee['endDate'] != null &&
-                            DateTime.tryParse(trainee['endDate']) != null
-                        ? (DateTime.parse(trainee['endDate'])
-                                    .millisecondsSinceEpoch >
-                                DateTime.now().millisecondsSinceEpoch
-                            ? LocalizationService.translateFromGeneral(
-                                'currently_subscribed')
-                            : LocalizationService.translateFromGeneral(
-                                'not_subscribed'))
-                        : LocalizationService.translateFromGeneral(
-                            'unknown'), // Default status if endDate is null or cannot be parsed
-                    trainee['profileImageUrl'] ?? Assets.notFound, // Default image if profileImageUrl is null
-                    () => Get.to(Directionality(
-                        textDirection: dir == 'rtl'
-                            ? TextDirection.rtl
-                            : TextDirection.ltr,
-                        child: TraineeScreen(
-                          username: trainee['username'] ??
+                  if (endIndex > filtteredTrainees.length) {
+                    endIndex = filtteredTrainees.length;
+                  }
+                  List<Widget> cards = [];
+                  for (int i = startIndex; i < endIndex; i++) {
+                    var trainee = filtteredTrainees[i];
+                    cards.add(
+                      Expanded(
+                        child: _buildTraineeCard(
+                          context,
+                          trainee['fullName'] ??
+                              trainee['username'] ??
                               LocalizationService.translateFromGeneral(
-                                  'unknown'), // Default username if null
-                          fetchTrainees: fetchTrainees,
-                        ))),
+                                  'unknown'),
+                          trainee['endDate'] != null &&
+                                  DateTime.tryParse(trainee['endDate']) != null
+                              ? (DateTime.parse(trainee['endDate'])
+                                          .millisecondsSinceEpoch >
+                                      DateTime.now().millisecondsSinceEpoch
+                                  ? LocalizationService.translateFromGeneral(
+                                      'currently_subscribed')
+                                  : LocalizationService.translateFromGeneral(
+                                      'not_subscribed'))
+                              : LocalizationService.translateFromGeneral(
+                                  'unknown'),
+                          trainee['profileImageUrl'] ?? Assets.notFound,
+                          () => Get.to(Directionality(
+                            textDirection: dir == 'rtl'
+                                ? TextDirection.rtl
+                                : TextDirection.ltr,
+                            child: TraineeScreen(
+                              username: trainee['username'] ??
+                                  LocalizationService.translateFromGeneral(
+                                      'unknown'),
+                              fetchTrainees: fetchTrainees,
+                            ),
+                          )),
+                        ),
+                      ),
+                    );
+                  }
+                  return Row(
+                    children: cards,
                   );
                 },
               ),
@@ -259,61 +279,70 @@ class _TraineesBodyState extends State<TraineesBody> {
   Widget _buildTraineeCard(BuildContext context, String name, String status,
       String imagePath, VoidCallback onTap) {
     return Card(
+      margin: const EdgeInsets.all(8),
       clipBehavior: Clip.antiAliasWithSaveLayer,
-      color: Palette.secondaryColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      color: Palette.black,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: InkWell(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.4,
+          height: 200,
+          child: Stack(
             children: [
-              Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                        imagePath.isEmpty ? Assets.notFound : imagePath,
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: CachedNetworkImage(
+                    imageUrl: imagePath.isEmpty ? Assets.notFound : imagePath,
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    fit: BoxFit.cover),
+              ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Icon(
+                  Icons.remove_red_eye,
+                  size: 24,
+                  color: Palette.mainAppColor,
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Palette.blackBack.withOpacity(0.6),
                   ),
-                  const SizedBox(width: 12),
-                  Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        name,
+                        name.length > 15 ? '${name.substring(0, 15)}...' : name,
                         style: AppStyles.textCairo(
                           14,
-                          Palette.mainAppColor,
+                          Palette.mainAppColorWhite,
                           FontWeight.bold,
                         ),
                       ),
                       Text(
-                        status,
+                        status.length > 15
+                            ? '${status.substring(0, 15)}...'
+                            : status,
                         style: AppStyles.textCairo(
                           10,
                           Palette.gray,
-                          FontWeight.w500,
+                          FontWeight.normal,
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
-              dir == 'rtl'
-                  ? Lottie.asset(
-                      'assets/jsonIcons/leftArrow.json',
-                      width: 25,
-                      height: 25,
-                    )
-                  : Lottie.asset(
-                      'assets/jsonIcons/rightArrow.json',
-                      width: 25,
-                      height: 25,
-                    ),
+                ),
+              )
             ],
           ),
         ),

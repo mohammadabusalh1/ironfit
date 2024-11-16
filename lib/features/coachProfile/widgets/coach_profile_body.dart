@@ -47,7 +47,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
 
   late BannerAd bannerAd;
   bool isBannerAdLoaded = false;
-  String dir = LocalizationService.getDir();
+  late String dir;
 
   @override
   void initState() {
@@ -71,6 +71,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
         isDataLoaded = true;
       });
     }
+    dir = LocalizationService.getDir();
   }
 
   @override
@@ -483,93 +484,96 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Stack(
-            alignment: AlignmentDirectional.center,
-            children: [
-              HeaderImage(
-                headerImage: Assets.header2,
-                high: MediaQuery.of(context).size.height * 0.44,
-                borderRadius: 32,
-                width: MediaQuery.of(context).size.width * 0.99,
-              ),
-              _buildProfileContent(context),
-            ],
-          ),
-          SizedBox(height: 10),
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  isBannerAdLoaded
-                      ? SizedBox(
-                          child: AdWidget(ad: bannerAd),
-                          height: bannerAd.size.height.toDouble(),
-                          width: bannerAd.size.width.toDouble(),
-                        )
-                      : const SizedBox(),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: Text(
-                      textAlign: TextAlign.start,
-                      LocalizationService.translateFromGeneral('profile'),
-                      style: AppStyles.textCairo(
-                        20,
-                        Palette.mainAppColorWhite,
-                        FontWeight.bold,
+    return SafeArea(
+      top: true,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Stack(
+              alignment: AlignmentDirectional.center,
+              children: [
+                HeaderImage(
+                  headerImage: Assets.header2,
+                  high: MediaQuery.of(context).size.height * 0.44,
+                  borderRadius: 32,
+                  width: MediaQuery.of(context).size.width * 0.99,
+                ),
+                _buildProfileContent(context),
+              ],
+            ),
+            SizedBox(height: 10),
+            Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: [
+                    isBannerAdLoaded
+                        ? SizedBox(
+                            child: AdWidget(ad: bannerAd),
+                            height: bannerAd.size.height.toDouble(),
+                            width: bannerAd.size.width.toDouble(),
+                          )
+                        : const SizedBox(),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: Text(
+                        textAlign: TextAlign.start,
+                        LocalizationService.translateFromGeneral('profile'),
+                        style: AppStyles.textCairo(
+                          20,
+                          Palette.mainAppColorWhite,
+                          FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 8),
-                  _buildButtonCard(
-                      context,
-                      LocalizationService.translateFromGeneral(
-                          'personalInformation'),
-                      Icons.person_2, () {
-                    showEditInfoDialog(context);
-                  }, Icons.arrow_forward_ios_outlined,
-                      Palette.mainAppColorBack),
-                  _buildButtonCard(
-                      context,
-                      LocalizationService.translateFromGeneral(
-                          'communicateWithTrainees'),
-                      Icons.chat,
-                      () {},
-                      Icons.arrow_forward_ios_outlined,
-                      Palette.mainAppColorBack),
-                  _buildButtonCard(
-                      context,
-                      LocalizationService.translateFromGeneral(
-                          'changePassword'),
-                      Icons.password_outlined, () {
-                    showEditPasswordDialog(context);
-                  }, Icons.arrow_forward_ios_outlined,
-                      Palette.mainAppColorBack),
-                  SizedBox(height: 16),
-                  _buildButtonCard(
-                      context,
-                      LocalizationService.translateFromGeneral('gyms'),
-                      Icons.location_on, () {
-                    Get.toNamed(Routes.myGyms);
-                  }, Icons.arrow_forward_ios, Palette.mainAppColorOrange),
-                  _buildButtonCard(
-                      context,
-                      dir == 'rtl'
-                          ? LocalizationService.translateFromPage(
-                              'Arabic', 'selectLang')
-                          : LocalizationService.translateFromPage(
-                              'English', 'selectLang'),
-                      Icons.translate, () {
-                    LocalizationService.load(
-                        LocalizationService.lang == 'en' ? 'ar' : 'en');
-                    RestartWidget.restartApp(context);
-                    Navigator.pushNamed(context, Routes.coachProfile);
-                  }, Icons.arrow_forward_ios, Palette.mainAppColorOrange),
-                ],
-              )),
-        ],
+                    SizedBox(height: 8),
+                    _buildButtonCard(
+                        context,
+                        LocalizationService.translateFromGeneral(
+                            'personalInformation'),
+                        Icons.person_2, () {
+                      showEditInfoDialog(context);
+                    }, Icons.arrow_forward_ios_outlined,
+                        Palette.mainAppColorBack),
+                    _buildButtonCard(
+                        context,
+                        LocalizationService.translateFromGeneral(
+                            'communicateWithTrainees'),
+                        Icons.chat,
+                        () {},
+                        Icons.arrow_forward_ios_outlined,
+                        Palette.mainAppColorBack),
+                    _buildButtonCard(
+                        context,
+                        LocalizationService.translateFromGeneral(
+                            'changePassword'),
+                        Icons.password_outlined, () {
+                      showEditPasswordDialog(context);
+                    }, Icons.arrow_forward_ios_outlined,
+                        Palette.mainAppColorBack),
+                    SizedBox(height: 16),
+                    _buildButtonCard(
+                        context,
+                        LocalizationService.translateFromGeneral('gyms'),
+                        Icons.location_on, () {
+                      Get.toNamed(Routes.myGyms);
+                    }, Icons.arrow_forward_ios, Palette.mainAppColorOrange),
+                    _buildButtonCard(
+                        context,
+                        dir == 'rtl'
+                            ? LocalizationService.translateFromPage(
+                                'English', 'selectLang')
+                            : LocalizationService.translateFromPage(
+                                'Arabic', 'selectLang'),
+                        Icons.translate, () {
+                      LocalizationService.load(
+                          LocalizationService.lang == 'en' ? 'ar' : 'en');
+                      RestartWidget.restartApp(context);
+                      Navigator.pushNamed(context, Routes.coachProfile);
+                    }, Icons.arrow_forward_ios, Palette.mainAppColorOrange),
+                  ],
+                )),
+          ],
+        ),
       ),
     );
   }

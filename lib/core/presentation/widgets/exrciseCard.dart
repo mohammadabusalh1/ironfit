@@ -91,7 +91,7 @@ class _ExrciseCardState extends State<ExrciseCard> {
         children: [
           Text(
             widget.title.length > 16
-                ? '...${widget.title.substring(0, 16)}'
+                ? '${widget.title.substring(0, 16)}...'
                 : widget.title,
             style: AppStyles.textCairo(
               12,
@@ -147,7 +147,6 @@ class _ExrciseCardState extends State<ExrciseCard> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
       icon: Icon(
         Icons.done_all,

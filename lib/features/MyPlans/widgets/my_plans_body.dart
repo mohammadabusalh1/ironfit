@@ -65,16 +65,16 @@ class _MyPlansBodyState extends State<MyPlansBody> {
 
   Future<void> deletePlan(BuildContext context, String planId) async {
     try {
-      Get.dialog(
-        const Center(child: CircularProgressIndicator()),
-        barrierDismissible: false,
-      );
-
       bool confirm = await confirmCancel(context);
       // If the user cancels, return early
       if (!confirm) {
         return;
       }
+
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
 
       // Check for null planId or current user
       if (planId.isEmpty || _auth.currentUser == null) {
@@ -305,26 +305,39 @@ class _MyPlansBodyState extends State<MyPlansBody> {
   }
 }
 
-class CustomCard extends StatelessWidget {
+class CustomCard extends StatefulWidget {
   final String title;
   final String description;
   final IconData icon;
   final VoidCallback onPressed;
   final VoidCallback onPressedEdit;
+  const CustomCard(
+      {super.key,
+      required this.title,
+      required this.description,
+      required this.icon,
+      required this.onPressed,
+      required this.onPressedEdit});
 
-  const CustomCard({
-    super.key,
-    required this.title,
-    required this.description,
-    required this.icon,
-    required this.onPressed,
-    required this.onPressedEdit,
-  });
+  @override
+  State<CustomCard> createState() => CustomCardState();
+}
+
+class CustomCardState extends State<CustomCard> {
+  late String dir;
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      dir = LocalizationService.getDir();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onPressedEdit,
+      onTap: widget.onPressedEdit,
       child: Card(
         clipBehavior: Clip.antiAliasWithSaveLayer,
         color: Palette.mainAppColorWhite,
@@ -337,7 +350,9 @@ class CustomCard extends StatelessWidget {
             Align(
               alignment: const AlignmentDirectional(0, 0),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(4, 6, 16, 6),
+                padding: dir == 'rtl'
+                    ? const EdgeInsets.fromLTRB(4, 6, 16, 6)
+                    : const EdgeInsets.fromLTRB(16, 6, 4, 6),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -351,7 +366,9 @@ class CustomCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          title.length > 25 ? '${title.substring(0, 25)}...' : title,
+                          widget.title.length > 25
+                              ? '${widget.title.substring(0, 25)}...'
+                              : widget.title,
                           style: AppStyles.textCairo(
                             14,
                             Palette.black,
@@ -359,7 +376,9 @@ class CustomCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          description.length > 25 ? '${description.substring(0, 25)}...' : description,
+                          widget.description.length > 25
+                              ? '${widget.description.substring(0, 25)}...'
+                              : widget.description,
                           style: AppStyles.textCairo(
                             10,
                             Palette.secondaryColor,
@@ -380,7 +399,7 @@ class CustomCard extends StatelessWidget {
                         color: Palette.redDelete,
                         size: 28,
                       ),
-                      onPressed: onPressed,
+                      onPressed: widget.onPressed,
                     ),
                   ],
                 ),

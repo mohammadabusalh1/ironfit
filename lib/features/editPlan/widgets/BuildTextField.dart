@@ -21,7 +21,13 @@ Widget BuildTextField({
     child: TextFormField(
       obscureText: obscureText,
       textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
-      onTap: onTap ?? () {},
+      onTap: onTap ??
+          () {
+            // When the text field is tapped, move cursor to the end
+            controller != null ? controller!.selection = TextSelection.fromPosition(
+              TextPosition(offset: controller.text.length),
+            ) : null;
+          },
       inputFormatters: inputFormatters,
       controller: controller,
       onChanged: onChange ?? (value) {},
@@ -42,8 +48,8 @@ Widget BuildTextField({
         hintStyle:
             const TextStyle(color: Palette.mainAppColorWhite, fontSize: 10),
         labelText: label,
-        labelStyle:
-            AppStyles.textCairo(11, Palette.mainAppColorWhite.withOpacity(0.9), FontWeight.bold),
+        labelStyle: AppStyles.textCairo(
+            11, Palette.mainAppColorWhite.withOpacity(0.9), FontWeight.bold),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(

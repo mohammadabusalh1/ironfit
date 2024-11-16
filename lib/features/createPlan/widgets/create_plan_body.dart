@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
+import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Button.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
@@ -68,7 +69,8 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Column(
                     children: [
-                      BuildTextField( dir: dir,
+                      BuildTextField(
+                        dir: dir,
                         controller: planController,
                         onChange: (value) => setState(() {
                           planName = value;
@@ -76,10 +78,10 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                         label: LocalizationService.translateFromGeneral(
                             'planName'),
                         icon: Icons.edit,
-                        
                       ),
                       const SizedBox(height: 16),
-                      BuildTextField( dir: dir,
+                      BuildTextField(
+                        dir: dir,
                         controller: descriptionController,
                         onChange: (value) =>
                             setState(() => planDescription = value),
@@ -185,6 +187,156 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
     );
   }
 
+  Widget _buildTrainingDayCard(TrainingDay day, int index) {
+    String dayName = day.day.contains('-') ? day.day.split('-')[1] : day.day;
+    return Card(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+              color: Palette.mainAppColorWhite.withOpacity(0.4),
+              style: BorderStyle.solid,
+              width: 2)),
+      color: Palette.mainAppColoryellow2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: () => _editTrainingDay(context, day, index),
+                  child: Row(
+                    children: [
+                      Text(
+                        dayName == 'sun'
+                            ? LocalizationService.translateFromGeneral('sunday')
+                            : dayName == 'mon'
+                                ? LocalizationService.translateFromGeneral(
+                                    'monday')
+                                : dayName == 'tue'
+                                    ? LocalizationService.translateFromGeneral(
+                                        'tuesday')
+                                    : dayName == 'wed'
+                                        ? LocalizationService
+                                            .translateFromGeneral('wednesday')
+                                        : dayName == 'thu'
+                                            ? LocalizationService
+                                                .translateFromGeneral(
+                                                    'thursday')
+                                            : dayName == 'fri'
+                                                ? LocalizationService
+                                                    .translateFromGeneral(
+                                                        'friday')
+                                                : LocalizationService
+                                                    .translateFromGeneral(
+                                                        'saturday'),
+                        style: AppStyles.textCairo(
+                            18, Palette.white, FontWeight.bold),
+                      ),
+                      IconButton(
+                        onPressed: () => _editTrainingDay(context, day, index),
+                        icon: const Icon(Icons.edit_note,
+                            color: Palette.mainAppColorWhite),
+                        iconSize: 30,
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  style: IconButton.styleFrom(
+                    backgroundColor: Palette.mainAppColorWhite,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  onPressed: () => _removeTrainingDay(index),
+                  icon: const Icon(Icons.delete, color: Palette.redDelete),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ReorderableListView(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              onReorder: (oldIndex, newIndex) {
+                setState(() {
+                  if (oldIndex < newIndex) {
+                    newIndex -= 1;
+                  }
+                  final Exercise item = day.exercises.removeAt(oldIndex);
+                  day.exercises.insert(newIndex, item);
+                });
+              },
+              children: day.exercises
+                  .map(
+                    (exercise) => Column(
+                      key: ValueKey('${day.exercises.indexOf(exercise)}'),
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.drag_handle,
+                              size: 22,
+                              color: Palette.mainAppColorWhite,
+                            ),
+                            const Spacer(),
+                            InkWell(
+                              onTap: () => _handleEditExercise(
+                                  day, day.exercises.indexOf(exercise)),
+                              child: ExrciseCard(
+                                spaceBetweenItems: 10,
+                                padding: 0,
+                                withIconButton: false,
+                                title: exercise.name,
+                                subtitle1:
+                                    "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
+                                subtitle2:
+                                    "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
+                                image: exercise.image,
+                              ),
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              onPressed: () => _removeExercise(day, exercise),
+                              icon: const Icon(
+                                Icons.delete_forever,
+                                color: Colors.red,
+                                size: 30,
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Add space between rows
+                        const SizedBox(
+                            height: 10), // Adjust the height as per your need
+                      ],
+                    ),
+                  )
+                  .toList(),
+            ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: BuildIconButton(
+                text: LocalizationService.translateFromGeneral('addExercise'),
+                onPressed: () => _addExerciseToDay(day),
+                backgroundColor: Palette.mainAppColorWhite,
+                width: 130,
+                fontSize: 12,
+                textColor: Palette.mainAppColorNavy,
+                height: 40,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildEditDayDialog(BuildContext context,
       {TrainingDay? initialDay, int? index}) {
     var daySplit = initialDay?.day.split('-');
@@ -287,128 +439,24 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
     );
   }
 
-  Widget _buildTrainingDayCard(TrainingDay day, int index) {
-    String dayName = day.day.contains('-') ? day.day.split('-')[1] : day.day;
-    return Card(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(
-              color: Palette.mainAppColorWhite.withOpacity(0.4),
-              style: BorderStyle.solid,
-              width: 2)),
-      color: Palette.mainAppColoryellow2,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () => _editTrainingDay(context, day, index),
-                  child: Row(
-                    children: [
-                      Text(
-                        dayName == 'sun'
-                            ? LocalizationService.translateFromGeneral('sunday')
-                            : dayName == 'mon'
-                                ? LocalizationService.translateFromGeneral(
-                                    'monday')
-                                : dayName == 'tue'
-                                    ? LocalizationService.translateFromGeneral(
-                                        'tuesday')
-                                    : dayName == 'wed'
-                                        ? LocalizationService
-                                            .translateFromGeneral('wednesday')
-                                        : dayName == 'thu'
-                                            ? LocalizationService
-                                                .translateFromGeneral(
-                                                    'thursday')
-                                            : dayName == 'fri'
-                                                ? LocalizationService
-                                                    .translateFromGeneral(
-                                                        'friday')
-                                                : LocalizationService
-                                                    .translateFromGeneral(
-                                                        'saturday'),
-                        style: AppStyles.textCairo(
-                            18, Palette.white, FontWeight.bold),
-                      ),
-                      IconButton(
-                        onPressed: () => _editTrainingDay(context, day, index),
-                        icon: const Icon(Icons.edit_note,
-                            color: Palette.mainAppColorWhite),
-                        iconSize: 30,
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  style: IconButton.styleFrom(
-                    backgroundColor: Palette.mainAppColorWhite,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  onPressed: () => _removeTrainingDay(index),
-                  icon: const Icon(Icons.delete, color: Palette.redDelete),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Column(
-              children: day.exercises.map((exercise) {
-                return Column(
-                  children: [
-                    Row(
-                      children: [
-                        ExrciseCard(
-                          spaceBetweenItems: 10,
-                          padding: 0,
-                          withIconButton: false,
-                          title: exercise.name,
-                          subtitle1:
-                              "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
-                          subtitle2:
-                              "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
-                          image: exercise.image,
-                        ),
-                        const Spacer(),
-                        IconButton(
-                          onPressed: () => _removeExercise(day, exercise),
-                          icon: const Icon(
-                            Icons.delete_forever,
-                            color: Colors.red,
-                            size: 30,
-                          ),
-                        ),
-                      ],
-                    ),
-                    // Add space between rows
-                    const SizedBox(
-                        height: 10), // Adjust the height as per your need
-                  ],
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: BuildIconButton(
-                text: LocalizationService.translateFromGeneral('addExercise'),
-                onPressed: () => _addExerciseToDay(day),
-                backgroundColor: Palette.mainAppColorWhite,
-                width: 130,
-                fontSize: 12,
-                textColor: Palette.mainAppColorNavy,
-                height: 40,
-              ),
-            ),
-          ],
-        ),
+  void editExercise(TrainingDay day, int index, Exercise updatedExercise) {
+    setState(() {
+      day.exercises[index] = updatedExercise;
+    });
+  }
+
+  void _handleEditExercise(TrainingDay day, int index) {
+    Exercise currentExercise = day.exercises[index];
+
+    // Open an edit dialog to update exercise details
+    showDialog(
+      context: context,
+      builder: (context) => ExerciseDialog(
+        addExercise: (updatedExercise) {
+          editExercise(day, index, updatedExercise);
+        },
+        initialExercise:
+            currentExercise, // Pass the current exercise data to edit
       ),
     );
   }
@@ -663,8 +711,7 @@ class Exercise {
     required this.name,
     required this.rounds,
     required this.repetitions,
-    this.image =
-        'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg',
+    this.image = Assets.notFound,
   });
 
   factory Exercise.fromMap(Map<String, dynamic> map) {

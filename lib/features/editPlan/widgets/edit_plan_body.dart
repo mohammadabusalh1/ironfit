@@ -309,41 +309,65 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            Column(
-              children: day.exercises.map((exercise) {
-                return Column(
-                  children: [
-                    Row(
+            const SizedBox(height: 12),
+            ReorderableListView(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              onReorder: (oldIndex, newIndex) {
+                setState(() {
+                  if (oldIndex < newIndex) {
+                    newIndex -= 1;
+                  }
+                  final Exercise item = day.exercises.removeAt(oldIndex);
+                  day.exercises.insert(newIndex, item);
+                });
+              },
+              children: day.exercises
+                  .map(
+                    (exercise) => Column(
+                      key: ValueKey('${day.exercises.indexOf(exercise)}'),
                       children: [
-                        ExrciseCard(
-                          spaceBetweenItems: 10,
-                          padding: 0,
-                          withIconButton: false,
-                          title: exercise.name,
-                          subtitle1:
-                              "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
-                          subtitle2:
-                              "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
-                          image: exercise.image,
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.drag_handle,
+                              size: 22,
+                              color: Palette.mainAppColorWhite,
+                            ),
+                            const Spacer(),
+                            InkWell(
+                              onTap: () => _handleEditExercise(
+                                  day, day.exercises.indexOf(exercise)),
+                              child: ExrciseCard(
+                                spaceBetweenItems: 10,
+                                padding: 0,
+                                withIconButton: false,
+                                title: exercise.name,
+                                subtitle1:
+                                    "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
+                                subtitle2:
+                                    "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
+                                image: exercise.image,
+                              ),
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              onPressed: () => _removeExercise(day, exercise),
+                              icon: const Icon(
+                                Icons.delete_forever,
+                                color: Colors.red,
+                                size: 30,
+                              ),
+                            ),
+                          ],
                         ),
-                        const Spacer(),
-                        IconButton(
-                          onPressed: () => _removeExercise(day, exercise),
-                          icon: const Icon(
-                            Icons.delete_forever,
-                            color: Colors.red,
-                            size: 30,
-                          ),
-                        ),
+                        // Add space between rows
+                        const SizedBox(
+                            height: 10), // Adjust the height as per your need
                       ],
                     ),
-                    // Add space between rows
-                    const SizedBox(
-                        height: 10), // Adjust the height as per your need
-                  ],
-                );
-              }).toList(),
+                  )
+                  .toList(),
             ),
             const SizedBox(height: 8),
             Align(
@@ -390,93 +414,102 @@ class _EditPlanBodyState extends State<EditPlanBody> {
   Widget _buildDayDialog() {
     String? selectedDay;
     return Theme(
-      data: customThemeData,
-      child: AlertDialog(
-        title: Text(
-            LocalizationService.translateFromGeneral('chooseTrainingDay'),
-            style: AppStyles.textCairo(
-                14, Palette.mainAppColorWhite, FontWeight.w500)),
-        content: StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return DropdownButton<String>(
-              dropdownColor: Palette.secondaryColor,
-              hint: Text(
-                  LocalizationService.translateFromGeneral('trainingDay'),
-                  style: AppStyles.textCairo(
-                      14, Palette.mainAppColorWhite, FontWeight.w500)),
-              value: selectedDay,
-              onChanged: (newValue) {
-                setState(() {
-                  selectedDay = newValue;
-                });
-              },
-              items: [
-                {
-                  'value': 'sun',
-                  'label': LocalizationService.translateFromGeneral('sunday')
-                },
-                {
-                  'value': 'mon',
-                  'label': LocalizationService.translateFromGeneral('monday')
-                },
-                {
-                  'value': 'tue',
-                  'label': LocalizationService.translateFromGeneral('tuesday')
-                },
-                {
-                  'value': 'wed',
-                  'label': LocalizationService.translateFromGeneral('wednesday')
-                },
-                {
-                  'value': 'thu',
-                  'label': LocalizationService.translateFromGeneral('thursday')
-                },
-                {
-                  'value': 'fri',
-                  'label': LocalizationService.translateFromGeneral('friday')
-                },
-                {
-                  'value': 'sat',
-                  'label': LocalizationService.translateFromGeneral('saturday')
-                },
-              ]
-                  .map((day) => DropdownMenuItem(
-                        value: '${day['label']}-${day['value']}',
-                        child: Align(
-                          alignment: AlignmentDirectional.centerEnd,
-                          child: Text(day['label']!,
-                              style: AppStyles.textCairo(
-                                  14, Palette.white, FontWeight.w500)),
-                        ),
-                      ))
-                  .toList(),
-            );
-          },
-        ),
-        actions: [
-          BuildIconButton(
-            text: LocalizationService.translateFromGeneral('save'),
-            onPressed: () {
-              if (selectedDay != null) {
-                setState(() {
-                  trainingDays
-                      .add(TrainingDay(day: selectedDay!, exercises: []));
-                });
-                Navigator.pop(context);
-              }
-            },
-            width: 90,
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(LocalizationService.translateFromGeneral('cancel'),
+        data: customThemeData,
+        child: Directionality(
+          textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+          child: AlertDialog(
+            title: Text(
+                LocalizationService.translateFromGeneral('chooseTrainingDay'),
                 style: AppStyles.textCairo(
                     14, Palette.mainAppColorWhite, FontWeight.w500)),
+            content: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return DropdownButton<String>(
+                  dropdownColor: Palette.secondaryColor,
+                  hint: Text(
+                      LocalizationService.translateFromGeneral('trainingDay'),
+                      style: AppStyles.textCairo(
+                          14, Palette.mainAppColorWhite, FontWeight.w500)),
+                  value: selectedDay,
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedDay = newValue;
+                    });
+                  },
+                  items: [
+                    {
+                      'value': 'sun',
+                      'label':
+                          LocalizationService.translateFromGeneral('sunday')
+                    },
+                    {
+                      'value': 'mon',
+                      'label':
+                          LocalizationService.translateFromGeneral('monday')
+                    },
+                    {
+                      'value': 'tue',
+                      'label':
+                          LocalizationService.translateFromGeneral('tuesday')
+                    },
+                    {
+                      'value': 'wed',
+                      'label':
+                          LocalizationService.translateFromGeneral('wednesday')
+                    },
+                    {
+                      'value': 'thu',
+                      'label':
+                          LocalizationService.translateFromGeneral('thursday')
+                    },
+                    {
+                      'value': 'fri',
+                      'label':
+                          LocalizationService.translateFromGeneral('friday')
+                    },
+                    {
+                      'value': 'sat',
+                      'label':
+                          LocalizationService.translateFromGeneral('saturday')
+                    },
+                  ]
+                      .map((day) => DropdownMenuItem(
+                            value: '${day['label']}-${day['value']}',
+                            child: Align(
+                              alignment: AlignmentDirectional.centerEnd,
+                              child: Text(day['label']!,
+                                  style: AppStyles.textCairo(
+                                      14, Palette.white, FontWeight.w500)),
+                            ),
+                          ))
+                      .toList(),
+                );
+              },
+            ),
+            actions: [
+              BuildIconButton(
+                text: LocalizationService.translateFromGeneral('save'),
+                onPressed: () {
+                  if (selectedDay != null) {
+                    setState(() {
+                      trainingDays
+                          .add(TrainingDay(day: selectedDay!, exercises: []));
+                    });
+                    Navigator.pop(context);
+                  }
+                },
+                width: 90,
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(LocalizationService.translateFromGeneral('cancel'),
+                    style: AppStyles.textCairo(
+                        14, Palette.mainAppColorWhite, FontWeight.w500)),
+              ),
+            ],
+            actionsAlignment: MainAxisAlignment.start,
           ),
-        ],
-        actionsAlignment: MainAxisAlignment.start,
-      ),
-    );
+        ));
   }
 
   void _addExerciseToDay(TrainingDay day) {
@@ -484,13 +517,34 @@ class _EditPlanBodyState extends State<EditPlanBody> {
       setState(() {
         day.exercises.add(exercise);
       });
-      Navigator.pop(context);
     }
 
     showDialog(
       context: context,
       builder: (context) => ExerciseDialog(
         addExercise: addExercise,
+      ),
+    );
+  }
+
+  void editExercise(TrainingDay day, int index, Exercise updatedExercise) {
+    setState(() {
+      day.exercises[index] = updatedExercise;
+    });
+  }
+
+  void _handleEditExercise(TrainingDay day, int index) {
+    Exercise currentExercise = day.exercises[index];
+
+    // Open an edit dialog to update exercise details
+    showDialog(
+      context: context,
+      builder: (context) => ExerciseDialog(
+        addExercise: (updatedExercise) {
+          editExercise(day, index, updatedExercise);
+        },
+        initialExercise:
+            currentExercise, // Pass the current exercise data to edit
       ),
     );
   }
@@ -511,99 +565,109 @@ class _EditPlanBodyState extends State<EditPlanBody> {
         : daySplit[0];
 
     return Theme(
-      data: customThemeData,
-      child: AlertDialog(
-        title: Text(
-            LocalizationService.translateFromGeneral('chooseTrainingDay'),
-            style: AppStyles.textCairo(14, Palette.white, FontWeight.w500)),
-        content: StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return DropdownButton<String>(
-              dropdownColor: Colors.grey[800],
-              hint: Text(
-                  LocalizationService.translateFromGeneral('trainingDay'),
-                  style:
-                      AppStyles.textCairo(14, Palette.white, FontWeight.w500)),
-              value: selectedDay,
-              onChanged: (newValue) {
-                setState(() {
-                  selectedDay = newValue;
-                });
-              },
-              items: [
-                {
-                  'value': 'sun',
-                  'label': LocalizationService.translateFromGeneral('sunday')
-                },
-                {
-                  'value': 'mon',
-                  'label': LocalizationService.translateFromGeneral('monday')
-                },
-                {
-                  'value': 'tue',
-                  'label': LocalizationService.translateFromGeneral('tuesday')
-                },
-                {
-                  'value': 'wed',
-                  'label': LocalizationService.translateFromGeneral('wednesday')
-                },
-                {
-                  'value': 'thu',
-                  'label': LocalizationService.translateFromGeneral('thursday')
-                },
-                {
-                  'value': 'fri',
-                  'label': LocalizationService.translateFromGeneral('friday')
-                },
-                {
-                  'value': 'sat',
-                  'label': LocalizationService.translateFromGeneral('saturday')
-                },
-              ]
-                  .map((day) => DropdownMenuItem(
-                        value: day['value'], // Correct value assignment
-                        child: Align(
-                          alignment: AlignmentDirectional.centerEnd,
-                          child: Text(day['label']!,
-                              style: AppStyles.textCairo(
-                                  14, Palette.white, FontWeight.w500)),
-                        ),
-                      ))
-                  .toList(),
-            );
-          },
-        ),
-        actions: [
-          BuildIconButton(
-            width: 90,
-            text: LocalizationService.translateFromGeneral('save'),
-            onPressed: () {
-              if (selectedDay != null) {
-                setState(() {
-                  if (index != null) {
-                    // Edit existing day
-                    trainingDays[index] = TrainingDay(
-                        day: selectedDay!,
-                        exercises: trainingDays[index].exercises);
-                  } else {
-                    // Add new day
-                    trainingDays
-                        .add(TrainingDay(day: selectedDay!, exercises: []));
-                  }
-                });
-                Navigator.pop(context);
-              }
-            },
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(LocalizationService.translateFromGeneral('cancel'),
+        data: customThemeData,
+        child: Directionality(
+          textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+          child: AlertDialog(
+            title: Text(
+                LocalizationService.translateFromGeneral('chooseTrainingDay'),
                 style: AppStyles.textCairo(14, Palette.white, FontWeight.w500)),
+            content: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return DropdownButton<String>(
+                  dropdownColor: Colors.grey[800],
+                  hint: Text(
+                      LocalizationService.translateFromGeneral('trainingDay'),
+                      style: AppStyles.textCairo(
+                          14, Palette.white, FontWeight.w500)),
+                  value: selectedDay,
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedDay = newValue;
+                    });
+                  },
+                  items: [
+                    {
+                      'value': 'sun',
+                      'label':
+                          LocalizationService.translateFromGeneral('sunday')
+                    },
+                    {
+                      'value': 'mon',
+                      'label':
+                          LocalizationService.translateFromGeneral('monday')
+                    },
+                    {
+                      'value': 'tue',
+                      'label':
+                          LocalizationService.translateFromGeneral('tuesday')
+                    },
+                    {
+                      'value': 'wed',
+                      'label':
+                          LocalizationService.translateFromGeneral('wednesday')
+                    },
+                    {
+                      'value': 'thu',
+                      'label':
+                          LocalizationService.translateFromGeneral('thursday')
+                    },
+                    {
+                      'value': 'fri',
+                      'label':
+                          LocalizationService.translateFromGeneral('friday')
+                    },
+                    {
+                      'value': 'sat',
+                      'label':
+                          LocalizationService.translateFromGeneral('saturday')
+                    },
+                  ]
+                      .map((day) => DropdownMenuItem(
+                            value: day['value'], // Correct value assignment
+                            child: Align(
+                              alignment: AlignmentDirectional.centerEnd,
+                              child: Text(day['label']!,
+                                  style: AppStyles.textCairo(
+                                      14, Palette.white, FontWeight.w500)),
+                            ),
+                          ))
+                      .toList(),
+                );
+              },
+            ),
+            actions: [
+              BuildIconButton(
+                width: 90,
+                text: LocalizationService.translateFromGeneral('save'),
+                onPressed: () {
+                  if (selectedDay != null) {
+                    setState(() {
+                      if (index != null) {
+                        // Edit existing day
+                        trainingDays[index] = TrainingDay(
+                            day: selectedDay!,
+                            exercises: trainingDays[index].exercises);
+                      } else {
+                        // Add new day
+                        trainingDays
+                            .add(TrainingDay(day: selectedDay!, exercises: []));
+                      }
+                    });
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(LocalizationService.translateFromGeneral('cancel'),
+                    style: AppStyles.textCairo(
+                        14, Palette.white, FontWeight.w500)),
+              ),
+            ],
+            actionsAlignment: MainAxisAlignment.start,
           ),
-        ],
-        actionsAlignment: MainAxisAlignment.start,
-      ),
-    );
+        ));
   }
 
   Future<void> _savePlan() async {

@@ -8,6 +8,7 @@ import 'package:ironfit/core/presentation/widgets/CarouselItem.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/theme.dart';
+import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 
 class ExercisesScreen extends StatefulWidget {
   final String fileName;
@@ -26,8 +27,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   List<dynamic> targetMuscles = [];
   String targetMuscleSelected = '';
   int stage = 1;
-  double high = 500;
+  double high = 1000;
   List<dynamic> selectedExercises = [];
+  late String dir;
+
+  TextEditingController _searchController = TextEditingController();
 
   Future<void> load(fileName) async {
     String jsonString =
@@ -59,12 +63,10 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   void _searchExercises(String query) {
     setState(() {
       if (query.isEmpty) {
-        if (targetMuscleSelected.isNotEmpty) {
-          loadTarget(targetMuscleSelected);
-        } else {
-          _filteredExercises = exercises;
-        }
+        _filteredExercises = exercises;
       } else {
+        _searchController.text = query;
+        _filteredExercises = exercises;
         _filteredExercises = _filteredExercises
             .where((exercise) => exercise['name']
                 .toString()
@@ -81,6 +83,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     super.initState();
     _scrollController.addListener(_scrollListener);
     load('back_exercises');
+    dir = LocalizationService.getDir();
   }
 
   @override
@@ -105,7 +108,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     } else {
       setState(() {
         stage = 2;
-        high = 1000;
+        high = 1300;
       });
     }
   }
@@ -115,101 +118,119 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     return Theme(
       data: customThemeData,
       child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: AlertDialog(
-          title: Text(
-              LocalizationService.translateFromGeneral('selectExercise'),
-              style: const TextStyle(color: Palette.white, fontSize: 20)),
-          content: SingleChildScrollView(
-            child: Material(
-              color: Colors.transparent,
-              child: SingleChildScrollView(
+          textDirection: TextDirection.rtl,
+          child: SingleChildScrollView(
+            child: AlertDialog(
+              title: Text(
+                LocalizationService.translateFromGeneral('selectExercise'),
+                style: const TextStyle(color: Palette.white, fontSize: 20),
+              ),
+              content: Container(
+                width: double.maxFinite,
+                height: high, // Adjust height as per your content's needs
                 child: Column(
                   children: [
-                    Container(
-                      width: double.infinity,
-                      child: DropdownButtonFormField<String>(
-                        dropdownColor: Palette.secondaryColor,
-                        value: fileNameSelected,
-                        decoration: InputDecoration(
-                          hintText: LocalizationService.translateFromGeneral(
-                              'bodyPart'),
-                          hintStyle: AppStyles.textCairo(
-                              14, Palette.white, FontWeight.w500),
-                        ),
-                        onChanged: (newValue) {
-                          setState(() {
-                            fileNameSelected = newValue!;
-                            load(newValue);
-                          });
-                        },
-                        items: [
-                          {
-                            'value': 'back_exercises',
-                            'label': LocalizationService.translateFromGeneral(
-                                'back'),
-                          },
-                          {
-                            'value': 'cardio_exercises',
-                            'label': LocalizationService.translateFromGeneral(
-                                'cardio'),
-                          },
-                          {
-                            'value': 'chest_exercises',
-                            'label': LocalizationService.translateFromGeneral(
-                                'chest'),
-                          },
-                          {
-                            'value': 'lower arms_exercises',
-                            'label': LocalizationService.translateFromGeneral(
-                                'lowerArms'),
-                          },
-                          {
-                            'value': 'lower legs_exercises',
-                            'label': LocalizationService.translateFromGeneral(
-                                'lowerLegs'),
-                          },
-                          {
-                            'value': 'neck_exercises',
-                            'label': LocalizationService.translateFromGeneral(
-                                'neck'),
-                          },
-                          {
-                            'value': 'shoulders_exercises',
-                            'label': LocalizationService.translateFromGeneral(
-                                'shoulders'),
-                          },
-                          {
-                            'value': 'upper arms_exercises',
-                            'label': LocalizationService.translateFromGeneral(
-                                'upperArms'),
-                          },
-                          {
-                            'value': 'upper legs_exercises',
-                            'label': LocalizationService.translateFromGeneral(
-                                'upperLegs'),
-                          },
-                          {
-                            'value': 'waist_exercises',
-                            'label': LocalizationService.translateFromGeneral(
-                                'waist'),
-                          },
-                        ]
-                            .map((day) => DropdownMenuItem<String>(
-                                  value: day['value']!,
-                                  child: Align(
-                                    alignment: AlignmentDirectional.centerEnd,
-                                    child: Text(
-                                      day['label']!,
-                                      style: AppStyles.textCairo(
-                                          14, Palette.white, FontWeight.w500),
-                                    ),
-                                  ),
-                                ))
-                            .toList(),
-                      ),
-                    ),
-                    stage == 1 ? const SizedBox(height: 8) : Container(),
+                    stage == 1
+                        ? Container(
+                            width: double.infinity,
+                            child: DropdownButtonFormField<String>(
+                              dropdownColor: Palette.secondaryColor,
+                              value: fileNameSelected.isEmpty
+                                  ? 'back_exercises'
+                                  : fileNameSelected,
+                              decoration: InputDecoration(
+                                hintText:
+                                    LocalizationService.translateFromGeneral(
+                                        'bodyPart'),
+                                hintStyle: AppStyles.textCairo(
+                                    14, Palette.white, FontWeight.w500),
+                              ),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  fileNameSelected = newValue!;
+
+                                  load(newValue);
+                                });
+                              },
+                              items: [
+                                {
+                                  'value': 'back_exercises',
+                                  'label':
+                                      LocalizationService.translateFromGeneral(
+                                          'back'),
+                                },
+                                {
+                                  'value': 'cardio_exercises',
+                                  'label':
+                                      LocalizationService.translateFromGeneral(
+                                          'cardio'),
+                                },
+                                {
+                                  'value': 'chest_exercises',
+                                  'label':
+                                      LocalizationService.translateFromGeneral(
+                                          'chest'),
+                                },
+                                {
+                                  'value': 'lower arms_exercises',
+                                  'label':
+                                      LocalizationService.translateFromGeneral(
+                                          'lowerArms'),
+                                },
+                                {
+                                  'value': 'lower legs_exercises',
+                                  'label':
+                                      LocalizationService.translateFromGeneral(
+                                          'lowerLegs'),
+                                },
+                                {
+                                  'value': 'neck_exercises',
+                                  'label':
+                                      LocalizationService.translateFromGeneral(
+                                          'neck'),
+                                },
+                                {
+                                  'value': 'shoulders_exercises',
+                                  'label':
+                                      LocalizationService.translateFromGeneral(
+                                          'shoulders'),
+                                },
+                                {
+                                  'value': 'upper arms_exercises',
+                                  'label':
+                                      LocalizationService.translateFromGeneral(
+                                          'upperArms'),
+                                },
+                                {
+                                  'value': 'upper legs_exercises',
+                                  'label':
+                                      LocalizationService.translateFromGeneral(
+                                          'upperLegs'),
+                                },
+                                {
+                                  'value': 'waist_exercises',
+                                  'label':
+                                      LocalizationService.translateFromGeneral(
+                                          'waist'),
+                                },
+                              ]
+                                  .map((day) => DropdownMenuItem<String>(
+                                        value: day['value']!,
+                                        child: Align(
+                                          alignment:
+                                              AlignmentDirectional.centerEnd,
+                                          child: Text(
+                                            day['label']!,
+                                            style: AppStyles.textCairo(14,
+                                                Palette.white, FontWeight.w500),
+                                          ),
+                                        ),
+                                      ))
+                                  .toList(),
+                            ),
+                          )
+                        : SizedBox(),
+                    stage == 1 ? const SizedBox(height: 8) : SizedBox(),
                     stage == 1
                         ? Container(
                             width: double.infinity,
@@ -224,6 +245,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                               onChanged: (newValue) {
                                 setState(() {
                                   targetMuscleSelected = newValue!;
+
                                   loadTarget(newValue);
                                 });
                               },
@@ -257,25 +279,19 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                                   .toList(),
                             ),
                           )
-                        : Container(),
-                    stage == 1 ? const SizedBox(height: 8) : Container(),
-                    stage == 1
-                        ? TextField(
-                            decoration: InputDecoration(
-                              hintText:
-                                  LocalizationService.translateFromGeneral(
-                                      'searchPrompt'),
-                              prefixIcon: const Icon(Icons.search),
-                              hintStyle: AppStyles.textCairo(
-                                  14, Palette.gray, FontWeight.w500),
-                            ),
-                            onChanged: _searchExercises,
-                          )
-                        : Container(),
+                        : SizedBox(),
+                    stage == 1 ? const SizedBox(height: 8) : SizedBox(),
+                    BuildTextField(
+                      dir: dir,
+                      label: LocalizationService.translateFromGeneral(
+                          'searchPrompt'),
+                      onChange: (v) {
+                        _searchExercises(v);
+                      },
+                      controller: _searchController,
+                    ),
                     const SizedBox(height: 24),
-                    Container(
-                      height: high,
-                      padding: const EdgeInsets.only(bottom: 200),
+                    Expanded(
                       child: ListView.builder(
                         controller: _scrollController,
                         itemCount: _itemCount,
@@ -286,8 +302,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      // Toggle isSelected state when tapped
                                       setState(() {
+                                        // Toggle isSelected state when tapped
                                         selectedExercises.any((e) =>
                                                 e['Exercise_Name'] ==
                                                 _filteredExercises[index]
@@ -306,7 +322,6 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                                                         ['gifUrl'],
                                               });
                                       });
-
                                       print(selectedExercises);
                                     },
                                     child: buildCarouselItem(
@@ -331,48 +346,46 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                         },
                       ),
                     ),
+                    SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        BuildIconButton(
+                          width: 70,
+                          height: 40,
+                          fontSize: 12,
+                          icon: Icons.arrow_upward,
+                          backgroundColor: Palette.mainAppColorWhite,
+                          iconColor: Palette.mainAppColorNavy,
+                          onPressed: () {
+                            setState(() {
+                              _scrollController.jumpTo(0);
+                            });
+                          },
+                        ),
+                        BuildIconButton(
+                          width: 75,
+                          height: 40,
+                          fontSize: 12,
+                          text:
+                              LocalizationService.translateFromGeneral('save'),
+                          onPressed: () =>
+                              Navigator.of(context).pop(selectedExercises),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text(
+                            LocalizationService.translateFromGeneral('cancel'),
+                            style: const TextStyle(color: Palette.white),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
             ),
-          ),
-          actions: [
-            BuildIconButton(
-              width: 70,
-              height: 40,
-              fontSize: 12,
-              icon: Icons.arrow_upward,
-              backgroundColor: Palette.mainAppColorWhite,
-              iconColor: Palette.mainAppColorNavy,
-              onPressed: () {
-                setState(() {
-                  stage = 1;
-                  high = 500;
-                  _scrollController.animateTo(
-                    0, // Scroll to the top of the list
-                    duration: Duration(
-                        milliseconds: 500), // Adjust duration as needed
-                    curve: Curves.easeInOut, // Optional easing curve
-                  );
-                });
-              },
-            ),
-            BuildIconButton(
-              width: 75,
-              height: 40,
-              fontSize: 12,
-              text: LocalizationService.translateFromGeneral('save'),
-              onPressed: () => Navigator.of(context).pop(selectedExercises),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(LocalizationService.translateFromGeneral('cancel'),
-                  style: const TextStyle(color: Palette.white)),
-            ),
-          ],
-          actionsAlignment: MainAxisAlignment.start,
-        ),
-      ),
+          )),
     );
   }
 }

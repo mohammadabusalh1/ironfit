@@ -75,7 +75,7 @@ class _ExrciseCardState extends State<ExrciseCard> {
       borderRadius: BorderRadius.circular(12),
       child: Image.network(
         widget.image,
-        width: MediaQuery.of(Get.context!).size.width * 0.24,
+        width: MediaQuery.of(Get.context!).size.width * 0.18,
         height: 70,
         fit: BoxFit.cover,
       ),

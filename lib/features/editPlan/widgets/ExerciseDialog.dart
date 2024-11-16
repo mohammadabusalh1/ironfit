@@ -11,8 +11,11 @@ import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 
 class ExerciseDialog extends StatefulWidget {
   final Function addExercise;
+  final Exercise? initialExercise; // Optional initial exercise to edit
 
-  const ExerciseDialog({super.key, required this.addExercise});
+  const ExerciseDialog(
+      {Key? key, required this.addExercise, this.initialExercise})
+      : super(key: key);
 
   @override
   _ExerciseDialogState createState() => _ExerciseDialogState();
@@ -24,11 +27,24 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
   String repetitions = '';
   late String dir;
 
+  late TextEditingController roundsController = TextEditingController();
+  late TextEditingController repetitionsController = TextEditingController();
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     dir = LocalizationService.getDir();
+
+    // Initialize state based on initial exercise if provided
+    if (widget.initialExercise != null) {
+      selectedExercises = [
+        widget.initialExercise
+      ]; // Adjust as per your data structure
+      rounds = widget.initialExercise!.rounds.toString();
+      repetitions = widget.initialExercise!.repetitions.toString();
+      roundsController = TextEditingController(text: rounds);
+      repetitionsController = TextEditingController(text: repetitions);
+    }
   }
 
   @override
@@ -38,8 +54,12 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
       child: Directionality(
         textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
         child: AlertDialog(
-          title: Text(LocalizationService.translateFromGeneral('addExercise'),
-              style: const TextStyle(color: Palette.white)),
+          title: Text(
+            widget.initialExercise != null
+                ? LocalizationService.translateFromGeneral('editExercise')
+                : LocalizationService.translateFromGeneral('addExercise'),
+            style: TextStyle(color: Palette.white),
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -47,51 +67,64 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 BuildIconButton(
-                    width: MediaQuery.of(context).size.width,
-                    fontSize: 12,
-                    text: LocalizationService.translateFromGeneral(
-                        'selectExercise'),
-                    backgroundColor: Palette.mainAppColorWhite,
-                    textColor: Palette.mainAppColorNavy,
-                    onPressed: () async {
-                      // Open the ExercisesScreen dialog and wait for selected exercise
-                      final val = await showDialog(
-                          context: context,
-                          builder: (context) => ExercisesScreen(
-                                fileName: 'back_exercises',
-                              ));
+                  width: MediaQuery.of(context).size.width,
+                  fontSize: 12,
+                  text: LocalizationService.translateFromGeneral(
+                      'selectExercise'),
+                  backgroundColor: Palette.mainAppColorWhite,
+                  textColor: Palette.mainAppColorNavy,
+                  onPressed: () async {
+                    final val = await showDialog(
+                      context: context,
+                      builder: (context) => ExercisesScreen(
+                        fileName: 'back_exercises',
+                      ),
+                    );
 
-                      // If an exercise is selected, update the state to reflect it
-                      if (val != null) {
-                        setState(() {
-                          selectedExercises = val;
-                        });
-                      }
-                    }),
-                // Display the selected exercise name
+                    if (val != null) {
+                      setState(() {
+                        selectedExercises = val;
+                      });
+                    }
+                  },
+                ),
                 const SizedBox(height: 12),
                 if (selectedExercises.isNotEmpty)
                   ...selectedExercises.map(
                     (e) => Text(
-                      e['Exercise_Name'],
+                      widget.initialExercise != null
+                          ? widget.initialExercise!.name
+                          : e['Exercise_Name'], // Adjust based on your data structure
                       style: AppStyles.textCairo(
-                          12, Palette.mainAppColorWhite, FontWeight.w500),
+                        12,
+                        Palette.mainAppColorWhite,
+                        FontWeight.w500,
+                      ),
                     ),
                   ),
                 const SizedBox(height: 24),
-                BuildTextField( dir: dir,
-                  onChange: (value) => setState(() {
-                    rounds = value;
-                  }),
+                BuildTextField(
+                  dir: dir,
+                  onChange: (value) {
+                    setState(() {
+                      rounds = value;
+                    });
+                  },
+                  controller: roundsController, // Set initial value if editing
                   label: LocalizationService.translateFromGeneral('rounds'),
                   keyboardType: TextInputType.number,
                   icon: Icons.refresh,
                 ),
                 const SizedBox(height: 12),
-                BuildTextField( dir: dir,
-                  onChange: (value) => setState(() {
-                    repetitions = value;
-                  }),
+                BuildTextField(
+                  dir: dir,
+                  onChange: (value) {
+                    setState(() {
+                      repetitions = value;
+                    });
+                  },
+                  controller:
+                      repetitionsController, // Set initial value if editing
                   label:
                       LocalizationService.translateFromGeneral('repetitions'),
                   keyboardType: TextInputType.number,
@@ -103,27 +136,43 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                // If the exercise is selected, add it to the training day
-                if (selectedExercises.isNotEmpty) {
+                if (widget.initialExercise != null && selectedExercises.length == 1) {
+                  Exercise exercise = Exercise(
+                    name: selectedExercises[0]
+                        .name, // Adjust based on your data structure
+                    image: selectedExercises[0]
+                        .image, // Adjust based on your data structure
+                    rounds: int.parse(rounds),
+                    repetitions: int.parse(repetitions),
+                  );
+                  widget.addExercise(exercise);
+                } else if (selectedExercises.isNotEmpty) {
                   selectedExercises.forEach((e) {
                     Exercise exercise = Exercise(
-                      name: e['Exercise_Name'],
-                      image: e['Exercise_Image'],
+                      name: e[
+                          'Exercise_Name'], // Adjust based on your data structure
+                      image: e[
+                          'Exercise_Image'], // Adjust based on your data structure
                       rounds: int.parse(rounds),
                       repetitions: int.parse(repetitions),
                     );
+
                     widget.addExercise(exercise);
                   });
-                  Navigator.pop(context);
                 }
+                Navigator.pop(context);
               },
-              child: Text(LocalizationService.translateFromGeneral('save'),
-                  style: const TextStyle(color: Palette.black)),
+              child: Text(
+                LocalizationService.translateFromGeneral('save'),
+                style: TextStyle(color: Palette.black),
+              ),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(LocalizationService.translateFromGeneral('cancel'),
-                  style: const TextStyle(color: Palette.white)),
+              child: Text(
+                LocalizationService.translateFromGeneral('cancel'),
+                style: TextStyle(color: Palette.white),
+              ),
             ),
           ],
           actionsAlignment: MainAxisAlignment.start,

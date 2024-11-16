@@ -42,13 +42,14 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
   String repetitions = '';
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
-  String dir = LocalizationService.getDir();
+  late String dir;
 
   PreferencesService preferencesService = PreferencesService();
   @override
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateSingIn();
+    dir = LocalizationService.getDir();
   }
 
   @override
@@ -67,7 +68,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Column(
                     children: [
-                      BuildTextField(
+                      BuildTextField( dir: dir,
                         controller: planController,
                         onChange: (value) => setState(() {
                           planName = value;
@@ -75,9 +76,10 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                         label: LocalizationService.translateFromGeneral(
                             'planName'),
                         icon: Icons.edit,
+                        
                       ),
                       const SizedBox(height: 16),
-                      BuildTextField(
+                      BuildTextField( dir: dir,
                         controller: descriptionController,
                         onChange: (value) =>
                             setState(() => planDescription = value),
@@ -416,7 +418,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
     return Theme(
       data: customThemeData,
       child: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
         child: AlertDialog(
           title: Text(
               LocalizationService.translateFromGeneral('chooseTrainingDay'),

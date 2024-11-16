@@ -46,11 +46,13 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
   late File _selectedImage;
+  late String dir;
 
   @override
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateDashboard();
+    dir = LocalizationService.getDir();
   }
 
   Future<void> updateUserInfo(String userId, Map<String, dynamic> data) async {
@@ -241,7 +243,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                   : Container(),
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
-                  ? BuildTextField(
+                  ? BuildTextField( dir: dir,
                       label: LocalizationService.translateFromGeneral(
                           'usernameLabel'),
                       controller: _usernameController,
@@ -250,7 +252,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                   : Container(),
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
-                  ? BuildTextField(
+                  ? BuildTextField( dir: dir,
                       label: LocalizationService.translateFromGeneral(
                           'firstNameLabel'),
                       controller: _firstNameController,
@@ -259,7 +261,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                   : Container(),
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
-                  ? BuildTextField(
+                  ? BuildTextField( dir: dir,
                       label: LocalizationService.translateFromGeneral(
                           'lastNameLabel'),
                       controller: _lastNameController,
@@ -330,7 +332,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? BuildTextField(
+                  ? BuildTextField( dir: dir,
                       label: LocalizationService.translateFromGeneral('age'),
                       controller: _ageController,
                       keyboardType: TextInputType.number,
@@ -338,7 +340,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? BuildTextField(
+                  ? BuildTextField( dir: dir,
                       label: LocalizationService.translateFromGeneral('weight'),
                       controller: _weightController,
                       keyboardType: TextInputType.number,
@@ -346,7 +348,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? BuildTextField(
+                  ? BuildTextField( dir: dir,
                       label: LocalizationService.translateFromGeneral('height'),
                       controller: _lengthController,
                       keyboardType: TextInputType.number,

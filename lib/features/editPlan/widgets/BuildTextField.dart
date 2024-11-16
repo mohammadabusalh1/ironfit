@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
-import 'package:ironfit/core/presentation/widgets/localization_service.dart';
-
-String dir = LocalizationService.getDir();
 
 Widget BuildTextField({
   Function(String)? onChange,
@@ -16,7 +13,8 @@ Widget BuildTextField({
   IconData? icon,
   String? Function(String?)? validator,
   List<TextInputFormatter>? inputFormatters,
-  bool obscureText = false, // Add validator function
+  bool obscureText = false,
+  required String? dir,
 }) {
   return Directionality(
     textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,

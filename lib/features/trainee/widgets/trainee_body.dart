@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ class _TraineeBodyState extends State<TraineeBody> {
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
-  String dir = LocalizationService.getDir();
+  late String dir;
 
   @override
   void initState() {
@@ -59,6 +60,7 @@ class _TraineeBodyState extends State<TraineeBody> {
     fetchPlans();
     fetchNumberOfDays();
     fetchUserPlan();
+    dir = LocalizationService.getDir();
   }
 
   Future<void> fetchNumberOfDays() async {
@@ -499,16 +501,15 @@ class _TraineeBodyState extends State<TraineeBody> {
                           style: AppStyles.textCairo(
                               14, Palette.mainAppColorWhite, FontWeight.w500)),
                       const SizedBox(height: 16),
-                      TextField(
+                      BuildTextField(
+                        dir: dir,
+                        label:
+                            LocalizationService.translateFromGeneral('amount'),
                         keyboardType: TextInputType.number,
-                        onChanged: (updateValue) {
+                        onChange: (updateValue) {
                           selectedValue = updateValue;
                         },
-                        decoration: InputDecoration(
-                          labelText: LocalizationService.translateFromGeneral(
-                              'amount'),
-                          border: const OutlineInputBorder(),
-                        ),
+                        icon: Icons.attach_money,
                       ),
                     ],
                   ),
@@ -637,6 +638,8 @@ class _TraineeBodyState extends State<TraineeBody> {
                                 Palette.mainAppColorWhite, FontWeight.w500)),
                         const SizedBox(height: 16),
                         BuildTextField(
+                          dir: dir,
+                          icon: Icons.timelapse,
                           controller: startDateController,
                           label: LocalizationService.translateFromGeneral(
                               'startDate'),
@@ -653,6 +656,8 @@ class _TraineeBodyState extends State<TraineeBody> {
                         ),
                         const SizedBox(height: 16),
                         BuildTextField(
+                          dir: dir,
+                          icon: Icons.timelapse,
                           controller: endDateController,
                           label: LocalizationService.translateFromGeneral(
                               'endDate'),
@@ -682,6 +687,8 @@ class _TraineeBodyState extends State<TraineeBody> {
                         ),
                         const SizedBox(height: 16),
                         BuildTextField(
+                          dir: dir,
+                          icon: Icons.attach_money,
                           onChange: (value) {
                             amountPaidController.text = value;
                           },
@@ -699,6 +706,8 @@ class _TraineeBodyState extends State<TraineeBody> {
                         ),
                         const SizedBox(height: 16),
                         BuildTextField(
+                          dir: dir,
+                          icon: Icons.money_off,
                           onChange: (value) {
                             debtsController.text = value;
                           },
@@ -730,6 +739,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                         }
                       },
                       width: 90,
+                      fontSize: 14,
                     ),
                     TextButton(
                       onPressed: () {
@@ -749,40 +759,49 @@ class _TraineeBodyState extends State<TraineeBody> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Align(
-            alignment: const AlignmentDirectional(0, 1),
-            child: SizedBox(
-              width: double.infinity,
-              child: Stack(
-                children: [
-                  const HeaderImage(),
-                  Align(
-                    alignment: const AlignmentDirectional(0, 0),
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height * 0.1),
+    return SafeArea(
+      top: true,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Align(
+              alignment: const AlignmentDirectional(0, 1),
+              child: SizedBox(
+                width: double.infinity,
+                child: Stack(
+                  children: [
+                    HeaderImage(
+                      high: MediaQuery.of(context).size.height * 0.3,
+                    ),
+                    Positioned(
+                      top: 12,
+                      bottom: 12,
+                      left: 12,
+                      right: 12,
                       child: Column(
-                        mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
                                 0, 0, 0, 4),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
-                              child: Image.network(
-                                imageURL.isEmpty ? Assets.notFound : imageURL,
+                              child: CachedNetworkImage(
+                                imageUrl: imageURL.isEmpty
+                                    ? Assets.notFound
+                                    : imageURL,
                                 width: 100,
                                 height: 100,
                                 fit: BoxFit.cover,
+                                placeholder: (context, url) =>
+                                    CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
                           Opacity(
                             opacity: 0.8,
                             child: Text(
@@ -790,7 +809,7 @@ class _TraineeBodyState extends State<TraineeBody> {
                                   ? LocalizationService.translateFromGeneral(
                                       'noUser')
                                   : userName,
-                              style: AppStyles.textCairo(18,
+                              style: AppStyles.textCairo(20,
                                   Palette.mainAppColorWhite, FontWeight.bold),
                             ),
                           ),
@@ -799,134 +818,134 @@ class _TraineeBodyState extends State<TraineeBody> {
                             child: Text(
                               '${LocalizationService.translateFromGeneral('daysRemaining')} $_numberOfDaysUserHave ${LocalizationService.translateFromGeneral('days')}',
                               style: AppStyles.textCairo(
-                                  12, Palette.gray, FontWeight.w500),
+                                  12, Palette.gray, FontWeight.normal),
                             ),
                           ),
                         ],
                       ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: BuildIconButton(
+                      text: LocalizationService.translateFromGeneral(
+                          'cancelSubscription'),
+                      onPressed: () {
+                        cancelSubscription(context, widget.username);
+                      },
+                      backgroundColor: Palette.redDelete,
+                      textColor: Palette.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(width: 12), // Spacing between buttons
+                  Expanded(
+                    flex: 1,
+                    child: BuildIconButton(
+                      onPressed: () {
+                        showAddPlanDialog(context);
+                      },
+                      text: LocalizationService.translateFromGeneral(
+                          'add_program'),
+                      backgroundColor: Palette.mainAppColor,
+                      fontSize: 12,
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: BuildIconButton(
-                    text: LocalizationService.translateFromGeneral(
-                        'cancelSubscription'),
-                    onPressed: () {
-                      cancelSubscription(context, widget.username);
-                    },
-                    backgroundColor: Palette.redDelete,
-                    textColor: Palette.white,
-                    fontSize: 12,
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: BuildIconButton(
+                      fontSize: 12,
+                      onPressed: () {
+                        showEditSubscriptionDialog(context);
+                      },
+                      text: LocalizationService.translateFromGeneral(
+                          'renewSubscription'),
+                      backgroundColor: Palette.mainAppColorNavy,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12), // Spacing between buttons
-                Expanded(
-                  flex: 1,
-                  child: BuildIconButton(
-                    onPressed: () {
-                      showAddPlanDialog(context);
-                    },
-                    text:
-                        LocalizationService.translateFromGeneral('add_program'),
-                    backgroundColor: Palette.mainAppColor,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: BuildIconButton(
-                    fontSize: 12,
-                    onPressed: () {
-                      showEditSubscriptionDialog(context);
-                    },
-                    text: LocalizationService.translateFromGeneral(
-                        'renewSubscription'),
-                    backgroundColor: Palette.mainAppColorNavy,
-                  ),
-                ),
-              ],
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(LocalizationService.translateFromGeneral('addedPlan'),
+                  textAlign: TextAlign.right,
+                  textDirection: TextDirection.rtl,
+                  style: AppStyles.textCairo(
+                      14, Palette.mainAppColorWhite, FontWeight.bold)),
             ),
-          ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Text(LocalizationService.translateFromGeneral('addedPlan'),
-                textAlign: TextAlign.right,
-                textDirection: TextDirection.rtl,
-                style: AppStyles.textCairo(
-                    14, Palette.mainAppColorWhite, FontWeight.bold)),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: _buildCard(context, planName, () {
-              removePlan();
-              fetchUserPlan();
-            }, Icons.delete, Palette.error, '', () {}),
-          ),
-          const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Divider(
-                color: Palette.gray,
-              )),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Text(
-                LocalizationService.translateFromGeneral(
-                    'financialTransactions'),
-                textAlign: TextAlign.right,
-                textDirection: TextDirection.rtl,
-                style: AppStyles.textCairo(
-                    14, Palette.mainAppColorWhite, FontWeight.bold)),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: _buildCard(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: _buildCard(context, planName, () {
+                removePlan();
+                fetchUserPlan();
+              }, Icons.delete, Palette.error, '', () {}),
+            ),
+            const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: Divider(
+                  color: Palette.gray,
+                )),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                  LocalizationService.translateFromGeneral(
+                      'financialTransactions'),
+                  textAlign: TextAlign.right,
+                  textDirection: TextDirection.rtl,
+                  style: AppStyles.textCairo(
+                      14, Palette.mainAppColorWhite, FontWeight.bold)),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: _buildCard(
+                  context,
+                  amountPaid,
+                  () {},
+                  Icons.money,
+                  Palette.greenActive,
+                  LocalizationService.translateFromGeneral('amountPaid'),
+                  () {}),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: _buildCard(
                 context,
-                amountPaid,
+                debts,
                 () {},
-                Icons.money,
-                Palette.greenActive,
-                LocalizationService.translateFromGeneral('amountPaid'),
-                () {}),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: _buildCard(
-              context,
-              debts,
-              () {},
-              Icons.keyboard_arrow_left,
-              Palette.mainAppColor,
-              LocalizationService.translateFromGeneral('debts'),
-              () {
-                showEditDebt(context);
-              },
+                Icons.keyboard_arrow_left,
+                Palette.mainAppColor,
+                LocalizationService.translateFromGeneral('debts'),
+                () {
+                  showEditDebt(context);
+                },
+              ),
             ),
-          ),
-          const SizedBox(height: 40),
-        ],
+            const SizedBox(height: 40),
+          ],
+        ),
       ),
     );
   }
@@ -952,7 +971,7 @@ Widget _buildCard(BuildContext context, String planName, Function onTap,
               Text(
                 planName,
                 style: AppStyles.textCairo(
-                    16, Palette.mainAppColorWhite, FontWeight.w500),
+                    12, Palette.mainAppColorWhite, FontWeight.w500),
               ),
               const SizedBox(width: 8),
               Text(

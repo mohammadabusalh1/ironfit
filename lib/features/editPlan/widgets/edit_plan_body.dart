@@ -130,6 +130,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                   child: Column(
                     children: [
                       BuildTextField(
+                        dir: dir,
                         controller: planController,
                         onChange: (value) => setState(() {
                           planName = value;
@@ -140,6 +141,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                       ),
                       const SizedBox(height: 16),
                       BuildTextField(
+                        dir: dir,
                         icon: Icons.description,
                         controller: descriptionController,
                         onChange: (value) =>
@@ -463,6 +465,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                 Navigator.pop(context);
               }
             },
+            width: 90,
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -572,6 +575,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
         ),
         actions: [
           BuildIconButton(
+            width: 90,
             text: LocalizationService.translateFromGeneral('save'),
             onPressed: () {
               if (selectedDay != null) {

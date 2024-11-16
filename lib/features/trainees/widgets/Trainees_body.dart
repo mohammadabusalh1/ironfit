@@ -41,7 +41,7 @@ class _TraineesBodyState extends State<TraineesBody> {
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
 
-  String dir = LocalizationService.getDir();
+  late String dir;
 
   @override
   void initState() {
@@ -61,6 +61,7 @@ class _TraineesBodyState extends State<TraineesBody> {
     bannerAd.load();
     _scrollController.addListener(_scrollListener);
     fetchTrainees();
+    dir = LocalizationService.getDir();
   }
 
   final _formKey = GlobalKey<FormState>(); // Form key for validation
@@ -93,6 +94,7 @@ class _TraineesBodyState extends State<TraineesBody> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: BuildTextField(
+                  dir: dir,
                   onChange: _filterTrainees,
                   label: LocalizationService.translateFromGeneral('search'),
                 ),
@@ -108,6 +110,7 @@ class _TraineesBodyState extends State<TraineesBody> {
           ),
           Positioned(
               bottom: 24,
+              left: 12,
               right: 12,
               child: InkWell(
                 onTap: () => showAddTraineeDialog(context),
@@ -515,6 +518,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         BuildTextField(
+                          dir: dir,
                           icon: Icons.person,
                           onChange: (value) {
                             setState(() {
@@ -551,6 +555,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                     ),
                     const SizedBox(height: 16),
                     BuildTextField(
+                      dir: dir,
                       icon: Icons.date_range,
                       controller: startDateController,
                       label:
@@ -568,6 +573,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                     ),
                     const SizedBox(height: 16),
                     BuildTextField(
+                      dir: dir,
                       icon: Icons.date_range,
                       onChange: (value) {
                         setState(() {
@@ -603,6 +609,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                     ),
                     const SizedBox(height: 16),
                     BuildTextField(
+                      dir: dir,
                       icon: Icons.attach_money_outlined,
                       onChange: (value) {
                         amountPaidController.text = value;
@@ -621,6 +628,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                     ),
                     const SizedBox(height: 16),
                     BuildTextField(
+                      dir: dir,
                       icon: Icons.money_off,
                       onChange: (value) {
                         debtsController.text = value;

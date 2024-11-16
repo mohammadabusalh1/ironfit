@@ -49,7 +49,7 @@
   "noData": "No data available",
   "planName": "Plan name",
   "planDescription": "Plan description",
-  "myPrograms": "My programs",
+  "myPrograms": "My Plans",
   "chooseTrainingDay": "Choose training day",
   "trainingDay": "Training day",
   "AddExercise": "Add exercise",
@@ -132,7 +132,7 @@
   "yourPlans": "Your Plans",
   "noUser": "No user available",
   "daysRemaining": "Days remaining in the subscription",
-  "cancelSubscription": "Cancel Subscription",
+  "cancelSubscription": "Unsubscribe",
   "renewSubscription": "Renew Subscription",
   "addedPlan": "Added Plan",
   "financialTransactions": "Financial Transactions",
@@ -258,5 +258,6 @@
   "iAmCoach": "convert to coach",
   "checkInfo": "Check your info",
   "hi": "Hi",
-  "communicateWithTrainees": "Contact with trainees"
+  "communicateWithTrainees": "Contact with trainees",
+  "addNewTrainee": "Add new trainee"
 }

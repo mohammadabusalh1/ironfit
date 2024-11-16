@@ -34,6 +34,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
+  late String dir;
 
   @override
   void initState() {
@@ -46,6 +47,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
         isDataLoaded = true;
       });
     }
+    dir = LocalizationService.getDir();
   }
 
   Future<void> fetchUserDays() async {
@@ -161,6 +163,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       BuildTextField(
+                        dir: dir,
                         controller: firstNameController,
                         label: LocalizationService.translateFromGeneral(
                             'firstNameLabel'),
@@ -175,6 +178,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                       ),
                       const SizedBox(height: 16),
                       BuildTextField(
+                        dir: dir,
                         controller: lastNameController,
                         label: LocalizationService.translateFromGeneral(
                             'lastNameLabel'),
@@ -189,6 +193,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                       ),
                       const SizedBox(height: 16),
                       BuildTextField(
+                        dir: dir,
                         controller: ageController,
                         label: LocalizationService.translateFromGeneral('age'),
                         keyboardType: TextInputType.number,
@@ -208,6 +213,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                       ),
                       const SizedBox(height: 16),
                       BuildTextField(
+                        dir: dir,
                         controller: wightController,
                         keyboardType: TextInputType.number,
                         label:
@@ -223,6 +229,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                       ),
                       const SizedBox(height: 16),
                       BuildTextField(
+                        dir: dir,
                         controller: heightController,
                         keyboardType: TextInputType.number,
                         label:
@@ -327,6 +334,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                                 Palette.mainAppColorWhite, FontWeight.w500)),
                         const SizedBox(height: 16),
                         BuildTextField(
+                          dir: dir,
                           obscureText: true,
                           controller: oldPasswordController,
                           label: LocalizationService.translateFromGeneral(
@@ -341,6 +349,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         ),
                         const SizedBox(height: 16),
                         BuildTextField(
+                          dir: dir,
                           obscureText: true,
                           controller: newPasswordController,
                           label: LocalizationService.translateFromGeneral(
@@ -360,6 +369,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         ),
                         const SizedBox(height: 16),
                         BuildTextField(
+                          dir: dir,
                           obscureText: true,
                           controller: confirmPasswordController,
                           label: LocalizationService.translateFromGeneral(

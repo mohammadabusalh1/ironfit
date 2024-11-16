@@ -5,16 +5,28 @@ import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
-class CoachNavBar extends StatelessWidget {
-  final CoachNavController navController =
-      Get.find(); // Find the NavController instance.
+class CoachNavBar extends StatefulWidget {
+  const CoachNavBar({super.key});
 
-  CoachNavBar({super.key});
+  @override
+  State<CoachNavBar> createState() => _CoachNavBarState();
+}
+
+class _CoachNavBarState extends State<CoachNavBar> {
+  late String dir;
+
+  final navController = Get.put(CoachNavController());
+
+  @override
+  void initState() {
+    super.initState();
+    dir = LocalizationService.getDir();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: TextDirection.rtl, // Set text direction to right-to-left.
+      textDirection: dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr, // Set text direction to right-to-left.
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(

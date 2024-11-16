@@ -252,6 +252,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       BuildTextField(
+                        dir: dir,
                         onChange: (firstName) {
                           firstNameController.text = firstName;
                         },
@@ -262,6 +263,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                       ),
                       const SizedBox(height: 16),
                       BuildTextField(
+                        dir: dir,
                         onChange: (lastName) {
                           lastNameController.text = lastName;
                         },
@@ -272,6 +274,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                       ),
                       const SizedBox(height: 16),
                       BuildTextField(
+                        dir: dir,
                         onChange: (age) {
                           ageController.text = age;
                         },
@@ -282,6 +285,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                       ),
                       const SizedBox(height: 16),
                       BuildTextField(
+                        dir: dir,
                         onChange: (experience) {
                           experienceController.text = experience;
                         },
@@ -403,6 +407,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                             )),
                         const SizedBox(height: 16),
                         BuildTextField(
+                          dir: dir,
                           obscureText: true,
                           onChange: (value) =>
                               oldPasswordController.text = value,
@@ -420,6 +425,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                         ),
                         const SizedBox(height: 16),
                         BuildTextField(
+                          dir: dir,
                           obscureText: true,
                           onChange: (value) =>
                               newPasswordController.text = value,
@@ -441,6 +447,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                         ),
                         const SizedBox(height: 16),
                         BuildTextField(
+                          dir: dir,
                           obscureText: true,
                           onChange: (value) =>
                               confirmPasswordController.text = value,
@@ -494,7 +501,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
               children: [
                 HeaderImage(
                   headerImage: Assets.header2,
-                  high: MediaQuery.of(context).size.height * 0.44,
+                  high: MediaQuery.of(context).size.height * 0.41,
                   borderRadius: 32,
                   width: MediaQuery.of(context).size.width * 0.99,
                 ),
@@ -506,13 +513,13 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: [
-                    isBannerAdLoaded
-                        ? SizedBox(
-                            child: AdWidget(ad: bannerAd),
-                            height: bannerAd.size.height.toDouble(),
-                            width: bannerAd.size.width.toDouble(),
-                          )
-                        : const SizedBox(),
+                    // isBannerAdLoaded
+                    //     ? SizedBox(
+                    //         child: AdWidget(ad: bannerAd),
+                    //         height: bannerAd.size.height.toDouble(),
+                    //         width: bannerAd.size.width.toDouble(),
+                    //       )
+                    //     : const SizedBox(),
                     Container(
                       width: MediaQuery.of(context).size.width,
                       child: Text(

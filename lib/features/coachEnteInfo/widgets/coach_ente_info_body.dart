@@ -38,11 +38,13 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
+  late String dir;
 
   @override
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateDashboard();
+    dir = LocalizationService.getDir();
   }
 
   Future<void> updateCoachInfo(
@@ -214,6 +216,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 stage == 1 ? const SizedBox(height: 12) : Container(),
                 stage == 1
                     ? BuildTextField(
+                        dir: dir,
                         onChange: (value) {
                           setState(() {
                             _usernameController.text = value;
@@ -229,6 +232,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 stage == 1 ? const SizedBox(height: 12) : Container(),
                 stage == 1
                     ? BuildTextField(
+                        dir: dir,
                         onChange: (value) {
                           setState(() {
                             _firstNameController.text = value;
@@ -244,6 +248,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 stage == 1 ? const SizedBox(height: 12) : Container(),
                 stage == 1
                     ? BuildTextField(
+                        dir: dir,
                         onChange: (value) {
                           setState(() {
                             _lastNameController.text = value;
@@ -277,6 +282,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 stage == 1 ? const SizedBox(height: 12) : Container(),
                 stage == 1
                     ? BuildTextField(
+                        dir: dir,
                         onChange: (value) {
                           setState(() {
                             _ageController.text = value;
@@ -291,6 +297,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                 stage == 1 ? const SizedBox(height: 12) : Container(),
                 stage == 1
                     ? BuildTextField(
+                        dir: dir,
                         onChange: (value) {
                           setState(() {
                             _experienceController.text = value;

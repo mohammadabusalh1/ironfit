@@ -59,7 +59,7 @@ Widget buildText(String text, bool isTitle) {
       alignment: AlignmentDirectional.topEnd,
       child: Text(
         textAlign: TextAlign.end,
-        text.length > 17 ? '...${text.substring(0, 17)}' : text,
+        text.length > 17 ? '${text.substring(0, 17)}...' : text,
         style: TextStyle(
           color: isTitle ? Palette.mainAppColorWhite : Palette.gray,
           fontSize: isTitle ? 14 : 12,

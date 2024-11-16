@@ -7,7 +7,7 @@ import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/theme.dart';
 import 'package:ironfit/features/createPlan/widgets/create_plan_body.dart';
-import 'package:ironfit/features/editPlan/widgets/buildTextField.dart';
+import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 
 class ExerciseDialog extends StatefulWidget {
   final Function addExercise;
@@ -79,7 +79,7 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                     ),
                   ),
                 const SizedBox(height: 24),
-                BuildTextField(
+                BuildTextField( dir: dir,
                   onChange: (value) => setState(() {
                     rounds = value;
                   }),
@@ -88,7 +88,7 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                   icon: Icons.refresh,
                 ),
                 const SizedBox(height: 12),
-                BuildTextField(
+                BuildTextField( dir: dir,
                   onChange: (value) => setState(() {
                     repetitions = value;
                   }),

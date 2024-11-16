@@ -13,6 +13,7 @@ import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/features/dashboard/widgets/card_widget.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:lottie/lottie.dart';
+import 'package:startapp_sdk/startapp.dart';
 
 String imageUrl = Assets.notFound;
 
@@ -34,9 +35,51 @@ class CoachDashboardState extends State<CoachDashboardBody> {
     'subscriptions': '0',
   };
 
+  // InterstitialAd? _interstitialAd;
+
+  // void loadAd() {
+  //   InterstitialAd.load(
+  //       adUnitId: 'ca-app-pub-2914276526243261/1514461526',
+  //       request: const AdRequest(),
+  //       adLoadCallback: InterstitialAdLoadCallback(
+  //         // Called when an ad is successfully received.
+  //         onAdLoaded: (ad) {
+  //           ad.fullScreenContentCallback = FullScreenContentCallback(
+  //               // Called when the ad showed the full screen content.
+  //               onAdShowedFullScreenContent: (ad) {},
+  //               // Called when an impression occurs on the ad.
+  //               onAdImpression: (ad) {},
+  //               // Called when the ad failed to show full screen content.
+  //               onAdFailedToShowFullScreenContent: (ad, err) {
+  //                 // Dispose the ad here to free resources.
+  //                 ad.dispose();
+  //               },
+  //               // Called when the ad dismissed full screen content.
+  //               onAdDismissedFullScreenContent: (ad) {
+  //                 // Dispose the ad here to free resources.
+  //                 ad.dispose();
+  //               },
+  //               // Called when a click is recorded for an ad.
+  //               onAdClicked: (ad) {});
+
+  //           debugPrint('$ad loaded.');
+  //           // Keep a reference to the ad so you can show it later.
+  //           _interstitialAd = ad;
+  //         },
+  //         // Called when an ad request failed.
+  //         onAdFailedToLoad: (LoadAdError error) {
+  //           debugPrint('InterstitialAd failed to load: $error');
+  //         },
+  //       ));
+  // }
+
+  // var startAppSdk = StartAppSdk();
+  // StartAppInterstitialAd? interstitialAd;
+
   @override
   void initState() {
     super.initState();
+    // startAppSdk.setTestAdsEnabled(true);
     fetchInitialData();
     bannerAd = BannerAd(
       adUnitId: 'ca-app-pub-2914276526243261/9874590860',
@@ -55,7 +98,22 @@ class CoachDashboardState extends State<CoachDashboardBody> {
     );
     bannerAd.load();
     tokenService.checkTokenAndNavigateSingIn();
+    // loadAd();
+    
+    // loadInterstitialAd();
   }
+
+  // void loadInterstitialAd() {
+  //   startAppSdk.loadInterstitialAd().then((interstitialAd) {
+  //     setState(() {
+  //       this.interstitialAd = interstitialAd;
+  //     });
+  //   }).onError<StartAppException>((ex, stackTrace) {
+  //     debugPrint("Error loading Interstitial ad: ${ex.message}");
+  //   }).onError((error, stackTrace) {
+  //     debugPrint("Error loading Interstitial ad: $error");
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -200,6 +258,28 @@ class CoachDashboardState extends State<CoachDashboardBody> {
             Column(
               children: [
                 _buildStatisticsRow(context, data),
+                // ElevatedButton(
+                //   onPressed: () {
+                //     if (interstitialAd != null) {
+                //       interstitialAd!.show().then((shown) {
+                //         if (shown) {
+                //           setState(() {
+                //             // NOTE interstitial ad can be shown only once
+                //             this.interstitialAd = null;
+
+                //             // NOTE load again
+                //             loadInterstitialAd();
+                //           });
+                //         }
+
+                //         return null;
+                //       }).onError((error, stackTrace) {
+                //         debugPrint("Error showing Interstitial ad: $error");
+                //       });
+                //     }
+                //   },
+                //   child: Text('Show Interstitial'),
+                // ),
                 const SizedBox(height: 12),
                 isBannerAdLoaded
                     ? SizedBox(

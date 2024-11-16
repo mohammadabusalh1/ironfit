@@ -99,6 +99,7 @@ class _TraineesBodyState extends State<TraineesBody> {
                   label: LocalizationService.translateFromGeneral('search'),
                 ),
               ),
+              const SizedBox(height: 24),
               if (_isLoading)
                 const SizedBox(height: 24), // Changed to conditional statement
               if (_isLoading)

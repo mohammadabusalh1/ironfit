@@ -34,7 +34,7 @@ class _LoginBodyState extends State<LoginBody> {
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
 
-  String dir = LocalizationService.getDir();
+  late String dir;
   late bool type = false;
 
   @override
@@ -42,6 +42,7 @@ class _LoginBodyState extends State<LoginBody> {
     super.initState();
     tokenService.checkTokenAndNavigateDashboard();
     checkType();
+    dir = LocalizationService.getDir();
   }
 
   Future<void> checkType() async {
@@ -197,7 +198,8 @@ class _LoginBodyState extends State<LoginBody> {
         }
       } catch (e) {
         Get.back();
-        customSnackbar.showMessage(context, e.toString());
+        customSnackbar.showMessage(
+            context, LocalizationService.translateFromGeneral('checkInfo'));
       }
     }
   }

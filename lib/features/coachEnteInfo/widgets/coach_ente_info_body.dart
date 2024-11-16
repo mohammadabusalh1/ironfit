@@ -81,9 +81,21 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
     if (_formKey.currentState!.validate()) {
       try {
         if (stage == 1) {
-          setState(() {
-            stage = 2;
-          });
+          String username = _usernameController.text;
+          // Check if username exists in the database
+          bool usernameExists = await _checkIfUsernameExists(username);
+
+          if (usernameExists) {
+            customSnackbar.showMessage(
+                context,
+                LocalizationService.translateFromGeneral(
+                    'usernameExistsError'));
+            return; // Exit early if username exists
+          } else {
+            setState(() {
+              stage = 2;
+            });
+          }
           return; // Exit early if stage transitioned
         } else {
           Get.dialog(const Center(child: CircularProgressIndicator()),
@@ -94,18 +106,6 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
           String lastName = _lastNameController.text;
           String age = _ageController.text;
           String experience = _experienceController.text;
-
-          // Check if username exists in the database
-          bool usernameExists = await _checkIfUsernameExists(username);
-
-          if (usernameExists) {
-            Get.back();
-            customSnackbar.showMessage(
-                context,
-                LocalizationService.translateFromGeneral(
-                    'usernameExistsError'));
-            return; // Exit early if username exists
-          }
 
           String coachId = await widget.registerCoach();
           String uploadedImageUrl = await _uploadImage(coachId);
@@ -177,7 +177,12 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildImageStack(),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.1,
+                ),
+                Center(
+                  child: _buildImageStack(),
+                ),
                 stage == 2 ? const SizedBox(height: 24) : Container(),
                 stage == 2
                     ? ImagePickerComponent(onImageUploaded: (selectedImage) {
@@ -204,11 +209,11 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                         ),
                       )
                     : Container(),
-                stage == 1 ? const SizedBox(height: 12) : Container(),
+                stage == 1 ? const SizedBox(height: 24) : Container(),
                 stage == 1
                     ? Text(LocalizationService.translateFromGeneral('account'),
                         style: AppStyles.textCairo(
-                          16,
+                          14,
                           Palette.mainAppColorWhite,
                           FontWeight.bold,
                         ))
@@ -226,7 +231,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                             'usernameLabel'),
                         controller: _usernameController,
                         keyboardType: TextInputType.text,
-                        icon: Icons.person,
+                        icon: Icons.account_circle,
                         validator: validator)
                     : Container(),
                 stage == 1 ? const SizedBox(height: 12) : Container(),
@@ -242,7 +247,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                             'firstNameLabel'),
                         controller: _firstNameController,
                         keyboardType: TextInputType.text,
-                        icon: Icons.face,
+                        icon: Icons.person,
                         validator: validator)
                     : Container(),
                 stage == 1 ? const SizedBox(height: 12) : Container(),
@@ -258,22 +263,22 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
                             'lastNameLabel'),
                         controller: _lastNameController,
                         keyboardType: TextInputType.text,
-                        icon: Icons.face,
+                        icon: Icons.person,
                         validator: validator)
                     : Container(),
                 stage == 1 ? const SizedBox(height: 12) : Container(),
-                stage == 1
-                    ? const Divider(
-                        color: Palette.gray,
-                      )
-                    : Container(),
+                // stage == 1
+                //     ? const Divider(
+                //         color: Palette.gray,
+                //       )
+                //     : Container(),
                 stage == 1 ? const SizedBox(height: 12) : Container(),
                 stage == 1
                     ? Text(
                         LocalizationService.translateFromGeneral(
                             'personalInformation'),
                         style: AppStyles.textCairo(
-                          16,
+                          14,
                           Palette.mainAppColorWhite,
                           FontWeight.w600,
                         ),
@@ -321,15 +326,16 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
         child: Row(
           children: [
             BuildIconButton(
-              onPressed: _submitForm,
-              text: LocalizationService.translateFromGeneral('next'),
-              icon: Icons.east,
-              iconAlignment: IconAlignment.start,
-              width: Get.width * 0.42,
-              fontSize: 14,
-              textColor: Palette.black,
-              iconColor: Palette.black,
-            ),
+                onPressed: _submitForm,
+                text: LocalizationService.translateFromGeneral('next'),
+                icon: Icons.east,
+                iconAlignment: IconAlignment.start,
+                width: Get.width * 0.42,
+                fontSize: 14,
+                textColor: Palette.mainAppColorWhite,
+                iconColor: Palette.mainAppColorWhite,
+                backgroundColor: Palette.greenActive,
+                iconSize: 20),
             const SizedBox(width: 12),
             BuildIconButton(
               onPressed: () {
@@ -342,8 +348,10 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
               iconAlignment: IconAlignment.end,
               width: Get.width * 0.42,
               fontSize: 14,
-              textColor: Palette.black,
-              iconColor: Palette.black,
+              textColor: Palette.mainAppColorNavy,
+              iconColor: Palette.mainAppColorNavy,
+              backgroundColor: Palette.mainAppColorWhite,
+              iconSize: 20,
             )
           ],
         ),
@@ -354,7 +362,7 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
   Widget _buildImageStack() {
     return Stack(
       children: [
-        _buildImage('assets/images/signOne.jpeg'),
+        // _buildImage('assets/images/signOne.jpeg'),
         _buildImage('assets/images/IronFit.png'),
       ],
     );
@@ -365,9 +373,9 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
       borderRadius: BorderRadius.circular(8),
       child: Image.asset(
         imagePath,
-        width: double.infinity,
-        height: 200,
-        fit: BoxFit.cover,
+        width: 250,
+        height: 60,
+        fit: BoxFit.fitWidth,
       ),
     );
   }

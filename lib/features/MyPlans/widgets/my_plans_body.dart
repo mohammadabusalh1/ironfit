@@ -249,8 +249,11 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                       : plans.isEmpty
                           ? Center(
                               child: Text(
-                                  LocalizationService.translateFromGeneral(
-                                      'noPlans')))
+                              LocalizationService.translateFromGeneral(
+                                  'noPlans'),
+                              style: AppStyles.textCairo(14,
+                                  Palette.mainAppColorWhite, FontWeight.w500),
+                            ))
                           : Padding(
                               padding: const EdgeInsetsDirectional.fromSTEB(
                                   24, 0, 24, 0),

@@ -35,18 +35,20 @@ class _SignUpBodyState extends State<SignUpBody> {
       GlobalKey<FormState>(); // Form Key for Validation
 
   bool passwordVisibility = false;
+  late bool type = false;
   PreferencesService preferencesService = PreferencesService();
 
   // Firebase Auth instance
   final FirebaseAuth _auth = FirebaseAuth.instance;
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
-  String dir = LocalizationService.getDir();
+  late String dir;
 
   @override
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateDashboard();
+    dir = LocalizationService.getDir();
   }
 
   // Method to save coach data
@@ -312,101 +314,140 @@ class _SignUpBodyState extends State<SignUpBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: MediaQuery.of(context).size.height * 0.12),
-                AnimatedScreen(),
-                Padding(
-                  padding: const EdgeInsets.all(24),
+        backgroundColor: Colors.black,
+        body: Stack(
+          children: [
+            Form(
+                key: _formKey,
+                child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      WelcomeText(),
-                      const SizedBox(height: 24),
-                      _buildEmailTextField(context),
-                      const SizedBox(height: 12),
-                      _buildPasswordTextField(context),
-                      const SizedBox(height: 24),
-                      // _buildCoachSwitch(context),
-                      // const SizedBox(height: 24),
-                      BuildIconButton(
-                        text: LocalizationService.translateFromGeneral(
-                            'create_account'),
-                        onPressed: () {
-                          _registerUser();
-                        },
-                        backgroundColor: Palette.mainAppColor,
-                        textColor: Palette.white,
-                        width: MediaQuery.of(context).size.width,
-                        height: 50,
-                      ),
-                      const SizedBox(height: 8),
-                      BuildIconButton(
-                        height: 50,
-                        text: LocalizationService.translateFromGeneral(
-                            'sign_in_with_google'),
-                        width: MediaQuery.of(context).size.width,
-                        onPressed: () async {
-                          try {
-                            await signUpWithGoogle();
-                          } catch (e) {
-                            Get.snackbar(
-                              LocalizationService.translateFromGeneral('error'),
-                              LocalizationService.translateFromGeneral(
-                                  'googleLoginFailure'),
-                              titleText: Text(
-                                LocalizationService.translateFromGeneral(
-                                    'error'),
-                                textAlign: TextAlign.right,
-                                textDirection: TextDirection.rtl,
-                                style: AppStyles.textCairo(14,
-                                    Palette.mainAppColorWhite, FontWeight.w500),
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.12),
+                      AnimatedScreen(),
+                      Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          children: [
+                            WelcomeText(),
+                            const SizedBox(height: 24),
+                            _buildEmailTextField(context),
+                            const SizedBox(height: 12),
+                            _buildPasswordTextField(context),
+                            const SizedBox(height: 24),
+                            // _buildCoachSwitch(context),
+                            // const SizedBox(height: 24),
+                            BuildIconButton(
+                              text: LocalizationService.translateFromGeneral(
+                                  'create_account'),
+                              onPressed: () {
+                                _registerUser();
+                              },
+                              backgroundColor: Palette.mainAppColor,
+                              textColor: Palette.white,
+                              width: MediaQuery.of(context).size.width,
+                              height: 50,
+                            ),
+                            const SizedBox(height: 8),
+                            BuildIconButton(
+                              height: 50,
+                              text: LocalizationService.translateFromGeneral(
+                                  'sign_in_with_google'),
+                              width: MediaQuery.of(context).size.width,
+                              onPressed: () async {
+                                try {
+                                  await signUpWithGoogle();
+                                } catch (e) {
+                                  Get.snackbar(
+                                    LocalizationService.translateFromGeneral(
+                                        'error'),
+                                    LocalizationService.translateFromGeneral(
+                                        'googleLoginFailure'),
+                                    titleText: Text(
+                                      LocalizationService.translateFromGeneral(
+                                          'error'),
+                                      textAlign: TextAlign.right,
+                                      textDirection: TextDirection.rtl,
+                                      style: AppStyles.textCairo(
+                                          14,
+                                          Palette.mainAppColorWhite,
+                                          FontWeight.w500),
+                                    ),
+                                    messageText: Text(
+                                      LocalizationService.translateFromGeneral(
+                                          'googleLoginFailure'),
+                                      textAlign: TextAlign.right,
+                                      textDirection: TextDirection.rtl,
+                                      style: AppStyles.textCairo(
+                                          14,
+                                          Palette.mainAppColorWhite,
+                                          FontWeight.w500),
+                                    ),
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    colorText: Colors.white,
+                                  );
+                                }
+                              },
+                              backgroundColor: Palette.mainAppColorWhite,
+                              textColor: Palette.mainAppColorNavy,
+                              icon: Icons.login,
+                              imageIcon: Image.asset(
+                                Assets.googleLogo,
+                                width: 24,
+                                height: 24,
                               ),
-                              messageText: Text(
-                                LocalizationService.translateFromGeneral(
-                                    'googleLoginFailure'),
-                                textAlign: TextAlign.right,
-                                textDirection: TextDirection.rtl,
-                                style: AppStyles.textCairo(14,
-                                    Palette.mainAppColorWhite, FontWeight.w500),
+                            ),
+                            const SizedBox(height: 24),
+                            Center(
+                              child: TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, Routes.singIn);
+                                },
+                                child: Text(
+                                  LocalizationService.translateFromGeneral(
+                                      'login'),
+                                  style: AppStyles.textCairo(14,
+                                      Palette.mainAppColor, FontWeight.w500),
+                                ),
                               ),
-                              snackPosition: SnackPosition.BOTTOM,
-                              colorText: Colors.white,
-                            );
-                          }
-                        },
-                        backgroundColor: Palette.mainAppColorWhite,
-                        textColor: Palette.mainAppColorNavy,
-                        icon: Icons.login,
-                        imageIcon: Image.asset(
-                          Assets.googleLogo,
-                          width: 24,
-                          height: 24,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Center(
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, Routes.singIn);
-                          },
-                          child: Text(
-                            LocalizationService.translateFromGeneral('login'),
-                            style: AppStyles.textCairo(
-                                14, Palette.mainAppColor, FontWeight.w500),
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
+                )),
+            Positioned(
+              top: 40,
+              right: 20,
+              child: TextButton(
+                style: TextButton.styleFrom(
+                    backgroundColor: type == true
+                        ? Palette.mainAppColorOrange
+                        : Palette.mainAppColorWhite),
+                onPressed: () async {
+                  SharedPreferences prefs =
+                      await preferencesService.getPreferences();
+                  prefs.setBool('isCoach', !prefs.getBool('isCoach')!);
+                  setState(() {
+                    type = !type;
+                  });
+                },
+                child: Text(
+                  type == true
+                      ? LocalizationService.translateFromGeneral('iAmTrainee')
+                      : LocalizationService.translateFromGeneral('iAmCoach'),
+                  style: AppStyles.textCairo(
+                      14,
+                      type == true
+                          ? Palette.mainAppColorWhite
+                          : Palette.mainAppColorNavy,
+                      FontWeight.w600),
                 ),
-              ],
+              ),
             ),
-          )),
-    );
+          ],
+        ));
   }
 
   Widget _buildEmailTextField(BuildContext context) {

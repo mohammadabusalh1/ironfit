@@ -14,6 +14,7 @@ import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
+import 'package:ironfit/core/presentation/widgets/theme.dart';
 import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
@@ -104,9 +105,22 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
     if (_formKey.currentState!.validate()) {
       try {
         if (stage == 1) {
-          setState(() {
-            stage = 2;
-          });
+          bool usernameExists =
+              await _checkIfUsernameExists(_usernameController.text);
+          if (usernameExists) {
+            setState(() {
+              stage = 1;
+            });
+            customSnackbar.showMessage(
+                context,
+                LocalizationService.translateFromGeneral(
+                    'usernameExistsError'));
+            return;
+          } else {
+            setState(() {
+              stage = 2;
+            });
+          }
         } else if (stage == 2) {
           if (_selectedGender == null || _selectedGender!.isEmpty) {
             customSnackbar.showMessage(context,
@@ -120,61 +134,46 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
           Get.dialog(const Center(child: CircularProgressIndicator()),
               barrierDismissible: false);
 
-          bool usernameExists =
-              await _checkIfUsernameExists(_usernameController.text);
+          final userId = await widget.registerUser();
+          String uploadedImageUrl = await _uploadImage(userId);
 
-          if (usernameExists) {
-            Navigator.of(context).pop();
-            setState(() {
-              stage = 1;
-            });
-            customSnackbar.showMessage(
-                context,
-                LocalizationService.translateFromGeneral(
-                    'usernameExistsError'));
-            return;
-          } else {
-            final userId = await widget.registerUser();
-            String uploadedImageUrl = await _uploadImage(userId);
+          var snapshot = await FirebaseFirestore.instance
+              .collection('subscriptions')
+              .where('username', isEqualTo: _usernameController.text)
+              .get();
 
-            var snapshot = await FirebaseFirestore.instance
-                .collection('subscriptions')
-                .where('username', isEqualTo: _usernameController.text)
-                .get();
-
-            if (snapshot.docs.isNotEmpty) {
-              await snapshot.docs.first.reference.update({'userId': userId});
-            }
-
-            Map<String, dynamic> userData = {
-              'username': _usernameController.text,
-              'firstName': _firstNameController.text,
-              'lastName': _lastNameController.text,
-              'gender': _selectedGender,
-              'age': int.parse(_ageController.text),
-              'weight': double.parse(_weightController.text),
-              'length': double.parse(_lengthController.text),
-              'profileImageUrl': uploadedImageUrl,
-              'subscriptionId':
-                  snapshot.docs.isNotEmpty ? snapshot.docs.first.id : '',
-            };
-
-            await updateUserInfo(userId, userData).then(
-              (value) {
-                customSnackbar.showMessage(
-                    context,
-                    LocalizationService.translateFromGeneral(
-                        'accountCreationSuccess'));
-
-                Navigator.of(context).pop();
-                Get.toNamed(Routes.trainerDashboard);
-              },
-            ).catchError((error) async {
-              print(error);
-              customSnackbar.showMessage(context,
-                  LocalizationService.translateFromGeneral('unexpectedError'));
-            });
+          if (snapshot.docs.isNotEmpty) {
+            await snapshot.docs.first.reference.update({'userId': userId});
           }
+
+          Map<String, dynamic> userData = {
+            'username': _usernameController.text,
+            'firstName': _firstNameController.text,
+            'lastName': _lastNameController.text,
+            'gender': _selectedGender,
+            'age': int.parse(_ageController.text),
+            'weight': double.parse(_weightController.text),
+            'length': double.parse(_lengthController.text),
+            'profileImageUrl': uploadedImageUrl,
+            'subscriptionId':
+                snapshot.docs.isNotEmpty ? snapshot.docs.first.id : '',
+          };
+
+          await updateUserInfo(userId, userData).then(
+            (value) {
+              customSnackbar.showMessage(
+                  context,
+                  LocalizationService.translateFromGeneral(
+                      'accountCreationSuccess'));
+
+              Navigator.of(context).pop();
+              Get.toNamed(Routes.trainerDashboard);
+            },
+          ).catchError((error) async {
+            print(error);
+            customSnackbar.showMessage(context,
+                LocalizationService.translateFromGeneral('unexpectedError'));
+          });
         }
       } catch (e) {
         print(e);
@@ -201,7 +200,12 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildImageStack(),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.25,
+              ),
+              Center(
+                child: _buildImageStack(),
+              ),
               const SizedBox(height: 24),
               stage == 3
                   ? ImagePickerComponent(onImageUploaded: (selectedImage) {
@@ -228,134 +232,170 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
                       ),
                     )
                   : Container(),
-              stage == 1 ? const SizedBox(height: 12) : Container(),
+              stage == 1 ? const SizedBox(height: 24) : Container(),
               stage == 1
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Text(
-                          LocalizationService.translateFromGeneral('account'),
-                          style: AppStyles.textCairo(
-                            14,
-                            Palette.mainAppColorWhite,
-                            FontWeight.bold,
-                          )),
-                    )
+                  ? Text(LocalizationService.translateFromGeneral('account'),
+                      style: AppStyles.textCairo(
+                        14,
+                        Palette.mainAppColorWhite,
+                        FontWeight.bold,
+                      ))
                   : Container(),
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
-                  ? BuildTextField( dir: dir,
+                  ? BuildTextField(
+                      dir: dir,
                       label: LocalizationService.translateFromGeneral(
                           'usernameLabel'),
                       controller: _usernameController,
                       keyboardType: TextInputType.text,
-                      icon: Icons.person)
+                      icon: Icons.account_circle,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return LocalizationService.translateFromGeneral(
+                              'thisFieldRequired');
+                        }
+                        return null;
+                      })
                   : Container(),
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
-                  ? BuildTextField( dir: dir,
+                  ? BuildTextField(
+                      dir: dir,
                       label: LocalizationService.translateFromGeneral(
                           'firstNameLabel'),
                       controller: _firstNameController,
                       keyboardType: TextInputType.text,
-                      icon: Icons.face)
+                      icon: Icons.person,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return LocalizationService.translateFromGeneral(
+                              'thisFieldRequired');
+                        }
+                        return null;
+                      })
                   : Container(),
               stage == 1 ? const SizedBox(height: 12) : Container(),
               stage == 1
-                  ? BuildTextField( dir: dir,
+                  ? BuildTextField(
+                      dir: dir,
                       label: LocalizationService.translateFromGeneral(
                           'lastNameLabel'),
                       controller: _lastNameController,
                       keyboardType: TextInputType.text,
-                      icon: Icons.face)
+                      icon: Icons.person,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return LocalizationService.translateFromGeneral(
+                              'thisFieldRequired');
+                        }
+                        return null;
+                      })
                   : Container(),
-              stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Text(
-                          LocalizationService.translateFromGeneral(
-                              'personalInfoSection'),
-                          style: AppStyles.textCairo(
-                            16,
-                            Palette.mainAppColorWhite,
-                            FontWeight.bold,
-                          )),
+                  ? Text(
+                      LocalizationService.translateFromGeneral(
+                          'personalInfoSection'),
+                      style: AppStyles.textCairo(
+                        14,
+                        Palette.mainAppColorWhite,
+                        FontWeight.bold,
+                      ),
                     )
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Theme(
-                        data: Theme.of(context).copyWith(
-                          canvasColor: Palette.secondaryColor,
+                  ? Theme(
+                      data: customThemeData,
+                      child: DropdownButtonFormField<String>(
+                        dropdownColor:
+                            Palette.secondaryColor, // Dropdown background color
+                        style: AppStyles.textCairo(
+                          14,
+                          Palette.gray,
+                          FontWeight.w500,
                         ),
-                        child: DropdownButton<String>(
-                          dropdownColor: Palette
-                              .secondaryColor, // Dropdown background color
+                        value: _selectedGender,
+                        isExpanded:
+                            true, // Make the dropdown take the full width
+                        hint: Text(
+                          LocalizationService.translateFromGeneral(
+                              'selectGender'),
+
                           style: AppStyles.textCairo(
                             14,
                             Palette.gray,
                             FontWeight.w500,
-                          ),
-                          value: _selectedGender,
-                          isExpanded:
-                              true, // Make the dropdown take the full width
-                          hint: Text(
-                            LocalizationService.translateFromGeneral(
-                                'selectGender'),
-
-                            style: AppStyles.textCairo(
-                              14,
-                              Palette.gray,
-                              FontWeight.w500,
-                            ), // Hint style
-                          ),
-                          items: _genders.map((String gender) {
-                            return DropdownMenuItem<String>(
-                              alignment: Alignment.centerRight,
-                              value: gender,
-                              child: Text(
-                                gender,
-                                textAlign: TextAlign.right,
-                              ), // Display gender
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              _selectedGender =
-                                  newValue; // Update selected gender
-                            });
-                          },
+                          ), // Hint style
                         ),
-                      ))
+                        items: _genders.map((String gender) {
+                          return DropdownMenuItem<String>(
+                            alignment: Alignment.centerRight,
+                            value: gender,
+                            child: Text(
+                              gender,
+                              textAlign: TextAlign.right,
+                            ), // Display gender
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedGender =
+                                newValue; // Update selected gender
+                          });
+                        },
+                      ),
+                    )
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? BuildTextField( dir: dir,
+                  ? BuildTextField(
+                      dir: dir,
                       label: LocalizationService.translateFromGeneral('age'),
                       controller: _ageController,
                       keyboardType: TextInputType.number,
-                      icon: Icons.group)
+                      icon: Icons.group,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return LocalizationService.translateFromGeneral(
+                              'thisFieldRequired');
+                        }
+                        return null;
+                      })
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? BuildTextField( dir: dir,
+                  ? BuildTextField(
+                      dir: dir,
                       label: LocalizationService.translateFromGeneral('weight'),
                       controller: _weightController,
                       keyboardType: TextInputType.number,
-                      icon: Icons.scale)
+                      icon: Icons.scale,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return LocalizationService.translateFromGeneral(
+                              'thisFieldRequired');
+                        }
+                        return null;
+                      })
                   : Container(),
               stage == 2 ? const SizedBox(height: 12) : Container(),
               stage == 2
-                  ? BuildTextField( dir: dir,
+                  ? BuildTextField(
+                      dir: dir,
                       label: LocalizationService.translateFromGeneral('height'),
                       controller: _lengthController,
                       keyboardType: TextInputType.number,
-                      icon: Icons.accessibility)
+                      icon: Icons.accessibility,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return LocalizationService.translateFromGeneral(
+                              'thisFieldRequired');
+                        }
+                        return null;
+                      })
                   : Container(),
-              const SizedBox(
-                  height: 24), // Adds extra space to ensure scrolling
+              // Adds extra space to ensure scrolling
             ],
           ),
         )),
@@ -372,14 +412,14 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
               iconAlignment: IconAlignment.start,
               width: Get.width * 0.42,
               fontSize: 14,
-              textColor: Palette.black,
-              iconColor: Palette.black,
+              textColor: Palette.mainAppColorWhite,
+              iconColor: Palette.mainAppColorWhite,
+              backgroundColor: Palette.greenActive,
             ),
             const SizedBox(width: 12),
             BuildIconButton(
               onPressed: () {
                 if (stage == 1) {
-                  Get.back();
                 } else {
                   setState(() {
                     stage = stage == 3 ? 2 : 1;
@@ -391,8 +431,9 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
               iconAlignment: IconAlignment.end,
               width: Get.width * 0.42,
               fontSize: 14,
-              textColor: Palette.black,
-              iconColor: Palette.black,
+              textColor: Palette.mainAppColorNavy,
+              iconColor: Palette.mainAppColorNavy,
+              backgroundColor: Palette.mainAppColorWhite,
             )
           ],
         ),
@@ -403,7 +444,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
   Widget _buildImageStack() {
     return Stack(
       children: [
-        _buildImage(Assets.signOne),
+        // _buildImage(Assets.signOne),
         _buildImage(Assets.ironFitLogo),
       ],
     );
@@ -414,9 +455,9 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
       borderRadius: BorderRadius.circular(8),
       child: Image.asset(
         imagePath,
-        width: double.infinity,
-        height: 200,
-        fit: BoxFit.cover,
+        width: 250,
+        height: 60,
+        fit: BoxFit.fitWidth,
       ),
     );
   }

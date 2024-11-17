@@ -1,10 +1,16 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Button.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
@@ -12,12 +18,13 @@ import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/theme.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/dashboard/widgets/trainer_dashboard_body.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
+import 'package:ironfit/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String? fullName;
-String trainerImage =
-    'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+String trainerImage = Assets.notFound;
 bool isDataLoaded = false;
 
 class UserProfileBody extends StatefulWidget {
@@ -28,25 +35,20 @@ class UserProfileBody extends StatefulWidget {
 }
 
 class _UserProfileBodyState extends State<UserProfileBody> {
-  bool isLoading = true;
   PreferencesService preferencesService = PreferencesService();
   String numberOfDays = '0';
   final FirebaseAuth _auth = FirebaseAuth.instance;
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
   late String dir;
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateSingIn();
     fetchUserDays();
-    if (!isDataLoaded) {
-      fetchUserName();
-      setState(() {
-        isDataLoaded = true;
-      });
-    }
+    fetchUserName();
     dir = LocalizationService.getDir();
   }
 
@@ -64,12 +66,17 @@ class _UserProfileBodyState extends State<UserProfileBody> {
         throw Exception('User document does not exist');
       }
 
-      Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
-
-      var subscription= await FirebaseFirestore.instance
+      var subscription = await FirebaseFirestore.instance
           .collection('subscriptions')
           .where('userId', isEqualTo: userId)
           .get();
+
+      if (subscription.docs.isEmpty) {
+        setState(() {
+          numberOfDays = '-0';
+        });
+        return;
+      }
 
       DocumentSnapshot subscriptionDoc = subscription.docs.first;
 
@@ -121,17 +128,22 @@ class _UserProfileBodyState extends State<UserProfileBody> {
 
       // Retrieve user information safely
       String? firstName = userData?['firstName'];
-      String? lastName = userData?['lastName'];
+      // String? lastName = userData?['lastName'];
       String profileImageUrl = userData?['profileImageUrl'] ?? Assets.notFound;
 
       setState(() {
-        fullName = '$firstName $lastName';
+        fullName = '$firstName';
         trainerImage = profileImageUrl;
       });
     } catch (e) {
       // Handle specific exceptions if needed, e.g., FirebaseException
       print("Error fetching user data: $e");
       // You can also show a user-friendly message on the UI
+    } finally {
+      setState(() {
+        isDataLoaded = false;
+      });
+      print('isDataLoaded: $isDataLoaded');
     }
   }
 
@@ -446,140 +458,236 @@ class _UserProfileBodyState extends State<UserProfileBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Column(
-          children: [
-            Stack(
-              children: [
-                const HeaderImage(),
-                _buildProfileContent(context),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  child: SingleChildScrollView(
+    return SafeArea(
+      top: true,
+      child: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  Stack(
+                    children: [
+                      HeaderImage(
+                        headerImage: Assets.header2,
+                        high: MediaQuery.of(context).size.height * 0.41,
+                        borderRadius: 32,
+                        width: MediaQuery.of(context).size.width * 0.99,
+                      ),
+                      Positioned(
+                        top: MediaQuery.of(context).size.height * 0.05,
+                        left: 24,
+                        right: 24,
+                        height: MediaQuery.of(context).size.height * 0.41,
+                        child: _buildProfileContent(context),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _buildButtonCard(
                             context,
                             LocalizationService.translateFromGeneral(
                                 'personalInformation'),
-                            Icons.person, () {
+                            Icons.person_2, () {
                           showEditInfoDialog(context);
-                        }),
-                        const SizedBox(height: 4),
+                        }, Icons.arrow_forward_ios_outlined,
+                            Palette.mainAppColorBack),
                         _buildButtonCard(
                             context,
                             LocalizationService.translateFromGeneral(
                                 'changePassword'),
-                            Icons.vpn_key, () {
+                            Icons.password_outlined, () {
                           showEditPasswordDialog(context);
-                        }),
-                        const SizedBox(height: 4),
+                        }, Icons.arrow_forward_ios_outlined,
+                            Palette.mainAppColorBack),
+                        SizedBox(height: 16),
                         _buildButtonCard(
                             context,
-                            LocalizationService.translateFromGeneral('logout'),
-                            Icons.login_outlined, () {
-                          _logout();
-                        }),
-                        const SizedBox(height: 12),
+                            LocalizationService.translateFromGeneral('gyms'),
+                            Icons.location_on, () {
+                          Get.toNamed(Routes.myGyms);
+                        }, Icons.arrow_forward_ios, Palette.mainAppColorOrange),
+                        _buildButtonCard(
+                            context,
+                            dir == 'rtl'
+                                ? LocalizationService.translateFromPage(
+                                    'English', 'selectLang')
+                                : LocalizationService.translateFromPage(
+                                    'Arabic', 'selectLang'),
+                            Icons.translate, () {
+                          LocalizationService.load(
+                              LocalizationService.lang == 'en' ? 'ar' : 'en');
+                          RestartWidget.restartApp(context);
+                          Navigator.pushNamed(context, Routes.userProfile);
+                        }, Icons.arrow_forward_ios, Palette.mainAppColorOrange),
                       ],
                     ),
                   ),
-                )),
-          ],
-        ));
+                ],
+              ),
+            ),
+    );
+  }
+
+  Future<void> changeUserImage() async {
+    final ImagePicker picker = ImagePicker();
+
+    // Pick an image from the gallery
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        isLoading = true;
+      });
+
+      try {
+        try {
+          Get.dialog(const Center(child: CircularProgressIndicator()),
+              barrierDismissible: false);
+          final storageRef = FirebaseStorage.instance.ref().child(
+              'profile_images/${FirebaseAuth.instance.currentUser!.uid}.jpg');
+          await storageRef.putFile(File(pickedFile.path)).then(
+            (snapshot) {
+              customSnackbar.showMessage(
+                  context,
+                  LocalizationService.translateFromGeneral(
+                      'imageUploadSuccess'));
+            },
+          );
+          final downloadUrl = await storageRef.getDownloadURL();
+
+          setState(() {
+            trainerImage = downloadUrl;
+          });
+
+          await FirebaseFirestore.instance
+              .collection('trainees')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .update({
+            'profileImageUrl': downloadUrl,
+          });
+
+          setState(() {
+            trainerImage = downloadUrl;
+            isLoading = false;
+          });
+
+          Get.back();
+        } catch (e) {
+          Get.back();
+          customSnackbar.showFailureMessage(context);
+        }
+      } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
+        customSnackbar.showFailureMessage(context);
+      }
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Widget _buildProfileContent(BuildContext context) {
     return Align(
+      alignment: Alignment.bottomCenter,
       child: Column(
         children: [
-          SizedBox(height: MediaQuery.of(Get.context!).size.height * 0.12),
-          Container(
-            width: 104, // Add extra width to accommodate the border
-            height: 104, // Add extra height to accommodate the border
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Palette.black, // Replace with your desired border color
-                width: 4.0, // Border width
-              ),
-              borderRadius:
-                  BorderRadius.circular(50), // Same as ClipRRect borderRadius
-            ),
+          InkWell(
+            onTap: changeUserImage,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(50), // Match the borderRadius
-              child: Image.network(
-                trainerImage.isEmpty ? Assets.notFound : trainerImage,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
+              borderRadius: BorderRadius.circular(50),
+              child: SizedBox(
+                child: CachedNetworkImage(
+                  width: 88,
+                  height: 88,
+                  fit: BoxFit.cover,
+                  imageUrl:
+                      trainerImage.isEmpty ? Assets.notFound : trainerImage,
+                  placeholder: (context, url) => CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                ),
               ),
             ),
           ),
-
-          const SizedBox(height: 10),
-          // Use FutureBuilder to display the fetched user name
+          const SizedBox(height: 8),
           Text(
-            fullName ??
-                LocalizationService.translateFromGeneral(
-                    'noName'), // If no name, display a default message
+            fullName ?? LocalizationService.translateFromGeneral('noName'),
             style: AppStyles.textCairo(
-              20,
+              22,
               Palette.mainAppColorWhite,
-              FontWeight.w500,
+              FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 4),
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                "${LocalizationService.translateFromGeneral('daysRemaining')} $numberOfDays ${LocalizationService.translateFromGeneral('days')}",
-                style: AppStyles.textCairo(
-                  14,
-                  Palette.subTitleGrey,
-                  FontWeight.w300,
-                ),
-                textAlign: TextAlign.center,
-              )),
+          Text(
+            trainerEmail, // If no name, display a default message
+            style: AppStyles.textCairo(
+              12,
+              Palette.subTitleGrey,
+              FontWeight.w100,
+            ),
+          ),
+          const SizedBox(height: 12),
+          BuildIconButton(
+            backgroundColor: Palette.mainAppColorWhite,
+            textColor: Palette.redDelete,
+            fontSize: 12,
+            text: LocalizationService.translateFromGeneral('logout'),
+            onPressed: () {
+              _logout();
+            },
+          )
         ],
       ),
     );
   }
 
-  Widget _buildButtonCard(
-      BuildContext context, String tilte, IconData icon, VoidCallback onClick) {
+  Widget _buildButtonCard(BuildContext context, String tilte, IconData icon,
+      VoidCallback onClick, IconData? leftIcon, Color? IconBackColor) {
     return InkWell(
       onTap: onClick,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Icon(
-              icon,
-              color: Palette.white,
-              size: 32,
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: IconBackColor ?? Palette.mainAppColorBack,
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Icon(
+                icon,
+                color: Palette.mainAppColorWhite,
+                size: 18,
+              ),
             ),
-            const SizedBox(width: 24), // Space between icon and text
+            const SizedBox(width: 12), // Space between icon and text
             Text(
               tilte,
               style: AppStyles.textCairo(
                 14,
                 Palette.mainAppColorWhite,
-                FontWeight.w500,
+                FontWeight.normal,
               ),
             ),
             const Spacer(), // Space between text and trailing icon
-            const Icon(
-              Icons.arrow_forward_ios_outlined,
-              color: Colors.grey, // Replace with the theme color if needed
-              size: 16,
+            Icon(
+              leftIcon,
+              color: Palette.gray
+                  .withOpacity(0.8), // Replace with the theme color if needed
+              size: 14,
             ),
           ],
         ),

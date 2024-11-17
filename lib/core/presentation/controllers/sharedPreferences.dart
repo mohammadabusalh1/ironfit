@@ -7,4 +7,14 @@ class PreferencesService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs;
   }
+
+  Future<void> setPlan(String userId, String planJson) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('plan_$userId', planJson);
+  }
+
+  Future<String?> getPlan(String userId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('plan_$userId');
+  }
 }

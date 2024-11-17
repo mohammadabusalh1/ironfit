@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
@@ -73,8 +74,8 @@ class _ExrciseCardState extends State<ExrciseCard> {
   Widget buildImage() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
-      child: Image.network(
-        widget.image,
+      child: CachedNetworkImage(
+        imageUrl: widget.image,
         width: MediaQuery.of(Get.context!).size.width * 0.18,
         height: 70,
         fit: BoxFit.cover,

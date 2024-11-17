@@ -10,11 +10,11 @@ import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/exersiceCarousel.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
+import 'package:lottie/lottie.dart';
 
 String trainerName = '';
 String trainerEmail = '';
-String trainerImage =
-    'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+String trainerImage = '';
 
 class TrainerDashboardBody extends StatefulWidget {
   const TrainerDashboardBody({super.key});
@@ -164,34 +164,112 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          DashboardHeader(
-            trainerImage: trainerImage.isEmpty ? Assets.notFound : trainerImage,
+    return SafeArea(
+      top: true,
+      child: Scaffold(
+        body: Column(
+          children: [
+            const SizedBox(height: 8),
+            _buildDashboardHeader(context),
+            const SizedBox(height: 24),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildDashboardImage(context),
+                    const SizedBox(height: 12),
+                    isBannerAdLoaded
+                        ? SizedBox(
+                            child: AdWidget(ad: bannerAd),
+                            height: bannerAd.size.height.toDouble(),
+                            width: bannerAd.size.width.toDouble(),
+                          )
+                        : const SizedBox(),
+                    const SizedBox(height: 24),
+                    _buildTodayExercisesButton(),
+                    const SizedBox(height: 12),
+                    ExerciseCarousel(
+                      exercises: exercises,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDashboardHeader(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Palette.blackBack,
+        boxShadow: [
+          BoxShadow(
+            color: Palette.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
           ),
-          const SizedBox(height: 24),
+        ],
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 30,
+            backgroundImage: NetworkImage(
+                trainerImage.isEmpty ? Assets.notFound : trainerImage),
+          ),
+          const SizedBox(width: 16),
           Expanded(
-            child: SingleChildScrollView(
               child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${LocalizationService.translateFromGeneral('welcomeBack')}',
+                style: AppStyles.textCairo(
+                  12,
+                  Palette.mainAppColorWhite,
+                  FontWeight.normal,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildDashboardImage(context),
-                  const SizedBox(height: 12),
-                  isBannerAdLoaded
-                      ? SizedBox(
-                          child: AdWidget(ad: bannerAd),
-                          height: bannerAd.size.height.toDouble(),
-                          width: bannerAd.size.width.toDouble(),
-                        )
-                      : const SizedBox(),
-                  const SizedBox(height: 12),
-                  _buildTodayExercisesButton(),
-                  const SizedBox(height: 24),
-                  ExerciseCarousel(
-                    exercises: exercises,
+                  Text(
+                    trainerName, // Replace with actual user name
+                    style: AppStyles.textCairo(
+                      18,
+                      Palette.mainAppColor,
+                      FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: Lottie.asset(
+                      'assets/jsonIcons/hi.json',
+                      width: 10,
+                      height: 10,
+                    ),
                   ),
                 ],
               ),
+            ],
+          )),
+          SizedBox(
+            width: 40,
+            height: 40,
+            child: Lottie.asset(
+              'assets/jsonIcons/chat.json',
+              width: 10,
+              height: 10,
             ),
           ),
         ],
@@ -201,14 +279,63 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
 
   Widget _buildDashboardImage(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: Image.asset(
-          Assets.dashboardYellow,
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.23,
-          fit: BoxFit.cover,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.23,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Palette.black.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(
+                Assets.dashboardYellow,
+                fit: BoxFit.cover,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Palette.mainAppColorNavy.withOpacity(0.8),
+                      Palette.mainAppColorNavy.withOpacity(0.5),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      LocalizationService.translateFromGeneral(
+                          'yourFitnessJourney'),
+                      style: AppStyles.textCairo(
+                          20, Palette.mainAppColorWhite, FontWeight.bold),
+                    ),
+                    Text(
+                      LocalizationService.translateFromGeneral(
+                          'keepPushingYourLimits'),
+                      style: AppStyles.textCairo(
+                          12, Palette.mainAppColorWhite, FontWeight.normal),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -216,18 +343,19 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
 
   Widget _buildTodayExercisesButton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 26),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Container(
         width: double.infinity,
         alignment: Alignment.center,
         height: 40,
         decoration: BoxDecoration(
-          color: Palette.secondaryColor,
-          borderRadius: BorderRadius.circular(16),
+          color: Palette.mainAppColorWhite,
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
           LocalizationService.translateFromGeneral('todayExercises'),
-          style: AppStyles.textCairo(16, Palette.white, FontWeight.w500),
+          style: AppStyles.textCairo(
+              16, Palette.mainAppColorNavy, FontWeight.bold),
         ),
       ),
     );

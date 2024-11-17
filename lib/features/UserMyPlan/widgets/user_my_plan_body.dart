@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,7 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   late Map<String, dynamic> plan;
+
 
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
@@ -62,6 +65,16 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
     try {
       User? user = _auth.currentUser; // Fetch current user
       if (user != null) {
+        // Attempt to load plan from local storage first
+        String? cachedPlan = await preferencesService.getPlan(user.uid);
+        if (cachedPlan != null && cachedPlan.isNotEmpty) {
+          setState(() {
+            plan = Map<String, dynamic>.from(jsonDecode(cachedPlan));
+          });
+          return; // Exit if plan is loaded from local storage
+        }
+
+        // If plan is not cached, fetch from Firestore
         QuerySnapshot<Map<String, dynamic>> subscription = await _firestore
             .collection('subscriptions')
             .where('userId', isEqualTo: user.uid)
@@ -83,7 +96,11 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
             .limit(1)
             .get();
 
-        // Fetch user details and exercises
+        // Cache the fetched plan locally
+        preferencesService.setPlan(
+            user.uid, jsonEncode(planDoc.docs.first.data()));
+
+        // Update UI with fetched plan
         setState(() {
           plan = planDoc.docs.first.data() as Map<String, dynamic>? ?? {};
         });
@@ -139,7 +156,7 @@ Widget _buildHeader(context) {
                 Opacity(
                   opacity: 0.8,
                   child: Text(
-                    LocalizationService.translateFromGeneral('my_plan'),
+                    LocalizationService.translateFromGeneral('exercises'),
                     style: AppStyles.textCairo(
                         20, Palette.mainAppColorWhite, FontWeight.bold),
                   ),

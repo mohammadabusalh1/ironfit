@@ -61,7 +61,7 @@
   "name": "الإسم",
   "search": "البحث",
   "currently_subscribed": "مشترك الأن",
-  "not_subscribed": "إنتهى الإشتراك",
+  "not_subscribed": "لم يتم الإشتراك",
   "no_account": "ليس لدي حساب؟",
   "already_have_account": "لدي حساب بالفعل؟",
   "sets": "عدة",
@@ -196,6 +196,7 @@
   "accountExist": "الحساب موجود بالفعل",
   "selectExerciseBodyPart": "يرجى أختيار المنطقة في الجسم",
   "selectExercise": "إختيار التمارين",
+  "exercises": "التمارين",
   "imageRemovedSuccess": "تمت إزالة الصورة بنجاح",
   "imageRemoveError": "حدث خطأ أثناء إزالة الصورة",
   "noImageToRemove": "لا توجد صورة لإزالتها",
@@ -257,5 +258,8 @@
   "checkInfo": "تحقق من المعلومات المدخلة",
   "hi": "مرحبا",
   "communicateWithTrainees": "تواصل مع المتدربين",
-  "editExercise": "تعديل التمرين"
+  "editExercise": "تعديل التمرين",
+  "welcomeBack": "مرحبا بعودتك",
+  "yourFitnessJourney": "طريقك لبناء جسم قوي",
+  "keepPushingYourLimits": "لا تجعل حدود أمام هدفك"
 }

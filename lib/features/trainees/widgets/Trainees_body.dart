@@ -280,73 +280,140 @@ class _TraineesBodyState extends State<TraineesBody> {
     );
   }
 
+  // Widget _buildTraineeCard(BuildContext context, String name, String status,
+  //     String imagePath, VoidCallback onTap) {
+  //   return Card(
+  //     margin: const EdgeInsets.all(8),
+  //     clipBehavior: Clip.antiAliasWithSaveLayer,
+  //     color: Palette.black,
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.circular(12),
+  //     ),
+  //     child: InkWell(
+  //       onTap: onTap,
+  //       child: Container(
+  //         width: MediaQuery.of(context).size.width * 0.4,
+  //         height: 200,
+  //         child: Stack(
+  //           children: [
+  //             ClipRRect(
+  //               borderRadius: BorderRadius.circular(12),
+  //               child: CachedNetworkImage(
+  //                   imageUrl: imagePath.isEmpty ? Assets.notFound : imagePath,
+  //                   width: MediaQuery.of(context).size.width,
+  //                   height: MediaQuery.of(context).size.height,
+  //                   fit: BoxFit.cover),
+  //             ),
+  //             Positioned(
+  //               top: 8,
+  //               right: 8,
+  //               child: Icon(
+  //                 Icons.remove_red_eye,
+  //                 size: 24,
+  //                 color: Palette.mainAppColor,
+  //               ),
+  //             ),
+  //             Positioned(
+  //               bottom: 0,
+  //               child: Container(
+  //                 width: MediaQuery.of(context).size.width,
+  //                 padding:
+  //                     const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+  //                 decoration: BoxDecoration(
+  //                   color: Palette.blackBack.withOpacity(0.6),
+  //                 ),
+  //                 child: Column(
+  //                   crossAxisAlignment: CrossAxisAlignment.start,
+  //                   children: [
+  //                     Text(
+  //                       name.length > 15 ? '${name.substring(0, 15)}...' : name,
+  //                       style: AppStyles.textCairo(
+  //                         14,
+  //                         Palette.mainAppColorWhite,
+  //                         FontWeight.bold,
+  //                       ),
+  //                     ),
+  //                     Text(
+  //                       status.length > 15
+  //                           ? '${status.substring(0, 15)}...'
+  //                           : status,
+  //                       style: AppStyles.textCairo(
+  //                         10,
+  //                         Palette.gray,
+  //                         FontWeight.normal,
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             )
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
   Widget _buildTraineeCard(BuildContext context, String name, String status,
       String imagePath, VoidCallback onTap) {
-    return Card(
-      margin: const EdgeInsets.all(8),
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      color: Palette.black,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.4,
-          height: 200,
-          child: Stack(
+    return InkWell(
+      onTap: onTap,
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: CachedNetworkImage(
-                    imageUrl: imagePath.isEmpty ? Assets.notFound : imagePath,
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    fit: BoxFit.cover),
+              CircleAvatar(
+                radius: 30,
+                backgroundImage: NetworkImage(
+                    imagePath.isEmpty ? Assets.notFound : imagePath),
               ),
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Icon(
-                  Icons.remove_red_eye,
-                  size: 24,
-                  color: Palette.mainAppColor,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name.length > 15 ? '${name.substring(0, 15)}...' : name,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      status.length > 15
+                          ? '${status.substring(0, 15)}...'
+                          : status,
+                      style: AppStyles.textCairo(
+                        12,
+                        status ==
+                                LocalizationService.translateFromGeneral(
+                                    'currently_subscribed')
+                            ? Palette.mainAppColorNavy
+                            : Colors.grey,
+                        FontWeight.normal,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Positioned(
-                bottom: 0,
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Palette.blackBack.withOpacity(0.6),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name.length > 15 ? '${name.substring(0, 15)}...' : name,
-                        style: AppStyles.textCairo(
-                          14,
-                          Palette.mainAppColorWhite,
-                          FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        status.length > 15
-                            ? '${status.substring(0, 15)}...'
-                            : status,
-                        style: AppStyles.textCairo(
-                          10,
-                          Palette.gray,
-                          FontWeight.normal,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
+              Icon(
+                status ==
+                        LocalizationService.translateFromGeneral(
+                            'currently_subscribed')
+                    ? Icons.star
+                    : Icons.star_border,
+                color: status ==
+                        LocalizationService.translateFromGeneral(
+                            'currently_subscribed')
+                    ? Colors.amber
+                    : Palette.gray,
+              ),
             ],
           ),
         ),

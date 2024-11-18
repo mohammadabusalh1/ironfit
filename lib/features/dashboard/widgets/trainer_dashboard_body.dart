@@ -44,6 +44,9 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
       message: LocalizationService.translateFromGeneral('timeToWorkout'),
       time: DateTime.now().subtract(const Duration(minutes: 5)),
       isRead: false,
+      senderId: '',
+      receiverIds: [],
+      id: '',
     ),
   ];
 

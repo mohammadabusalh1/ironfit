@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:ironfit/core/models/notification_item.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ironfit/core/services/firebase_notification_service.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -12,7 +16,28 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
-  final List<NotificationMessage> _messages = [];
+  final FirebaseNotificationService _notificationService = FirebaseNotificationService();
+  bool isCoach = false; // Set this based on user role
+
+  @override
+  void initState() {
+    super.initState();
+    _checkUserRole();
+  }
+
+  Future<void> _checkUserRole() async {
+    // Check if current user is a coach
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('coaches')
+          .doc(user.uid)
+          .get();
+      setState(() {
+        isCoach = doc.exists;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,60 +51,117 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
-          // Notification messages list
           Expanded(
-            child: _messages.isEmpty
-                ? Center(
+            child: StreamBuilder<List<NotificationItem>>(
+              stream: _notificationService.getNotifications(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final notifications = snapshot.data!;
+                if (notifications.isEmpty) {
+                  return Center(
                     child: Text(
                       LocalizationService.translateFromGeneral('noNotifications'),
-                      style: AppStyles.textCairo(
-                        16,
-                        Palette.gray,
-                        FontWeight.normal,
-                      ),
+                      style: AppStyles.textCairo(16, Palette.gray, FontWeight.normal),
                     ),
-                  )
-                : ListView.builder(
-                    itemCount: _messages.length,
-                    itemBuilder: (context, index) {
-                      return _buildNotificationCard(_messages[index]);
-                    },
-                  ),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: notifications.length,
+                  itemBuilder: (context, index) {
+                    return _buildNotificationCard(notifications[index]);
+                  },
+                );
+              },
+            ),
           ),
-          // Only show input if user is a coach
-          _buildMessageInput(),
+          if (isCoach) _buildMessageInput(),
         ],
       ),
     );
   }
 
-  Widget _buildNotificationCard(NotificationMessage message) {
+  Widget _buildNotificationCard(NotificationItem notification) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.notifications, color: Palette.mainAppColor),
-                const SizedBox(width: 8),
-                Text(
-                  message.timestamp.toString(),
-                  style: AppStyles.textCairo(12, Palette.gray, FontWeight.normal),
+      child: InkWell(
+        onTap: () => _notificationService.markAsRead(notification.id),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: notification.isRead ? null : Palette.mainAppColorBack.withOpacity(0.05),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.notifications,
+                    color: notification.isRead ? Palette.gray : Palette.mainAppColor,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _formatTime(notification.time),
+                    style: AppStyles.textCairo(12, Palette.gray, FontWeight.normal),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                notification.title,
+                style: AppStyles.textCairo(
+                  16,
+                  Palette.black,
+                  notification.isRead ? FontWeight.normal : FontWeight.bold,
                 ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              message.text,
-              style: AppStyles.textCairo(14, Palette.black, FontWeight.normal),
-            ),
-          ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                notification.message,
+                style: AppStyles.textCairo(14, Palette.black, FontWeight.normal),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _sendNotification() async {
+    if (_messageController.text.trim().isNotEmpty) {
+      try {
+        await _notificationService.sendNotificationToTrainees(
+          'Coach Announcement',
+          _messageController.text,
+        );
+        _messageController.clear();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error sending notification: $e')),
+        );
+      }
+    }
+  }
+
+  String _formatTime(DateTime time) {
+    final now = DateTime.now();
+    final difference = now.difference(time);
+
+    if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}h ago';
+    } else {
+      return '${difference.inDays}d ago';
+    }
   }
 
   Widget _buildMessageInput() {
@@ -125,29 +207,4 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
     );
   }
-
-  void _sendNotification() {
-    if (_messageController.text.trim().isNotEmpty) {
-      setState(() {
-        _messages.insert(
-          0,
-          NotificationMessage(
-            text: _messageController.text,
-            timestamp: DateTime.now(),
-          ),
-        );
-      });
-      _messageController.clear();
-    }
-  }
-}
-
-class NotificationMessage {
-  final String text;
-  final DateTime timestamp;
-
-  NotificationMessage({
-    required this.text,
-    required this.timestamp,
-  });
 }

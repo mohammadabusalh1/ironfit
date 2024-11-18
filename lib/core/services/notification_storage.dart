@@ -24,10 +24,13 @@ class NotificationStorage {
 
     final List<dynamic> decoded = json.decode(notificationsJson);
     return decoded.map((n) => NotificationItem(
+      id: n['id'],
       title: n['title'],
       message: n['message'],
       time: DateTime.parse(n['time']),
       isRead: n['isRead'],
+      senderId: n['senderId'],
+      receiverIds: n['receiverIds'],
     )).toList();
   }
 } 

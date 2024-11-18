@@ -261,5 +261,15 @@
   "editExercise": "تعديل التمرين",
   "welcomeBack": "مرحبا بعودتك",
   "yourFitnessJourney": "طريقك لبناء جسم قوي",
-  "keepPushingYourLimits": "لا تجعل حدود أمام هدفك"
+  "keepPushingYourLimits": "لا تجعل حدود أمام هدفك",
+  "notifications": "الإشعارات",
+  "exerciseTime": "وقت التمرين",
+  "timeToWorkout": "وقت التمرين حان",
+  "workoutTime": "وقت التمرين",
+  "minutesAgo": "دقيقة",
+  "hoursAgo": "ساعة",
+  "daysAgo": "يوم",
+  "noNotifications": "لا يوجد إشعارات",
+  "typeAnnouncement": "أكتب الرسالة هنا",
+  "sendToAllTrainers": "أرسل إلى جميع المدربين"
 }

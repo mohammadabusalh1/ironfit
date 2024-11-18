@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,12 +32,21 @@ class ExrciseCard extends StatefulWidget {
 }
 
 class _ExrciseCardState extends State<ExrciseCard> {
-  bool _isClicked = false; // Track if the button is clicked
+  bool _isClicked = false;
+  Timer? _timer;
+  int _timeLeft = 90; // 90 seconds = 1:30 minutes
+  bool _isTimerActive = false;
 
   @override
   void initState() {
     super.initState();
     _loadClickedState(); // Load saved state
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   void _loadClickedState() async {
@@ -50,22 +61,62 @@ class _ExrciseCardState extends State<ExrciseCard> {
     prefs.setBool('isClicked_${widget.title}', _isClicked);
   }
 
+  void showImage(String image, context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: CachedNetworkImage(
+          imageUrl: image,
+        ),
+      ),
+    );
+  }
+
+  void _startTimer() {
+    setState(() {
+      _timeLeft = 90;
+      _isTimerActive = true;
+    });
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_timeLeft > 0) {
+          _timeLeft--;
+        } else {
+          _isTimerActive = false;
+          _timer?.cancel();
+        }
+      });
+    });
+  }
+
+  String _formatTime(int timeInSeconds) {
+    int minutes = timeInSeconds ~/ 60;
+    int seconds = timeInSeconds % 60;
+    return '${minutes.toString().padLeft(1, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: widget.padding),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          buildImage(),
-          SizedBox(width: widget.spaceBetweenItems),
-          buildTextColumn(context),
-          widget.withIconButton
-              ? SizedBox(width: widget.spaceBetweenItems)
-              : Container(),
-          widget.withIconButton ? buildIconButton(context) : Container(),
-        ],
+    return InkWell(
+      onTap: () {
+        showImage(widget.image, context);
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: widget.padding),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            buildImage(),
+            SizedBox(width: widget.spaceBetweenItems),
+            buildTextColumn(context),
+            widget.withIconButton
+                ? SizedBox(width: widget.spaceBetweenItems)
+                : Container(),
+            widget.withIconButton ? buildIconButton(context) : Container(),
+          ],
+        ),
       ),
     );
   }
@@ -142,24 +193,56 @@ class _ExrciseCardState extends State<ExrciseCard> {
 
   // Reusable Icon Button Widget
   Widget buildIconButton(BuildContext context) {
-    return IconButton(
-      style: IconButton.styleFrom(
-        backgroundColor: Palette.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        IconButton(
+          style: IconButton.styleFrom(
+            backgroundColor: _isTimerActive 
+                ? Palette.white.withOpacity(0.8)
+                : Palette.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          icon: _isTimerActive
+              ? Text(
+                  _formatTime(_timeLeft),
+                  style: TextStyle(
+                    color: Palette.mainAppColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                )
+              : Icon(
+                  Icons.done_all,
+                  color: _isClicked ? Colors.green : Palette.mainAppColor,
+                  size: 24,
+                ),
+          onPressed: _isTimerActive
+              ? null
+              : () {
+                  setState(() {
+                    _isClicked = !_isClicked;
+                    if (_isClicked) {
+                      _startTimer();
+                    }
+                    _saveClickedState();
+                  });
+                },
         ),
-      ),
-      icon: Icon(
-        Icons.done_all,
-        color: _isClicked ? Colors.green : Palette.mainAppColor,
-        size: 24,
-      ),
-      onPressed: () {
-        setState(() {
-          _isClicked = !_isClicked;
-          _saveClickedState(); // Save the state
-        });
-      },
+        if (_isTimerActive)
+          SizedBox(
+            width: 40,
+            height: 40,
+            child: CircularProgressIndicator(
+              value: _timeLeft / 90,
+              strokeWidth: 2,
+              color: Palette.mainAppColor,
+              backgroundColor: Colors.grey.withOpacity(0.3),
+            ),
+          ),
+      ],
     );
   }
 }

@@ -146,6 +146,14 @@
   {
     "bodyPart": "back",
     "equipment": "band",
+    "gifUrl": "https://gymvisual.com/img/p/2/0/8/3/1/20831.gif",
+    "id": 1010,
+    "name": "deadlift",
+    "target": "spine"
+  },
+  {
+    "bodyPart": "back",
+    "equipment": "band",
     "gifUrl": "https://gymvisual.com/img/p/5/7/2/6/5726.gif",
     "id": 1013,
     "name": "band underhand pulldown",

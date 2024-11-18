@@ -83,62 +83,69 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   Future<void> changeUserImage() async {
     final ImagePicker picker = ImagePicker();
 
-    // Pick an image from the gallery
-    final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.gallery);
+    try {
+      final XFile? pickedFile = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 70, // Compress image quality to 70%
+      );
 
-    if (pickedFile != null) {
+      if (pickedFile == null) return;
+
+      // Show loading indicator in a non-blocking way
+      // Get.dialog(
+      //   const Center(child: CircularProgressIndicator()),
+      //   barrierDismissible: false,
+      // );
+
+      // Update UI immediately with local image
       setState(() {
+        imageUrl = pickedFile.path;
         isLoading = true;
       });
 
-      try {
-        try {
-          Get.dialog(const Center(child: CircularProgressIndicator()),
-              barrierDismissible: false);
-          final storageRef = FirebaseStorage.instance.ref().child(
-              'profile_images/${FirebaseAuth.instance.currentUser!.uid}.jpg');
-          await storageRef.putFile(File(pickedFile.path)).then(
-            (snapshot) {
-              customSnackbar.showMessage(
-                  context,
-                  LocalizationService.translateFromGeneral(
-                      'imageUploadSuccess'));
-            },
-          );
-          final downloadUrl = await storageRef.getDownloadURL();
+      // Upload image in background
+      final storageRef = FirebaseStorage.instance.ref().child(
+          'profile_images/${FirebaseAuth.instance.currentUser!.uid}.jpg');
 
-          setState(() {
-            imageUrl = downloadUrl;
-          });
+      final uploadTask = storageRef.putFile(
+        File(pickedFile.path),
+        SettableMetadata(contentType: 'image/jpeg'),
+      );
 
-          await FirebaseFirestore.instance
-              .collection('coaches')
-              .doc(coachId)
-              .update({
-            'profileImageUrl': downloadUrl,
-          });
+      // Listen to upload progress if needed
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        final progress = snapshot.bytesTransferred / snapshot.totalBytes;
+        // You can use this progress value to show upload progress
+      });
 
-          setState(() {
-            imageUrl = downloadUrl;
-            isLoading = false;
-          });
+      // Wait for upload to complete and get download URL
+      final downloadUrl = await (await uploadTask).ref.getDownloadURL();
 
-          Get.back();
-        } catch (e) {
-          Get.back();
-          customSnackbar.showFailureMessage(context);
-        }
-      } catch (e) {
-        setState(() {
-          isLoading = false;
-        });
-        customSnackbar.showFailureMessage(context);
-      }
-    } else {
+      // Update Firestore with new image URL
+      await FirebaseFirestore.instance
+          .collection('coaches')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({
+        'profileImageUrl': downloadUrl,
+      });
+
+      // Update UI with cloud URL
+      setState(() {
+        imageUrl = downloadUrl;
+        isLoading = false;
+      });
+
+      // Get.back(); // Remove loading dialog
+      customSnackbar.showMessage(
+        context,
+        LocalizationService.translateFromGeneral('imageUploadSuccess'),
+      );
+    } catch (e) {
+      Get.back(); // Remove loading dialog
       setState(() {
         isLoading = false;
       });
+      customSnackbar.showFailureMessage(context);
     }
   }
 
@@ -590,20 +597,8 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
       child: Column(
         children: [
           InkWell(
+            child: _buildProfileImage(),
             onTap: changeUserImage,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: SizedBox(
-                child: CachedNetworkImage(
-                  width: 88,
-                  height: 88,
-                  fit: BoxFit.cover,
-                  imageUrl: imageUrl.isEmpty ? Assets.notFound : imageUrl,
-                  placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
-                ),
-              ),
-            ),
           ),
           const SizedBox(height: 12),
           Text(
@@ -634,6 +629,60 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
           )
         ],
       ),
+    );
+  }
+
+  Widget _buildProfileImage() {
+    return Stack(
+      children: [
+        // Profile Image
+        ClipRRect(
+          borderRadius: BorderRadius.circular(50),
+          child: SizedBox(
+            width: 88,
+            height: 88,
+            child: imageUrl.startsWith('http')
+                ? CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        Image.asset(Assets.notFound),
+                  )
+                : imageUrl.startsWith('/')
+                    ? Image.file(
+                        File(imageUrl),
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Image.asset(Assets.notFound),
+                      )
+                    : Image.asset(Assets.notFound),
+          ),
+        ),
+
+        // Camera Icon Flag
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: Palette.mainAppColorOrange,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Palette.mainAppColorWhite,
+                width: 2,
+              ),
+            ),
+            child: const Icon(
+              Icons.camera_alt,
+              color: Palette.mainAppColorWhite,
+              size: 14,
+            ),
+          ),
+        ),
+      ],
     );
   }
 

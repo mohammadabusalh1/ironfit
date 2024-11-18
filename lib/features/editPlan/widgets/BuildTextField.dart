@@ -24,7 +24,7 @@ Widget BuildTextField({
       onTap: onTap ??
           () {
             // When the text field is tapped, move cursor to the end
-            controller != null ? controller!.selection = TextSelection.fromPosition(
+            controller != null ? controller.selection = TextSelection.fromPosition(
               TextPosition(offset: controller.text.length),
             ) : null;
           },

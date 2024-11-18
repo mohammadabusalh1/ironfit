@@ -84,6 +84,9 @@ abstract class Palette {
   static const Color bodyWebDark = Color(0xff1D2939);
   static const Color webDashboardWelcoming = Color(0xffbbe8f8);
 
+  static const Color cardBackground = Color(0xFF2A2A2A);
+  static const Color cardBorder = Color(0xFF3A3A3A);
+
   //getters
   static Color get primaryColor => Get.theme.primaryColor;
 

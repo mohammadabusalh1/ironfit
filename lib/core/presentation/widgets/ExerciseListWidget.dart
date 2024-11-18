@@ -27,7 +27,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   List<dynamic> targetMuscles = [];
   String targetMuscleSelected = '';
   int stage = 1;
-  double high = 1000;
+  double high = 570;
   List<dynamic> selectedExercises = [];
   late String dir;
 
@@ -103,12 +103,10 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     if (_scrollController.position.pixels == 0) {
       setState(() {
         stage = 1;
-        high = 500;
       });
     } else {
       setState(() {
         stage = 2;
-        high = 1300;
       });
     }
   }
@@ -322,7 +320,6 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                                                         ['gifUrl'],
                                               });
                                       });
-                                      print(selectedExercises);
                                     },
                                     child: buildCarouselItem(
                                       _filteredExercises[index]

@@ -26,4 +26,5 @@ class Routes {
   static const String userProfile = '/userProfile';
   static const String selectLanguage = '/selectLanguage';
   static const String selectEnter = '/selectEnter';
+  static const String chat = '/chat';
 }

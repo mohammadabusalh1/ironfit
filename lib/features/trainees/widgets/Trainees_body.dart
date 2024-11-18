@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -237,41 +236,38 @@ class _TraineesBodyState extends State<TraineesBody> {
                   for (int i = startIndex; i < endIndex; i++) {
                     var trainee = filtteredTrainees[i];
                     cards.add(
-                      Expanded(
-                        child: _buildTraineeCard(
-                          context,
-                          trainee['fullName'] ??
-                              trainee['username'] ??
-                              LocalizationService.translateFromGeneral(
-                                  'unknown'),
-                          trainee['endDate'] != null &&
-                                  DateTime.tryParse(trainee['endDate']) != null
-                              ? (DateTime.parse(trainee['endDate'])
-                                          .millisecondsSinceEpoch >
-                                      DateTime.now().millisecondsSinceEpoch
-                                  ? LocalizationService.translateFromGeneral(
-                                      'currently_subscribed')
-                                  : LocalizationService.translateFromGeneral(
-                                      'not_subscribed'))
-                              : LocalizationService.translateFromGeneral(
-                                  'unknown'),
-                          trainee['profileImageUrl'] ?? Assets.notFound,
-                          () => Get.to(Directionality(
-                            textDirection: dir == 'rtl'
-                                ? TextDirection.rtl
-                                : TextDirection.ltr,
-                            child: TraineeScreen(
-                              username: trainee['username'] ??
-                                  LocalizationService.translateFromGeneral(
-                                      'unknown'),
-                              fetchTrainees: fetchTrainees,
-                            ),
-                          )),
-                        ),
+                      _buildTraineeCard(
+                        context,
+                        trainee['fullName'] ??
+                            trainee['username'] ??
+                            LocalizationService.translateFromGeneral('unknown'),
+                        trainee['endDate'] != null &&
+                                DateTime.tryParse(trainee['endDate']) != null
+                            ? (DateTime.parse(trainee['endDate'])
+                                        .millisecondsSinceEpoch >
+                                    DateTime.now().millisecondsSinceEpoch
+                                ? LocalizationService.translateFromGeneral(
+                                    'currently_subscribed')
+                                : LocalizationService.translateFromGeneral(
+                                    'not_subscribed'))
+                            : LocalizationService.translateFromGeneral(
+                                'unknown'),
+                        trainee['profileImageUrl'] ?? Assets.notFound,
+                        () => Get.to(Directionality(
+                          textDirection: dir == 'rtl'
+                              ? TextDirection.rtl
+                              : TextDirection.ltr,
+                          child: TraineeScreen(
+                            username: trainee['username'] ??
+                                LocalizationService.translateFromGeneral(
+                                    'unknown'),
+                            fetchTrainees: fetchTrainees,
+                          ),
+                        )),
                       ),
                     );
                   }
-                  return Row(
+                  return Column(
                     children: cards,
                   );
                 },
@@ -783,6 +779,11 @@ class _TraineesBodyState extends State<TraineesBody> {
                         final coachDocRef = FirebaseFirestore.instance
                             .collection('subscriptions');
 
+                        var user = await FirebaseFirestore.instance
+                            .collection('trainees')
+                            .where('username', isEqualTo: username)
+                            .get();
+
                         final subscriptionDocRef = coachDocRef.doc();
                         batch.set(subscriptionDocRef, {
                           'username': username,
@@ -791,7 +792,8 @@ class _TraineesBodyState extends State<TraineesBody> {
                           'amountPaid': amountPaid,
                           'totalAmountPaid': amountPaid,
                           'debts': debts,
-                          'userId': username,
+                          'userId':
+                              user.docs.length > 0 ? user.docs[0].id : username,
                           'coachId': coach?.uid,
                           "isActive": true,
                         });
@@ -803,8 +805,6 @@ class _TraineesBodyState extends State<TraineesBody> {
                             LocalizationService.translateFromPage(
                                 'message', 'snackbarSuccess'));
                       }
-
-                      // Commit batch write
                       await batch.commit();
                       await fetchTrainees();
                     }

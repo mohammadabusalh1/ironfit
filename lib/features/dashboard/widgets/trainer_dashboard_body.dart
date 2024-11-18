@@ -2,19 +2,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:ironfit/core/models/notification_item.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
-import 'package:ironfit/core/presentation/widgets/PagesHeader.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/exersiceCarousel.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:lottie/lottie.dart';
+import 'package:ironfit/core/services/notification_service.dart';
 
 String trainerName = '';
 String trainerEmail = '';
 String trainerImage = '';
+bool isBannerAdLoaded = false;
 
 class TrainerDashboardBody extends StatefulWidget {
   const TrainerDashboardBody({super.key});
@@ -34,7 +36,16 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
   bool isDataLoaded = false;
 
   late BannerAd bannerAd;
-  bool isBannerAdLoaded = false;
+  late String dir;
+
+  List<NotificationItem> notifications = [
+    NotificationItem(
+      title: LocalizationService.translateFromGeneral('workoutTime'),
+      message: LocalizationService.translateFromGeneral('timeToWorkout'),
+      time: DateTime.now().subtract(const Duration(minutes: 5)),
+      isRead: false,
+    ),
+  ];
 
   @override
   void initState() {
@@ -54,11 +65,13 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
     bannerAd.load();
     _fetchTrainerData();
     if (!isDataLoaded) {
+      _showExerciseNotification();
       _fetchTrainerNameAndImage();
       setState(() {
         isDataLoaded = true;
       });
     }
+    dir = LocalizationService.getDir();
   }
 
   @override
@@ -263,15 +276,42 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
               ),
             ],
           )),
-          SizedBox(
-            width: 40,
-            height: 40,
-            child: Lottie.asset(
-              'assets/jsonIcons/chat.json',
-              width: 10,
-              height: 10,
+          InkWell(
+            onTap: () => _showNotificationsDialog(context),
+            child: Stack(
+              children: [
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: Lottie.asset(
+                    'assets/jsonIcons/chat.json',
+                    width: 10,
+                    height: 10,
+                  ),
+                ),
+                if (notifications.any((n) => !n.isRead))
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        notifications.where((n) => !n.isRead).length.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          ),
+          )
         ],
       ),
     );
@@ -359,5 +399,189 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
         ),
       ),
     );
+  }
+
+  // Show immediate notification
+  void _showExerciseNotification() {
+    if (isDataLoaded) {
+      NotificationService.showNotification(
+        title: LocalizationService.translateFromGeneral('exerciseTime'),
+        body: LocalizationService.translateFromGeneral('timeToWorkout'),
+      );
+    }
+  }
+
+  // Schedule workout notification
+  void _scheduleWorkoutReminder() {
+    // Schedule for tomorrow at 9 AM
+    final tomorrow = DateTime.now();
+    final scheduledTime = DateTime(
+      tomorrow.year,
+      tomorrow.month,
+      tomorrow.day,
+      9, // 9 AM
+      41,
+    );
+
+    NotificationService.scheduleNotification(
+      title: LocalizationService.translateFromGeneral('workoutReminder'),
+      body: LocalizationService.translateFromGeneral('dontForgetWorkout'),
+      scheduledDate: scheduledTime,
+    );
+  }
+
+  // Example for exercise timer notification
+  void _startExerciseTimer() {
+    // Schedule notification for when timer ends
+    final endTime = DateTime.now().add(const Duration(minutes: 1, seconds: 30));
+
+    NotificationService.scheduleNotification(
+      title: LocalizationService.translateFromGeneral('exerciseComplete'),
+      body: LocalizationService.translateFromGeneral('greatJob'),
+      scheduledDate: endTime,
+    );
+  }
+
+  void _showNotificationsDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) => Directionality(
+              textDirection:
+                  dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+              child: Dialog(
+                backgroundColor: Palette.blackBack,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            LocalizationService.translateFromGeneral(
+                                'notifications'),
+                            style: AppStyles.textCairo(
+                              18,
+                              Palette.mainAppColorWhite,
+                              FontWeight.bold,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () => Navigator.pop(context),
+                            icon: const Icon(
+                              Icons.close,
+                              color: Palette.mainAppColorWhite,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Divider(color: Palette.gray),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.6,
+                        ),
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          itemCount: notifications.length,
+                          separatorBuilder: (context, index) => const Divider(
+                            color: Palette.gray,
+                            height: 1,
+                          ),
+                          itemBuilder: (context, index) {
+                            final notification = notifications[index];
+                            return ListTile(
+                              onTap: () {
+                                setState(() {
+                                  notification.isRead = true;
+                                });
+                                Navigator.pop(context);
+                                // Handle notification tap
+                              },
+                              leading: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: notification.isRead
+                                      ? Palette.gray.withOpacity(0.2)
+                                      : Palette.mainAppColorOrange
+                                          .withOpacity(0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.notifications,
+                                  color: notification.isRead
+                                      ? Palette.gray
+                                      : Palette.mainAppColorOrange,
+                                ),
+                              ),
+                              title: Text(
+                                notification.title,
+                                style: AppStyles.textCairo(
+                                  14,
+                                  notification.isRead
+                                      ? Palette.gray
+                                      : Palette.mainAppColorWhite,
+                                  FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    notification.message,
+                                    style: AppStyles.textCairo(
+                                      12,
+                                      notification.isRead
+                                          ? Palette.gray
+                                          : Palette.mainAppColorWhite,
+                                      FontWeight.normal,
+                                    ),
+                                  ),
+                                  Text(
+                                    _formatNotificationTime(notification.time),
+                                    style: AppStyles.textCairo(
+                                      10,
+                                      Palette.gray,
+                                      FontWeight.normal,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              trailing: !notification.isRead
+                                  ? Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: const BoxDecoration(
+                                        color: Palette.mainAppColorOrange,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    )
+                                  : null,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ));
+  }
+
+  String _formatNotificationTime(DateTime time) {
+    final now = DateTime.now();
+    final difference = now.difference(time);
+
+    if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} ${LocalizationService.translateFromGeneral('minutesAgo')}';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} ${LocalizationService.translateFromGeneral('hoursAgo')}';
+    } else {
+      return '${difference.inDays} ${LocalizationService.translateFromGeneral('daysAgo')}';
+    }
   }
 }

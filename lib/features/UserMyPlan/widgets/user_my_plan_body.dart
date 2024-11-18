@@ -27,7 +27,6 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
 
   late Map<String, dynamic> plan;
 
-
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
 
@@ -96,13 +95,26 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
             .limit(1)
             .get();
 
+        // Convert Firestore Timestamps to DateTime
+        // Convert Firestore Timestamps to DateTime
+        Map<String, dynamic> planData = {};
+        planDoc.docs.forEach((doc) {
+          planData = {
+            ...doc.data(),
+            'createdAt': doc.data()['createdAt'] is Timestamp
+                ? (doc.data()['createdAt'] as Timestamp)
+                    .toDate()
+                    .toIso8601String()
+                : doc.data()['createdAt'],
+          };
+        });
+
         // Cache the fetched plan locally
-        preferencesService.setPlan(
-            user.uid, jsonEncode(planDoc.docs.first.data()));
+        preferencesService.setPlan(user.uid, jsonEncode(planData));
 
         // Update UI with fetched plan
         setState(() {
-          plan = planDoc.docs.first.data() as Map<String, dynamic>? ?? {};
+          plan = planData;
         });
       }
     } catch (e) {

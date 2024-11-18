@@ -62,7 +62,7 @@ class _UserEnterInfoBodyState extends State<UserEnterInfoBody> {
           .collection('trainees')
           .doc(userId)
           .update(data);
-    } on FirebaseException catch (e) {
+    } on FirebaseException {
       rethrow;
     } catch (e) {
       rethrow;

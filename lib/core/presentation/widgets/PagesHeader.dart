@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
-import 'package:flutter/animation.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
+import 'package:ironfit/core/routes/routes.dart';
 import 'package:lottie/lottie.dart';
 
 class DashboardHeader extends StatelessWidget {
@@ -26,32 +26,39 @@ class DashboardHeader extends StatelessWidget {
       children: [
         _buildTrainerImage(context),
         const Spacer(),
-        Container(
-          decoration: BoxDecoration(
-            color: Palette.mainAppColor,
-            borderRadius: BorderRadius.circular(25),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          child: Row(
-            children: [
-              Text(LocalizationService.translateFromGeneral('communicateWithTrainees'),
-                  style:
-                      AppStyles.textCairo(12, Palette.white, FontWeight.bold)),
-              SizedBox(
-                width: 5,
-              ),
-              SizedBox(
-                width: 40,
-                height: 40,
-                child: Lottie.asset(
-                  'assets/jsonIcons/chat.json',
-                  width: 10,
-                  height: 10,
+        InkWell(
+          onTap: () {
+            Navigator.pushNamed(context, Routes.chat);
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Palette.mainAppColor,
+              borderRadius: BorderRadius.circular(25),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            child: Row(
+              children: [
+                Text(
+                    LocalizationService.translateFromGeneral(
+                        'communicateWithTrainees'),
+                    style: AppStyles.textCairo(
+                        12, Palette.white, FontWeight.bold)),
+                SizedBox(
+                  width: 5,
                 ),
-              )
-            ],
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: Lottie.asset(
+                    'assets/jsonIcons/chat.json',
+                    width: 10,
+                    height: 10,
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
+        )
       ],
     );
   }

@@ -1,14 +1,14 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:ironfit/config/EnvConfig.dart';
 import 'package:ironfit/core/presentation/controllers/coach_nav_bar_controller.dart';
-import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
-import 'package:ironfit/core/presentation/widgets/NotificationService.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/core/services/notification_service.dart';
+import 'package:ironfit/features/ChatScreen/ChatScreen.dart';
 import 'package:ironfit/features/CoachStatistics/screens/coach_statistics_screen.dart';
 import 'package:ironfit/features/MyPlans/screens/my_plans_screen.dart';
 import 'package:ironfit/features/SelectEnterType/screens/select_enter_screen.dart';
@@ -30,17 +30,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.initialize();
   MobileAds.instance.initialize();
   if (kIsWeb) {
     await Firebase.initializeApp(
-      options: const FirebaseOptions(
-          apiKey: "AIzaSyD7c0gMFuZhSkiYZWcZxX6_EuUsrYicLPQ",
-          authDomain: "ironfit-edef8.firebaseapp.com",
-          projectId: "ironfit-edef8",
-          storageBucket: "ironfit-edef8.appspot.com",
-          messagingSenderId: "252100398371",
-          appId: "1:252100398371:web:bc04fec736142df19cd096",
-          measurementId: "G-5RB0H19GQF"),
+      options: FirebaseOptions(
+        apiKey: EnvConfig.firebaseApiKey,
+        authDomain: EnvConfig.firebaseAuthDomain,
+        projectId: EnvConfig.firebaseProjectId,
+        storageBucket: EnvConfig.firebaseStorageBucket,
+        messagingSenderId: EnvConfig.firebaseMessagingSenderId,
+        appId: EnvConfig.firebaseAppId,
+        measurementId: EnvConfig.firebaseMeasurementId,
+      ),
     );
   } else {
     await Firebase.initializeApp();
@@ -48,24 +50,6 @@ void main() async {
 
   LocalizationService.load('ar');
 
-  final notificationService = NotificationService();
-  await notificationService.init();
-
-  PreferencesService preferencesService = PreferencesService();
-  SharedPreferences prefs = await preferencesService.getPreferences();
-  // prefs.clear();
-  FirebaseAuth user = FirebaseAuth.instance;
-
-  if (user.currentUser != null) {
-    if (user.currentUser!.uid.isNotEmpty && prefs.getBool('isCoach') == false) {
-      // Save user ID for background tasks
-      await prefs.setString('userId', user.currentUser!.uid);
-
-      // Set up subscription notifications
-      await notificationService
-          .setupSubscriptionListener(user.currentUser!.uid);
-    }
-  }
   // This function is the entry point of the app.
   // It starts the app by running the MyApp widget.
   runApp(RestartWidget());
@@ -259,6 +243,14 @@ class _RestartWidgetState extends State<RestartWidget> {
                       textDirection:
                           dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
                       child: UserProfileScreen(),
+                    ),
+                  ),
+                  GetPage(
+                    name: Routes.chat,
+                    page: () => Directionality(
+                      textDirection:
+                          dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr,
+                      child: const ChatScreen(),
                     ),
                   ),
                 ],

@@ -13,7 +13,6 @@ import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/features/dashboard/widgets/card_widget.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:lottie/lottie.dart';
-import 'package:startapp_sdk/startapp.dart';
 
 String imageUrl = Assets.notFound;
 

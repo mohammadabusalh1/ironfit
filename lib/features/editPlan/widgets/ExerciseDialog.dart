@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Button.dart';
 import 'package:ironfit/core/presentation/widgets/ExerciseListWidget.dart';
@@ -29,6 +28,7 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
 
   late TextEditingController roundsController = TextEditingController();
   late TextEditingController repetitionsController = TextEditingController();
+  bool isAddNewImage = false;
 
   @override
   void initState() {
@@ -83,6 +83,7 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
 
                     if (val != null) {
                       setState(() {
+                        isAddNewImage = true;
                         selectedExercises = val;
                       });
                     }
@@ -136,16 +137,29 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                if (widget.initialExercise != null && selectedExercises.length == 1) {
-                  Exercise exercise = Exercise(
-                    name: selectedExercises[0]
-                        .name, // Adjust based on your data structure
-                    image: selectedExercises[0]
-                        .image, // Adjust based on your data structure
-                    rounds: int.parse(rounds),
-                    repetitions: int.parse(repetitions),
-                  );
-                  widget.addExercise(exercise);
+                if (widget.initialExercise != null &&
+                    selectedExercises.length == 1) {
+                  if (isAddNewImage) {
+                    Exercise exercise = Exercise(
+                      name: selectedExercises[0][
+                          'Exercise_Name'], // Adjust based on your data structure
+                      image: selectedExercises[0][
+                          'Exercise_Image'], // Adjust based on your data structure
+                      rounds: int.parse(rounds),
+                      repetitions: int.parse(repetitions),
+                    );
+                    widget.addExercise(exercise);
+                  } else {
+                    Exercise exercise = Exercise(
+                      name: selectedExercises[0]
+                          .name, // Adjust based on your data structure
+                      image: selectedExercises[0]
+                          .image, // Adjust based on your data structure
+                      rounds: int.parse(rounds),
+                      repetitions: int.parse(repetitions),
+                    );
+                    widget.addExercise(exercise);
+                  }
                 } else if (selectedExercises.isNotEmpty) {
                   selectedExercises.forEach((e) {
                     Exercise exercise = Exercise(

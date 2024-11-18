@@ -484,48 +484,51 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                   ),
                   const SizedBox(height: 24),
                   Container(
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _buildButtonCard(
-                            context,
-                            LocalizationService.translateFromGeneral(
-                                'personalInformation'),
-                            Icons.person_2, () {
-                          showEditInfoDialog(context);
-                        }, Icons.arrow_forward_ios_outlined,
-                            Palette.mainAppColorBack),
+                          context,
+                          LocalizationService.translateFromGeneral('personalInformation'),
+                          Icons.person_2,
+                          () => showEditInfoDialog(context),
+                          Icons.arrow_forward_ios_outlined,
+                          Palette.mainAppColorBack,
+                        ),
                         _buildButtonCard(
-                            context,
-                            LocalizationService.translateFromGeneral(
-                                'changePassword'),
-                            Icons.password_outlined, () {
-                          showEditPasswordDialog(context);
-                        }, Icons.arrow_forward_ios_outlined,
-                            Palette.mainAppColorBack),
-                        SizedBox(height: 16),
+                          context,
+                          LocalizationService.translateFromGeneral('changePassword'),
+                          Icons.password_outlined,
+                          () => showEditPasswordDialog(context),
+                          Icons.arrow_forward_ios_outlined,
+                          Palette.mainAppColorBack,
+                        ),
                         _buildButtonCard(
-                            context,
-                            LocalizationService.translateFromGeneral('gyms'),
-                            Icons.location_on, () {
-                          Get.toNamed(Routes.myGyms);
-                        }, Icons.arrow_forward_ios, Palette.mainAppColorOrange),
+                          context,
+                          LocalizationService.translateFromGeneral('gyms'),
+                          Icons.location_on,
+                          () => Get.toNamed(Routes.myGyms),
+                          Icons.arrow_forward_ios,
+                          Palette.mainAppColorOrange,
+                        ),
                         _buildButtonCard(
-                            context,
-                            dir == 'rtl'
-                                ? LocalizationService.translateFromPage(
-                                    'English', 'selectLang')
-                                : LocalizationService.translateFromPage(
-                                    'Arabic', 'selectLang'),
-                            Icons.translate, () {
-                          LocalizationService.load(
-                              LocalizationService.lang == 'en' ? 'ar' : 'en');
-                          RestartWidget.restartApp(context);
-                          Navigator.pushNamed(context, Routes.userProfile);
-                        }, Icons.arrow_forward_ios, Palette.mainAppColorOrange),
+                          context,
+                          dir == 'rtl'
+                              ? LocalizationService.translateFromPage('English', 'selectLang')
+                              : LocalizationService.translateFromPage('Arabic', 'selectLang'),
+                          Icons.translate,
+                          () {
+                            LocalizationService.load(
+                              LocalizationService.lang == 'en' ? 'ar' : 'en',
+                            );
+                            RestartWidget.restartApp(context);
+                            Navigator.pushNamed(context, Routes.userProfile);
+                          },
+                          Icons.arrow_forward_ios,
+                          Palette.mainAppColorOrange,
+                        ),
                       ],
                     ),
                   ),
@@ -538,62 +541,71 @@ class _UserProfileBodyState extends State<UserProfileBody> {
   Future<void> changeUserImage() async {
     final ImagePicker picker = ImagePicker();
 
-    // Pick an image from the gallery
-    final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.gallery);
+    try {
+      final XFile? pickedFile = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 70, // Compress image quality to 70%
+      );
 
-    if (pickedFile != null) {
+      if (pickedFile == null) return;
+
+      // Show loading indicator in a non-blocking way
+      // Get.dialog(
+      //   const Center(child: CircularProgressIndicator()),
+      //   barrierDismissible: false,
+      // );
+
+      // Update UI immediately with local image
       setState(() {
+        trainerImage = pickedFile.path;
         isLoading = true;
       });
 
-      try {
-        try {
-          Get.dialog(const Center(child: CircularProgressIndicator()),
-              barrierDismissible: false);
-          final storageRef = FirebaseStorage.instance.ref().child(
-              'profile_images/${FirebaseAuth.instance.currentUser!.uid}.jpg');
-          await storageRef.putFile(File(pickedFile.path)).then(
-            (snapshot) {
-              customSnackbar.showMessage(
-                  context,
-                  LocalizationService.translateFromGeneral(
-                      'imageUploadSuccess'));
-            },
-          );
-          final downloadUrl = await storageRef.getDownloadURL();
+      // Upload image in background
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('profile_images/${FirebaseAuth.instance.currentUser!.uid}.jpg');
+      
+      final uploadTask = storageRef.putFile(
+        File(pickedFile.path),
+        SettableMetadata(contentType: 'image/jpeg'),
+      );
 
-          setState(() {
-            trainerImage = downloadUrl;
-          });
+      // Listen to upload progress if needed
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        final progress = snapshot.bytesTransferred / snapshot.totalBytes;
+        // You can use this progress value to show upload progress
+      });
 
-          await FirebaseFirestore.instance
-              .collection('trainees')
-              .doc(FirebaseAuth.instance.currentUser!.uid)
-              .update({
-            'profileImageUrl': downloadUrl,
-          });
+      // Wait for upload to complete and get download URL
+      final downloadUrl = await (await uploadTask).ref.getDownloadURL();
 
-          setState(() {
-            trainerImage = downloadUrl;
-            isLoading = false;
-          });
+      // Update Firestore with new image URL
+      await FirebaseFirestore.instance
+          .collection('trainees')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({
+        'profileImageUrl': downloadUrl,
+      });
 
-          Get.back();
-        } catch (e) {
-          Get.back();
-          customSnackbar.showFailureMessage(context);
-        }
-      } catch (e) {
-        setState(() {
-          isLoading = false;
-        });
-        customSnackbar.showFailureMessage(context);
-      }
-    } else {
+      // Update UI with cloud URL
+      setState(() {
+        trainerImage = downloadUrl;
+        isLoading = false;
+      });
+
+      // Get.back(); // Remove loading dialog
+      customSnackbar.showMessage(
+        context,
+        LocalizationService.translateFromGeneral('imageUploadSuccess'),
+      );
+
+    } catch (e) {
+      Get.back(); // Remove loading dialog
       setState(() {
         isLoading = false;
       });
+      customSnackbar.showFailureMessage(context);
     }
   }
 
@@ -604,20 +616,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
         children: [
           InkWell(
             onTap: changeUserImage,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: SizedBox(
-                child: CachedNetworkImage(
-                  width: 88,
-                  height: 88,
-                  fit: BoxFit.cover,
-                  imageUrl:
-                      trainerImage.isEmpty ? Assets.notFound : trainerImage,
-                  placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
-                ),
-              ),
-            ),
+            child: _buildProfileImage(),
           ),
           const SizedBox(height: 8),
           Text(
@@ -651,45 +650,80 @@ class _UserProfileBodyState extends State<UserProfileBody> {
     );
   }
 
-  Widget _buildButtonCard(BuildContext context, String tilte, IconData icon,
-      VoidCallback onClick, IconData? leftIcon, Color? IconBackColor) {
-    return InkWell(
-      onTap: onClick,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: IconBackColor ?? Palette.mainAppColorBack,
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Icon(
-                icon,
-                color: Palette.mainAppColorWhite,
-                size: 18,
-              ),
-            ),
-            const SizedBox(width: 12), // Space between icon and text
-            Text(
-              tilte,
-              style: AppStyles.textCairo(
-                14,
-                Palette.mainAppColorWhite,
-                FontWeight.normal,
+  Widget _buildButtonCard(
+    BuildContext context,
+    String title,
+    IconData icon,
+    VoidCallback onClick,
+    IconData? trailingIcon,
+    Color? iconBackColor,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onClick,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Palette.mainAppColoryellow2.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: Palette.mainAppColorBack.withOpacity(0.1),
+                width: 1,
               ),
             ),
-            const Spacer(), // Space between text and trailing icon
-            Icon(
-              leftIcon,
-              color: Palette.gray
-                  .withOpacity(0.8), // Replace with the theme color if needed
-              size: 14,
+            child: Row(
+              children: [
+                // Leading Icon with background
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: iconBackColor?.withOpacity(0.9) ?? Palette.mainAppColorBack,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (iconBackColor ?? Palette.mainAppColorBack).withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    icon,
+                    color: Palette.mainAppColorWhite,
+                    size: 18,
+                  ),
+                ),
+                
+                const SizedBox(width: 16),
+                
+                // Title
+                Expanded(
+                  child: Text(
+                    title,
+                    style: AppStyles.textCairo(
+                      14,
+                      Palette.mainAppColorWhite,
+                      FontWeight.w500,
+                    ),
+                  ),
+                ),
+                
+                // Trailing Icon with animation
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(
+                    trailingIcon ?? Icons.arrow_forward_ios,
+                    color: Palette.gray.withOpacity(0.8),
+                    size: 16,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -706,5 +740,57 @@ class _UserProfileBodyState extends State<UserProfileBody> {
     } catch (e) {
       customSnackbar.showFailureMessage(context);
     }
+  }
+
+  Widget _buildProfileImage() {
+    return Stack(
+      children: [
+        // Profile Image
+        ClipRRect(
+          borderRadius: BorderRadius.circular(50),
+          child: SizedBox(
+            width: 88,
+            height: 88,
+            child: trainerImage.startsWith('http')
+                ? CachedNetworkImage(
+                    imageUrl: trainerImage,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => Image.asset(Assets.notFound),
+                  )
+                : trainerImage.startsWith('/')
+                    ? Image.file(
+                        File(trainerImage),
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Image.asset(Assets.notFound),
+                      )
+                    : Image.asset(Assets.notFound),
+          ),
+        ),
+        
+        // Camera Icon Flag
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: Palette.mainAppColorOrange,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Palette.mainAppColorWhite,
+                width: 2,
+              ),
+            ),
+            child: const Icon(
+              Icons.camera_alt,
+              color: Palette.mainAppColorWhite,
+              size: 14,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

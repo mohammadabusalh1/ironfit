@@ -38,6 +38,8 @@ dependencies:
   lottie: ^3.1.3
   cached_network_image: ^3.4.1
   startapp_sdk: ^1.0.1
+  flutter_dotenv: ^5.2.1
+  flutter_image_compress: ^2.3.0
 
   # Add any other packages your project might need like HTTP for API calls
   # Example:
@@ -89,6 +91,7 @@ flutter:
     - assets/jsonIcons/rightArrow.json
     - assets/jsonIcons/add.json
     - assets/jsonIcons/add150.json
+    - .env
 
   # Fonts can also be added if required for custom typography
   # fonts:

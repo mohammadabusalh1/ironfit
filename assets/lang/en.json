@@ -264,5 +264,15 @@
   "exercises": "Exercises",
   "welcomeBack": "Welcome back",
   "yourFitnessJourney": "Your fitness journey",
-  "keepPushingYourLimits": "Keep pushing your limits!"
+  "keepPushingYourLimits": "Keep pushing your limits!",
+  "notifications": "Notifications",
+  "exerciseTime": "Exercise time",
+  "timeToWorkout": "Time to workout",
+  "workoutTime": "Workout time",
+  "minutesAgo": "Minutes ago",
+  "hoursAgo": "Hours ago",
+  "daysAgo": "Days ago",
+  "noNotifications": "No notifications",
+  "typeAnnouncement": "Type announcement here",
+  "sendToAllTrainers": "Send to all trainers"
 }

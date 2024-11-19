@@ -273,5 +273,13 @@
   "typeAnnouncement": "أكتب الرسالة هنا",
   "sendToAllTrainers": "أرسل إلى جميع المدربين",
   "coachAnnouncement": "إعلان مدرب",
-  "remainingDays": "تبقى لك"
+  "remainingDays": "تبقى لك",
+  "premiumSubscription": "الاشتراك المميز",
+  "unlimitedTrainees": "المتدربين بلا حدود",
+  "prioritySupport": "دون إعلانات",
+  "advancedAnalytics": "التحليل المتقدم",
+  "subscribe": "اشترك",
+  "month": "شهر",
+  "payWithCard": "الدفع بالبطاقة",
+  "paymentDetails": "تفاصيل الدفع"
 }

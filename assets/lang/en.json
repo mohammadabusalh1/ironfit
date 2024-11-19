@@ -276,5 +276,13 @@
   "typeAnnouncement": "Type announcement here",
   "sendToAllTrainers": "Send to all trainers",
   "coachAnnouncement": "Coach announcement",
-  "remainingDays": "Remaining days"
+  "remainingDays": "Remaining days",
+  "premiumSubscription": "Premium Subscription",
+  "unlimitedTrainees": "Unlimited Trainees",
+  "prioritySupport": "No Ads",
+  "advancedAnalytics": "Advanced Analytics",
+  "subscribe": "Subscribe",
+  "month": "Month",
+  "payWithCard": "Pay with Card",
+  "paymentDetails": "Payment Details"
 }

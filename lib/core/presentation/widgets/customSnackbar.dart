@@ -38,6 +38,9 @@ class CustomSnackbar {
         messageText: Text(
           LocalizationService.translateFromPage('message', failurePageName),
           textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Palette.mainAppColorWhite,
+          ),
         ));
   }
 

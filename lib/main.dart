@@ -8,6 +8,7 @@ import 'package:ironfit/core/presentation/controllers/coach_nav_bar_controller.d
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/core/services/notification_service.dart';
+import 'package:ironfit/core/services/stripe_service.dart';
 import 'package:ironfit/features/ChatScreen/ChatScreen.dart';
 import 'package:ironfit/features/CoachStatistics/screens/coach_statistics_screen.dart';
 import 'package:ironfit/features/MyPlans/screens/my_plans_screen.dart';
@@ -28,6 +29,7 @@ import 'package:ironfit/features/regestraion/register/screens/sing_up_screen.dar
 import 'package:ironfit/features/userProfile/screens/user_profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:stripe_sdk/stripe_sdk.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

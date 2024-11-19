@@ -42,6 +42,9 @@ dependencies:
   flutter_image_compress: ^2.3.0
   connectivity_plus: ^6.1.0
   image: ^4.3.0
+  flutter_stripe: ^11.3.0
+  http: ^1.2.2
+  stripe_sdk: ^5.0.0
 
   # Add any other packages your project might need like HTTP for API calls
   # Example:

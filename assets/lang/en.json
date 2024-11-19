@@ -274,5 +274,6 @@
   "daysAgo": "Days ago",
   "noNotifications": "No notifications",
   "typeAnnouncement": "Type announcement here",
-  "sendToAllTrainers": "Send to all trainers"
+  "sendToAllTrainers": "Send to all trainers",
+  "coachAnnouncement": "Coach announcement"
 }

@@ -271,5 +271,6 @@
   "daysAgo": "يوم",
   "noNotifications": "لا يوجد إشعارات",
   "typeAnnouncement": "أكتب الرسالة هنا",
-  "sendToAllTrainers": "أرسل إلى جميع المدربين"
+  "sendToAllTrainers": "أرسل إلى جميع المدربين",
+  "coachAnnouncement": "إعلان مدرب"
 }

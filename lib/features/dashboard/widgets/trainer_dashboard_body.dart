@@ -50,6 +50,12 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
     ),
   ];
 
+  void addNotification(NotificationItem notification) {
+    setState(() {
+      notifications.add(notification);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -70,6 +76,7 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
     if (!isDataLoaded) {
       _showExerciseNotification();
       _fetchTrainerNameAndImage();
+      _fetchPendingNotifications();
       setState(() {
         isDataLoaded = true;
       });
@@ -193,7 +200,9 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
                 child: Column(
                   children: [
                     _buildDashboardImage(context),
-                    const SizedBox(height: 12),
+                    isBannerAdLoaded
+                        ? const SizedBox(height: 12)
+                        : const SizedBox(),
                     isBannerAdLoaded
                         ? SizedBox(
                             child: AdWidget(ad: bannerAd),
@@ -201,7 +210,9 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
                             width: bannerAd.size.width.toDouble(),
                           )
                         : const SizedBox(),
-                    const SizedBox(height: 24),
+                    isBannerAdLoaded
+                        ? const SizedBox(height: 24)
+                        : Container(),
                     _buildTodayExercisesButton(),
                     const SizedBox(height: 12),
                     ExerciseCarousel(
@@ -497,13 +508,23 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
                           ),
                           itemBuilder: (context, index) {
                             final notification = notifications[index];
+                            User? user = _auth.currentUser;
                             return ListTile(
-                              onTap: () {
+                              onTap: () async {
+                                await FirebaseFirestore.instance
+                                    .collection('notifications')
+                                    .where('id', isEqualTo: notification.id)
+                                    .get()
+                                    .then((value) {
+                                  value.docs.first.reference.update({
+                                    'receiverIds':
+                                        FieldValue.arrayRemove([user!.uid])
+                                  });
+                                });
                                 setState(() {
                                   notification.isRead = true;
                                 });
                                 Navigator.pop(context);
-                                // Handle notification tap
                               },
                               leading: Container(
                                 padding: const EdgeInsets.all(8),
@@ -586,5 +607,13 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
     } else {
       return '${difference.inDays} ${LocalizationService.translateFromGeneral('daysAgo')}';
     }
+  }
+
+  Future<void> _fetchPendingNotifications() async {
+    final pendingNotifications =
+        await NotificationService.checkPendingNotifications(show: false);
+    setState(() {
+      notifications.addAll(pendingNotifications);
+    });
   }
 }

@@ -27,6 +27,7 @@ import 'package:ironfit/features/regestraion/login/screens/login_screen.dart';
 import 'package:ironfit/features/regestraion/register/screens/sing_up_screen.dart';
 import 'package:ironfit/features/userProfile/screens/user_profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,8 +48,16 @@ void main() async {
   } else {
     await Firebase.initializeApp();
   }
-
+  NotificationService.checkPendingNotifications();
   LocalizationService.load('ar');
+  Connectivity()
+      .onConnectivityChanged
+      .listen((List<ConnectivityResult> results) {
+    print('aaa');
+    if (!results.contains(ConnectivityResult.none)) {
+      NotificationService.checkPendingNotifications();
+    }
+  });
 
   // This function is the entry point of the app.
   // It starts the app by running the MyApp widget.

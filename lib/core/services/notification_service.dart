@@ -1,6 +1,17 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:ironfit/core/models/notification_item.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
+
+// Add this top-level function outside the class
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse details) {
+  print('Background notification received: ${details.payload}');
+}
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._();
@@ -18,23 +29,50 @@ class NotificationService {
     tz.initializeTimeZones();
 
     // Initialize notification settings
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const iosSettings = DarwinInitializationSettings(
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    var iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
+      notificationCategories: [
+        DarwinNotificationCategory(
+          'default',
+          actions: [
+            DarwinNotificationAction.plain('id_1', 'Action'),
+          ],
+          options: {
+            DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
+          },
+        ),
+      ],
     );
 
-    const settings =
+    var settings =
         InitializationSettings(android: androidSettings, iOS: iosSettings);
 
     await _notifications.initialize(
       settings,
       onDidReceiveNotificationResponse: (details) {
-        // Handle notification tap
         print('Notification tapped: ${details.payload}');
       },
+      // Update this line to use the top-level function
+      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
+
+    await _notifications
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+
+    await _notifications
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
   }
 
   // Show immediate notification
@@ -131,4 +169,47 @@ class NotificationService {
           sound: true,
         );
   }
-} 
+
+  static Future<List<NotificationItem>> checkPendingNotifications(
+      {bool? show = true}) async {
+    List<NotificationItem> pendingNotifications = [];
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        final auth = FirebaseAuth.instance;
+        final user = auth.currentUser;
+
+        if (user == null) {
+          return pendingNotifications;
+        }
+
+        final notifications = await FirebaseFirestore.instance
+            .collection('notifications')
+            .where('receiverIds', arrayContains: user.uid)
+            .get();
+
+        for (var doc in notifications.docs) {
+          final notification = NotificationItem.fromMap(doc.data());
+          if (notification.time.difference(DateTime.now()).inHours.abs() > 24) {
+            await FirebaseFirestore.instance
+                .collection('notifications')
+                .doc(doc.id)
+                .update({'receiverIds': FieldValue.arrayRemove([user.uid])});
+            continue;
+          }
+          pendingNotifications.add(notification);
+          if (show == true) {
+            await showNotification(
+              title: notification.title,
+              body: notification.message,
+            );
+          }
+          await doc.reference.update({'shown': true});
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+    return pendingNotifications;
+  }
+}

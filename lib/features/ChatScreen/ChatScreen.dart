@@ -51,9 +51,10 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
+          SizedBox(height: 24,),
           Expanded(
             child: StreamBuilder<List<NotificationItem>>(
-              stream: _notificationService.getNotifications(),
+              stream: _notificationService.getNotificationsStream(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
@@ -139,7 +140,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_messageController.text.trim().isNotEmpty) {
       try {
         await _notificationService.sendNotificationToTrainees(
-          'Coach Announcement',
+          LocalizationService.translateFromGeneral('coachAnnouncement'),
           _messageController.text,
         );
         _messageController.clear();

@@ -14,9 +14,7 @@ class FirebaseNotificationService {
         .collection('subscriptions')
         .where('coachId', isEqualTo: coachId)
         .get();
-    return trainees.docs
-        .map((doc) => doc.data()['traineeId'] as String)
-        .toList();
+    return trainees.docs.map((doc) => doc.data()['userId'] as String).toList();
   }
 
   // Send notification to all trainers
@@ -31,17 +29,13 @@ class FirebaseNotificationService {
         receiverIds: await getTraineesIds(), // Empty means all trainees
         isRead: false,
       );
+      final user = FirebaseAuth.instance.currentUser;
 
-      await _firestore
-          .collection('notifications')
-          .doc(notification.id)
-          .set(notification.toMap());
-
-      // Also trigger push notification
-      await NotificationService.showNotification(
-        title: title,
-        body: message,
-      );
+      if (user != null) {
+        await _firestore
+            .collection('notifications')
+            .add(notification.toMap());
+      }
     } catch (e) {
       print('Error sending notification: $e');
       rethrow;
@@ -49,17 +43,47 @@ class FirebaseNotificationService {
   }
 
   // Get notifications for current user
-  Stream<List<NotificationItem>> getNotifications() {
+  Future<List<NotificationItem>> getNotificationsForCoach() async {
+    final userId = _auth.currentUser?.uid;
+    if (userId == null) return [];
+
+    var data = await _firestore
+        .collection('notifications')
+        .orderBy('time', descending: true)
+        .where('senderId', isEqualTo: userId)
+        .get();
+
+    return data.docs
+        .map((doc) => NotificationItem.fromMap(doc.data()))
+        .toList();
+  }
+
+  Stream<List<NotificationItem>> getNotificationsForTrainee() {
     final userId = _auth.currentUser?.uid;
     if (userId == null) return Stream.value([]);
 
     return _firestore
         .collection('notifications')
         .orderBy('time', descending: true)
-        .where('senderId', isEqualTo: userId)
+        .where('receiverIds', arrayContains: userId)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.whereType<NotificationItem>().toList();
+      // Show local notification for new messages
+      for (var change in snapshot.docChanges) {
+        if (change.type == DocumentChangeType.added) {
+          final notification = NotificationItem.fromMap(change.doc.data()!);
+          // Only show notification for new messages
+          if (DateTime.now().difference(notification.time).inMinutes < 1) {
+            NotificationService.showNotification(
+              title: notification.title,
+              body: notification.message,
+            );
+          }
+        }
+      }
+      return snapshot.docs
+          .map((doc) => NotificationItem.fromMap(doc.data()))
+          .toList();
     });
   }
 
@@ -74,5 +98,17 @@ class FirebaseNotificationService {
       print('Error marking notification as read: $e');
       rethrow;
     }
+  }
+
+  Stream<List<NotificationItem>> getNotificationsStream() {
+    return FirebaseFirestore.instance
+        .collection('notifications')
+        .orderBy('time', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc){
+              return NotificationItem.fromMap(doc.data());
+            })
+            .toList());
   }
 }

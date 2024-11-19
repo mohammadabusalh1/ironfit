@@ -200,9 +200,7 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
                 child: Column(
                   children: [
                     _buildDashboardImage(context),
-                    isBannerAdLoaded
-                        ? const SizedBox(height: 12)
-                        : const SizedBox(),
+                    const SizedBox(height: 24),
                     isBannerAdLoaded
                         ? SizedBox(
                             child: AdWidget(ad: bannerAd),
@@ -210,9 +208,7 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
                             width: bannerAd.size.width.toDouble(),
                           )
                         : const SizedBox(),
-                    isBannerAdLoaded
-                        ? const SizedBox(height: 24)
-                        : Container(),
+                    isBannerAdLoaded ? const SizedBox(height: 12) : Container(),
                     _buildTodayExercisesButton(),
                     const SizedBox(height: 12),
                     ExerciseCarousel(
@@ -520,6 +516,12 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
                                     'receiverIds':
                                         FieldValue.arrayRemove([user!.uid])
                                   });
+                                  if (value.docs.first
+                                          .data()['receiverIds']
+                                          .length <=
+                                      1) {
+                                    value.docs.first.reference.delete();
+                                  }
                                 });
                                 setState(() {
                                   notification.isRead = true;

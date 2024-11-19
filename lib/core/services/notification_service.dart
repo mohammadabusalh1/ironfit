@@ -191,10 +191,20 @@ class NotificationService {
         for (var doc in notifications.docs) {
           final notification = NotificationItem.fromMap(doc.data());
           if (notification.time.difference(DateTime.now()).inHours.abs() > 24) {
-            await FirebaseFirestore.instance
-                .collection('notifications')
-                .doc(doc.id)
-                .update({'receiverIds': FieldValue.arrayRemove([user.uid])});
+            DocumentReference<Map<String, dynamic>> notiDoc =
+                await FirebaseFirestore.instance
+                    .collection('notifications')
+                    .doc(doc.id);
+
+            DocumentSnapshot<Map<String, dynamic>> notiDocSnapshot =
+                await notiDoc.get();
+
+            await notiDoc.update({
+              'receiverIds': FieldValue.arrayRemove([user.uid])
+            });
+            if (notiDocSnapshot.data()!['receiverIds'].length == 0) {
+              await notiDoc.delete();
+            }
             continue;
           }
           pendingNotifications.add(notification);
@@ -204,7 +214,6 @@ class NotificationService {
               body: notification.message,
             );
           }
-          await doc.reference.update({'shown': true});
         }
       }
     } catch (e) {

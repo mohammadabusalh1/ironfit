@@ -738,7 +738,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
       prefs.remove('userId');
       prefs.remove('token');
       prefs.remove('isCoach');
-      Get.toNamed(Routes.selectEnter);
+      Get.toNamed(Routes.singIn);
     } catch (e) {
       customSnackbar.showMessage(
           context, LocalizationService.translateFromGeneral('logoutError'));

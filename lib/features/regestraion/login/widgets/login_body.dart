@@ -310,7 +310,7 @@ class _LoginBodyState extends State<LoginBody> {
               onPressed: () async {
                 SharedPreferences prefs =
                     await preferencesService.getPreferences();
-                prefs.setBool('isCoach', !prefs.getBool('isCoach')!);
+                prefs.setBool('isCoach', !type);
                 setState(() {
                   type = !type;
                 });

@@ -272,5 +272,6 @@
   "noNotifications": "لا يوجد إشعارات",
   "typeAnnouncement": "أكتب الرسالة هنا",
   "sendToAllTrainers": "أرسل إلى جميع المدربين",
-  "coachAnnouncement": "إعلان مدرب"
+  "coachAnnouncement": "إعلان مدرب",
+  "remainingDays": "تبقى لك"
 }

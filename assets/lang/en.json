@@ -271,9 +271,10 @@
   "workoutTime": "Workout time",
   "minutesAgo": "Minutes ago",
   "hoursAgo": "Hours ago",
-  "daysAgo": "Days ago",
+  "daysAgo": "Day",
   "noNotifications": "No notifications",
   "typeAnnouncement": "Type announcement here",
   "sendToAllTrainers": "Send to all trainers",
-  "coachAnnouncement": "Coach announcement"
+  "coachAnnouncement": "Coach announcement",
+  "remainingDays": "Remaining days"
 }

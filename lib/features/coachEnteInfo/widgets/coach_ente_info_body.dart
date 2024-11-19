@@ -14,6 +14,7 @@ import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
 import 'package:ironfit/core/routes/routes.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
+import 'package:image/image.dart' as img;
 
 class CoachEnterInfoBody extends StatefulWidget {
   final Function registerCoach;
@@ -62,16 +63,46 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
 
   Future<String> _uploadImage(String userId) async {
     try {
+      // Read image file
+      final bytes = await _selectedImage.readAsBytes();
+      final image = img.decodeImage(bytes);
+
+      if (image == null) return '';
+
+      // Resize the image to a maximum width of 800 pixels while maintaining aspect ratio
+      final resizedImage = img.copyResize(
+        image,
+        width: 800,
+        maintainAspect: true,
+        interpolation: img.Interpolation.linear,
+      );
+
+      // Encode the image to jpg with reduced quality (0-100)
+      final compressedBytes = img.encodeJpg(resizedImage, quality: 70);
+
+      // Create a new temporary file with compressed image
+      final tempDir = await Directory.systemTemp.createTemp();
+      final tempFile = File('${tempDir.path}/compressed_$userId.jpg');
+      await tempFile.writeAsBytes(compressedBytes);
+
+      // Upload the compressed image
       final storageRef =
           FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
 
-      // Upload the image file
-      await storageRef.putFile(_selectedImage);
+      await storageRef.putFile(
+        tempFile,
+        SettableMetadata(contentType: 'image/jpeg'),
+      );
 
-      // Get the download URL for the uploaded image
+      // Clean up temporary file
+      await tempFile.delete();
+      await tempDir.delete();
+
+      // Get the download URL
       final imageUrl = await storageRef.getDownloadURL();
       return imageUrl;
     } catch (e) {
+      print('Error uploading image: $e');
       return '';
     }
   }

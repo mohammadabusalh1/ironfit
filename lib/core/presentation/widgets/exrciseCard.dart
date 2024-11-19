@@ -15,6 +15,7 @@ class ExrciseCard extends StatefulWidget {
   final bool withIconButton;
   final double padding;
   final double spaceBetweenItems;
+  final Function() onTap;
 
   const ExrciseCard({
     super.key,
@@ -25,7 +26,10 @@ class ExrciseCard extends StatefulWidget {
     this.withIconButton = true,
     this.padding = 24,
     this.spaceBetweenItems = 24,
+    this.onTap = _defaultOnTap,
   });
+
+  static void _defaultOnTap() {}
 
   @override
   _ExrciseCardState createState() => _ExrciseCardState();
@@ -99,16 +103,19 @@ class _ExrciseCardState extends State<ExrciseCard> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        showImage(widget.image, context);
-      },
+      onTap: widget.onTap,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: widget.padding),
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            buildImage(),
+            InkWell(
+              onTap: () {
+                showImage(widget.image, context);
+              },
+              child: buildImage(),
+            ),
             SizedBox(width: widget.spaceBetweenItems),
             buildTextColumn(context),
             widget.withIconButton
@@ -198,9 +205,8 @@ class _ExrciseCardState extends State<ExrciseCard> {
       children: [
         IconButton(
           style: IconButton.styleFrom(
-            backgroundColor: _isTimerActive 
-                ? Palette.white.withOpacity(0.8)
-                : Palette.white,
+            backgroundColor:
+                _isTimerActive ? Palette.white.withOpacity(0.8) : Palette.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),

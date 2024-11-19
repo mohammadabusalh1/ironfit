@@ -474,7 +474,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         width: MediaQuery.of(context).size.width * 0.99,
                       ),
                       Positioned(
-                        top: MediaQuery.of(context).size.height * 0.05,
+                        top: MediaQuery.of(context).size.height * 0.04,
                         left: 24,
                         right: 24,
                         height: MediaQuery.of(context).size.height * 0.41,
@@ -491,20 +491,23 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                       children: [
                         _buildButtonCard(
                           context,
-                          LocalizationService.translateFromGeneral('personalInformation'),
-                          Icons.person_2,
+                          LocalizationService.translateFromGeneral(
+                              'personalInformation'),
+                          Icons.settings,
                           () => showEditInfoDialog(context),
                           Icons.arrow_forward_ios_outlined,
                           Palette.mainAppColorBack,
                         ),
                         _buildButtonCard(
                           context,
-                          LocalizationService.translateFromGeneral('changePassword'),
-                          Icons.password_outlined,
+                          LocalizationService.translateFromGeneral(
+                              'changePassword'),
+                          Icons.lock,
                           () => showEditPasswordDialog(context),
                           Icons.arrow_forward_ios_outlined,
                           Palette.mainAppColorBack,
                         ),
+                        SizedBox(height: 16,),
                         _buildButtonCard(
                           context,
                           LocalizationService.translateFromGeneral('gyms'),
@@ -516,8 +519,10 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                         _buildButtonCard(
                           context,
                           dir == 'rtl'
-                              ? LocalizationService.translateFromPage('English', 'selectLang')
-                              : LocalizationService.translateFromPage('Arabic', 'selectLang'),
+                              ? LocalizationService.translateFromPage(
+                                  'English', 'selectLang')
+                              : LocalizationService.translateFromPage(
+                                  'Arabic', 'selectLang'),
                           Icons.translate,
                           () {
                             LocalizationService.load(
@@ -562,10 +567,9 @@ class _UserProfileBodyState extends State<UserProfileBody> {
       });
 
       // Upload image in background
-      final storageRef = FirebaseStorage.instance
-          .ref()
-          .child('profile_images/${FirebaseAuth.instance.currentUser!.uid}.jpg');
-      
+      final storageRef = FirebaseStorage.instance.ref().child(
+          'profile_images/${FirebaseAuth.instance.currentUser!.uid}.jpg');
+
       final uploadTask = storageRef.putFile(
         File(pickedFile.path),
         SettableMetadata(contentType: 'image/jpeg'),
@@ -599,7 +603,6 @@ class _UserProfileBodyState extends State<UserProfileBody> {
         context,
         LocalizationService.translateFromGeneral('imageUploadSuccess'),
       );
-
     } catch (e) {
       Get.back(); // Remove loading dialog
       setState(() {
@@ -627,12 +630,39 @@ class _UserProfileBodyState extends State<UserProfileBody> {
               FontWeight.bold,
             ),
           ),
-          Text(
-            trainerEmail, // If no name, display a default message
-            style: AppStyles.textCairo(
-              12,
-              Palette.subTitleGrey,
-              FontWeight.w100,
+          // Text(
+          //   trainerEmail,
+          //   style: AppStyles.textCairo(
+          //     12,
+          //     Palette.subTitleGrey,
+          //     FontWeight.w100,
+          //   ),
+          // ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Palette.mainAppColorOrange.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.access_time,
+                  color: Palette.mainAppColorOrange,
+                  size: 16,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '${LocalizationService.translateFromGeneral('remainingDays')}: $numberOfDays ${LocalizationService.translateFromGeneral('daysAgo')}',
+                  style: AppStyles.textCairo(
+                    14,
+                    Palette.mainAppColorOrange,
+                    FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 12),
@@ -659,7 +689,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
     Color? iconBackColor,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -668,12 +698,12 @@ class _UserProfileBodyState extends State<UserProfileBody> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Palette.mainAppColoryellow2.withOpacity(0.1),
+              // color: Palette.mainAppColoryellow2.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Palette.mainAppColorBack.withOpacity(0.1),
-                width: 1,
-              ),
+              // border: Border.all(
+              //   color: Palette.mainAppColorBack.withOpacity(0.1),
+              //   width: 1,
+              // ),
             ),
             child: Row(
               children: [
@@ -697,9 +727,9 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                     size: 18,
                   ),
                 ),
-                
+
                 const SizedBox(width: 16),
-                
+
                 // Title
                 Expanded(
                   child: Text(
@@ -711,7 +741,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                     ),
                   ),
                 ),
-                
+
                 // Trailing Icon with animation
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
@@ -736,7 +766,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
       prefs.remove('userId');
       prefs.remove('token');
       prefs.remove('isCoach');
-      Get.toNamed(Routes.selectEnter);
+      Get.toNamed(Routes.singIn);
     } catch (e) {
       customSnackbar.showFailureMessage(context);
     }
@@ -755,8 +785,10 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                 ? CachedNetworkImage(
                     imageUrl: trainerImage,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) => Image.asset(Assets.notFound),
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        Image.asset(Assets.notFound),
                   )
                 : trainerImage.startsWith('/')
                     ? Image.file(
@@ -768,7 +800,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                     : Image.asset(Assets.notFound),
           ),
         ),
-        
+
         // Camera Icon Flag
         Positioned(
           bottom: 0,

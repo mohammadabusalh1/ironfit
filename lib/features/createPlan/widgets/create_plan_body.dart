@@ -283,20 +283,20 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                               color: Palette.mainAppColorWhite,
                             ),
                             const Spacer(),
-                            InkWell(
-                              onTap: () => _handleEditExercise(
-                                  day, day.exercises.indexOf(exercise)),
-                              child: ExrciseCard(
-                                spaceBetweenItems: 10,
-                                padding: 0,
-                                withIconButton: false,
-                                title: exercise.name,
-                                subtitle1:
-                                    "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
-                                subtitle2:
-                                    "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
-                                image: exercise.image,
-                              ),
+                            ExrciseCard(
+                              onTap: () {
+                                _handleEditExercise(
+                                    day, day.exercises.indexOf(exercise));
+                              },
+                              spaceBetweenItems: 10,
+                              padding: 0,
+                              withIconButton: false,
+                              title: exercise.name,
+                              subtitle1:
+                                  "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
+                              subtitle2:
+                                  "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
+                              image: exercise.image,
                             ),
                             const Spacer(),
                             IconButton(

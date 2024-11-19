@@ -41,6 +41,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
   flutter_image_compress: ^2.3.0
   connectivity_plus: ^6.1.0
+  image: ^4.3.0
 
   # Add any other packages your project might need like HTTP for API calls
   # Example:

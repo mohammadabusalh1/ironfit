@@ -21,13 +21,8 @@ class ExerciseDialog extends StatefulWidget {
 }
 
 class _ExerciseDialogState extends State<ExerciseDialog> {
-  List<dynamic> selectedExercises = [];
-  String rounds = '';
-  String repetitions = '';
+  List<Map<String, dynamic>> selectedExercisesWithDetails = [];
   late String dir;
-
-  late TextEditingController roundsController = TextEditingController();
-  late TextEditingController repetitionsController = TextEditingController();
   bool isAddNewImage = false;
 
   @override
@@ -37,14 +32,50 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
 
     // Initialize state based on initial exercise if provided
     if (widget.initialExercise != null) {
-      selectedExercises = [
-        widget.initialExercise
-      ]; // Adjust as per your data structure
-      rounds = widget.initialExercise!.rounds.toString();
-      repetitions = widget.initialExercise!.repetitions.toString();
-      roundsController = TextEditingController(text: rounds);
-      repetitionsController = TextEditingController(text: repetitions);
+      selectedExercisesWithDetails = [{
+        'exercise': widget.initialExercise,
+        'rounds': TextEditingController(text: widget.initialExercise!.rounds.toString()),
+        'repetitions': TextEditingController(text: widget.initialExercise!.repetitions.toString()),
+      }];
     }
+  }
+
+  Widget _buildExerciseItem(Map<String, dynamic> exerciseData, int index) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          isAddNewImage 
+              ? exerciseData['exercise']['Exercise_Name']
+              : exerciseData['exercise'].name,
+          style: AppStyles.textCairo(
+            12,
+            Palette.mainAppColorWhite,
+            FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 8),
+        BuildTextField(
+          dir: dir,
+          controller: exerciseData['rounds'],
+          label: LocalizationService.translateFromGeneral('rounds'),
+          keyboardType: TextInputType.number,
+          icon: Icons.refresh,
+        ),
+        const SizedBox(height: 8),
+        BuildTextField(
+          dir: dir,
+          controller: exerciseData['repetitions'],
+          label: LocalizationService.translateFromGeneral('repetitions'),
+          keyboardType: TextInputType.number,
+          icon: Icons.loop,
+        ),
+        const SizedBox(height: 16),
+        if (index < selectedExercisesWithDetails.length - 1)
+          Divider(color: Palette.white.withOpacity(0.3)),
+        const SizedBox(height: 16),
+      ],
+    );
   }
 
   @override
@@ -69,67 +100,40 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                 BuildIconButton(
                   width: MediaQuery.of(context).size.width,
                   fontSize: 12,
-                  text: LocalizationService.translateFromGeneral(
-                      'selectExercise'),
+                  text: LocalizationService.translateFromGeneral('selectExercise'),
                   backgroundColor: Palette.mainAppColorWhite,
                   textColor: Palette.mainAppColorNavy,
                   onPressed: () async {
-                    final val = await showDialog(
-                      context: context,
-                      builder: (context) => ExercisesScreen(
-                        fileName: 'back_exercises',
-                      ),
-                    );
+                    try {
+                      final result = await showDialog<List<dynamic>>(
+                        context: context,
+                        builder: (context) => ExercisesScreen(
+                          fileName: 'back_exercises',
+                        ),
+                      );
 
-                    if (val != null) {
-                      setState(() {
-                        isAddNewImage = true;
-                        selectedExercises = val;
-                      });
+                      if (result != null && result.isNotEmpty) {
+                        setState(() {
+                          isAddNewImage = true;
+                          selectedExercisesWithDetails = result.map((e) => {
+                            'exercise': e,
+                            'rounds': TextEditingController(),
+                            'repetitions': TextEditingController(),
+                          }).toList();
+                        });
+                      }
+                    } catch (e) {
+                      print('Error selecting exercise: $e');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error selecting exercise')),
+                      );
                     }
                   },
                 ),
                 const SizedBox(height: 12),
-                if (selectedExercises.isNotEmpty)
-                  ...selectedExercises.map(
-                    (e) => Text(
-                      widget.initialExercise != null
-                          ? widget.initialExercise!.name
-                          : e['Exercise_Name'], // Adjust based on your data structure
-                      style: AppStyles.textCairo(
-                        12,
-                        Palette.mainAppColorWhite,
-                        FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: 24),
-                BuildTextField(
-                  dir: dir,
-                  onChange: (value) {
-                    setState(() {
-                      rounds = value;
-                    });
-                  },
-                  controller: roundsController, // Set initial value if editing
-                  label: LocalizationService.translateFromGeneral('rounds'),
-                  keyboardType: TextInputType.number,
-                  icon: Icons.refresh,
-                ),
-                const SizedBox(height: 12),
-                BuildTextField(
-                  dir: dir,
-                  onChange: (value) {
-                    setState(() {
-                      repetitions = value;
-                    });
-                  },
-                  controller:
-                      repetitionsController, // Set initial value if editing
-                  label:
-                      LocalizationService.translateFromGeneral('repetitions'),
-                  keyboardType: TextInputType.number,
-                  icon: Icons.loop,
+                ...List.generate(
+                  selectedExercisesWithDetails.length,
+                  (index) => _buildExerciseItem(selectedExercisesWithDetails[index], index),
                 ),
               ],
             ),
@@ -137,42 +141,27 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                if (widget.initialExercise != null &&
-                    selectedExercises.length == 1) {
+                for (var exerciseData in selectedExercisesWithDetails) {
+                  final rounds = int.tryParse(exerciseData['rounds'].text) ?? 0;
+                  final repetitions = int.tryParse(exerciseData['repetitions'].text) ?? 0;
+                  
+                  Exercise exercise;
                   if (isAddNewImage) {
-                    Exercise exercise = Exercise(
-                      name: selectedExercises[0][
-                          'Exercise_Name'], // Adjust based on your data structure
-                      image: selectedExercises[0][
-                          'Exercise_Image'], // Adjust based on your data structure
-                      rounds: int.parse(rounds),
-                      repetitions: int.parse(repetitions),
+                    exercise = Exercise(
+                      name: exerciseData['exercise']['Exercise_Name'],
+                      image: exerciseData['exercise']['Exercise_Image'],
+                      rounds: rounds,
+                      repetitions: repetitions,
                     );
-                    widget.addExercise(exercise);
                   } else {
-                    Exercise exercise = Exercise(
-                      name: selectedExercises[0]
-                          .name, // Adjust based on your data structure
-                      image: selectedExercises[0]
-                          .image, // Adjust based on your data structure
-                      rounds: int.parse(rounds),
-                      repetitions: int.parse(repetitions),
+                    exercise = Exercise(
+                      name: exerciseData['exercise'].name,
+                      image: exerciseData['exercise'].image,
+                      rounds: rounds,
+                      repetitions: repetitions,
                     );
-                    widget.addExercise(exercise);
                   }
-                } else if (selectedExercises.isNotEmpty) {
-                  selectedExercises.forEach((e) {
-                    Exercise exercise = Exercise(
-                      name: e[
-                          'Exercise_Name'], // Adjust based on your data structure
-                      image: e[
-                          'Exercise_Image'], // Adjust based on your data structure
-                      rounds: int.parse(rounds),
-                      repetitions: int.parse(repetitions),
-                    );
-
-                    widget.addExercise(exercise);
-                  });
+                  widget.addExercise(exercise);
                 }
                 Navigator.pop(context);
               },
@@ -193,5 +182,15 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // Clean up controllers
+    for (var exercise in selectedExercisesWithDetails) {
+      exercise['rounds'].dispose();
+      exercise['repetitions'].dispose();
+    }
+    super.dispose();
   }
 }

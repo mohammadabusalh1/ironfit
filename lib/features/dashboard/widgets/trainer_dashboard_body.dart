@@ -115,8 +115,7 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
         trainerName =
             '${userDoc['firstName'] ?? 'لا يوجد'} ${userDoc['lastName'] ?? 'لا يوجد'}';
         trainerEmail = userDoc['email'] ?? 'البريد الإلكتروني';
-        trainerImage = userDoc['profileImageUrl'] ??
-            'https://cdn.vectorstock.com/i/500p/30/21/data-search-not-found-concept-vector-36073021.jpg';
+        trainerImage = userDoc['profileImageUrl'] ?? Assets.notFound;
       });
     } catch (e) {
       // Handle any errors that occur during the Firestore operation
@@ -243,6 +242,13 @@ class _TrainerDashboardBodyState extends State<TrainerDashboardBody> {
         children: [
           CircleAvatar(
             radius: 30,
+            onBackgroundImageError: (exception, stackTrace) {
+              // Fallback to default image on error
+              setState(() {
+                trainerImage =
+                    ''; // This will trigger the use of Assets.notFound
+              });
+            },
             backgroundImage: NetworkImage(
                 trainerImage.isEmpty ? Assets.notFound : trainerImage),
           ),

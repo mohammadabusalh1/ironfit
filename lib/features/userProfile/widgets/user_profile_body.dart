@@ -18,7 +18,6 @@ import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/theme.dart';
 import 'package:ironfit/core/routes/routes.dart';
-import 'package:ironfit/features/dashboard/widgets/trainer_dashboard_body.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:ironfit/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';

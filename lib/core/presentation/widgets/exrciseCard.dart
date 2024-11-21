@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/workmanager.dart';
 
 class ExrciseCard extends StatefulWidget {
   final String image;
@@ -44,7 +45,9 @@ class _ExrciseCardState extends State<ExrciseCard> {
   @override
   void initState() {
     super.initState();
-    _loadClickedState(); // Load saved state
+    _loadClickedState();
+    _loadTimerState();
+    Workmanager().initialize(callbackDispatcher);
   }
 
   @override
@@ -76,11 +79,24 @@ class _ExrciseCardState extends State<ExrciseCard> {
     );
   }
 
-  void _startTimer() {
+  void _startTimer({int? resumeFrom}) {
+    final endTime = DateTime.now().millisecondsSinceEpoch + (resumeFrom ?? 90) * 1000;
+    
     setState(() {
-      _timeLeft = 90;
+      _timeLeft = resumeFrom ?? 90;
       _isTimerActive = true;
     });
+
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setInt('timer_end_${widget.title}', endTime);
+    });
+
+    Workmanager().registerOneOffTask(
+      'timer_${widget.title}',
+      'timer_task',
+      inputData: {'title': widget.title},
+      initialDelay: const Duration(seconds: 90),
+    );
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -250,5 +266,45 @@ class _ExrciseCardState extends State<ExrciseCard> {
           ),
       ],
     );
+  }
+
+  // Add this static method at the top level of the file
+  @pragma('vm:entry-point')
+  static void callbackDispatcher() {
+    Workmanager().executeTask((task, inputData) async {
+      // Handle the background timer task
+      final prefs = await SharedPreferences.getInstance();
+      final endTime = prefs.getInt('timer_end_${inputData?['title']}');
+      
+      if (endTime != null && DateTime.now().millisecondsSinceEpoch < endTime) {
+        // Timer is still running
+        return Future.value(true);
+      }
+      
+      // Timer completed
+      prefs.remove('timer_end_${inputData?['title']}');
+      return Future.value(true);
+    });
+  }
+
+  void _loadTimerState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final endTime = prefs.getInt('timer_end_${widget.title}');
+    
+    if (endTime != null) {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      if (now < endTime) {
+        // Timer is still running
+        final remainingTime = (endTime - now) ~/ 1000;
+        setState(() {
+          _timeLeft = remainingTime;
+          _isTimerActive = true;
+          _startTimer(resumeFrom: remainingTime);
+        });
+      } else {
+        // Timer has completed while app was closed
+        prefs.remove('timer_end_${widget.title}');
+      }
+    }
   }
 }

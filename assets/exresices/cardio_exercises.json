@@ -10,6 +10,14 @@
   {
     "bodyPart": "cardio",
     "equipment": "body weight",
+    "gifUrl": "https://cdn.jefit.com/assets/img/exercises/gifs/867.gif",
+    "id": 3220,
+    "name": "Arm Circle",
+    "target": "cardiovascular system"
+  },
+  {
+    "bodyPart": "cardio",
+    "equipment": "body weight",
     "gifUrl": "https://gymvisual.com/img/p/1/4/7/5/4/14754.gif",
     "id": 3672,
     "name": "back and forth step",

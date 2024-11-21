@@ -20,95 +20,237 @@ class ExercisesScreen extends StatefulWidget {
 
 class _ExercisesScreenState extends State<ExercisesScreen> {
   final ScrollController _scrollController = ScrollController();
-  int _itemCount = 10;
-  List<dynamic> _filteredExercises = [];
-  List<dynamic> exercises = [];
-  String fileNameSelected = '';
-  List<dynamic> targetMuscles = [];
-  String targetMuscleSelected = '';
-  int stage = 1;
-  double high = 570;
-  List<dynamic> selectedExercises = [];
-  late String dir;
+  final TextEditingController _searchController = TextEditingController();
+  
+  // Constants
+  static const int _itemsPerPage = 10;
+  static const List<String> exerciseFiles = [
+    'back_exercises',
+    'cardio_exercises',
+    'chest_exercises',
+    'lower arms_exercises',
+    'lower legs_exercises',
+    'neck_exercises',
+    'shoulders_exercises',
+    'upper arms_exercises',
+    'upper legs_exercises',
+    'waist_exercises'
+  ];
 
-  TextEditingController _searchController = TextEditingController();
+  // State variables
+  int _itemCount = _itemsPerPage;
+  List<Map<String, dynamic>> _filteredExercises = [];
+  List<Map<String, dynamic>> _allExercises = [];
+  Set<String> _targetMuscles = {};
+  String _fileNameSelected = '';
+  String _targetMuscleSelected = '';
+  int _stage = 1;
+  bool _isLoading = true;
+  late String _dir;
 
-  Future<void> load(fileName) async {
-    String jsonString =
-        await rootBundle.loadString('assets/exresices/$fileName.json');
-    List<dynamic> jsonMap = json.decode(jsonString);
-    setState(() {
-      _filteredExercises = exercises = jsonMap;
-      _itemCount = 10;
-      fileNameSelected = fileName;
-    });
-    loadTargetMuscles(jsonMap);
-  }
-
-  Future<void> loadTarget(target) async {
-    setState(() {
-      _filteredExercises =
-          exercises.where((exercise) => exercise['target'] == target).toList();
-    });
-  }
-
-  Future<void> loadTargetMuscles(exercises) async {
-    setState(() {
-      targetMuscles =
-          exercises.map((exercise) => exercise['target']).toSet().toList();
-      targetMuscleSelected = targetMuscles[0];
-    });
-  }
-
-  void _searchExercises(String query) {
-    setState(() {
-      if (query.isEmpty) {
-        _filteredExercises = exercises;
-      } else {
-        _searchController.text = query;
-        _filteredExercises = exercises;
-        _filteredExercises = _filteredExercises
-            .where((exercise) => exercise['name']
-                .toString()
-                .toLowerCase()
-                .contains(query.toLowerCase()))
-            .toList();
-      }
-      _itemCount = 10; // Reset item count when search query changes
-    });
-  }
+  final List<Map<String, String>> _selectedExercises = [];
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
-    load('back_exercises');
-    dir = LocalizationService.getDir();
+    _dir = LocalizationService.getDir();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    await _loadAllExercises();
+    // await _load('back_exercises');
+  }
+
+  Future<void> _loadAllExercises() async {
+    try {
+      List<Map<String, dynamic>> allLoadedExercises = [];
+      
+      for (String fileName in exerciseFiles) {
+        final jsonString = await rootBundle.loadString('assets/exresices/$fileName.json');
+        final List<dynamic> jsonList = json.decode(jsonString);
+        allLoadedExercises.addAll(
+          jsonList.map((item) => Map<String, dynamic>.from(item))
+        );
+      }
+
+      setState(() {
+        _allExercises = allLoadedExercises;
+        _filteredExercises = allLoadedExercises;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading exercises: $e');
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _load(String fileName) async {
+    setState(() {
+      _filteredExercises = _allExercises
+          .where((exercise) => _normalizeString(exercise['bodyPart']) == 
+                             _normalizeString(fileName.replaceAll('_exercises', '')))
+          .toList();
+      _itemCount = _itemsPerPage;
+      _fileNameSelected = fileName;
+      _loadTargetMuscles();
+    });
+  }
+
+  String _normalizeString(String input) => 
+      input.toLowerCase().replaceAll(' ', '_');
+
+  void _loadTargetMuscles() {
+    _targetMuscles = _filteredExercises
+        .map((exercise) => exercise['target'].toString())
+        .toSet();
+    _targetMuscleSelected = _targetMuscles.first;
+  }
+
+  void _searchExercises(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        _filteredExercises = _fileNameSelected.isEmpty 
+            ? _allExercises 
+            : _allExercises.where((exercise) => 
+                _normalizeString(exercise['bodyPart']) == 
+                _normalizeString(_fileNameSelected.replaceAll('_exercises', '')))
+              .toList();
+      } else {
+        final searchBase = _fileNameSelected.isEmpty 
+            ? _allExercises 
+            : _filteredExercises;
+            
+        final lowercaseQuery = query.toLowerCase();
+        _filteredExercises = searchBase.where((exercise) {
+          return exercise['name'].toString().toLowerCase().contains(lowercaseQuery) ||
+                 exercise['target'].toString().toLowerCase().contains(lowercaseQuery) ||
+                 exercise['bodyPart'].toString().toLowerCase().contains(lowercaseQuery);
+        }).toList();
+      }
+      _itemCount = _itemsPerPage;
+    });
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      setState(() => _itemCount += _itemsPerPage);
+    }
+    setState(() => _stage = _scrollController.position.pixels == 0 ? 1 : 2);
   }
 
   @override
   void dispose() {
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
-  void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      setState(() {
-        _itemCount += 10;
-      });
+  // Build methods for UI components
+  Widget _buildDropdowns() {
+    if (_stage != 1) return const SizedBox();
+    
+    return Column(
+      children: [
+        _buildBodyPartDropdown(),
+        const SizedBox(height: 8),
+        _buildTargetMuscleDropdown(),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Widget _buildBodyPartDropdown() {
+    return DropdownButton<String>(
+      value: _fileNameSelected.isEmpty ? exerciseFiles.first : _fileNameSelected,
+      items: exerciseFiles.map((String fileName) {
+        return DropdownMenuItem<String>(
+          value: fileName,
+          child: Text(
+            fileName.replaceAll('_exercises', '').replaceAll('_', ' '),
+            style: const TextStyle(color: Palette.white),
+          ),
+        );
+      }).toList(),
+      onChanged: (String? newValue) {
+        if (newValue != null) _load(newValue);
+      },
+      dropdownColor: Palette.secondaryColor,
+    );
+  }
+
+  Widget _buildTargetMuscleDropdown() {
+    return DropdownButton<String>(
+      value: _targetMuscleSelected,
+      items: _targetMuscles.map((String target) {
+        return DropdownMenuItem<String>(
+          value: target,
+          child: Text(
+            target.replaceAll('_', ' '),
+            style: const TextStyle(color: Palette.white),
+          ),
+        );
+      }).toList(),
+      onChanged: (String? newValue) {
+        if (newValue != null) {
+          setState(() => _targetMuscleSelected = newValue);
+        }
+      },
+      dropdownColor: Palette.secondaryColor,
+    );
+  }
+
+  Widget _buildExerciseList() {
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(
+          color: Palette.mainAppColorWhite,
+        ),
+      );
     }
-    if (_scrollController.position.pixels == 0) {
-      setState(() {
-        stage = 1;
-      });
-    } else {
-      setState(() {
-        stage = 2;
-      });
-    }
+
+    return ListView.builder(
+      controller: _scrollController,
+      itemCount: _itemCount.clamp(0, _filteredExercises.length),
+      itemBuilder: (context, index) {
+        if (index >= _filteredExercises.length) return null;
+        
+        final exercise = _filteredExercises[index];
+        final isSelected = _selectedExercises.any(
+          (e) => e['Exercise_Name'] == exercise['name']
+        );
+
+        return Column(
+          children: [
+            GestureDetector(
+              onTap: () => _toggleExerciseSelection(exercise),
+              child: buildCarouselItem(
+                exercise.cast<String, String>(),
+                padding: 150,
+                isSelected: isSelected,
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+        );
+      },
+    );
+  }
+
+  void _toggleExerciseSelection(Map<String, dynamic> exercise) {
+    setState(() {
+      final exerciseName = exercise['name'];
+      if (_selectedExercises.any((e) => e['Exercise_Name'] == exerciseName)) {
+        _selectedExercises.removeWhere((e) => e['Exercise_Name'] == exerciseName);
+      } else {
+        _selectedExercises.add({
+          'Exercise_Name': exerciseName,
+          'Exercise_Image': exercise['gifUrl'],
+        });
+      }
+    });
   }
 
   @override
@@ -116,273 +258,115 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     return Theme(
       data: customThemeData,
       child: Directionality(
-          textDirection: TextDirection.rtl,
-          child: SingleChildScrollView(
-            child: AlertDialog(
-              title: Text(
-                LocalizationService.translateFromGeneral('selectExercise'),
-                style: const TextStyle(color: Palette.white, fontSize: 20),
-              ),
-              content: Container(
-                width: double.maxFinite,
-                height: high, // Adjust height as per your content's needs
-                child: Column(
-                  children: [
-                    stage == 1
-                        ? Container(
-                            width: double.infinity,
-                            child: DropdownButtonFormField<String>(
-                              dropdownColor: Palette.secondaryColor,
-                              value: fileNameSelected.isEmpty
-                                  ? 'back_exercises'
-                                  : fileNameSelected,
-                              decoration: InputDecoration(
-                                hintText:
-                                    LocalizationService.translateFromGeneral(
-                                        'bodyPart'),
-                                hintStyle: AppStyles.textCairo(
-                                    14, Palette.white, FontWeight.w500),
+        textDirection: TextDirection.rtl,
+        child: SingleChildScrollView(
+          child: Stack(
+            children: [
+              AlertDialog(
+                title: Text(
+                  LocalizationService.translateFromGeneral('selectExercise'),
+                  style: const TextStyle(color: Palette.white, fontSize: 20),
+                ),
+                content: Container(
+                  width: double.maxFinite,
+                  height: MediaQuery.of(context).size.height * 0.8,
+                  child: Column(
+                    children: [
+                      _stage == 1
+                          ? _buildDropdowns()
+                          : SizedBox(),
+                      _stage == 1 ? const SizedBox(height: 8) : SizedBox(),
+                      BuildTextField(
+                        dir: _dir,
+                        label: LocalizationService.translateFromGeneral(
+                            'searchPrompt'),
+                        onChange: (v) {
+                          _searchExercises(v);
+                        },
+                        controller: _searchController,
+                      ),
+                      const SizedBox(height: 24),
+                      Expanded(
+                        child: _isLoading 
+                        ? Center(
+                            child: Container(
+                              padding: EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: Palette.secondaryColor.withOpacity(0.9),
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              onChanged: (newValue) {
-                                setState(() {
-                                  fileNameSelected = newValue!;
-
-                                  load(newValue);
-                                });
-                              },
-                              items: [
-                                {
-                                  'value': 'back_exercises',
-                                  'label':
-                                      LocalizationService.translateFromGeneral(
-                                          'back'),
-                                },
-                                {
-                                  'value': 'cardio_exercises',
-                                  'label':
-                                      LocalizationService.translateFromGeneral(
-                                          'cardio'),
-                                },
-                                {
-                                  'value': 'chest_exercises',
-                                  'label':
-                                      LocalizationService.translateFromGeneral(
-                                          'chest'),
-                                },
-                                {
-                                  'value': 'lower arms_exercises',
-                                  'label':
-                                      LocalizationService.translateFromGeneral(
-                                          'lowerArms'),
-                                },
-                                {
-                                  'value': 'lower legs_exercises',
-                                  'label':
-                                      LocalizationService.translateFromGeneral(
-                                          'lowerLegs'),
-                                },
-                                {
-                                  'value': 'neck_exercises',
-                                  'label':
-                                      LocalizationService.translateFromGeneral(
-                                          'neck'),
-                                },
-                                {
-                                  'value': 'shoulders_exercises',
-                                  'label':
-                                      LocalizationService.translateFromGeneral(
-                                          'shoulders'),
-                                },
-                                {
-                                  'value': 'upper arms_exercises',
-                                  'label':
-                                      LocalizationService.translateFromGeneral(
-                                          'upperArms'),
-                                },
-                                {
-                                  'value': 'upper legs_exercises',
-                                  'label':
-                                      LocalizationService.translateFromGeneral(
-                                          'upperLegs'),
-                                },
-                                {
-                                  'value': 'waist_exercises',
-                                  'label':
-                                      LocalizationService.translateFromGeneral(
-                                          'waist'),
-                                },
-                              ]
-                                  .map((day) => DropdownMenuItem<String>(
-                                        value: day['value']!,
-                                        child: Align(
-                                          alignment:
-                                              AlignmentDirectional.centerEnd,
-                                          child: Text(
-                                            day['label']!,
-                                            style: AppStyles.textCairo(14,
-                                                Palette.white, FontWeight.w500),
-                                          ),
-                                        ),
-                                      ))
-                                  .toList(),
-                            ),
-                          )
-                        : SizedBox(),
-                    stage == 1 ? const SizedBox(height: 8) : SizedBox(),
-                    stage == 1
-                        ? Container(
-                            width: double.infinity,
-                            child: DropdownButtonFormField<String>(
-                              dropdownColor: Palette.secondaryColor,
-                              hint: Text(
-                                  LocalizationService.translateFromGeneral(
-                                      'bodyPart'),
-                                  style: AppStyles.textCairo(
-                                      14, Palette.white, FontWeight.w500)),
-                              value: targetMuscleSelected,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  targetMuscleSelected = newValue!;
-
-                                  loadTarget(newValue);
-                                });
-                              },
-                              items: targetMuscles
-                                  .map((muscle) => {
-                                        'value': muscle,
-                                        'label': LocalizationService
-                                                        .translateFromGeneral(
-                                                            muscle)
-                                                    .length >
-                                                24
-                                            ? LocalizationService
-                                                    .translateFromGeneral(
-                                                        muscle)
-                                                .substring(0, 24)
-                                            : LocalizationService
-                                                .translateFromGeneral(muscle)
-                                      })
-                                  .map((day) => DropdownMenuItem(
-                                        value: '${day['value']}',
-                                        child: Align(
-                                          alignment:
-                                              AlignmentDirectional.centerEnd,
-                                          child: Text(day['label']!,
-                                              style: AppStyles.textCairo(
-                                                  14,
-                                                  Palette.white,
-                                                  FontWeight.w500)),
-                                        ),
-                                      ))
-                                  .toList(),
-                            ),
-                          )
-                        : SizedBox(),
-                    stage == 1 ? const SizedBox(height: 8) : SizedBox(),
-                    BuildTextField(
-                      dir: dir,
-                      label: LocalizationService.translateFromGeneral(
-                          'searchPrompt'),
-                      onChange: (v) {
-                        _searchExercises(v);
-                      },
-                      controller: _searchController,
-                    ),
-                    const SizedBox(height: 24),
-                    Expanded(
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        itemCount: _itemCount,
-                        itemBuilder: (context, index) {
-                          try {
-                            if (index < _filteredExercises.length) {
-                              return Column(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        // Toggle isSelected state when tapped
-                                        selectedExercises.any((e) =>
-                                                e['Exercise_Name'] ==
-                                                _filteredExercises[index]
-                                                    ['name'])
-                                            ? selectedExercises.removeWhere(
-                                                (e) =>
-                                                    e['Exercise_Name'] ==
-                                                    _filteredExercises[index]
-                                                        ['name'])
-                                            : selectedExercises.add({
-                                                'Exercise_Name':
-                                                    _filteredExercises[index]
-                                                        ['name'],
-                                                'Exercise_Image':
-                                                    _filteredExercises[index]
-                                                        ['gifUrl'],
-                                              });
-                                      });
-                                    },
-                                    child: buildCarouselItem(
-                                      _filteredExercises[index]
-                                          .cast<String, String>(),
-                                      padding: 150,
-                                      isSelected: selectedExercises.any((e) =>
-                                          e['Exercise_Name'] ==
-                                          _filteredExercises[index]['name']),
+                                  CircularProgressIndicator(
+                                    color: Palette.mainAppColorWhite,
+                                  ),
+                                  SizedBox(height: 16),
+                                  Text(
+                                    LocalizationService.translateFromGeneral('loading'),
+                                    style: AppStyles.textCairo(
+                                      14, 
+                                      Palette.white, 
+                                      FontWeight.w500
                                     ),
                                   ),
-                                  const SizedBox(height: 12),
                                 ],
-                              );
-                            } else {
-                              return Container(); // Return an empty container for extra items
-                            }
-                          } catch (e) {
-                            print(e);
-                            return Container();
-                          }
-                        },
+                              ),
+                            ),
+                          )
+                        : _buildExerciseList(),
                       ),
-                    ),
-                    SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        BuildIconButton(
-                          width: 70,
-                          height: 40,
-                          fontSize: 12,
-                          icon: Icons.arrow_upward,
-                          backgroundColor: Palette.mainAppColorWhite,
-                          iconColor: Palette.mainAppColorNavy,
-                          onPressed: () {
-                            setState(() {
-                              _scrollController.jumpTo(0);
-                            });
-                          },
-                        ),
-                        BuildIconButton(
-                          width: 75,
-                          height: 40,
-                          fontSize: 12,
-                          text:
-                              LocalizationService.translateFromGeneral('save'),
-                          onPressed: () =>
-                              Navigator.of(context).pop(selectedExercises),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: Text(
-                            LocalizationService.translateFromGeneral('cancel'),
-                            style: const TextStyle(color: Palette.white),
+                      SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          BuildIconButton(
+                            width: 70,
+                            height: 40,
+                            fontSize: 12,
+                            icon: Icons.arrow_upward,
+                            backgroundColor: Palette.mainAppColorWhite,
+                            iconColor: Palette.mainAppColorNavy,
+                            onPressed: () {
+                              setState(() {
+                                _scrollController.jumpTo(0);
+                              });
+                            },
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          BuildIconButton(
+                            width: 75,
+                            height: 40,
+                            fontSize: 12,
+                            text:
+                                LocalizationService.translateFromGeneral('save'),
+                            onPressed: () =>
+                                Navigator.of(context).pop(_selectedExercises),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: Text(
+                              LocalizationService.translateFromGeneral('cancel'),
+                              style: const TextStyle(color: Palette.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          )),
+              
+              // Optional: Add a loading overlay for operations
+              if (_isLoading)
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.black26,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

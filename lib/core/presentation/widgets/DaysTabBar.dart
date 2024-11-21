@@ -29,13 +29,11 @@ class _CustomTabBarWidgetState extends State<CustomTabBarWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.6,
       child: Column(
         children: [
-          Align(
-            alignment: Alignment.center,
-            child: buildTabBar(),
-          ),
+          buildTabBar(),
           Expanded(
             child: buildTabBarView(),
           ),
@@ -129,33 +127,28 @@ class _CustomTabBarWidgetState extends State<CustomTabBarWidget>
   // Reusable content builder for each tab
   Widget buildTabContent(String content, List<Exercise> exercises) {
     return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          const SizedBox(height: 24),
-          Center(
-            child: Text(content, style: const TextStyle(color: Palette.white)),
-          ),
-          const SizedBox(height: 24),
-          ...exercises.map((exercise) {
-            return Column(
-              children: [
-                ExrciseCard(
-                  image: exercise.image,
-                  title: exercise.name,
-                  subtitle1:
-                      "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
-                  subtitle2:
-                      "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
-                ),
-                const SizedBox(height: 24),
-              ],
-            );
-          }), // Spread operator to flatten the list
-        ],
+      child: Container(
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 24),
+            Center(
+              child: Text(content, style: const TextStyle(color: Palette.white)),
+            ),
+            const SizedBox(height: 24),
+            ...exercises.map((exercise) => Padding(
+              padding: const EdgeInsets.only(bottom: 24),
+              child: ExrciseCard(
+                image: exercise.image,
+                title: exercise.name,
+                subtitle1: "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
+                subtitle2: "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
+              ),
+            )).toList(),
+          ],
+        ),
       ),
     );
   }
 }
-
-

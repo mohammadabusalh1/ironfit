@@ -17,4 +17,9 @@ class PreferencesService {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('plan_$userId');
   }
+
+  Future<void> removePlan(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('plan_$userId');
+  }
 }

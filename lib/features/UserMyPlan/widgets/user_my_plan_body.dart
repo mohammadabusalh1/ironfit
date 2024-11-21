@@ -30,7 +30,7 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
 
-  late BannerAd bannerAd;
+  BannerAd? bannerAd;
   bool isBannerAdLoaded = false;
   String dir = LocalizationService.getDir();
 
@@ -38,25 +38,33 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateSingIn();
-    bannerAd = BannerAd(
-        adUnitId: 'ca-app-pub-2914276526243261/3712377319',
-        size: AdSize.banner,
-        request: const AdRequest(),
-        listener: BannerAdListener(onAdLoaded: (ad) {
-          setState(() {
-            isBannerAdLoaded = true;
-          });
-        }, onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-        }));
-    bannerAd.load();
+    _loadAd();
     plan = {};
     _fetchPlan();
   }
 
+  void _loadAd() {
+    bannerAd = BannerAd(
+      adUnitId: 'ca-app-pub-2914276526243261/3712377319',
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            isBannerAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        }
+      )
+    );
+    bannerAd?.load();
+  }
+
   @override
   void dispose() {
-    bannerAd.dispose();
+    bannerAd?.dispose();
     super.dispose();
   }
 
@@ -126,22 +134,35 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
   Widget build(BuildContext context) {
     return SafeArea(
       top: true,
-      child: SizedBox(
-        width: double.infinity,
-        child: Column(
-          children: [
-            _buildHeader(context),
-            const SizedBox(height: 12),
-            isBannerAdLoaded
-                ? SizedBox(
-                    child: AdWidget(ad: bannerAd),
-                    height: bannerAd.size.height.toDouble(),
-                    width: bannerAd.size.width.toDouble(),
-                  )
-                : const SizedBox(),
-            const SizedBox(height: 12),
-            CustomTabBarWidget(plan: plan),
-          ],
+      child: RefreshIndicator(
+        onRefresh: () async {
+          User? user = _auth.currentUser;
+          if (user != null) {
+            await preferencesService.removePlan(user.uid);
+          }
+          await _fetchPlan();
+        },
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildHeader(context),
+                  const SizedBox(height: 12),
+                  if (isBannerAdLoaded && bannerAd != null)
+                    SizedBox(
+                      height: bannerAd!.size.height.toDouble(),
+                      width: bannerAd!.size.width.toDouble(),
+                      child: AdWidget(ad: bannerAd!),
+                    ),
+                  const SizedBox(height: 12),
+                  CustomTabBarWidget(plan: plan),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

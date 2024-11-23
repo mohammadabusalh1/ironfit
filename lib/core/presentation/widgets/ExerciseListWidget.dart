@@ -21,7 +21,7 @@ class ExercisesScreen extends StatefulWidget {
 class _ExercisesScreenState extends State<ExercisesScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
-  
+
   // Constants
   static const int _itemsPerPage = 10;
   static const List<String> exerciseFiles = [
@@ -66,13 +66,13 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   Future<void> _loadAllExercises() async {
     try {
       List<Map<String, dynamic>> allLoadedExercises = [];
-      
+
       for (String fileName in exerciseFiles) {
-        final jsonString = await rootBundle.loadString('assets/exresices/$fileName.json');
+        final jsonString =
+            await rootBundle.loadString('assets/exresices/$fileName.json');
         final List<dynamic> jsonList = json.decode(jsonString);
-        allLoadedExercises.addAll(
-          jsonList.map((item) => Map<String, dynamic>.from(item))
-        );
+        allLoadedExercises
+            .addAll(jsonList.map((item) => Map<String, dynamic>.from(item)));
       }
 
       setState(() {
@@ -89,8 +89,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   Future<void> _load(String fileName) async {
     setState(() {
       _filteredExercises = _allExercises
-          .where((exercise) => _normalizeString(exercise['bodyPart']) == 
-                             _normalizeString(fileName.replaceAll('_exercises', '')))
+          .where((exercise) =>
+              _normalizeString(exercise['bodyPart']) ==
+              _normalizeString(fileName.replaceAll('_exercises', '')))
           .toList();
       _itemCount = _itemsPerPage;
       _fileNameSelected = fileName;
@@ -98,7 +99,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     });
   }
 
-  String _normalizeString(String input) => 
+  String _normalizeString(String input) =>
       input.toLowerCase().replaceAll(' ', '_');
 
   void _loadTargetMuscles() {
@@ -111,22 +112,29 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   void _searchExercises(String query) {
     setState(() {
       if (query.isEmpty) {
-        _filteredExercises = _fileNameSelected.isEmpty 
-            ? _allExercises 
-            : _allExercises.where((exercise) => 
-                _normalizeString(exercise['bodyPart']) == 
-                _normalizeString(_fileNameSelected.replaceAll('_exercises', '')))
-              .toList();
+        _filteredExercises = _fileNameSelected.isEmpty
+            ? _allExercises
+            : _allExercises
+                .where((exercise) =>
+                    _normalizeString(exercise['bodyPart']) ==
+                    _normalizeString(
+                        _fileNameSelected.replaceAll('_exercises', '')))
+                .toList();
       } else {
-        final searchBase = _fileNameSelected.isEmpty 
-            ? _allExercises 
-            : _filteredExercises;
-            
         final lowercaseQuery = query.toLowerCase();
-        _filteredExercises = searchBase.where((exercise) {
-          return exercise['name'].toString().toLowerCase().contains(lowercaseQuery) ||
-                 exercise['target'].toString().toLowerCase().contains(lowercaseQuery) ||
-                 exercise['bodyPart'].toString().toLowerCase().contains(lowercaseQuery);
+        _filteredExercises = _allExercises.where((exercise) {
+          return exercise['name']
+                  .toString()
+                  .toLowerCase()
+                  .contains(lowercaseQuery) ||
+              exercise['target']
+                  .toString()
+                  .toLowerCase()
+                  .contains(lowercaseQuery) ||
+              exercise['bodyPart']
+                  .toString()
+                  .toLowerCase()
+                  .contains(lowercaseQuery);
         }).toList();
       }
       _itemCount = _itemsPerPage;
@@ -134,7 +142,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
       setState(() => _itemCount += _itemsPerPage);
     }
     setState(() => _stage = _scrollController.position.pixels == 0 ? 1 : 2);
@@ -151,7 +160,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   // Build methods for UI components
   Widget _buildDropdowns() {
     if (_stage != 1) return const SizedBox();
-    
+
     return Column(
       children: [
         _buildBodyPartDropdown(),
@@ -164,7 +173,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
   Widget _buildBodyPartDropdown() {
     return DropdownButton<String>(
-      value: _fileNameSelected.isEmpty ? exerciseFiles.first : _fileNameSelected,
+      value:
+          _fileNameSelected.isEmpty ? exerciseFiles.first : _fileNameSelected,
       items: exerciseFiles.map((String fileName) {
         return DropdownMenuItem<String>(
           value: fileName,
@@ -216,11 +226,10 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       itemCount: _itemCount.clamp(0, _filteredExercises.length),
       itemBuilder: (context, index) {
         if (index >= _filteredExercises.length) return null;
-        
+
         final exercise = _filteredExercises[index];
-        final isSelected = _selectedExercises.any(
-          (e) => e['Exercise_Name'] == exercise['name']
-        );
+        final isSelected = _selectedExercises
+            .any((e) => e['Exercise_Name'] == exercise['name']);
 
         return Column(
           children: [
@@ -243,7 +252,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     setState(() {
       final exerciseName = exercise['name'];
       if (_selectedExercises.any((e) => e['Exercise_Name'] == exerciseName)) {
-        _selectedExercises.removeWhere((e) => e['Exercise_Name'] == exerciseName);
+        _selectedExercises
+            .removeWhere((e) => e['Exercise_Name'] == exerciseName);
       } else {
         _selectedExercises.add({
           'Exercise_Name': exerciseName,
@@ -272,9 +282,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                   height: MediaQuery.of(context).size.height * 0.8,
                   child: Column(
                     children: [
-                      _stage == 1
-                          ? _buildDropdowns()
-                          : SizedBox(),
+                      _stage == 1 ? _buildDropdowns() : SizedBox(),
                       _stage == 1 ? const SizedBox(height: 8) : SizedBox(),
                       BuildTextField(
                         dir: _dir,
@@ -287,34 +295,33 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                       ),
                       const SizedBox(height: 24),
                       Expanded(
-                        child: _isLoading 
-                        ? Center(
-                            child: Container(
-                              padding: EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: Palette.secondaryColor.withOpacity(0.9),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CircularProgressIndicator(
-                                    color: Palette.mainAppColorWhite,
+                        child: _isLoading
+                            ? Center(
+                                child: Container(
+                                  padding: EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Palette.secondaryColor.withOpacity(0.9),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                  SizedBox(height: 16),
-                                  Text(
-                                    LocalizationService.translateFromGeneral('loading'),
-                                    style: AppStyles.textCairo(
-                                      14, 
-                                      Palette.white, 
-                                      FontWeight.w500
-                                    ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      CircularProgressIndicator(
+                                        color: Palette.mainAppColorWhite,
+                                      ),
+                                      SizedBox(height: 16),
+                                      Text(
+                                        LocalizationService
+                                            .translateFromGeneral('loading'),
+                                        style: AppStyles.textCairo(
+                                            14, Palette.white, FontWeight.w500),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                          )
-                        : _buildExerciseList(),
+                                ),
+                              )
+                            : _buildExerciseList(),
                       ),
                       SizedBox(height: 24),
                       Row(
@@ -337,15 +344,16 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                             width: 75,
                             height: 40,
                             fontSize: 12,
-                            text:
-                                LocalizationService.translateFromGeneral('save'),
+                            text: LocalizationService.translateFromGeneral(
+                                'save'),
                             onPressed: () =>
                                 Navigator.of(context).pop(_selectedExercises),
                           ),
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
                             child: Text(
-                              LocalizationService.translateFromGeneral('cancel'),
+                              LocalizationService.translateFromGeneral(
+                                  'cancel'),
                               style: const TextStyle(color: Palette.white),
                             ),
                           ),
@@ -355,7 +363,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                   ),
                 ),
               ),
-              
+
               // Optional: Add a loading overlay for operations
               if (_isLoading)
                 Positioned.fill(

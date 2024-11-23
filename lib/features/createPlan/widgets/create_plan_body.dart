@@ -295,7 +295,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                               subtitle1:
                                   "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
                               subtitle2:
-                                  "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
+                                  "${exercise!.time != null ? exercise!.time : exercise.repetitions} ${exercise!.time != null ? LocalizationService.translateFromGeneral('seconds') : LocalizationService.translateFromGeneral('repetitions')}",
                               image: exercise.image,
                             ),
                             const Spacer(),
@@ -623,7 +623,9 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                       'repetitions':
                           exercise.repetitions, // Number of repetitions
                       'rounds': exercise.rounds, // Number of rounds
-                      'image': exercise.image // Image for the exercise
+                      'image': exercise.image, // Image for the exercise
+                      'time': exercise.time, // Time for the exercise
+                      'useTime': exercise.time != null ? true : false,
                     };
                   }).toList(); // Convert the exercises to a list
                 }),
@@ -702,15 +704,19 @@ class TrainingDay {
 
 class Exercise {
   final String name;
+  final String image;
   final int rounds;
   final int repetitions;
-  final String image;
+  final int? time;
+  final bool useTime;
 
   Exercise({
     required this.name,
+    required this.image,
     required this.rounds,
     required this.repetitions,
-    this.image = Assets.notFound,
+    this.time,
+    this.useTime = false,
   });
 
   factory Exercise.fromMap(Map<String, dynamic> map) {
@@ -719,6 +725,8 @@ class Exercise {
       image: map['image'] ?? map['Exercise_Image'] as String,
       rounds: map['rounds'] ?? 0,
       repetitions: map['repetitions'] ?? 0,
+      time: map['time'] ?? 0,
+      useTime: map['useTime'] ?? false,
     );
   }
 }

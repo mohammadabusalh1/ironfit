@@ -32,11 +32,18 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
 
     // Initialize state based on initial exercise if provided
     if (widget.initialExercise != null) {
-      selectedExercisesWithDetails = [{
-        'exercise': widget.initialExercise,
-        'rounds': TextEditingController(text: widget.initialExercise!.rounds.toString()),
-        'repetitions': TextEditingController(text: widget.initialExercise!.repetitions.toString()),
-      }];
+      selectedExercisesWithDetails = [
+        {
+          'exercise': widget.initialExercise,
+          'rounds': TextEditingController(
+              text: widget.initialExercise!.rounds.toString()),
+          'repetitions': TextEditingController(
+              text: widget.initialExercise!.repetitions.toString()),
+          'time': TextEditingController(
+              text: widget.initialExercise!.time?.toString() ?? ''),
+          'useTime': widget.initialExercise!.time != null,
+        }
+      ];
     }
   }
 
@@ -45,7 +52,7 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isAddNewImage 
+          isAddNewImage
               ? exerciseData['exercise']['Exercise_Name']
               : exerciseData['exercise'].name,
           style: AppStyles.textCairo(
@@ -63,13 +70,43 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
           icon: Icons.refresh,
         ),
         const SizedBox(height: 8),
-        BuildTextField(
-          dir: dir,
-          controller: exerciseData['repetitions'],
-          label: LocalizationService.translateFromGeneral('repetitions'),
-          keyboardType: TextInputType.number,
-          icon: Icons.loop,
+        Row(
+          children: [
+            Text(
+              LocalizationService.translateFromGeneral('measurementType'),
+              style: AppStyles.textCairo(
+                  12, Palette.mainAppColorWhite, FontWeight.w500),
+            ),
+            const SizedBox(width: 8),
+            Switch(
+              value: exerciseData['useTime']
+                  ? true
+                  : false,
+              onChanged: (value) {
+                setState(() {
+                  exerciseData['useTime'] = value;
+                });
+              },
+            ),
+          ],
         ),
+        const SizedBox(height: 8),
+        if (exerciseData['useTime'] ?? false)
+          BuildTextField(
+            dir: dir,
+            controller: exerciseData['time'],
+            label: LocalizationService.translateFromGeneral('timeInSeconds'),
+            keyboardType: TextInputType.number,
+            icon: Icons.timer,
+          )
+        else
+          BuildTextField(
+            dir: dir,
+            controller: exerciseData['repetitions'],
+            label: LocalizationService.translateFromGeneral('repetitions'),
+            keyboardType: TextInputType.number,
+            icon: Icons.loop,
+          ),
         const SizedBox(height: 16),
         if (index < selectedExercisesWithDetails.length - 1)
           Divider(color: Palette.white.withOpacity(0.3)),
@@ -100,7 +137,8 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                 BuildIconButton(
                   width: MediaQuery.of(context).size.width,
                   fontSize: 12,
-                  text: LocalizationService.translateFromGeneral('selectExercise'),
+                  text: LocalizationService.translateFromGeneral(
+                      'selectExercise'),
                   backgroundColor: Palette.mainAppColorWhite,
                   textColor: Palette.mainAppColorNavy,
                   onPressed: () async {
@@ -115,11 +153,15 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                       if (result != null && result.isNotEmpty) {
                         setState(() {
                           isAddNewImage = true;
-                          selectedExercisesWithDetails = result.map((e) => {
-                            'exercise': e,
-                            'rounds': TextEditingController(),
-                            'repetitions': TextEditingController(),
-                          }).toList();
+                          selectedExercisesWithDetails = result
+                              .map((e) => {
+                                    'exercise': e,
+                                    'rounds': TextEditingController(),
+                                    'repetitions': TextEditingController(),
+                                    'time': TextEditingController(),
+                                    'useTime': false,
+                                  })
+                              .toList();
                         });
                       }
                     } catch (e) {
@@ -133,7 +175,8 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                 const SizedBox(height: 12),
                 ...List.generate(
                   selectedExercisesWithDetails.length,
-                  (index) => _buildExerciseItem(selectedExercisesWithDetails[index], index),
+                  (index) => _buildExerciseItem(
+                      selectedExercisesWithDetails[index], index),
                 ),
               ],
             ),
@@ -143,8 +186,14 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
               onPressed: () {
                 for (var exerciseData in selectedExercisesWithDetails) {
                   final rounds = int.tryParse(exerciseData['rounds'].text) ?? 0;
-                  final repetitions = int.tryParse(exerciseData['repetitions'].text) ?? 0;
-                  
+                  final useTime = exerciseData['useTime'] ?? false;
+                  final repetitions = useTime
+                      ? 0
+                      : (int.tryParse(exerciseData['repetitions'].text) ?? 0);
+                  final time = useTime
+                      ? (int.tryParse(exerciseData['time'].text) ?? 0)
+                      : null;
+
                   Exercise exercise;
                   if (isAddNewImage) {
                     exercise = Exercise(
@@ -152,6 +201,7 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                       image: exerciseData['exercise']['Exercise_Image'],
                       rounds: rounds,
                       repetitions: repetitions,
+                      time: time,
                     );
                   } else {
                     exercise = Exercise(
@@ -159,6 +209,7 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
                       image: exerciseData['exercise'].image,
                       rounds: rounds,
                       repetitions: repetitions,
+                      time: time,
                     );
                   }
                   widget.addExercise(exercise);
@@ -186,10 +237,10 @@ class _ExerciseDialogState extends State<ExerciseDialog> {
 
   @override
   void dispose() {
-    // Clean up controllers
     for (var exercise in selectedExercisesWithDetails) {
       exercise['rounds'].dispose();
       exercise['repetitions'].dispose();
+      exercise['time']?.dispose();
     }
     super.dispose();
   }

@@ -99,6 +99,8 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                       repetitions: exercise['repetitions'] ?? 0,
                       image:
                           exercise['image'] ?? 'https://default-image-url.jpg',
+                      time: exercise['time'],
+                      useTime: exercise['useTime'] ?? false,
                     );
                   }).toList() ??
                   [];
@@ -196,7 +198,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader() { 
     return SizedBox(
       width: double.infinity,
       child: Stack(
@@ -334,20 +336,18 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                               color: Palette.mainAppColorWhite,
                             ),
                             const Spacer(),
-                            InkWell(
+                            ExrciseCard(
                               onTap: () => _handleEditExercise(
                                   day, day.exercises.indexOf(exercise)),
-                              child: ExrciseCard(
-                                spaceBetweenItems: 10,
-                                padding: 0,
-                                withIconButton: false,
-                                title: exercise.name,
-                                subtitle1:
-                                    "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
-                                subtitle2:
-                                    "${exercise.repetitions} ${LocalizationService.translateFromGeneral('repetitions')}",
-                                image: exercise.image,
-                              ),
+                              spaceBetweenItems: 10,
+                              padding: 0,
+                              withIconButton: false,
+                              title: exercise.name,
+                              subtitle1:
+                                  "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
+                              subtitle2:
+                                  "${exercise.useTime ? exercise.time : exercise.repetitions} ${exercise!.time != null ? LocalizationService.translateFromGeneral('seconds') : LocalizationService.translateFromGeneral('repetitions')}",
+                              image: exercise.image,
                             ),
                             const Spacer(),
                             IconButton(
@@ -687,6 +687,8 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                             'rounds': e.rounds,
                             'repetitions': e.repetitions,
                             'image': e.image,
+                            'time': e.time,
+                            'useTime': e.time != null ? true : false,
                           })
                       .toList()
           }

@@ -19,12 +19,11 @@ import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/theme.dart';
 import 'package:ironfit/core/routes/routes.dart';
-import 'package:ironfit/core/services/stripe_service.dart';
+import 'package:ironfit/features/PaymentPage/PaymentPage.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:ironfit/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 
 String? fullName;
 String imageUrl = Assets.notFound;
@@ -753,6 +752,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
           context, LocalizationService.translateFromGeneral('logoutError'));
     }
   }
+  
 
   void _showSubscriptionDialog(BuildContext context) {
     showDialog(
@@ -783,9 +783,18 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  _buildBenefitRow(Icons.check_circle, LocalizationService.translateFromGeneral('unlimitedTrainees')),
-                  _buildBenefitRow(Icons.check_circle, LocalizationService.translateFromGeneral('prioritySupport')),
-                  _buildBenefitRow(Icons.check_circle, LocalizationService.translateFromGeneral('advancedAnalytics')),
+                  _buildBenefitRow(
+                      Icons.check_circle,
+                      LocalizationService.translateFromGeneral(
+                          'unlimitedTrainees')),
+                  _buildBenefitRow(
+                      Icons.check_circle,
+                      LocalizationService.translateFromGeneral(
+                          'prioritySupport')),
+                  _buildBenefitRow(
+                      Icons.check_circle,
+                      LocalizationService.translateFromGeneral(
+                          'advancedAnalytics')),
                   const SizedBox(height: 16),
                   Container(
                     padding: EdgeInsets.all(12),
@@ -797,7 +806,8 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          LocalizationService.translateFromGeneral('paymentDetails'),
+                          LocalizationService.translateFromGeneral(
+                              'paymentDetails'),
                           style: AppStyles.textCairo(
                             16,
                             Palette.mainAppColorWhite,
@@ -809,7 +819,8 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              LocalizationService.translateFromGeneral('amount'),
+                              LocalizationService.translateFromGeneral(
+                                  'amount'),
                               style: AppStyles.textCairo(
                                 14,
                                 Palette.mainAppColorWhite,
@@ -831,8 +842,10 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                   ),
                   const SizedBox(height: 24),
                   BuildIconButton(
-                    onPressed: () => _handleSubscription(context),
-                    text: LocalizationService.translateFromGeneral('payWithCard'),
+                    onPressed: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => PaymentPage())),
+                    text:
+                        LocalizationService.translateFromGeneral('payWithCard'),
                     width: double.infinity,
                     backgroundColor: Palette.mainAppColorOrange,
                     icon: Icons.credit_card,
@@ -864,103 +877,5 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
         ],
       ),
     );
-  }
-
-  Future<void> _handleSubscription(BuildContext context) async {
-    try {
-      // Show loading indicator
-      Get.dialog(
-        const Center(child: CircularProgressIndicator()),
-        barrierDismissible: false,
-      );
-
-      // Create payment intent
-      final paymentIntent = await StripeService.createPaymentIntent(
-        2000, // Amount in cents (20.00 USD)
-        'USD',
-      );
-
-      if (paymentIntent['error'] != null) {
-        throw Exception(paymentIntent['error']);
-      }
-
-      // Initialize payment sheet
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          paymentIntentClientSecret: paymentIntent['client_secret'],
-          merchantDisplayName: 'IronFit',
-          style: ThemeMode.dark,
-          billingDetails: const BillingDetails(
-            name: 'Default Name',
-            email: 'default@email.com',
-          ),
-          appearance: PaymentSheetAppearance(
-            colors: PaymentSheetAppearanceColors(
-              background: Palette.mainAppColorBack,
-              primary: Palette.mainAppColorOrange,
-              componentBackground: Palette.mainAppColorBack,
-              componentText: Palette.mainAppColorWhite,
-            ),
-            shapes: PaymentSheetShape(
-              borderRadius: 12,
-              shadow: PaymentSheetShadowParams(color: Colors.black),
-            ),
-          ),
-        ),
-      );
-
-      // Present payment sheet
-      await Stripe.instance.presentPaymentSheet();
-
-      // If payment successful, update subscription in Firestore
-      final subscriptionRef = await FirebaseFirestore.instance
-          .collection('subscriptions')
-          .add({
-        'coachId': coachId,
-        'startDate': DateTime.now(),
-        'endDate': DateTime.now().add(const Duration(days: 30)),
-        'status': 'active',
-        'amount': 20.00,
-        'paymentMethod': 'card',
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      // Update coach's premium status
-      await FirebaseFirestore.instance
-          .collection('coaches')
-          .doc(coachId)
-          .update({
-        'isPremium': true,
-        'subscriptionId': subscriptionRef.id,
-        'subscriptionStartDate': DateTime.now(),
-        'subscriptionEndDate': DateTime.now().add(const Duration(days: 30)),
-      });
-
-      // Close dialogs
-      Navigator.of(context).pop(); // Close loading
-      Navigator.of(context).pop(); // Close subscription dialog
-
-      // Show success message
-      customSnackbar.showMessage(
-        context,
-        LocalizationService.translateFromGeneral('subscriptionSuccess'),
-      );
-    } catch (e) {
-      // Close loading dialog if open
-      if (Get.isDialogOpen ?? false) {
-        Navigator.of(context).pop();
-      }
-      
-      print('Error: $e'); // For debugging
-      
-      String errorMessage = 'Payment failed';
-      if (e is StripeException) {
-        errorMessage = e.error.localizedMessage ?? 'Payment failed';
-      } else if (e is StripeConfigException) {
-        errorMessage = 'Invalid Stripe configuration';
-      }
-      
-      customSnackbar.showMessage(context, errorMessage);
-    }
   }
 }

@@ -1,391 +1,40 @@
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
-import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Button.dart';
-import 'package:ironfit/core/presentation/widgets/CheckTockens.dart';
-import 'package:ironfit/core/presentation/widgets/Styles.dart';
-import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/uploadImage.dart';
-import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/features/coachEnteInfo/controllers/coach_enter_info_controller.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
-import 'package:image/image.dart' as img;
 
-class CoachEnterInfoBody extends StatefulWidget {
+class CoachEnterInfoBody extends StatelessWidget {
   final Function registerCoach;
-  const CoachEnterInfoBody({super.key, required this.registerCoach});
 
-  @override
-  _CoachEnterInfoBodyState createState() => _CoachEnterInfoBodyState();
-}
-
-class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
-  final TextEditingController _experienceController = TextEditingController();
-  final TextEditingController _usernameController =
-      TextEditingController(); // Added username controller
-  int stage = 1;
-  late File _selectedImage;
-
-  PreferencesService preferencesService = PreferencesService();
-  TokenService tokenService = TokenService();
-  CustomSnackbar customSnackbar = CustomSnackbar();
-  late String dir;
-
-  @override
-  void initState() {
-    super.initState();
-    tokenService.checkTokenAndNavigateDashboard();
-    dir = LocalizationService.getDir();
-  }
-
-  Future<void> updateCoachInfo(
-      String coachId, Map<String, dynamic> data) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('coaches')
-          .doc(coachId)
-          .update(data);
-      // Success handling, if needed
-    } catch (e) {
-      // Error handling
-      print('Error updating coach info: $e');
-    }
-  }
-
-  Future<String> _uploadImage(String userId) async {
-    try {
-      // Read image file
-      final bytes = await _selectedImage.readAsBytes();
-      final image = img.decodeImage(bytes);
-
-      if (image == null) return '';
-
-      // Resize the image to a maximum width of 800 pixels while maintaining aspect ratio
-      final resizedImage = img.copyResize(
-        image,
-        width: 800,
-        maintainAspect: true,
-        interpolation: img.Interpolation.linear,
-      );
-
-      // Encode the image to jpg with reduced quality (0-100)
-      final compressedBytes = img.encodeJpg(resizedImage, quality: 70);
-
-      // Create a new temporary file with compressed image
-      final tempDir = await Directory.systemTemp.createTemp();
-      final tempFile = File('${tempDir.path}/compressed_$userId.jpg');
-      await tempFile.writeAsBytes(compressedBytes);
-
-      // Upload the compressed image
-      final storageRef =
-          FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
-
-      await storageRef.putFile(
-        tempFile,
-        SettableMetadata(contentType: 'image/jpeg'),
-      );
-
-      // Clean up temporary file
-      await tempFile.delete();
-      await tempDir.delete();
-
-      // Get the download URL
-      final imageUrl = await storageRef.getDownloadURL();
-      return imageUrl;
-    } catch (e) {
-      print('Error uploading image: $e');
-      return '';
-    }
-  }
-
-  void _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        if (stage == 1) {
-          String username = _usernameController.text;
-          // Check if username exists in the database
-          bool usernameExists = await _checkIfUsernameExists(username);
-
-          if (usernameExists) {
-            customSnackbar.showMessage(
-                context,
-                LocalizationService.translateFromGeneral(
-                    'usernameExistsError'));
-            return; // Exit early if username exists
-          } else {
-            setState(() {
-              stage = 2;
-            });
-          }
-          return; // Exit early if stage transitioned
-        } else {
-          Get.dialog(const Center(child: CircularProgressIndicator()),
-              barrierDismissible: false);
-
-          String username = _usernameController.text;
-          String firstName = _firstNameController.text;
-          String lastName = _lastNameController.text;
-          String age = _ageController.text;
-          String experience = _experienceController.text;
-
-          String coachId = await widget.registerCoach();
-          String uploadedImageUrl = await _uploadImage(coachId);
-
-          Map<String, dynamic> coachData = {
-            'firstName': firstName,
-            'lastName': lastName,
-            'age':
-                int.tryParse(age) ?? 0, // Safely parse integer or default to 0
-            'experience': int.tryParse(experience) ??
-                0, // Safely parse integer or default to 0
-            'profileImageUrl': uploadedImageUrl,
-            'username': username,
-          };
-
-          await updateCoachInfo(coachId, coachData);
-          customSnackbar.showSuccessMessage(context);
-
-          // Navigate to the coach dashboard after success
-          Get.toNamed(Routes.coachDashboard)?.then((value) => Get.back());
-        }
-      } on FirebaseException {
-        Get.back();
-        customSnackbar.showFailureMessage(context);
-      } on FormatException catch (_) {
-        Get.back();
-        customSnackbar.showInvalidFormatMessage(context);
-      } catch (e) {
-        Get.back();
-        customSnackbar.showFailureMessage(context);
-      }
-    } else {
-      customSnackbar.showInvalidFormatMessage(context);
-    }
-  }
-
-  String? validator(value) {
-    if (value!.isEmpty) {
-      return LocalizationService.translateFromGeneral('thisFieldRequired');
-    }
-    return null;
-  }
-
-  // Function to check if username exists in the database
-  Future<bool> _checkIfUsernameExists(String username) async {
-    try {
-      // Example query to check if the username exists in Firestore
-      var snapshot = await FirebaseFirestore.instance
-          .collection('coaches')
-          .where('username', isEqualTo: username)
-          .get();
-
-      // If snapshot contains documents, username exists
-      return snapshot.docs.isNotEmpty;
-    } catch (e) {
-      customSnackbar.showFailureMessage(context);
-      return false;
-    }
-  }
+  CoachEnterInfoBody({super.key, required this.registerCoach});
 
   @override
   Widget build(BuildContext context) {
+    final controller =
+        Get.put(CoachEnterInfoController(registerCoach: registerCoach));
+    final dir = LocalizationService.getDir();
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Form(
-          key: _formKey,
+          key: controller.formKey,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.1,
-                ),
-                Center(
-                  child: _buildImageStack(),
-                ),
-                stage == 2 ? const SizedBox(height: 24) : Container(),
-                stage == 2
-                    ? ImagePickerComponent(onImageUploaded: (selectedImage) {
-                        setState(() {
-                          _selectedImage = selectedImage;
-                        });
-                      })
-                    : Container(),
-                const SizedBox(height: 12),
-                stage == 1
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Align(
-                          alignment: AlignmentDirectional.center,
-                          child: Text(
-                            LocalizationService.translateFromGeneral(
-                                'completeInfoPrompt'),
-                            style: AppStyles.textCairo(
-                              16,
-                              Palette.mainAppColorWhite,
-                              FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      )
-                    : Container(),
-                stage == 1 ? const SizedBox(height: 24) : Container(),
-                stage == 1
-                    ? Text(LocalizationService.translateFromGeneral('account'),
-                        style: AppStyles.textCairo(
-                          14,
-                          Palette.mainAppColorWhite,
-                          FontWeight.bold,
-                        ))
-                    : Container(),
-                stage == 1 ? const SizedBox(height: 12) : Container(),
-                stage == 1
-                    ? BuildTextField(
-                        dir: dir,
-                        onChange: (value) {
-                          setState(() {
-                            _usernameController.text = value;
-                          });
-                        },
-                        label: LocalizationService.translateFromGeneral(
-                            'usernameLabel'),
-                        controller: _usernameController,
-                        keyboardType: TextInputType.text,
-                        icon: Icons.account_circle,
-                        validator: validator)
-                    : Container(),
-                stage == 1 ? const SizedBox(height: 12) : Container(),
-                stage == 1
-                    ? BuildTextField(
-                        dir: dir,
-                        onChange: (value) {
-                          setState(() {
-                            _firstNameController.text = value;
-                          });
-                        },
-                        label: LocalizationService.translateFromGeneral(
-                            'firstNameLabel'),
-                        controller: _firstNameController,
-                        keyboardType: TextInputType.text,
-                        icon: Icons.person,
-                        validator: validator)
-                    : Container(),
-                stage == 1 ? const SizedBox(height: 12) : Container(),
-                stage == 1
-                    ? BuildTextField(
-                        dir: dir,
-                        onChange: (value) {
-                          setState(() {
-                            _lastNameController.text = value;
-                          });
-                        },
-                        label: LocalizationService.translateFromGeneral(
-                            'lastNameLabel'),
-                        controller: _lastNameController,
-                        keyboardType: TextInputType.text,
-                        icon: Icons.person,
-                        validator: validator)
-                    : Container(),
-                stage == 1 ? const SizedBox(height: 12) : Container(),
-                // stage == 1
-                //     ? const Divider(
-                //         color: Palette.gray,
-                //       )
-                //     : Container(),
-                stage == 1 ? const SizedBox(height: 12) : Container(),
-                stage == 1
-                    ? Text(
-                        LocalizationService.translateFromGeneral(
-                            'personalInformation'),
-                        style: AppStyles.textCairo(
-                          14,
-                          Palette.mainAppColorWhite,
-                          FontWeight.w600,
-                        ),
-                      )
-                    : Container(),
-                stage == 1 ? const SizedBox(height: 12) : Container(),
-                stage == 1
-                    ? BuildTextField(
-                        dir: dir,
-                        onChange: (value) {
-                          setState(() {
-                            _ageController.text = value;
-                          });
-                        },
-                        label: LocalizationService.translateFromGeneral('age'),
-                        controller: _ageController,
-                        keyboardType: TextInputType.number,
-                        icon: Icons.group,
-                        validator: validator)
-                    : Container(),
-                stage == 1 ? const SizedBox(height: 12) : Container(),
-                stage == 1
-                    ? BuildTextField(
-                        dir: dir,
-                        onChange: (value) {
-                          setState(() {
-                            _experienceController.text = value;
-                          });
-                        },
-                        label: LocalizationService.translateFromGeneral(
-                            'experience'),
-                        controller: _experienceController,
-                        keyboardType: TextInputType.number,
-                        icon: Icons.star,
-                        validator: validator)
-                    : Container(),
-                stage == 1 ? const SizedBox(height: 24) : Container(),
+                // SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+                // Center(child: _buildImageStack()),
+                Obx(() => _buildFormFields(context, controller, dir)),
               ],
             ),
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            BuildIconButton(
-                onPressed: _submitForm,
-                text: LocalizationService.translateFromGeneral('next'),
-                icon: Icons.east,
-                iconAlignment: IconAlignment.start,
-                width: Get.width * 0.42,
-                fontSize: 14,
-                textColor: Palette.mainAppColorWhite,
-                iconColor: Palette.mainAppColorWhite,
-                backgroundColor: Palette.greenActive,
-                iconSize: 20),
-            const SizedBox(width: 12),
-            BuildIconButton(
-              onPressed: () {
-                setState(() {
-                  stage = 1;
-                });
-              },
-              text: LocalizationService.translateFromGeneral('goBack'),
-              icon: Icons.west,
-              iconAlignment: IconAlignment.end,
-              width: Get.width * 0.42,
-              fontSize: 14,
-              textColor: Palette.mainAppColorNavy,
-              iconColor: Palette.mainAppColorNavy,
-              backgroundColor: Palette.mainAppColorWhite,
-              iconSize: 20,
-            )
-          ],
-        ),
-      ),
+      bottomNavigationBar: _buildBottomButtons(context, controller),
     );
   }
 
@@ -406,6 +55,79 @@ class _CoachEnterInfoBodyState extends State<CoachEnterInfoBody> {
         width: 250,
         height: 60,
         fit: BoxFit.fitWidth,
+      ),
+    );
+  }
+
+  Widget _buildFormFields(
+      BuildContext context, CoachEnterInfoController controller, String dir) {
+    return Column(
+      children: [
+        const SizedBox(height: 24),
+        ImagePickerComponent(
+          onImageUploaded: controller.setImage,
+        ),
+        const SizedBox(height: 24),
+        BuildTextField(
+          dir: dir,
+          controller: controller.firstNameController,
+          label: LocalizationService.translateFromGeneral('firstNameLabel'),
+          validator: controller.validator,
+        ),
+        const SizedBox(height: 16),
+        BuildTextField(
+          dir: dir,
+          controller: controller.lastNameController,
+          label: LocalizationService.translateFromGeneral('lastNameLabel'),
+          validator: controller.validator,
+        ),
+        const SizedBox(height: 16),
+        BuildTextField(
+          dir: dir,
+          controller: controller.ageController,
+          label: LocalizationService.translateFromGeneral('age'),
+          validator: controller.validator,
+          keyboardType: TextInputType.number,
+        ),
+        const SizedBox(height: 16),
+        BuildTextField(
+          dir: dir,
+          controller: controller.experienceController,
+          label: LocalizationService.translateFromGeneral('experience'),
+          validator: controller.validator,
+          keyboardType: TextInputType.number,
+        ),
+        const SizedBox(height: 16),
+        BuildTextField(
+          dir: dir,
+          controller: controller.usernameController,
+          label: LocalizationService.translateFromGeneral('usernameLabel'),
+          validator: controller.validator,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomButtons(
+      BuildContext context, CoachEnterInfoController controller) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          BuildIconButton(
+            onPressed: () => controller.submitForm(context),
+            text: LocalizationService.translateFromGeneral('next'),
+            width: 150,
+            fontSize: 14,
+          ),
+          const SizedBox(width: 12),
+          BuildIconButton(
+            onPressed: controller.goBack,
+            text: LocalizationService.translateFromGeneral('goBack'),
+            width: 150,
+            fontSize: 14,
+          ),
+        ],
       ),
     );
   }

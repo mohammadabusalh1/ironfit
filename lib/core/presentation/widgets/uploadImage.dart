@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
+import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 
@@ -49,11 +50,7 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Card(
-        elevation: 5,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+      child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12),
         child: Padding(
           padding: EdgeInsets.symmetric(
@@ -64,25 +61,6 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                LocalizationService.translateFromGeneral('addProfilePicture'),
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF454038),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                LocalizationService.translateFromGeneral(
-                    'addProfilePicturePrompt'),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey.shade700,
-                ),
-                textAlign: TextAlign.center,
-              ),
               const SizedBox(height: 24),
               _selectedImage != null
                   ? ClipRRect(
@@ -123,23 +101,23 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
                   ),
                 ),
               ),
-              if (_selectedImage != null) ...[
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _removeImage,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    LocalizationService.translateFromGeneral('removeImage'),
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
+              // if (_selectedImage != null) ...[
+              //   const SizedBox(height: 16),
+              //   ElevatedButton(
+              //     onPressed: _removeImage,
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor: Colors.redAccent,
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(8),
+              //       ),
+              //     ),
+              //     child: Text(
+              //       LocalizationService.translateFromGeneral('removeImage'),
+              //       style: const TextStyle(color: Colors.white),
+              //     ),
+              //   ),
+              //   const SizedBox(height: 16),
+              // ],
             ],
           ),
         ),

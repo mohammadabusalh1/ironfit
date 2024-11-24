@@ -295,7 +295,7 @@ class _CreatePlanBodyState extends State<CreatePlanBody> {
                               subtitle1:
                                   "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
                               subtitle2:
-                                  "${exercise!.time != null ? exercise!.time : exercise.repetitions} ${exercise!.time != null ? LocalizationService.translateFromGeneral('seconds') : LocalizationService.translateFromGeneral('repetitions')}",
+                                  "${exercise.time != null ? exercise.time : exercise.repetitions} ${exercise.time != null ? LocalizationService.translateFromGeneral('seconds') : LocalizationService.translateFromGeneral('repetitions')}",
                               image: exercise.image,
                             ),
                             const Spacer(),

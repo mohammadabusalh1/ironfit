@@ -39,9 +39,10 @@ class ExrciseCard extends StatefulWidget {
 class _ExrciseCardState extends State<ExrciseCard> {
   bool _isClicked = false;
   Timer? _timer;
-  int _timeLeft = 10; // 90 seconds = 1:30 minutes
+  int _timeLeft = 90;
   bool _isTimerActive = false;
   int rounds = 0;
+  final int timerDuration = 90;
 
   @override
   void initState() {
@@ -82,11 +83,11 @@ class _ExrciseCardState extends State<ExrciseCard> {
   }
 
   void _startTimer({int? resumeFrom}) {
-    final endTime =
-        DateTime.now().millisecondsSinceEpoch + (resumeFrom ?? 2) * 1000;
+    final endTime = DateTime.now().millisecondsSinceEpoch +
+        (resumeFrom ?? timerDuration) * 1000;
 
     setState(() {
-      _timeLeft = resumeFrom ?? 2;
+      _timeLeft = resumeFrom ?? timerDuration;
       _isTimerActive = true;
     });
 
@@ -98,7 +99,7 @@ class _ExrciseCardState extends State<ExrciseCard> {
       'timer_${widget.title}',
       'timer_task',
       inputData: {'title': widget.title},
-      initialDelay: const Duration(seconds: 2),
+      initialDelay: Duration(seconds: timerDuration),
     );
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -248,9 +249,17 @@ class _ExrciseCardState extends State<ExrciseCard> {
               ? null
               : () {
                   setState(() {
-                    if (rounds == 1 && !_isClicked) {
+                    if (_isClicked) {
+                      setState(() {
+                        _isClicked = false;
+                        _saveClickedState();
+                        rounds = int.parse(widget.subtitle1.split(' ')[0]);
+                      });
+                    } else if (rounds == 1 && !_isClicked) {
                       _startTimer();
-                      _isClicked = true;
+                      setState(() {
+                        _isClicked = true;
+                      });
                       _saveClickedState();
                     } else if (rounds > 1) {
                       setState(() {

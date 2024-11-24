@@ -1,13 +1,9 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
@@ -25,10 +21,6 @@ import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:ironfit/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-String? fullName;
-String imageUrl = Assets.notFound;
-String email = '';
-
 class CoachProfileBody extends StatefulWidget {
   const CoachProfileBody({super.key});
 
@@ -38,147 +30,29 @@ class CoachProfileBody extends StatefulWidget {
 
 class _CoachProfileBodyState extends State<CoachProfileBody> {
   final CoachProfileController controller = Get.find();
-  bool isLoading = true;
-  String coachId = FirebaseAuth.instance.currentUser!.uid;
-  bool isDataLoaded = false;
 
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
   CustomSnackbar customSnackbar = CustomSnackbar();
-
-  late BannerAd bannerAd;
-  bool isBannerAdLoaded = false;
   late String dir;
 
   @override
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateSingIn();
-    bannerAd = BannerAd(
-        adUnitId: 'ca-app-pub-2914276526243261/3277263040',
-        size: AdSize.banner,
-        request: const AdRequest(),
-        listener: BannerAdListener(onAdLoaded: (ad) {
-          setState(() {
-            isBannerAdLoaded = true;
-          });
-        }, onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-        }));
-    bannerAd.load();
-    if (!isDataLoaded) {
-      fetchUserName();
-      setState(() {
-        isDataLoaded = true;
-      });
+    if (!controller.profileData.value.isDataLoaded) {
+      controller.fetchUserName();
     }
     dir = LocalizationService.getDir();
   }
 
   @override
   void dispose() {
-    bannerAd.dispose();
     super.dispose();
   }
 
-  Future<void> changeUserImage() async {
-    final ImagePicker picker = ImagePicker();
-
-    try {
-      final XFile? pickedFile = await picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 70, // Compress image quality to 70%
-      );
-
-      if (pickedFile == null) return;
-
-      // Show loading indicator in a non-blocking way
-      // Get.dialog(
-      //   const Center(child: CircularProgressIndicator()),
-      //   barrierDismissible: false,
-      // );
-
-      // Update UI immediately with local image
-      setState(() {
-        imageUrl = pickedFile.path;
-        isLoading = true;
-      });
-
-      // Upload image in background
-      final storageRef = FirebaseStorage.instance.ref().child(
-          'profile_images/${FirebaseAuth.instance.currentUser!.uid}.jpg');
-
-      final uploadTask = storageRef.putFile(
-        File(pickedFile.path),
-        SettableMetadata(contentType: 'image/jpeg'),
-      );
-
-      // Listen to upload progress if needed
-      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        final progress = snapshot.bytesTransferred / snapshot.totalBytes;
-        // You can use this progress value to show upload progress
-      });
-
-      // Wait for upload to complete and get download URL
-      final downloadUrl = await (await uploadTask).ref.getDownloadURL();
-
-      // Update Firestore with new image URL
-      await FirebaseFirestore.instance
-          .collection('coaches')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .update({
-        'profileImageUrl': downloadUrl,
-      });
-
-      // Update UI with cloud URL
-      setState(() {
-        imageUrl = downloadUrl;
-        isLoading = false;
-      });
-
-      // Get.back(); // Remove loading dialog
-      customSnackbar.showMessage(
-        context,
-        LocalizationService.translateFromGeneral('imageUploadSuccess'),
-      );
-    } catch (e) {
-      Get.back(); // Remove loading dialog
-      setState(() {
-        isLoading = false;
-      });
-      customSnackbar.showFailureMessage(context);
-    }
-  }
-
-  Future<void> fetchUserName() async {
-    try {
-      tokenService.checkTokenAndNavigateSingIn();
-      // Get user data from Firestore
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('coaches')
-          .doc(coachId)
-          .get();
-
-      if (userDoc.exists) {
-        String? firstName = userDoc['firstName'];
-        String? lastName = userDoc['lastName'];
-
-        setState(() {
-          fullName = '$firstName $lastName';
-          email = userDoc['email'] ?? ''; // Ensure to handle null safely
-          imageUrl =
-              userDoc['profileImageUrl'] ?? ''; // Ensure to handle null safely
-        });
-      } else {
-        // Handle case where document does not exist
-        print("User data not found for coach ID: $coachId");
-        // Perform fallback action or show appropriate message
-      }
-    } catch (e) {
-      // Handle specific exceptions
-      print("Error fetching user data: $e");
-      // Perform appropriate error handling actions, e.g., show error message
-    }
+  void changeUserImage() async {
+    await controller.changeUserImage();
   }
 
   void showEditInfoDialog(BuildContext context) {
@@ -216,15 +90,9 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
 
           // Perform Firestore update if there is any data to update
           if (updateData.isNotEmpty) {
-            await FirebaseFirestore.instance
-                .collection('coaches')
-                .doc(coachId)
-                .update(updateData)
-                .then((_) {
-              fetchUserName();
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-            });
+            await controller.updateUserInfo(updateData);
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
           } else {
             // Handle case where no fields were updated
             customSnackbar.showMessageAbove(context,
@@ -521,13 +389,6 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: [
-                    // isBannerAdLoaded
-                    //     ? SizedBox(
-                    //         child: AdWidget(ad: bannerAd),
-                    //         height: bannerAd.size.height.toDouble(),
-                    //         width: bannerAd.size.width.toDouble(),
-                    //       )
-                    //     : const SizedBox(),
                     Container(
                       width: MediaQuery.of(context).size.width,
                       child: Text(
@@ -553,9 +414,9 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                         context,
                         LocalizationService.translateFromGeneral(
                             'communicateWithTrainees'),
-                        Icons.chat,
-                        () {},
-                        Icons.arrow_forward_ios_outlined,
+                        Icons.chat, () {
+                      Get.toNamed(Routes.chat);
+                    }, Icons.arrow_forward_ios_outlined,
                         Palette.mainAppColorBack),
                     _buildButtonCard(
                         context,
@@ -609,22 +470,23 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
             onTap: changeUserImage,
           ),
           const SizedBox(height: 12),
-          Text(
-            fullName ?? LocalizationService.translateFromGeneral('noName'),
-            style: AppStyles.textCairo(
-              22,
-              Palette.mainAppColorWhite,
-              FontWeight.bold,
-            ),
-          ),
-          Text(
-            email, // If no name, display a default message
-            style: AppStyles.textCairo(
-              12,
-              Palette.subTitleGrey,
-              FontWeight.w100,
-            ),
-          ),
+          Obx(() => Text(
+                controller.profileData.value.fullName ??
+                    LocalizationService.translateFromGeneral('noName'),
+                style: AppStyles.textCairo(
+                  22,
+                  Palette.mainAppColorWhite,
+                  FontWeight.bold,
+                ),
+              )),
+          Obx(() => Text(
+                controller.profileData.value.email,
+                style: AppStyles.textCairo(
+                  12,
+                  Palette.subTitleGrey,
+                  FontWeight.w100,
+                ),
+              )),
           const SizedBox(height: 12),
           BuildIconButton(
             backgroundColor: Palette.mainAppColorWhite,
@@ -641,57 +503,54 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
   }
 
   Widget _buildProfileImage() {
-    return Stack(
-      children: [
-        // Profile Image
-        ClipRRect(
-          borderRadius: BorderRadius.circular(50),
-          child: SizedBox(
-            width: 88,
-            height: 88,
-            child: imageUrl.startsWith('http')
-                ? CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) =>
-                        Image.asset(Assets.notFound),
-                  )
-                : imageUrl.startsWith('/')
-                    ? Image.file(
-                        File(imageUrl),
+    return Obx(() => Stack(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: SizedBox(
+                width: 88,
+                height: 88,
+                child: controller.profileData.value.imageUrl.startsWith('http')
+                    ? CachedNetworkImage(
+                        imageUrl: controller.profileData.value.imageUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
+                        placeholder: (context, url) =>
+                            const CircularProgressIndicator(),
+                        errorWidget: (context, url, error) =>
                             Image.asset(Assets.notFound),
                       )
-                    : Image.asset(Assets.notFound),
-          ),
-        ),
-
-        // Camera Icon Flag
-        Positioned(
-          bottom: 0,
-          right: 0,
-          child: Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: Palette.mainAppColorOrange,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Palette.mainAppColorWhite,
-                width: 2,
+                    : controller.profileData.value.imageUrl.startsWith('/')
+                        ? Image.file(
+                            File(controller.profileData.value.imageUrl),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Image.asset(Assets.notFound),
+                          )
+                        : Image.asset(Assets.notFound),
               ),
             ),
-            child: const Icon(
-              Icons.camera_alt,
-              color: Palette.mainAppColorWhite,
-              size: 14,
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Palette.mainAppColorOrange,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Palette.mainAppColorWhite,
+                    width: 2,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.camera_alt,
+                  color: Palette.mainAppColorWhite,
+                  size: 14,
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
-    );
+          ],
+        ));
   }
 
   Widget _buildButtonCard(BuildContext context, String tilte, IconData icon,
@@ -752,7 +611,6 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
           context, LocalizationService.translateFromGeneral('logoutError'));
     }
   }
-  
 
   void _showSubscriptionDialog(BuildContext context) {
     showDialog(

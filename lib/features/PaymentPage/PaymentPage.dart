@@ -21,7 +21,6 @@ import 'package:flutter/services.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Styles.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
-import 'package:ironfit/features/PaymentPage/BuySheet.dart';
 import 'package:square_in_app_payments/google_pay_constants.dart'
     as google_pay_constants;
 import 'package:square_in_app_payments/in_app_payments.dart';
@@ -38,7 +37,7 @@ class PaymentPageState extends State<PaymentPage> {
 
   static final GlobalKey<ScaffoldState> scaffoldKey =
       GlobalKey<ScaffoldState>();
-  final squareLocationId = 'sandbox-sq0idb-dLnDnBS1yKAWplVX8PZErg';
+  final squareLocationId = 'sq0idp-ugrlwQoPlcMjXEuZrg5LFw';
 
   @override
   void initState() {

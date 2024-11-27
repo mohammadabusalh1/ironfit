@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,5 +43,17 @@ class TokenService {
     } else {
       Get.toNamed(Routes.preLoginScreens);
     }
+  }
+
+  Future<bool> checkSubscription() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    // Fetch the coach's subscription data
+    var subscription = await FirebaseFirestore.instance
+        .collection('coaches')
+        .doc(user!.uid)
+        .get();
+
+    return subscription.data()?['subscription'] ?? false;
   }
 }

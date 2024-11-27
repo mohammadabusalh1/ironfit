@@ -42,7 +42,8 @@ dependencies:
   flutter_image_compress: ^2.3.0
   connectivity_plus: ^6.1.0
   image: ^4.3.0
-  square_in_app_payments: ^1.7.9
+  flutter_animate: ^4.5.2
+  flutter_braintree: ^4.0.0
 
   # Add any other packages your project might need like HTTP for API calls
   # Example:

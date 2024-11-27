@@ -305,5 +305,8 @@
   "paymentSuccessMessage": "The process completed successfully",
   "paymentFailedMessage": "The process failed",
   "ok": "Ok",
-  "payWithGooglePay": "Pay with Google Pay"
+  "payWithGooglePay": "Pay with Google Pay",
+  "noInternetConnection": "No Internet Connection",
+  "subscriptionRequired": "You must subscribe to view this content",
+  "watchAd": "Watch Ad"
 }

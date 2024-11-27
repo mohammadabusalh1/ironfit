@@ -8,6 +8,7 @@ import 'package:ironfit/core/presentation/widgets/theme.dart';
 import 'package:ironfit/features/createPlan/widgets/create_plan_body.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 
+
 class ExerciseDialog extends StatefulWidget {
   final Function addExercise;
   final Exercise? initialExercise; // Optional initial exercise to edit

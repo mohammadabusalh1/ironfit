@@ -15,7 +15,7 @@ import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/theme.dart';
 import 'package:ironfit/core/routes/routes.dart';
-import 'package:ironfit/features/PaymentPage/PaymentPage.dart';
+import 'package:ironfit/core/services/paymentServices.dart';
 import 'package:ironfit/features/coachProfile/controllers/coach_profile_controller.dart';
 import 'package:ironfit/features/coachProfile/widgets/dialogs.dart';
 import 'package:ironfit/main.dart';
@@ -392,8 +392,7 @@ class _CoachProfileBodyState extends State<CoachProfileBody> {
                   ),
                   const SizedBox(height: 24),
                   BuildIconButton(
-                    onPressed: () => Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => PaymentPage())),
+                    onPressed: () => PaymentServices.submitPayment(),
                     text:
                         LocalizationService.translateFromGeneral('payWithCard'),
                     width: double.infinity,

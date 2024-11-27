@@ -13,7 +13,9 @@ import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/routes/routes.dart';
+import 'package:ironfit/core/services/paymentServices.dart';
 import 'package:ironfit/features/editPlan/screens/edit_plan_screen.dart';
+import 'package:startapp_sdk/startapp.dart';
 
 class MyPlansBody extends StatefulWidget {
   const MyPlansBody({super.key});
@@ -37,6 +39,20 @@ class _MyPlansBodyState extends State<MyPlansBody> {
   late BannerAd bannerAd;
   bool isBannerAdLoaded = false;
   late String dir;
+  var startAppSdk = StartAppSdk();
+  StartAppInterstitialAd? interstitialAd;
+
+  void loadInterstitialAd() {
+    startAppSdk.loadInterstitialAd().then((interstitialAd) {
+      setState(() {
+        this.interstitialAd = interstitialAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Interstitial ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Interstitial ad: $error");
+    });
+  }
 
   @override
   void initState() {
@@ -56,6 +72,7 @@ class _MyPlansBodyState extends State<MyPlansBody> {
     bannerAd.load();
     getPlans();
     dir = LocalizationService.getDir();
+    loadInterstitialAd();
   }
 
   void dispose() {
@@ -203,8 +220,111 @@ class _MyPlansBodyState extends State<MyPlansBody> {
                         Expanded(
                           flex: 1,
                           child: BuildIconButton(
-                            onPressed: () {
-                              Get.toNamed(Routes.createPlan);
+                            onPressed: () async {
+                              if (!await tokenService.checkSubscription()) {
+                                showModalBottomSheet(
+                                  context: context,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (BuildContext context) {
+                                    return Container(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Palette.mainAppColorNavy,
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(16),
+                                          topRight: Radius.circular(16),
+                                        ),
+                                      ),
+                                      padding: const EdgeInsets.all(24),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            LocalizationService
+                                                .translateFromGeneral(
+                                                    'subscriptionRequired'),
+                                            style: AppStyles.textCairo(
+                                              14,
+                                              Palette.mainAppColorWhite,
+                                              FontWeight.bold,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          const SizedBox(height: 24),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              BuildIconButton(
+                                                text: LocalizationService
+                                                    .translateFromGeneral(
+                                                        'watchAd'),
+                                                fontSize: 14,
+                                                icon: Icons.play_circle_outline,
+                                                onPressed: () async {
+                                                  Navigator.pop(
+                                                      context); // Close bottom sheet
+                                                  // Add your ad watching logic here
+                                                  if (interstitialAd != null) {
+                                                    interstitialAd!.show().then(
+                                                        (shown) {
+                                                      if (shown) {
+                                                        setState(() {
+                                                          // NOTE interstitial ad can be shown only once
+                                                          this.interstitialAd =
+                                                              null;
+
+                                                          // NOTE load again
+                                                          loadInterstitialAd();
+                                                        });
+                                                      }
+
+                                                      Get.toNamed(
+                                                          Routes.createPlan);
+                                                    }).onError(
+                                                        (error, stackTrace) {
+                                                      debugPrint(
+                                                          "Error showing Interstitial ad: $error");
+                                                    });
+                                                  } else {
+                                                    Get.toNamed(
+                                                        Routes.createPlan);
+                                                  }
+                                                },
+                                                width: double.infinity,
+                                                backgroundColor:
+                                                    Palette.mainAppColorWhite,
+                                                textColor:
+                                                    Palette.mainAppColorNavy,
+                                                iconColor:
+                                                    Palette.mainAppColorNavy,
+                                              ),
+                                              const SizedBox(width: 12),
+                                              BuildIconButton(
+                                                text: LocalizationService
+                                                    .translateFromGeneral(
+                                                        'subscribe'),
+                                                fontSize: 14,
+                                                icon: Icons.star,
+                                                onPressed: () =>
+                                                    PaymentServices.submitPayment(),
+                                                width: double.infinity,
+                                                backgroundColor: Colors.amber,
+                                                textColor:
+                                                    Palette.mainAppColorNavy,
+                                                iconColor:
+                                                    Palette.mainAppColorNavy,
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 12),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                                return; // Stop the execution of the current function
+                              }
                             },
                             iconSize: 20,
                             icon: Icons.add,

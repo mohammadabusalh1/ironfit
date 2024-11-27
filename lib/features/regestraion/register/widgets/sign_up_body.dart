@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -310,6 +309,43 @@ class _SignUpBodyState extends State<SignUpBody> {
     return null;
   }
 
+  Widget _buildTypeSelectionButton() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: type ? Palette.mainAppColorOrange : Palette.mainAppColorWhite,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            onPressed: () async {
+              SharedPreferences prefs = await preferencesService.getPreferences();
+              setState(() {
+                type = !type;
+                prefs.setBool('isCoach', type);
+              });
+            },
+            child: Text(
+              type 
+                ? LocalizationService.translateFromGeneral('iAmTrainee')
+                : LocalizationService.translateFromGeneral('iAmCoach'),
+              style: AppStyles.textCairo(
+                14,
+                type ? Palette.mainAppColorWhite : Palette.mainAppColorNavy,
+                FontWeight.w700
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -321,8 +357,7 @@ class _SignUpBodyState extends State<SignUpBody> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.12),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.12),
                       AnimatedScreen(),
                       Padding(
                         padding: const EdgeInsets.all(24),
@@ -330,15 +365,14 @@ class _SignUpBodyState extends State<SignUpBody> {
                           children: [
                             WelcomeText(),
                             const SizedBox(height: 24),
+                            _buildTypeSelectionButton(),
+                            const SizedBox(height: 24),
                             _buildEmailTextField(context),
                             const SizedBox(height: 12),
                             _buildPasswordTextField(context),
                             const SizedBox(height: 24),
-                            // _buildCoachSwitch(context),
-                            // const SizedBox(height: 24),
                             BuildIconButton(
-                              text: LocalizationService.translateFromGeneral(
-                                  'create_account'),
+                              text: LocalizationService.translateFromGeneral('create_account'),
                               onPressed: () {
                                 _registerUser();
                               },
@@ -350,21 +384,17 @@ class _SignUpBodyState extends State<SignUpBody> {
                             const SizedBox(height: 8),
                             BuildIconButton(
                               height: 50,
-                              text: LocalizationService.translateFromGeneral(
-                                  'sign_in_with_google'),
+                              text: LocalizationService.translateFromGeneral('sign_in_with_google'),
                               width: MediaQuery.of(context).size.width,
                               onPressed: () async {
                                 try {
                                   await signUpWithGoogle();
                                 } catch (e) {
                                   Get.snackbar(
-                                    LocalizationService.translateFromGeneral(
-                                        'error'),
-                                    LocalizationService.translateFromGeneral(
-                                        'googleLoginFailure'),
+                                    LocalizationService.translateFromGeneral('error'),
+                                    LocalizationService.translateFromGeneral('googleLoginFailure'),
                                     titleText: Text(
-                                      LocalizationService.translateFromGeneral(
-                                          'error'),
+                                      LocalizationService.translateFromGeneral('error'),
                                       textAlign: TextAlign.right,
                                       textDirection: TextDirection.rtl,
                                       style: AppStyles.textCairo(
@@ -373,8 +403,7 @@ class _SignUpBodyState extends State<SignUpBody> {
                                           FontWeight.w500),
                                     ),
                                     messageText: Text(
-                                      LocalizationService.translateFromGeneral(
-                                          'googleLoginFailure'),
+                                      LocalizationService.translateFromGeneral('googleLoginFailure'),
                                       textAlign: TextAlign.right,
                                       textDirection: TextDirection.rtl,
                                       style: AppStyles.textCairo(
@@ -396,15 +425,14 @@ class _SignUpBodyState extends State<SignUpBody> {
                                 height: 24,
                               ),
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 8),
                             Center(
                               child: TextButton(
                                 onPressed: () {
                                   Navigator.pushNamed(context, Routes.singIn);
                                 },
                                 child: Text(
-                                  LocalizationService.translateFromGeneral(
-                                      'login'),
+                                  LocalizationService.translateFromGeneral('login'),
                                   style: AppStyles.textCairo(14,
                                       Palette.mainAppColor, FontWeight.w500),
                                 ),
@@ -416,35 +444,6 @@ class _SignUpBodyState extends State<SignUpBody> {
                     ],
                   ),
                 )),
-            Positioned(
-              top: 40,
-              right: 20,
-              child: TextButton(
-                style: TextButton.styleFrom(
-                    backgroundColor: type == true
-                        ? Palette.mainAppColorOrange
-                        : Palette.mainAppColorWhite),
-                onPressed: () async {
-                  SharedPreferences prefs =
-                      await preferencesService.getPreferences();
-                  prefs.setBool('isCoach', !prefs.getBool('isCoach')!);
-                  setState(() {
-                    type = !type;
-                  });
-                },
-                child: Text(
-                  type == true
-                      ? LocalizationService.translateFromGeneral('iAmTrainee')
-                      : LocalizationService.translateFromGeneral('iAmCoach'),
-                  style: AppStyles.textCairo(
-                      14,
-                      type == true
-                          ? Palette.mainAppColorWhite
-                          : Palette.mainAppColorNavy,
-                      FontWeight.w600),
-                ),
-              ),
-            ),
           ],
         ));
   }

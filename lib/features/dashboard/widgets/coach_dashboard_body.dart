@@ -80,22 +80,6 @@ class CoachDashboardState extends State<CoachDashboardBody> {
     super.initState();
     // startAppSdk.setTestAdsEnabled(true);
     fetchInitialData();
-    bannerAd = BannerAd(
-      adUnitId: 'ca-app-pub-2914276526243261/9874590860',
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (ad) {
-          setState(() {
-            isBannerAdLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-        },
-      ),
-    );
-    bannerAd.load();
     tokenService.checkTokenAndNavigateSingIn();
     // loadAd();
     

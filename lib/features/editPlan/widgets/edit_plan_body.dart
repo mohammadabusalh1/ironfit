@@ -346,7 +346,7 @@ class _EditPlanBodyState extends State<EditPlanBody> {
                               subtitle1:
                                   "${exercise.rounds} ${LocalizationService.translateFromGeneral('rounds')}",
                               subtitle2:
-                                  "${exercise.useTime ? exercise.time : exercise.repetitions} ${exercise.time != null ? LocalizationService.translateFromGeneral('seconds') : LocalizationService.translateFromGeneral('repetitions')}",
+                                  "${exercise.time != null ? exercise.time : exercise.repetitions} ${exercise.time != null ? LocalizationService.translateFromGeneral('seconds') : LocalizationService.translateFromGeneral('repetitions')}",
                               image: exercise.image,
                             ),
                             const Spacer(),

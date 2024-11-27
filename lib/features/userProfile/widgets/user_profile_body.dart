@@ -22,10 +22,6 @@ import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:ironfit/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-String? fullName;
-String trainerImage = Assets.notFound;
-bool isDataLoaded = false;
-
 class UserProfileBody extends StatefulWidget {
   const UserProfileBody({super.key});
 
@@ -34,6 +30,9 @@ class UserProfileBody extends StatefulWidget {
 }
 
 class _UserProfileBodyState extends State<UserProfileBody> {
+  String? fullName;
+  String trainerImage = Assets.notFound;
+  bool isDataLoaded = false;
   PreferencesService preferencesService = PreferencesService();
   String numberOfDays = '0';
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -41,13 +40,26 @@ class _UserProfileBodyState extends State<UserProfileBody> {
   CustomSnackbar customSnackbar = CustomSnackbar();
   late String dir;
   bool isLoading = false;
+  bool _isImageUploading = false;
+  bool _isDataFetching = false;
 
   @override
   void initState() {
     super.initState();
-    tokenService.checkTokenAndNavigateSingIn();
-    fetchUserDays();
-    fetchUserName();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    setState(() => _isDataFetching = true);
+    try {
+      await Future.wait([
+        tokenService.checkTokenAndNavigateSingIn(),
+        fetchUserDays(),
+        fetchUserName(),
+      ]);
+    } finally {
+      setState(() => _isDataFetching = false);
+    }
     dir = LocalizationService.getDir();
   }
 
@@ -104,45 +116,25 @@ class _UserProfileBodyState extends State<UserProfileBody> {
   Future<void> fetchUserName() async {
     try {
       String? userId = _auth.currentUser?.uid;
+      if (userId == null) throw Exception('No user logged in');
 
-      if (userId == null) {
-        print("No user is logged in.");
-        // Optionally, show a message to the user via UI here.
-        return; // Early exit if the user is not logged in
-      }
-      // Get user data from Firestore
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+      final userDoc = await FirebaseFirestore.instance
           .collection('trainees')
           .doc(userId)
           .get();
 
-      if (!userDoc.exists) {
-        print("User data not found for userId: $userId");
-        // Optionally, notify the user about the missing data via UI
-        return;
-      }
+      if (!userDoc.exists) throw Exception('User data not found');
 
-      // Cast userDoc data to Map<String, dynamic>
-      Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
-
-      // Retrieve user information safely
-      String? firstName = userData?['firstName'];
-      // String? lastName = userData?['lastName'];
-      String profileImageUrl = userData?['profileImageUrl'] ?? Assets.notFound;
-
+      final userData = userDoc.data() as Map<String, dynamic>;
+      
       setState(() {
-        fullName = '$firstName';
-        trainerImage = profileImageUrl;
+        fullName = userData['firstName'] as String?;
+        trainerImage = userData['profileImageUrl'] ?? Assets.notFound;
+        isDataLoaded = true;
       });
     } catch (e) {
-      // Handle specific exceptions if needed, e.g., FirebaseException
-      print("Error fetching user data: $e");
-      // You can also show a user-friendly message on the UI
-    } finally {
-      setState(() {
-        isDataLoaded = false;
-      });
-      print('isDataLoaded: $isDataLoaded');
+      customSnackbar.showFailureMessage(context);
+      setState(() => isDataLoaded = false);
     }
   }
 
@@ -457,158 +449,91 @@ class _UserProfileBodyState extends State<UserProfileBody> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isDataFetching) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return SafeArea(
       top: true,
-      child: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  Stack(
-                    children: [
-                      HeaderImage(
-                        headerImage: Assets.header2,
-                        high: MediaQuery.of(context).size.height * 0.41,
-                        borderRadius: 32,
-                        width: MediaQuery.of(context).size.width * 0.99,
-                      ),
-                      Positioned(
-                        top: MediaQuery.of(context).size.height * 0.04,
-                        left: 24,
-                        right: 24,
-                        height: MediaQuery.of(context).size.height * 0.41,
-                        child: _buildProfileContent(context),
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildButtonCard(
-                          context,
-                          LocalizationService.translateFromGeneral(
-                              'personalInformation'),
-                          Icons.settings,
-                          () => showEditInfoDialog(context),
-                          Icons.arrow_forward_ios_outlined,
-                          Palette.mainAppColorBack,
-                        ),
-                        _buildButtonCard(
-                          context,
-                          LocalizationService.translateFromGeneral(
-                              'changePassword'),
-                          Icons.lock,
-                          () => showEditPasswordDialog(context),
-                          Icons.arrow_forward_ios_outlined,
-                          Palette.mainAppColorBack,
-                        ),
-                        SizedBox(height: 16,),
-                        _buildButtonCard(
-                          context,
-                          LocalizationService.translateFromGeneral('gyms'),
-                          Icons.location_on,
-                          () => Get.toNamed(Routes.myGyms),
-                          Icons.arrow_forward_ios,
-                          Palette.mainAppColorOrange,
-                        ),
-                        _buildButtonCard(
-                          context,
-                          dir == 'rtl'
-                              ? LocalizationService.translateFromPage(
-                                  'English', 'selectLang')
-                              : LocalizationService.translateFromPage(
-                                  'Arabic', 'selectLang'),
-                          Icons.translate,
-                          () {
-                            LocalizationService.load(
-                              LocalizationService.lang == 'en' ? 'ar' : 'en',
-                            );
-                            RestartWidget.restartApp(context);
-                            Navigator.pushNamed(context, Routes.userProfile);
-                          },
-                          Icons.arrow_forward_ios,
-                          Palette.mainAppColorOrange,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildProfileHeader(context),
+            const SizedBox(height: 24),
+            _buildSettingsSection(context),
+          ],
+        ),
+      ),
     );
   }
 
   Future<void> changeUserImage() async {
-    final ImagePicker picker = ImagePicker();
+    if (_isImageUploading) return;
 
     try {
+      setState(() => _isImageUploading = true);
+      
+      final ImagePicker picker = ImagePicker();
       final XFile? pickedFile = await picker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 70, // Compress image quality to 70%
+        imageQuality: 70,
       );
 
       if (pickedFile == null) return;
 
-      // Show loading indicator in a non-blocking way
-      // Get.dialog(
-      //   const Center(child: CircularProgressIndicator()),
-      //   barrierDismissible: false,
-      // );
+      final File imageFile = File(pickedFile.path);
+      final String userId = _auth.currentUser!.uid;
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('profile_images/$userId.jpg');
 
-      // Update UI immediately with local image
-      setState(() {
-        trainerImage = pickedFile.path;
-        isLoading = true;
-      });
+      // Update UI with local image first
+      setState(() => trainerImage = pickedFile.path);
 
-      // Upload image in background
-      final storageRef = FirebaseStorage.instance.ref().child(
-          'profile_images/${FirebaseAuth.instance.currentUser!.uid}.jpg');
-
+      // Upload and get URL
       final uploadTask = storageRef.putFile(
-        File(pickedFile.path),
+        imageFile,
         SettableMetadata(contentType: 'image/jpeg'),
       );
 
-      // Listen to upload progress if needed
-      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        final progress = snapshot.bytesTransferred / snapshot.totalBytes;
-        // You can use this progress value to show upload progress
-      });
-
-      // Wait for upload to complete and get download URL
       final downloadUrl = await (await uploadTask).ref.getDownloadURL();
 
-      // Update Firestore with new image URL
       await FirebaseFirestore.instance
           .collection('trainees')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .update({
-        'profileImageUrl': downloadUrl,
-      });
+          .doc(userId)
+          .update({'profileImageUrl': downloadUrl});
 
-      // Update UI with cloud URL
-      setState(() {
-        trainerImage = downloadUrl;
-        isLoading = false;
-      });
-
-      // Get.back(); // Remove loading dialog
+      setState(() => trainerImage = downloadUrl);
+      
       customSnackbar.showMessage(
         context,
         LocalizationService.translateFromGeneral('imageUploadSuccess'),
       );
     } catch (e) {
-      Get.back(); // Remove loading dialog
-      setState(() {
-        isLoading = false;
-      });
       customSnackbar.showFailureMessage(context);
+    } finally {
+      setState(() => _isImageUploading = false);
     }
+  }
+
+  Widget _buildProfileHeader(BuildContext context) {
+    return Stack(
+      children: [
+        HeaderImage(
+          headerImage: Assets.header2,
+          high: MediaQuery.of(context).size.height * 0.41,
+          borderRadius: 32,
+          width: MediaQuery.of(context).size.width * 0.99,
+        ),
+        Positioned(
+          top: MediaQuery.of(context).size.height * 0.04,
+          left: 24,
+          right: 24,
+          height: MediaQuery.of(context).size.height * 0.41,
+          child: _buildProfileContent(context),
+        )
+      ],
+    );
   }
 
   Widget _buildProfileContent(BuildContext context) {
@@ -641,7 +566,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Palette.mainAppColorOrange.withOpacity(0.2),
+              color: Palette.mainAppColor.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -649,7 +574,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
               children: [
                 Icon(
                   Icons.access_time,
-                  color: Palette.mainAppColorOrange,
+                  color: Palette.mainAppColor,
                   size: 16,
                 ),
                 const SizedBox(width: 8),
@@ -657,7 +582,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
                   '${LocalizationService.translateFromGeneral('remainingDays')}: $numberOfDays ${LocalizationService.translateFromGeneral('daysAgo')}',
                   style: AppStyles.textCairo(
                     14,
-                    Palette.mainAppColorOrange,
+                    Palette.mainAppColor,
                     FontWeight.bold,
                   ),
                 ),
@@ -679,81 +604,58 @@ class _UserProfileBodyState extends State<UserProfileBody> {
     );
   }
 
-  Widget _buildButtonCard(
-    BuildContext context,
-    String title,
-    IconData icon,
-    VoidCallback onClick,
-    IconData? trailingIcon,
-    Color? iconBackColor,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onClick,
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              // color: Palette.mainAppColoryellow2.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
-              // border: Border.all(
-              //   color: Palette.mainAppColorBack.withOpacity(0.1),
-              //   width: 1,
-              // ),
-            ),
-            child: Row(
-              children: [
-                // Leading Icon with background
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: iconBackColor?.withOpacity(0.9) ?? Palette.mainAppColorBack,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: (iconBackColor ?? Palette.mainAppColorBack).withOpacity(0.2),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    icon,
-                    color: Palette.mainAppColorWhite,
-                    size: 18,
-                  ),
-                ),
-
-                const SizedBox(width: 16),
-
-                // Title
-                Expanded(
-                  child: Text(
-                    title,
-                    style: AppStyles.textCairo(
-                      14,
-                      Palette.mainAppColorWhite,
-                      FontWeight.w500,
-                    ),
-                  ),
-                ),
-
-                // Trailing Icon with animation
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  child: Icon(
-                    trailingIcon ?? Icons.arrow_forward_ios,
-                    color: Palette.gray.withOpacity(0.8),
-                    size: 16,
-                  ),
-                ),
-              ],
-            ),
+  Widget _buildSettingsSection(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildButtonCard(
+            context,
+            LocalizationService.translateFromGeneral(
+                'personalInformation'),
+            Icons.settings,
+            () => showEditInfoDialog(context),
+            Icons.arrow_forward_ios_outlined,
+            Palette.mainAppColor,
           ),
-        ),
+          _buildButtonCard(
+            context,
+            LocalizationService.translateFromGeneral(
+                'changePassword'),
+            Icons.lock,
+            () => showEditPasswordDialog(context),
+            Icons.arrow_forward_ios_outlined,
+            Palette.mainAppColor,
+          ),
+          _buildButtonCard(
+            context,
+            LocalizationService.translateFromGeneral('gyms'),
+            Icons.location_on,
+            () => Get.toNamed(Routes.myGyms),
+            Icons.arrow_forward_ios,
+            Palette.mainAppColor,
+          ),
+          _buildButtonCard(
+            context,
+            dir == 'rtl'
+                ? LocalizationService.translateFromPage(
+                    'English', 'selectLang')
+                : LocalizationService.translateFromPage(
+                    'Arabic', 'selectLang'),
+            Icons.translate,
+            () {
+              LocalizationService.load(
+                LocalizationService.lang == 'en' ? 'ar' : 'en',
+              );
+              RestartWidget.restartApp(context);
+              Navigator.pushNamed(context, Routes.userProfile);
+            },
+            Icons.arrow_forward_ios,
+            Palette.mainAppColor,
+          ),
+        ],
       ),
     );
   }
@@ -807,7 +709,7 @@ class _UserProfileBodyState extends State<UserProfileBody> {
           child: Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Palette.mainAppColorOrange,
+              color: Palette.mainAppColor,
               shape: BoxShape.circle,
               border: Border.all(
                 color: Palette.mainAppColorWhite,
@@ -822,6 +724,62 @@ class _UserProfileBodyState extends State<UserProfileBody> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildButtonCard(
+    BuildContext context,
+    String title,
+    IconData icon,
+    VoidCallback onClick,
+    IconData? trailingIcon,
+    Color? iconBackColor,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onClick,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Palette.mainAppColorWhite.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Palette.mainAppColorWhite.withOpacity(0.1),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  color: iconBackColor ?? Palette.mainAppColorWhite,
+                  size: 24,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: AppStyles.textCairo(
+                      12,
+                      Palette.mainAppColorWhite,
+                      FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Icon(
+                  trailingIcon ?? Icons.arrow_forward_ios,
+                  color: Palette.mainAppColorWhite.withOpacity(0.5),
+                  size: 16,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

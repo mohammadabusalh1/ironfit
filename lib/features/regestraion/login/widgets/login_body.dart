@@ -146,55 +146,34 @@ class _LoginBodyState extends State<LoginBody> {
         Get.dialog(const Center(child: CircularProgressIndicator()),
             barrierDismissible: false);
 
-        // Step 1: Sign in the user with FirebaseAuth
         UserCredential userCredential = await FirebaseAuth.instance
             .signInWithEmailAndPassword(
                 email: emailController.text.trim(),
                 password: passwordController.text);
 
-        // Step 2: Get the current user from FirebaseAuth
         User? user = userCredential.user;
+        if (user == null) throw Exception('No user found');
 
         SharedPreferences prefs = await preferencesService.getPreferences();
         bool isCoach = prefs.getBool('isCoach') ?? false;
-        // Step 5: Navigate based on userType
-        if (isCoach) {
-          // Step 3: Fetch user data from Firestore
-          if (user != null) {
-            DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-                .collection('coaches')
-                .doc(user.uid)
-                .get();
+        String collectionPath = isCoach ? 'coaches' : 'trainees';
 
-            if (userSnapshot.exists) {
-              SharedPreferences prefs =
-                  await preferencesService.getPreferences();
-              prefs.setString('coachId', user.uid);
-              prefs.setString('token', userSnapshot.id);
-              // Navigate to coach dashboard
-              Get.toNamed(Routes.coachDashboard);
-            } else {
-              throw Exception(
-                  LocalizationService.translateFromGeneral('checkInfo'));
-            }
-          }
-        } else if (!isCoach) {
-          if (user != null) {
-            DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-                .collection('trainees')
-                .doc(user.uid)
-                .get();
+        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection(collectionPath)
+            .doc(user.uid)
+            .get();
 
-            if (userSnapshot.exists) {
-              SharedPreferences prefs =
-                  await preferencesService.getPreferences();
-              prefs.setString('token', userSnapshot.id);
-              Get.toNamed(Routes.trainerDashboard);
-            } else {
-              throw Exception(
-                  LocalizationService.translateFromGeneral('checkInfo'));
-            }
+        if (userSnapshot.exists) {
+          prefs.setString('token', userSnapshot.id);
+          if (isCoach) {
+            prefs.setString('coachId', user.uid);
+            Get.toNamed(Routes.coachDashboard);
+          } else {
+            Get.toNamed(Routes.trainerDashboard);
           }
+        } else {
+          throw Exception(
+              LocalizationService.translateFromGeneral('checkInfo'));
         }
       } catch (e) {
         Get.back();
@@ -202,6 +181,43 @@ class _LoginBodyState extends State<LoginBody> {
             context, LocalizationService.translateFromGeneral('checkInfo'));
       }
     }
+  }
+
+  Widget _buildTypeSelectionButton() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: type ? Palette.mainAppColorOrange : Palette.mainAppColorWhite,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            onPressed: () async {
+              SharedPreferences prefs = await preferencesService.getPreferences();
+              setState(() {
+                type = !type;
+                prefs.setBool('isCoach', type);
+              });
+            },
+            child: Text(
+              type 
+                ? LocalizationService.translateFromGeneral('iAmTrainee')
+                : LocalizationService.translateFromGeneral('iAmCoach'),
+              style: AppStyles.textCairo(
+                14,
+                type ? Palette.mainAppColorWhite : Palette.mainAppColorNavy,
+                FontWeight.w700
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -224,12 +240,12 @@ class _LoginBodyState extends State<LoginBody> {
                       children: [
                         WelcomeText(),
                         const SizedBox(height: 24),
+                        _buildTypeSelectionButton(),
+                        const SizedBox(height: 24),
                         _buildEmailTextField(context),
                         const SizedBox(height: 12),
                         _buildPasswordTextField(context),
                         const SizedBox(height: 24),
-                        // _buildCoachSwitch(context),
-                        // const SizedBox(height: 24),
                         BuildIconButton(
                           height: 50,
                           text:
@@ -296,35 +312,6 @@ class _LoginBodyState extends State<LoginBody> {
                     ),
                   ),
                 ],
-              ),
-            ),
-          ),
-          Positioned(
-            top: 40,
-            right: 20,
-            child: TextButton(
-              style: TextButton.styleFrom(
-                  backgroundColor: type == true
-                      ? Palette.mainAppColorOrange
-                      : Palette.mainAppColorWhite),
-              onPressed: () async {
-                SharedPreferences prefs =
-                    await preferencesService.getPreferences();
-                prefs.setBool('isCoach', !type);
-                setState(() {
-                  type = !type;
-                });
-              },
-              child: Text(
-                type == true
-                    ? LocalizationService.translateFromGeneral('iAmTrainee')
-                    : LocalizationService.translateFromGeneral('iAmCoach'),
-                style: AppStyles.textCairo(
-                    14,
-                    type == true
-                        ? Palette.mainAppColorWhite
-                        : Palette.mainAppColorNavy,
-                    FontWeight.w600),
               ),
             ),
           ),

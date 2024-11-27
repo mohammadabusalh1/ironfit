@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
 import 'package:ironfit/core/presentation/widgets/Button.dart';
@@ -28,42 +27,18 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
 
   PreferencesService preferencesService = PreferencesService();
   TokenService tokenService = TokenService();
-
-  BannerAd? bannerAd;
-  bool isBannerAdLoaded = false;
   String dir = LocalizationService.getDir();
 
   @override
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateSingIn();
-    _loadAd();
     plan = {};
     _fetchPlan();
   }
 
-  void _loadAd() {
-    bannerAd = BannerAd(
-      adUnitId: 'ca-app-pub-2914276526243261/3712377319',
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (ad) {
-          setState(() {
-            isBannerAdLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-        }
-      )
-    );
-    bannerAd?.load();
-  }
-
   @override
   void dispose() {
-    bannerAd?.dispose();
     super.dispose();
   }
 
@@ -149,14 +124,7 @@ class _UserMyPlanBodyState extends State<UserMyPlanBody> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _buildHeader(context),
-                  const SizedBox(height: 12),
-                  if (isBannerAdLoaded && bannerAd != null)
-                    SizedBox(
-                      height: bannerAd!.size.height.toDouble(),
-                      width: bannerAd!.size.width.toDouble(),
-                      child: AdWidget(ad: bannerAd!),
-                    ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 24),
                   CustomTabBarWidget(plan: plan),
                 ],
               ),

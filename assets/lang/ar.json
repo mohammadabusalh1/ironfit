@@ -301,5 +301,8 @@
   "paymentSuccessMessage": "تمت العملية بنجاح",
   "paymentFailedMessage": "فشلت العملية",
   "ok": "موافق",
-  "payWithGooglePay": "الدفع بواسطة جوجل باي"
+  "payWithGooglePay": "الدفع بواسطة جوجل باي",
+  "noInternetConnection": "لا يوجد اتصال بالإنترنت",
+  "subscriptionRequired": "يجب عليك الاشتراك لتتمكن من مشاهدة هذا المحتوى",
+  "watchAd": "مشاهدة الإعلان"
 }

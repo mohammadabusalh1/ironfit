@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:ironfit/core/presentation/controllers/sharedPreferences.dart';
 import 'package:ironfit/core/presentation/style/assets.dart';
 import 'package:ironfit/core/presentation/style/palette.dart';
@@ -14,9 +13,11 @@ import 'package:ironfit/core/presentation/widgets/customSnackbar.dart';
 import 'package:ironfit/core/presentation/widgets/hederImage.dart';
 import 'package:ironfit/core/presentation/widgets/localization_service.dart';
 import 'package:ironfit/core/presentation/widgets/theme.dart';
+import 'package:ironfit/core/services/paymentServices.dart';
 import 'package:ironfit/features/Trainee/screens/trainee_screen.dart';
 import 'package:ironfit/features/editPlan/widgets/BuildTextField.dart';
 import 'package:lottie/lottie.dart';
+import 'package:startapp_sdk/startapp.dart';
 
 class TraineesBody extends StatefulWidget {
   const TraineesBody({super.key});
@@ -41,34 +42,34 @@ class _TraineesBodyState extends State<TraineesBody> {
   CustomSnackbar customSnackbar = CustomSnackbar();
 
   late String dir;
+  var startAppSdk = StartAppSdk();
+  StartAppInterstitialAd? interstitialAd;
+
+  void loadInterstitialAd() {
+    startAppSdk.loadInterstitialAd().then((interstitialAd) {
+      setState(() {
+        this.interstitialAd = interstitialAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Interstitial ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Interstitial ad: $error");
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     tokenService.checkTokenAndNavigateSingIn();
-    bannerAd = BannerAd(
-        adUnitId: 'ca-app-pub-2914276526243261/1778708496',
-        size: AdSize.banner,
-        request: const AdRequest(),
-        listener: BannerAdListener(onAdLoaded: (ad) {
-          setState(() {
-            isBannerAdLoaded = true;
-          });
-        }, onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-        }));
-    bannerAd.load();
     _scrollController.addListener(_scrollListener);
     fetchTrainees();
     dir = LocalizationService.getDir();
+    loadInterstitialAd();
   }
 
   final _formKey = GlobalKey<FormState>(); // Form key for validation
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
-
-  late BannerAd bannerAd;
-  bool isBannerAdLoaded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -80,15 +81,7 @@ class _TraineesBodyState extends State<TraineesBody> {
             child: Column(
               children: [
                 _buildHeader(),
-                const SizedBox(height: 12),
-                isBannerAdLoaded
-                    ? SizedBox(
-                        child: AdWidget(ad: bannerAd),
-                        height: bannerAd.size.height.toDouble(),
-                        width: bannerAd.size.width.toDouble(),
-                      )
-                    : const SizedBox(),
-                const SizedBox(height: 12),
+                const SizedBox(height: 24),
                 _buildActionButtons(),
                 const SizedBox(height: 12),
                 Padding(
@@ -128,16 +121,20 @@ class _TraineesBodyState extends State<TraineesBody> {
                               context,
                               trainee['fullName'] ??
                                   trainee['username'] ??
-                                  LocalizationService.translateFromGeneral('unknown'),
+                                  LocalizationService.translateFromGeneral(
+                                      'unknown'),
                               trainee['endDate'] != null &&
-                                      DateTime.tryParse(trainee['endDate']) != null
+                                      DateTime.tryParse(trainee['endDate']) !=
+                                          null
                                   ? (DateTime.parse(trainee['endDate'])
                                               .millisecondsSinceEpoch >
                                           DateTime.now().millisecondsSinceEpoch
-                                      ? LocalizationService.translateFromGeneral(
-                                          'currently_subscribed')
-                                      : LocalizationService.translateFromGeneral(
-                                          'not_subscribed'))
+                                      ? LocalizationService
+                                          .translateFromGeneral(
+                                              'currently_subscribed')
+                                      : LocalizationService
+                                          .translateFromGeneral(
+                                              'not_subscribed'))
                                   : LocalizationService.translateFromGeneral(
                                       'unknown'),
                               trainee['profileImageUrl'] ?? Assets.notFound,
@@ -170,7 +167,99 @@ class _TraineesBodyState extends State<TraineesBody> {
             left: 12,
             right: 12,
             child: InkWell(
-              onTap: () => showAddTraineeDialog(context),
+              onTap: () async {
+                if (!await tokenService.checkSubscription()) {
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    builder: (BuildContext context) {
+                      return Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Palette.mainAppColorNavy,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16),
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              LocalizationService.translateFromGeneral(
+                                  'subscriptionRequired'),
+                              style: AppStyles.textCairo(
+                                14,
+                                Palette.mainAppColorWhite,
+                                FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 24),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                BuildIconButton(
+                                  text:
+                                      LocalizationService.translateFromGeneral(
+                                          'watchAd'),
+                                  fontSize: 14,
+                                  icon: Icons.play_circle_outline,
+                                  onPressed: () async {
+                                    Navigator.pop(
+                                        context); // Close bottom sheet
+                                    // Add your ad watching logic here
+                                    if (interstitialAd != null) {
+                                      interstitialAd!.show().then((shown) {
+                                        if (shown) {
+                                          setState(() {
+                                            // NOTE interstitial ad can be shown only once
+                                            this.interstitialAd = null;
+
+                                            // NOTE load again
+                                            loadInterstitialAd();
+                                          });
+                                        }
+
+                                        showAddTraineeDialog(context);
+                                      }).onError((error, stackTrace) {
+                                        debugPrint(
+                                            "Error showing Interstitial ad: $error");
+                                      });
+                                    } else {
+                                      showAddTraineeDialog(context);
+                                    }
+                                  },
+                                  width: double.infinity,
+                                  backgroundColor: Palette.mainAppColorWhite,
+                                  textColor: Palette.mainAppColorNavy,
+                                  iconColor: Palette.mainAppColorNavy,
+                                ),
+                                const SizedBox(width: 12),
+                                BuildIconButton(
+                                  text:
+                                      LocalizationService.translateFromGeneral(
+                                          'subscribe'),
+                                  fontSize: 14,
+                                  icon: Icons.star,
+                                  onPressed: () => PaymentServices.submitPayment(),
+                                  width: double.infinity,
+                                  backgroundColor: Colors.amber,
+                                  textColor: Palette.mainAppColorNavy,
+                                  iconColor: Palette.mainAppColorNavy,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                  return; // Stop the execution of the current function
+                }
+              },
               child: SizedBox(
                 width: 70,
                 height: 70,
@@ -429,7 +518,6 @@ class _TraineesBodyState extends State<TraineesBody> {
   void dispose() {
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
-    bannerAd.dispose();
     super.dispose();
   }
 
@@ -632,7 +720,6 @@ class _TraineesBodyState extends State<TraineesBody> {
                         const Center(child: CircularProgressIndicator()),
                         barrierDismissible: false,
                       );
-
                       String username = usernameController.text.trim();
                       String startDate = startDateController.text.trim();
                       String endDate = endDateController.text.trim();

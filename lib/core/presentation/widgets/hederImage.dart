@@ -16,6 +16,9 @@ class HeaderImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Precache the image
+    precacheImage(AssetImage(headerImage), context);
+
     return ClipRRect(
       borderRadius: BorderRadius.only(
         bottomLeft: Radius.circular(borderRadius),
@@ -24,11 +27,10 @@ class HeaderImage extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Image.asset(
-            headerImage,
+          Image(
+            image: AssetImage(headerImage),
             width: width == 0 ? double.infinity : width,
-            height:
-                high == 0 ? MediaQuery.of(context).size.height * 0.25 : high,
+            height: high == 0 ? MediaQuery.of(context).size.height * 0.25 : high,
             fit: BoxFit.cover,
           ),
           Container(

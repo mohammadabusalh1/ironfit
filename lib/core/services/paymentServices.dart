@@ -4,19 +4,19 @@ class PaymentServices {
   static submitPayment() async {
     try {
       final request = BraintreeDropInRequest(
-        clientToken: 'sandbox_d5fdtgp3_dw75gy8mp2dhgk88',
+        clientToken: 'sandbox_rzxp79vs_w7m3b89fk4mdh8z7',
         collectDeviceData: true,
         googlePaymentRequest: BraintreeGooglePaymentRequest(
-          totalPrice: '1',
+          totalPrice: '0.20',
           currencyCode: 'USD',
           billingAddressRequired: false,
         ),
         paypalRequest: BraintreePayPalRequest(
-          amount: '1',
+          amount: '0.20',
           displayName: 'Example company',
         ),
       );
-      var result = await BraintreeDropIn.start(request);
+      BraintreeDropInResult? result = await BraintreeDropIn.start(request);
       if (result != null) {
         print('Nonce: ${result.paymentMethodNonce.nonce}');
       } else {

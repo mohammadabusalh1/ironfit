@@ -31,8 +31,8 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
     super.initState();
     tokenService.checkTokenAndNavigateDashboard();
     _controller = AnimationController(
-      duration: const Duration(seconds: 2),
       vsync: this,
+      duration: Duration(seconds: 1),
     );
 
     _opacityAnimation = Tween<double>(
@@ -45,6 +45,13 @@ class _SelectEnterBodyState extends State<SelectEnterBody>
 
     // Start animation when widget is first rendered
     _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    // Make sure to dispose the controller before calling super.dispose()
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
